@@ -37,19 +37,19 @@
             <div class="container" style="margin-top: 15%;">
                 <div class="row">
                     <div class="col-12 text-center" >
-                        <input type="text" class="form-control-lg text-center no-border" placeholder="ชื่อผู้ใช้" style="width: 40%; background: white;">
+                        <input id="name" type="text" class="form-control-lg text-center no-border" placeholder="ชื่อผู้ใช้" style="width: 40%; background: white;">
                     </div>
                 </div><br>
 
                 <div class="row">
                     <div class="col-12 text-center" >
-                        <input type="password" class="form-control-lg text-center no-border" placeholder="รหัสผ่าน" style="width: 40%; background: white;">
+                        <input id="password" type="password" class="form-control-lg text-center no-border" placeholder="รหัสผ่าน" style="width: 40%; background: white;">
                     </div>
                 </div><br><br>
 
                 <div class="row">
                     <div class="col-12 text-center">
-                        <button class="btn btn-lg btn-success">เข้าสู่ระบบ</button>
+                        <button class="btn btn-lg btn-success" onclick="login()">เข้าสู่ระบบ</button>
                     </div>
                 </div><br>
 
@@ -61,6 +61,27 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function login(){
+            var name = $('#name').val();
+            var pass = $('#password').val();
+            $.ajax({
+                type: "POST",
+                url: "http://150.95.26.163:8080/gitmew/php/login.php",
+                data: {'name': name,
+                       'pass' : pass},               
+                success: function(data){
+                   if(data == "fail"){
+                       alert("ชื่อหรือรหัสผ่านไม่ถูกต้อง");
+                   }else{
+                       localStorage.user_id = data;
+                       window.location = "sale.html";
+                   }
+                }                             
+            }); 
+        }
+    </script>
     
 </body>
 </html>

@@ -5,15 +5,15 @@
 	$match = false; 
     
 	// Check pass match 
-	$sql_pass = "SELECT pwd FROM user WHERE user_name = '$name'";
+	$sql_pass = "SELECT user_id,pwd FROM user WHERE user_name = '$name'";
 	$res_pass = mysqli_query($conn, $sql_pass);
 
-	if($res_pass){
+	if($mysqli_num_rows($res_pass) > 0){
 		while($row = $res_pass->fetch_assoc()){
-			if(password_verify($pass, $row['pwd']))
-				$match = true;
-		}
-		echo $match;
+			if(password_verify($pass, $row['pwd'])){
+				echo $row['user_id'];
+			}		
+		}		
 	}else{
 		echo "fail";
 	}
