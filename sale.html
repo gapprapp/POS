@@ -895,7 +895,7 @@
           json.push(item);         
           no++;
 
-          text = text + "<div style='font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%;'>"+jsonObj[i].name+"</div>" + "<div style='margin-left: 6cm; margin-right: 1.1cm; font-size: 0.6em; text-align:right;'>"+jsonObj[i].price+"("+jsonObj[i].amount+")</div>";
+          text = text + "<div class='txt-left'>"+jsonObj[i].name+"</div>" + "<div class='txt-right'>"+jsonObj[i].price+"("+jsonObj[i].amount+")</div>";
         }); 
         var jsonString = JSON.stringify(json);          
         var print = $('input[name=print-radio]:checked').val();
@@ -922,33 +922,33 @@
                 //alert(data);
                 if(data != "fail"){ 
                   if(print == "print"){                 
-                    WinPrint.document.write("<style>@page { size: auto; margin: 0mm; }</style >"+
+                    WinPrint.document.write("<style>@page { size: auto; margin: 0mm;} .txt-right{ margin-left: 6cm; margin-right: 1.1cm; font-size: 0.6em; text-align:right; } .txt-left{ font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60 %;} .txt-center{ font-size: 0.6em; text-align:center; }</style >"+
                                             "<div style='width: 7.9cm'>" +
-                                              "<div style='font-size: 0.6em; text-align:center;'>PPS AUTO  GROUP " +b_name+"</div>" +
-                                              "<div style='font-size: 0.6em; text-align:center;'>"+data+"</div>" +
-                                              "<div style='font-size: 0.6em; text-align:center;'>"+datetime+"</div>" +
+                                              "<div class='txt-center'>PPS AUTO  GROUP " +b_name+"</div>" +
+                                              "<div class='txt-center'>"+data+"</div>" +
+                                              "<div class='txt-center'>"+datetime+"</div>" +
                                                                           "<hr>" +
                                             "<div style='margin-bottom: 0.6em;'>"+ text + "</div>" +
                                             "<hr>" +
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%;'>รวม</div >"+ 
-                                              "<div style='margin-left: 6cm; margin-right: 1.1cm; font-size: 0.6em; text-align:right;' >"+sum_price+"</div>"+
+                                              "<div class='txt-left'>รวม</div>"+ 
+                                              "<div class='txt-right'>"+sum_price+"</div>"+
                                             "</div>"+ 
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%;'>ลด</div >"+ 
-                                              "<div style='margin-left: 6cm; margin-right: 1.1cm; font-size: 0.6em; text-align:right;' >"+ discount+"</div>"+
+                                              "<div class='txt-left'>ลด</div>"+ 
+                                              "<div class='txt-right'>"+ discount+"</div>"+
                                             "</div>"+
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%;'>สุทธิ</div >"+ 
-                                              "<div style='margin-left: 6cm; margin-right: 1.1cm; font-size: 0.6em; text-align:right;' >"+ final_price+"</div>"+
+                                              "<div class='txt-left'>สุทธิ</div>"+ 
+                                              "<div class='txt-right'>"+ final_price+"</div>"+
                                             "</div>"+ 
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%;'>รับ</div >"+ 
-                                              "<div style='margin-left: 6cm; margin-right: 1.1cm; font-size: 0.6em; text-align:right;' >"+ get_money+"</div>"+
+                                              "<div class='txt-left'>รับ</div>"+ 
+                                              "<div class='txt-right'>"+ get_money+"</div>"+
                                             "</div>"+
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%;'>ทอน</div >"+ 
-                                              "<div style='margin-left: 6cm; margin-right: 1.1cm; font-size: 0.6em; text-align:right;' >"+ change_money+"</div>"+
+                                              "<div class='txt-left'>ทอน</div>"+ 
+                                              "<div class='txt-right'>"+ change_money+"</div>"+
                                             "</div>"+
                                             "</div>");
                     WinPrint.document.close();
