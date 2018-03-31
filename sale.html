@@ -130,7 +130,7 @@
                     </div>
                   </div>
                   <div class="col-6 text-center text-muted">ผู้ทำรายการ :
-                    <div id="user" class="btn-group col-4 text-center text-muted">สมพร สง่างาม
+                    <div id="user" class="btn-group col-4 text-center text-muted">
                     </div>
                   </div>
                   </div>
@@ -173,7 +173,7 @@
                   <input id="price" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
-                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" data-index="2">
+                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" onchange="chng_amt()" data-index="2">
                 </div>
                 <div class="col-1">
                   <input id="unit" type="text" class="form-control text-center" readonly>
@@ -509,7 +509,7 @@
 
         detail();
 
-        setTimeout(function() {$("#name").focus();}, 100);
+        setTimeout(function() {$("#cus").focus();}, 100);
 
         var options = {
 
@@ -518,7 +518,7 @@
           },
 
           getValue: function(element) {
-            console.log(element);
+            
             return element.prod_name;
           },
 
@@ -527,9 +527,16 @@
             data: {}
           },
 
-          preparePostData: function(data) {
-            data.phrase = $("#name").val();
-            return data;
+          preparePostData: function(data) {            
+            if($("#cus").val() == ""){
+              alert("กรุณาใส่ชื่อลูกค้าก่อนทำรายการ");
+              $("#cus").focus();
+              return 0;
+            }else{
+              data.phrase = $("#name").val();
+              return data;
+            }
+           
           },
 
           list: {
@@ -612,10 +619,13 @@
     });
 
     function detail(){
+      $('#branch').empty();
       //Date
       var d = new Date($.now());
       $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
       datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+      $('#user').text(localStorage.name);
 
       $.ajax({
           url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
@@ -626,6 +636,19 @@
           $.each(obj, function(i, field){
             $('#branch').append("<option class='dropdown-item text-center' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
           });
+        }
+      });
+    }
+
+    function chng_amt(){
+      var amt = $('#amount').val();
+      $.ajax({
+        type: POST,
+        url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
+        data: {'prod_id' : prod_id,
+                'amount' : amt},
+        success : function(data){
+          
         }
       });
     }

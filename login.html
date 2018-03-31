@@ -76,6 +76,7 @@
                     if(data == "fail"){
                         alert("ชื่อหรือรหัสผ่านไม่ถูกต้อง");
                     }else{
+                        localStorage.name = name
                         localStorage.user_id = data;
                         window.location = "sale.html";
                     }
