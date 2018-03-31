@@ -895,7 +895,7 @@
           json.push(item);         
           no++;
 
-          text = text + "<div style='font-size: 0.6em; margin-left: 1.1cm; margin-right: 1.1cm; float: left; width: 60%;'>"+jsonObj[i].name+"</div>" + "<div style='margin-left: 6.6cm; margin-right: 0.5em; font-size: 0.6em; text-align:right;'>"+jsonObj[i].price+"("+jsonObj[i].amount+")</div>";
+          text = text + "<div style='font-size: 0.6em; margin-left: 1.1cm;float: left; width: 60%;'>"+jsonObj[i].name+"</div>" + "<div style='margin-left: 6cm; margin-right: 1.1; font-size: 0.6em; text-align:right;'>"+jsonObj[i].price+" x "+jsonObj[i].amount+"</div>";
         }); 
         var jsonString = JSON.stringify(json);          
         var print = $('input[name=print-radio]:checked').val();
@@ -922,8 +922,8 @@
                 //alert(data);
                 if(data != "fail"){ 
                   if(print == "print"){                 
-                    WinPrint.document.write("<style>@page { size: auto; margin: 0mm; }</style >"+
-                                            "<div style='width: 7.9cm'>" +
+                    WinPrint.document.write("<style>@page { margin: 0mm; }</style >"+
+                                            "<div style='width: 7.9cm; background: black;'>" +
                                               "<div style='font-size: 0.6em; text-align:center;'>PPS AUTO  GROUP " +b_name+"</div>" +
                                               "<div style='font-size: 0.6em; text-align:center;'>"+data+"</div>" +
                                               "<div style='font-size: 0.6em; text-align:center;'>"+datetime+"</div>" +
