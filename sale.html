@@ -413,7 +413,11 @@
       $('#get-money').on("keyup input", function(){
         var money = $('#get-money').val();
         var net = $('#final-price').val();
-        $('#change-money').val(money - net);
+        if(money - net < 0){
+          $('#change-money').val("NaN");
+        }else{
+          $('#change-money').val(money - net);
+        }
       });
 
     jsonObj = [];   
@@ -927,24 +931,24 @@
                                             "<div style='margin-bottom: 0.6em;'>"+ text + "</div>" +
                                             "<hr style='width: 80%;'>" +
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 15%; float: left; width: 60%;'>รวม</div >"+ 
-                                              "<div style='margin-left: 75%; margin-right: 15%; font-size: 0.6em;' >"+sum_price+"</div>"+
+                                              "<div style='font-size: 0.6em; float: left; width: 60%;'>รวม</div >"+ 
+                                              "<div style='margin-left: 75%; font-size: 0.6em;' >"+sum_price+"</div>"+
                                             "</div>"+ 
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 15%; float: left; width: 60%;'>ลด</div >"+ 
-                                              "<div style='margin-left: 75%; margin-right: 15%; font-size: 0.6em;' >"+ discount+"</div>"+
+                                              "<div style='font-size: 0.6em; float: left; width: 60%;'>ลด</div >"+ 
+                                              "<div style='margin-left: 75%; font-size: 0.6em;' >"+ discount+"</div>"+
                                             "</div>"+
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 15%; float: left; width: 60%;'>สุทธิ</div >"+ 
-                                              "<div style='margin-left: 75%; margin-right: 15%; font-size: 0.6em;' >"+ final_price+"</div>"+
+                                              "<div style='font-size: 0.6em; float: left; width: 60%;'>สุทธิ</div >"+ 
+                                              "<div style='margin-left: 75%; font-size: 0.6em;' >"+ final_price+"</div>"+
                                             "</div>"+ 
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 15%; float: left; width: 60%;'>รับ</div >"+ 
-                                              "<div style='margin-left: 75%; margin-right: 15%; font-size: 0.6em;' >"+ get_money+"</div>"+
+                                              "<div style='font-size: 0.6em; float: left; width: 60%;'>รับ</div >"+ 
+                                              "<div style='margin-left: 75%; font-size: 0.6em;' >"+ get_money+"</div>"+
                                             "</div>"+
                                             "<div>"+
-                                              "<div style='font-size: 0.6em; margin-left: 15%; float: left; width: 60%;'>ทอน</div >"+ 
-                                              "<div style='margin-left: 75%; margin-right: 15%; font-size: 0.6em;' >"+ change_money+"</div>"+
+                                              "<div style='font-size: 0.6em; float: left; width: 60%;'>ทอน</div >"+ 
+                                              "<div style='margin-left: 75%; font-size: 0.6em;' >"+ change_money+"</div>"+
                                             "</div>"+
                                             "</div>");
                     WinPrint.document.close();
