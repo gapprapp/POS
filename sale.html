@@ -130,7 +130,7 @@
                     </div>
                   </div>
                   <div class="col-6 text-center text-muted">ผู้ทำรายการ :
-                    <div id="user" class="btn-group col-4 text-center text-muted">สมพร สง่างาม
+                    <div id="user" class="btn-group col-4 text-center text-muted">
                     </div>
                   </div>
                   </div>
@@ -173,7 +173,7 @@
                   <input id="price" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
-                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" data-index="2">
+                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" onchange="chng_amt()" data-index="2">
                 </div>
                 <div class="col-1">
                   <input id="unit" type="text" class="form-control text-center" readonly>
@@ -414,7 +414,7 @@
         var money = $('#get-money').val();
         var net = $('#final-price').val();
         if(money - net < 0){
-          $('#change-money').val(0);
+          $('#change-money').val("");
         }else{
           $('#change-money').val(money - net);
         }
@@ -431,8 +431,7 @@
     var cus_id;
     var img;
     var prod_id;
-    $(document).ready(function(){
-      alert(localStorage.user_id);
+    $(document).ready(function(){      
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
@@ -510,16 +509,15 @@
 
         detail();
 
-        setTimeout(function() {$("#name").focus();}, 100);
+        setTimeout(function() {$("#cus").focus();}, 100);
 
         var options = {
 
           url: function(phrase) {
-            return "http://150.95.26.163:8080/gitmew/php/search.php";
+            return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
           },
 
-          getValue: function(element) {
-            //console.log(element);
+          getValue: function(element) {            
             return element.prod_name;
           },
 
@@ -528,13 +526,20 @@
             data: {}
           },
 
-          preparePostData: function(data) {
-            data.phrase = $("#name").val();
-            return data;
+          preparePostData: function(data) {            
+            if($("#cus").val() == ""){
+              alert("กรุณาใส่ชื่อลูกค้าก่อนทำรายการ");
+              $("#cus").focus();
+              return 0;
+            }else{
+              data.phrase = $("#name").val();
+              return data;
+            }
+           
           },
 
           list: {
-              maxNumberOfElements: 5,
+              maxNumberOfElements: 4,
 
               showAnimation: {
                   type: "slide",
@@ -558,10 +563,14 @@
                 $('#total').val(price);
               }
           },
+<<<<<<< HEAD
 
           //requestDelay: 400,
 
 
+=======
+          requestDelay: 400,          
+>>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
         };
 
         $("#name").easyAutocomplete(options);
@@ -588,7 +597,7 @@
           },
 
           list: {
-              maxNumberOfElements: 5,
+              maxNumberOfElements: 3,
 
               showAnimation: {
                   type: "slide",
@@ -603,20 +612,27 @@
                 cus_id = $("#cus").getSelectedItemData().customer_id;
               }
           },
+<<<<<<< HEAD
 
           //requestDelay: 400,
 
 
+=======
+          requestDelay: 400,          
+>>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
         };
 
         $("#cus").easyAutocomplete(options_cus);
     });
 
     function detail(){
+      $('#branch').empty();
       //Date
       var d = new Date($.now());
       $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
       datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+      $('#user').text(localStorage.name);
 
       $.ajax({
           url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
@@ -631,6 +647,24 @@
       });
     }
 
+<<<<<<< HEAD
+=======
+    function chng_amt(){
+      var amt = $('#amount').val();
+      $.ajax({
+        type: "POST",
+        url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
+        data: {'prod_id' : prod_id,
+                'amount' : amt},
+        success : function(data){
+          if(data != "fail"){           
+            $('#total').val(data);
+          }
+        }
+      });
+    }
+    
+>>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
     var total_old,dis_old;
     function edit(arg){
       $("#btn_edit"+arg).prop('hidden', true);
@@ -871,11 +905,19 @@
 
       $('#net-price').val(total);
       $('#discount-money').val(dis);
+<<<<<<< HEAD
       $('#final-price').val(net);
     }
 
+=======
+      $('#final-price').val(net); 
+      $('#get-money').val(""); 
+      $('#change-money').val("");
+    }   
+   
+>>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
     function save(){
-      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != ""){
+      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != ""){
         var no = 1;
         json = [];
         var text = "";
@@ -888,9 +930,9 @@
           item ["prod_id"] =  jsonObj[i].prod_id;
           item ["discount"] =  jsonObj[i].discount;
           if($('#box'+(i+1)).is(':checked') == true){
-            item ["bonus"] =  1;
+            item ["bonus"] =  true;
           }else{
-            item ["bonus"] =  0;
+            item ["bonus"] =  false;
           }
           json.push(item);
           no++;
@@ -908,9 +950,15 @@
         var final_price = $('#final-price').val();
         var get_money = $('#get-money').val();
         var change_money = $('#change-money').val();
+        var cus_name = $('#cus').val();
         var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
+<<<<<<< HEAD
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price="
         + final_price + "&comment=" + comment;
+=======
+        + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
+        + final_price + "&comment=" + comment + "&name_cus=" + cus_name;  
+>>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
 
         var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
         $.ajax({

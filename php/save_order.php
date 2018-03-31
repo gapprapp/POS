@@ -1,8 +1,8 @@
 <?php
     $conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos");
     $input  = $_POST['JSON'];
-    $obj = json_decode($input,true);  	
-    $cus  = $_POST['cus_id'];
+    $obj = json_decode($input,true); 
+    $cus;  
     $b  = $_POST['b_id'];
     $dt  = $_POST['date'];
     $sum  = $_POST['sum'];
@@ -12,6 +12,15 @@
     $change_money  = $_POST['change_money'];
     $final_price  = $_POST['final_price'];
     $comment  = $_POST['comment'];
+    $name_cus = $_POST['name_cus'];
+
+    if(isset($_POST['cus_id'])){
+        $cus  = $_POST['cus_id'];
+    }else{
+        $sql = "INSERT INTO customer (customer_name) VALUE ('$name_cus')"; 
+        $result = mysqli_query($conn, $sql);
+        $cus = mysqli_insert_id($conn);	
+    }   
    
     $sql = "SELECT order_number,count FROM sale_order ORDER BY order_id DESC LIMIT 1"; 
     $result = mysqli_query($conn, $sql);   
@@ -62,6 +71,9 @@
         $sql1 = "INSERT INTO sale_order_item (order_id,item_id,prod_id,prod_price,prod_amount,prod_discount,bonus)
          VALUE ('$last_id','$item','$prod_id','$price','$amt','$discount','$bonus')"; 
         $result1 = mysqli_query($conn, $sql1);       
+       
+        $sql_up = "UPDATE product_branch SET amount = amount-'$amt' WHERE branch_id = '$b_id' AND prod_id = '$prod_id'"; 
+        $result_up = mysqli_query($conn, $sql_up);        
     }
 
     if($result){
