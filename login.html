@@ -66,20 +66,22 @@
         function login(){
             var name = $('#name').val();
             var pass = $('#password').val();
-            $.ajax({
-                type: "POST",
-                url: "http://150.95.26.163:8080/gitmew/php/login.php",
-                data: {'name': name,
-                       'pass' : pass},               
-                success: function(data){
-                   if(data == "fail"){
-                       alert("ชื่อหรือรหัสผ่านไม่ถูกต้อง");
-                   }else{
-                       localStorage.user_id = data;
-                       window.location = "sale.html";
-                   }
-                }                             
-            }); 
+            if(name && pass){
+                $.ajax({
+                    type: "POST",
+                    url: "http://150.95.26.163:8080/gitmew/php/login.php",
+                    data: {'name': name,
+                        'pass' : pass},                           
+                    success: function(data){                   
+                    if(data == "fail"){
+                        alert("ชื่อหรือรหัสผ่านไม่ถูกต้อง");
+                    }else{
+                        localStorage.user_id = data;
+                        window.location = "sale.html";
+                    }
+                    }                            
+                });  
+            }           
         }
     </script>
     
