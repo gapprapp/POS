@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Date Picker -->
+    <link  href="css/datepicker.css" rel="stylesheet">
+    <script src="js/datepicker.js"></script>
+    <script src="js/datepicker.th-TH.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+     <!-- Easy-autocomplete -->
+     <script src="js/jquery.easy-autocomplete.min.js"></script>
+     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet" >    
+    <style>
+      .pdlr{
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    </style>
+
+    <script>
+      var sup_id,prod_id,img;
+      $(document).ready(function(){   
+        detail();
+
+        setTimeout(function() {$("#name").focus();}, 100);
+
+        var options = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search.php";
+          },
+
+          getValue: function(element) {
+            //console.log(element);
+            return element.prod_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {
+            data.phrase = $("#name").val();
+            return data;
+          },
+
+          list: {
+              maxNumberOfElements: 5,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+
+              onChooseEvent: function() {
+                var barcode = $("#name").getSelectedItemData().barcode;
+                var price = $("#name").getSelectedItemData().prod_price;
+                var cost = $("#name").getSelectedItemData().prod_cost;
+                prod_id = $("#name").getSelectedItemData().prod_id;
+                img = $("#name").getSelectedItemData().img_string;
+
+                $('#barcode').val(barcode);
+                $('#price').val(price);
+                $('#fund').val(cost);     
+                $('#amount').val("1");                       
+              }
+          },
+        };
+
+        $("#name").easyAutocomplete(options);
+
+        var options_sup = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search_sup.php";
+          },
+
+          getValue: function(element) {
+            //console.log(element);
+            return element.sup_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {
+            data.phrase = $("#sup").val();
+            return data;
+          },
+
+          list: {
+              maxNumberOfElements: 5,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+
+              onChooseEvent: function() {
+                sup_id = $("#sup").getSelectedItemData().sup_id;
+              }
+          },
+
+          //requestDelay: 400,
+
+        };
+
+        $("#sup").easyAutocomplete(options_sup);   
+
+         var options_cus = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+          },
+
+          getValue: function(element) {
+            //console.log(element);
+            return element.customer_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {
+            data.phrase = $("#input-cus").val();
+            return data;
+          },
+
+          list: {
+              maxNumberOfElements: 3,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+
+              onChooseEvent: function() {
+                //cus_id = $("#input-cus").getSelectedItemData().customer_id;
+              }
+          },       
+        };
+
+        $("#input-cus").easyAutocomplete(options_cus);
+        $('div.easy-autocomplete').removeAttr('style');
+      });
+
+      var datetime;
+      function detail(){
+        //Date
+        var d = new Date($.now());
+        $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
+        datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+        $.ajax({
+            url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
+            method:"GET",
+          success:function(data)
+          {
+            var obj = jQuery.parseJSON(data);
+            $.each(obj, function(i, field){
+              $('#branch').append("<option class='dropdown-item text-center' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
+            });
+          }
+        });
+      }
+
+      var number, name, price;
+      // Radio Check!!
+      var is_checked = "null";
+      $(function(){
+        $('input[type="radio"]').click(function(){
+          if ($(this).is(':checked')){
+            if(is_checked == $(this).attr('id')){
+              $(':radio').each(function () {
+                  $(this).removeAttr('checked');
+                  $('input[type="radio"]').prop('checked', false);
+                  $("#input-unit").prop('disabled', false);
+                });
+            }else{
+              //$(this).val();
+              $("#input-unit").attr('disabled', 'disabled');
+            }is_checked = $(this).attr('id');
+          }
+        });
+      });
+
+      var c_unit = 0;
+      function add_unit() {
+        if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#input-unit-price").val() == ""){
+          alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+          return 0;
+        }
+
+        c_unit++;
+        // Radio is checked
+        var exist = false;
+        $('input[type="radio"]').each(function() {
+          if($(this).is(":checked")){
+            //alert($(this).val());
+            number = $(this).val();
+            price = $("#input-unit-price").val();
+            // Exist Check
+            for(var i = 1; i <= c_unit; i++){
+              if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
+                alert("ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว");
+                exist = true;
+              }
+            }
+            if(exist == false){
+              if (c_unit == 1) {
+                header = "<div id='head-seted-amt' class='row'>" +
+                  "<div class='col-3'></div>" +
+                  "<div class='col-3 text-center'>จำนวน</div>" +
+                  "<div class='col-2 text-center'>ราคา</div>" +
+                  "<div class='col-1'></div>" +
+                  "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                $("#show-amt-container").append(header);
+              }
+
+              var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
+                "<div class='col-3'></div>" +
+                "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>"+ number +"</div>" +
+                "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>"+ price +"</div>" +
+                "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");'></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
+                "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+              $("#show-amt-container").append(text_html);
+            }
+            $(this).prop("checked", false);
+          }
+        });
+
+        var isDisabled = $("#input-unit").prop('disabled');
+        if(!isDisabled){
+          number = $("#input-unit").val();
+          for(var i = 1; i <= c_unit; i++){
+            if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
+              if(number == ""){
+                alert("กรุณากรอกจำนวน");
+              }else{
+                alert("ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว");
+              }
+              exist = true;
+            }
+          }
+          if(exist == false){
+            if (c_unit == 1) {
+              header = "<div id='head-seted-amt' class='row'>" +
+                "<div class='col-3'></div>" +
+                "<div class='col-3 text-center'>จำนวน</div>" +
+                "<div class='col-2 text-center'>ราคา</div>" +
+                "<div class='col-1'></div>" +
+                "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+              $("#show-amt-container").append(header);
+            }
+
+            var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
+              "<div class='col-3'></div>" +
+              "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>" + number + "</div>" +
+              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>" + price + "</div>" +
+              "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");'></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
+              "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+            $("#show-amt-container").append(text_html);
+            $("#input-unit").val("");
+          }
+        }
+        $("#input-unit-price").val("");
+        $("#input-unit").removeAttr('disabled');
+      }
+
+      function setUnit(arg) {
+        var text = $("#show-unit-"+arg).text();
+        $("#show-unit-"+arg).text("");
+        var text_html = "<input id='set-unit-"+arg+"' type='text' class='form-control text-center' value='"+text+"'>";
+        $("#show-unit-"+arg).append(text_html);
+
+        $("#unit-del-"+arg).prop('hidden', true);
+        $("#unit-check-"+arg).prop('hidden', false);
+      }
+
+      function setUnitPrice(arg) {
+        var text = $("#show-unit-price-"+arg).text();
+        $("#show-unit-price-"+arg).text("");
+        var text_html = "<input id='set-unit-price-"+arg+"' type='number' class='form-control text-center' value='"+text+"'>";
+        $("#show-unit-price-"+arg).append(text_html);
+
+        $("#unit-del-"+arg).prop('hidden', true);
+        $("#unit-check-"+arg).prop('hidden', false);
+      }
+
+      function delrow_amt(arg) {
+        $.confirm({
+          icon: 'fa fa-warning',
+          title: 'แน่ใจหรือว่าต้องการลบ!',
+          content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
+          buttons: {
+            danger: {
+              btnClass: 'btn-danger',
+              text: 'ลบ',
+              action: function () {
+                var count = $("#show-amt-container").children().length;
+                if (count == 2) {
+                  $("#head-seted-amt").remove();
+                  c_unit = 0;
+                }
+                $("#unit-del-" + arg).closest('.row').remove();
+              }
+            },
+            ยกเลิก: function () { },
+          }
+        });
+      }
+
+      function checkrow_unit(arg) {
+        var unit = $("#set-unit-"+arg).val();
+        var price = $("#set-unit-price-"+arg).val();
+
+        for(var i = 1; i <= c_unit; i++){
+          if(unit == $("#show-unit-"+i).text()){
+            alert("ได้ตั้งค่าราคาของจำนวน " + unit + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+            return 0;
+          }
+        }
+
+        $("#set-unit-"+arg).remove();
+        $("#set-unit-price-"+arg).remove();
+
+        $("#show-unit-"+arg).text(unit);
+        $("#show-unit-price-"+arg).text(price);
+
+        $("#unit-del-"+arg).prop('hidden', false);
+        $("#unit-check-"+arg).prop('hidden', true);
+      }
+
+      var c_cus = 0;
+      function add_cus() {
+          if($("#input-cus").val() == "" || $("#input-cus-price").val() == ""){
+            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+            return 0;
+          }
+
+        var exist = false;
+        for (var i = 1; i <= c_cus; i++) {
+          if (cus == $("#show-cus-" + i).text() || cus == $("#set-cus-" + i).val()) {
+            alert("ได้ตั้งค่าราคาของลูกค้า " + cus + " ไว้แล้ว");
+            exist = true;
+          }
+        }
+        
+        if(exist){
+          return 0;
+        }else{
+          c_cus++;
+          if (c_cus == 1) {
+            header = "<div id='head-seted-cus' class='row'>" +
+              "<div class='col-3'></div>" +
+              "<div class='col-3 text-center'>ชื่อลูกค้า</div>" +
+              "<div class='col-2 text-center'>ราคา</div>" +
+              "<div class='col-1'></div>" +
+              "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+            $("#show-cus-container").append(header);
+          }
+
+          var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
+            "<div class='col-3'></div>" +
+            "<div id='show-cus-" + c_cus + "' class='col-3 text-center' ondblclick='setCus(" + c_cus + ");'></div>" +
+            "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center' ondblclick='setCusPrice(" + c_cus + ");'></div>" +
+            "<div class='col-1'><i id='cus-del-" + c_cus + "' class='fa fa-close' style='color: red' onclick='delrow_cus(" + c_cus + ");'></i><i id='cus-check-" + c_cus + "' class='fa fa-check' style='color: green' onclick='checkrow_cus(" + c_cus + ");' hidden></i></div>" +
+            "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+          $("#show-cus-container").append(text_html);
+
+          cus = $("#input-cus").val();
+          price = $("#input-cus-price").val();
+
+          $("#show-cus-" + c_cus).text(cus);
+          $("#show-cus-price-" + c_cus).text(price);
+
+          $("#input-cus").val("");
+          $("#input-cus-price").val("");
+        }
+      }
+
+      function setCus(arg) {
+        var text = $("#show-cus-"+arg).text();
+        $("#show-cus-"+arg).text("");
+        var text_html = "<input id='set-cus-"+arg+"' type='text' class='form-control text-center' value='"+text+"'>";
+        $("#show-cus-"+arg).append(text_html);
+
+        $("#cus-del-"+arg).prop('hidden', true);
+        $("#cus-check-"+arg).prop('hidden', false);
+      }
+
+      function setCusPrice(arg) {
+          var text = $("#show-cus-price-"+arg).text();
+          $("#show-cus-price-"+arg).text("");
+          var text_html = "<input id='set-cus-price-"+arg+"' type='number' class='form-control text-center' value='"+text+"'>";
+          $("#show-cus-price-"+arg).append(text_html);
+
+          $("#cus-del-"+arg).prop('hidden', true);
+          $("#cus-check-"+arg).prop('hidden', false);
+      }
+
+      function delrow_cus(arg) {
+        $.confirm({
+          icon: 'fa fa-warning',
+          title: 'แน่ใจหรือว่าต้องการลบ!',
+          content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
+          buttons: {
+            danger: {
+              btnClass: 'btn-danger',
+              text: 'ลบ',
+              action: function () {
+                var count = $("#show-cus-container").children().length;
+                if (count == 2) {
+                  $("#head-seted-cus").remove();
+                  c_cus = 0;
+                }
+                $("#cus-del-" + arg).closest('.row').remove();
+              }
+            },
+            ยกเลิก: function () { },
+          }
+        });
+      }
+
+      function checkrow_cus(arg) {
+        var cus = $("#set-cus-"+arg).val();
+        var price = $("#set-cus-price-"+arg).val();
+
+        for(var i = 1; i <= c_cus; i++){
+          if(cus == $("#show-cus-"+i).text()){
+            alert("ได้ตั้งค่าราคาของลูกค้า " + cus + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+            return 0;
+          }
+        }
+
+        $("#set-cus-"+arg).remove();
+        $("#set-cus-price-"+arg).remove();
+
+        $("#show-cus-"+arg).text(cus);
+        $("#show-cus-price-"+arg).text(price);
+
+        $("#cus-del-"+arg).prop('hidden', false);
+        $("#cus-check-"+arg).prop('hidden', true);
+      }
+
+      function add_next() {
+        //Check radio is checked??
+        var checked = false;
+        $(':radio').each(function () {
+          if($(this).prop('checked')){
+            checked = true;
+          }
+        });
+
+        if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#fund").val() == "")
+        {
+          return 0;
+        }else if($("#input-unit").val() != "" || $("#input-unit-price").val() != "" || $("#input-cus").val() != "" || $("#input-cus-price").val() != "" || checked == true){
+          alert("กรุณากดเพิ่มเพื่อกำหนดราคาก่อนเพิ่มสินค้าถัดไป");
+        }else{
+          saveAndShow();
+        }
+      }
+
+      var obj = [];
+      //obj.push({unit: ["0"],unit_price: ["0"],cus: ["0"],cus_price: ["0"],barcode: ["0"],name: ["0"], amount: ["0"],retail: ["0"],wholesale: ["0"]});
+      var count = 0;
+      function saveAndShow() {
+          /*********** Unit ************/
+          var unit = [];
+          var unit_price = [];
+
+          for(var i = 1; i <= c_unit; i++){
+          unit.push($("#show-unit-"+i).text());
+          unit_price.push($("#show-unit-price-"+i).text());
+
+          $("#show-seted-amt-"+i).remove();
+          }
+          $("#head-seted-amt").remove();
+
+          //Splice Empty
+          for(var j = 0; j < unit.length; j++){
+          if(unit[j] == "" || unit_price[j] == ""){
+            unit.splice(j,1);
+            unit_price.splice(j,1);
+            j--;
+          }
+          }
+
+          /*********** Cus ************/         
+          var cus = [];
+          var cus_price = [];
+
+          for(var l = 1; l <= c_cus; l++){
+          cus.push($("#show-cus-"+l).text());
+          cus_price.push($("#show-cus-price-"+l).text());
+
+          $("#show-seted-cus-"+l).remove();
+          }
+          $("#head-seted-cus").remove();
+
+          //Splice Empty
+          for(var m = 0; m < cus.length; m++){
+          if(cus[m] == "" || cus_price[m] == ""){
+            cus.splice(m,1);
+            cus_price.splice(m,1);
+            m--;
+          }
+          }
+
+              var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 15%; padding-right: 0px; margin-bottom: 5px'>"+
+                    "<div class='col-1 text-center'>"+
+                      "<input id='no-"+count+"' type='text' class='form-control text-center' value='"+(count+1)+"' readonly>"+
+                    "</div>"+
+                    "<div class='col-2 text-center pdlr'>"+
+                      "<input disabled id='barcode-"+count+"' type='text' class='form-control text-center added'>"+
+                    "</div>"+
+                    "<div class='col-4 text-center'>"+
+                      "<input id='name-"+count+"' type='text' class='form-control text-center added' rel='popover' data-img='"+img+"'  placeholder='พิมพ์ชื่อรายการสินค้าที่นี่' readonly>"+
+                    "</div>"+
+                    "<div class='col-1 text-center pdlr'>"+
+                      "<input disabled id='amount-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                    "</div>"+
+                    "<div class='col-1 text-center pdlr'>"+
+                      "<input disabled id='fund-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                    "</div>"+
+                    "<div class='col-1 text-center pdlr'>"+
+                      "<input disabled id='price-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                    "</div>"+
+                    "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
+                    "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
+                      "<i class='fa fa-angle-down'></i>" +
+                    "</button>" +
+                      "<button id='btn-edit-" + count +"' class='btn btn-sm btn-primary' style='margin-right: 4px;' onclick='added_edit(" + count +")'>"+
+                        "<i class='fa fa-edit'></i>"+
+                      "</button>"+
+                      "<button id='btn-save-" + count +"' class='btn btn-sm btn-success' style='margin-right: 4px;' onclick='save_edit("+count+");' hidden>" +
+                        "<i class='fa fa-check-square'></i>" +
+                      "</button>" +
+                      "<button id='btn-delete-" + count +"' class='btn btn-sm btn-danger' style='margin-right: 4px;' onclick='added_delete(" + count +")' hidden>" +
+                        "<i class='fa fa-minus'></i>" +
+                      "</button>" +
+                    "</div>"+
+                    "<div id='li-" + count + "-collapse' class='container text-center collapse' style='margin-top: 15px; margin-bottom: 15px;'>" +
+                      "<div class='card card-body' style='border: solid 1px black; background: white; padding: 20px; width: 60%; margin-left: 11%;'>" +
+                        "<div id='ctn-collapse-" + count + "' class='container'>" +
+                          "<div class='row' style='margin-bottom: 5px;'>" +
+                            "<div class='col-2'></div>" +
+                            "<div class='col-4'>จำนวน/ราคา</div>" +
+                            "<div class='col-4'>ลูกค้า/ราคา</div>" +
+                            "<div class='col-2'></div>" +
+                          "</div>" +
+                        "</div>" +
+                      "</div>" +
+                    "</div>"+
+                    "<script>" +
+                      "$('#name-" + count + "[rel=popover]').popover({" +
+                      "html: true," +
+                      "trigger: 'hover'," +
+                      "placement: 'left'," +
+                      "content: function(){" +
+                      "return '<img src='+$(this).data('img')+'>';}" +
+                      "});" +
+                    "</" + "script>" +
+                  "</div>";
+        $("#show_list_add").append(text_append);
+
+        //Loop Lenght
+        var loop = 0;
+        if(unit.length > cus.length){
+          loop = unit.length;
+          diff = unit.length - cus.length;
+          for(i = 0; i < diff; i++){
+            cus.push("-");
+            cus_price.push("-");
+          }
+        }
+        if(cus.length > unit.length){
+          loop = cus.length;
+          diff = cus.length - unit.length;
+          for(i = 0; i < diff; i++){
+            unit.push("-");
+            unit_price.push("-");
+          }
+        }
+        if(cus.length == unit.length && unit.length != 0 && cus.length != 0) loop = unit.length;
+
+        // Initail Val
+        var barcode = $("#barcode").val();
+        var name = $("#name").val();
+        var amount = $("#amount").val();
+        var retail = $("#fund").val();
+        var wholesale = $("#price").val();
+
+        // Clear Val
+        $("#barcode").val("");
+        $("#name").val("");
+        $("#amount").val("");
+        $("#fund").val("");
+        $("#price").val("");
+        
+
+        // Set val(text)
+        $("#barcode-"+count).val(barcode);
+        $("#name-"+count).val(name);
+        $("#amount-"+count).val(amount);
+        $("#fund-"+count).val(retail);
+        $("#price-"+count).val(wholesale);
+
+        // Case no unit and cus
+        if(loop == 0){
+          $("#ctn-collapse-"+count).append("<div class='row' style='margin-bottom: 5px;'>"+
+                            "<div class='col-2'></div>"+
+                            "<div class='col-4'>-</div>"+
+                            "<div class='col-4'>-</div>"+
+                            "<div class='col-2'></div>"+
+                          "</div>");
+        }
+
+        for(var c = 0; c < loop; c++){
+          if(c == 0){
+            $("#ctn-collapse-"+count).append("<div class='row' style='margin-bottom: 5px;'>"+
+                              "<div class='col-2'></div>"+
+                              "<div class='col-2'>"+unit[c]+"</div>"+
+                              "<div class='col-2'>"+unit_price[c]+"</div>"+
+                              "<div class='col-2'>"+cus[c]+"</div>"+
+                              "<div class='col-2'>"+cus_price[c]+"</div>"+
+                              "<div class='col-2'></div>"+
+                            "</div>");
+          }else{
+            $("#ctn-collapse-"+count).append("<div class='row' style='margin-bottom: 5px;'>"+
+                              "<div class='col-2'></div>"+
+                              "<div class='col-2'>"+unit[c]+"</div>"+
+                              "<div class='col-2'>"+unit_price[c]+"</div>"+
+                              "<div class='col-2'>"+cus[c]+"</div>"+
+                              "<div class='col-2'>"+cus_price[c]+"</div>"+
+                              "<div class='col-2'></div>"+
+                            "</div>");
+          }
+        }
+        var total_cost = retail*amount;
+
+        //Keep all val in OBJ
+        // Obj will push at count's index
+        // edit and delete will deal with this obj
+        obj.push({unit: unit,unit_price: unit_price,cus: cus,cus_price: cus_price,amount: amount,retail: retail,prod_id: prod_id,total: total_cost});
+        //alert(JSON.stringify(obj)); // To json       
+
+        count++;
+        $("#no").val(count + 1);
+      }
+
+      function added_delete(arg) {
+        $.confirm({
+          icon: 'fa fa-warning',
+          title: 'แน่ใจหรือว่าต้องการลบ!',
+          content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
+          buttons: {
+            danger: {
+              btnClass: 'btn-danger',
+              text: 'ลบ',
+              action: function () {
+                obj.splice(arg, 1);
+                $("#item-" + arg).remove();
+                for (i = arg + 1; i <= count; i++) {
+                  $("#no-"+ i).prop('id', 'no-'+ (i-1));
+                  $("#no-" + (i-1)).val(i);
+                  $("#li-" + i).attr('onclick', "added_collapse(" + (i - 1) + ")")
+                  $("#li-" + i).prop('id', 'li-' + (i - 1));
+                  $("#li-" + i + "-collapse").prop('id', 'li-' + (i - 1) + '-collapse');
+                  $("#ctn-collapse-" + i).prop('id', 'ctn-collapse-' + (i - 1));
+                  $("#barcode-" + i).prop('id', 'barcode-' + (i - 1));
+                  $("#name-" + i).prop('id', 'name-' + (i - 1));
+                  $("#amount-" + i).prop('id', 'amount-' + (i - 1));
+                  $("#fund-" + i).prop('id', 'fund-' + (i - 1));
+                  $("#price-" + i).prop('id', 'price-' + (i - 1));
+                  $("#item-" + i).prop('id', 'item-' + (i - 1));
+                  $("#btn-delete-" + i).attr('onclick', "added_delete(" + (i - 1) + ")");
+                  $("#btn-delete-" + i).prop('id', 'btn-delete-' + (i - 1));
+                  $("#btn-edit-" + i).attr('onclick', "added_edit(" + (i - 1) + ")");
+                  $("#btn-edit-" + i).prop('id', 'btn-edit-' + (i - 1));
+                  $("#btn-save-" + i).attr('onclick', "save_edit(" + (i - 1) + ")");
+                  $("#btn-save-" + i).prop('id', 'btn-save-' + (i - 1));
+                  //alert("Change : " + i + " to " + (i-1));
+                }
+                count--;
+                $("#no").val(count+1);
+        //alert(JSON.stringify(obj));
+              }
+            },
+            ยกเลิก: function () { },
+          }
+        });
+      }
+
+      function added_edit(arg) {
+        stop = false;
+        for(i = 0; i <= count; i++){
+          if($("#btn-save-" + i).is(":visible")){
+            stop = ture;
+          }
+        }
+        if(stop){
+          return 0;
+        }else{
+          if(!($("#li-"+arg+"-collapse").is(":visible"))){
+            $("#li-" + arg).click();
+          }
+          //$("#barcode-" + arg).prop('disabled', false);
+          //$("#name-" + arg).prop('disabled', false);
+          $("#amount-" + arg).prop('disabled', false);
+          //$("#fund-" + arg).prop('disabled', false);
+          //$("#price-" + arg).prop('disabled', false);
+
+          //change btn-edit to save
+          $("#btn-edit-" + arg).prop('hidden', true);
+          $("#btn-save-" + arg).prop('hidden', false);
+          $("#btn-delete-" + arg).prop('hidden', false);
+
+          $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+        }
+      }
+
+      function save_edit(arg) {
+        if($("#li-" + arg +"-collapse").is(":visible")){
+          $("#li-" + arg).click();
+        }
+        // Save input val to obj[arg]
+        //obj[arg].barcode = $("#barcode-"+arg).val();
+        //obj[arg].name = $("#name-"+arg).val();
+        obj[arg].amount = $("#amount-"+arg).val();
+        var total = $("#amount-"+arg).val()*obj[arg].retail;
+        obj[arg].total = total;
+        //obj[arg].retail = $("#fund-"+arg).val();
+        //obj[arg].wholesale = $("#price-"+arg).val();
+
+        $("#btn-edit-" + arg).prop('hidden', false);
+        $("#btn-save-" + arg).prop('hidden', true);
+        $("#btn-delete-" + arg).prop('hidden', true);
+
+        //$("#barcode-"+arg).prop('disabled', true);
+        //$("#name-"+arg).prop('disabled', true);
+        $("#amount-"+arg).prop('disabled', true);
+        //$("#fund-"+arg).prop('disabled', true);
+        //$("#price-"+arg).prop('disabled', true);
+        $("#btn-edit-"+arg).attr('onclick', "added_edit("+arg+")");
+      }
+      
+      function change_option(arg){
+        if (arg == 'amt') {
+          // show cus
+          $("#title-amt").prop('hidden', true);
+          $("#title-cus").prop('hidden', false);
+
+          $("#ctn-amt").prop('hidden', true);
+          $("#ctn-cus").prop('hidden', false);
+        } else if (arg == 'cus') {
+          // show amt
+          $("#title-cus").prop('hidden', true);
+          $("#title-amt").prop('hidden', false);
+
+          $("#ctn-cus").prop('hidden', true);
+          $("#ctn-amt").prop('hidden', false);
+        }
+        $("#card").fadeOut(200).fadeIn(200);
+      }
+
+      function collapse(){
+        $("#card").slideToggle('collapse');
+      }
+
+      function added_collapse(arg){
+        $("#li-"+arg+"-collapse").slideToggle('collapse');
+      }
+
+      function save(){      
+        if(obj.length > 0 && $('#sup').val() != ""){
+          //console.log(obj);
+          var data_str = JSON.stringify(obj);         
+          var b_id = $('#branch option:selected').val();   
+          var dataString =  "JSON=" + data_str + "&b_id=" + b_id + "&date=" + datetime;
+          //console.log(dataString);
+          $.ajax({
+              type: "POST",
+              url:"http://150.95.26.163:8080/gitmew/php/stock_in.php",
+              data: dataString,                                     
+              success: function(data){
+                  alert(data);
+                  if(data == "success"){                
+                    $('#show_list_add').empty();
+                    obj = [];                
+                    count = 0
+                    c_cus = 0;
+                    c_unit = 0;                                                       
+                
+                    $('#sup').val("");
+                    detail();
+                  }
+              }
+          });       
+          
+        }else{
+          alert("กรุณาเลือกผู้ผลิตก่อนบันทึก");
+        }
+      }
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale_list.html">๐ รายการขายวันนี้</a></li>
+                <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
+                <li><a href="#">๐ เงินสด</a></li>
+                <li><a href="#">๐ ลูกหนี้</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/set_price.html">๐ กำหนดราคาสินค้า</a></li>
+                <li><a href="#">๐ เพิ่มสินค้า</a></li>
+                <li><a href="#">๐ สินค้าเข้า</a></li>
+                <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ขายส่ง</a></li>
+                <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
+                <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
+                <li><a href="#">๐ รายชื่อลูกค้า</a></li>
+                <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
+                <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
+                <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div> <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+          <!-- Navbar -->
+          <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 rounded">
+            <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+              <h3 id="nav-title">เพิ่มสินค้า</h3>
+            </div>
+          </nav>
+          <!-- End Navbar -->
+
+          
+          <!-- Header -->
+          <div class="container-fullwidth justify-content-center">
+
+            <div class="row">
+              <div class="col-6 text-center text-muted">เลขที่นำสินค้าเข้า : ทำอัตโนมัติเมื่อบันทึก
+              </div>
+              <div id="date" class="col-6 text-center text-muted"></div>
+            </div> <br>
+            <div class="row">
+              <div class="col-6 text-center text-muted">ชื่อผู้ผลิต :
+                <div class="btn-group col-4 text-center text-muted">
+                    <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิตที่นี่">
+                </div>
+              </div>
+              <div class="col-6 text-center text-muted dropdown">นำของเข้า :
+                <div class="btn-group">
+                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                  </select>
+                </div>
+              </div>
+            </div>
+            <hr style="width: 80%;">
+
+            <div class="row" style="padding-left: 15%; padding-right: 0px; margin-bottom: 10px;">
+              <div class="col-1 text-center">ลำดับ</div>
+              <div class="col-2 text-center" pdlr>บาร์โค้ด</div>
+              <div class="col-4 text-center">ชื่อสินค้า</div>
+              <div class="col-1 text-center">จำนวน</div>
+              <div class="col-1 text-center">ทุน</div>
+              <div class="col-1 text-center">ราคา</div>
+            </div> 
+
+            <!-- Collapse -->
+            <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
+              <!-- Append here!! -->
+            </div>
+
+            <!-- Input -->
+            <div class="row" style="padding-left: 15%; padding-right: 0px;">
+              <div class="col-1 text-center">
+                <input id="no" type="text" class="form-control text-center" value="1" readonly>
+              </div>
+              <div class="col-2 text-center pdlr">
+                <input id="barcode" type="text" class="form-control text-center" readonly>
+              </div>
+              <div class="col-4 text-center">
+                <input id="name" type="text" class="form-control text-center no-spin" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่">
+              </div>
+              <div class="col-1 text-center pdlr">
+                <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin">
+              </div>
+              <div class="col-1 text-center pdlr">
+                <input id="fund" type="number" class="form-control text-center no-spin" readonly>
+              </div>
+              <div class="col-1 text-center pdlr">
+                <input id="price" type="number" class="form-control text-center no-spin" readonly>
+              </div>
+              <div class="col-1" style="margin-top: 5px;" onclick="collapse();">
+                <button class="btn btn-sm btn-info">
+                  <i class="fa fa-angle-down"></i>
+                </button>
+              </div>
+            </div> <br>
+
+            
+            <div id="card" class="collapse">
+              <!-- Card -->
+              <div class="card card-body" style="width: 60%; margin: 0 auto">
+                <div class="container">
+                  <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-12 text-center">
+                      <h5 id="title-amt">จำนวน / ราคา
+                        <i class="fa fa-angle-right" style="margin-left: 15px;" onclick="change_option('amt');"></i>
+                      </h5>
+                      <h5 id="title-cus" hidden>ลูกค้า / ราคา
+                        <i class="fa fa-angle-right" style="margin-left: 15px;" onclick="change_option('cus');"></i>
+                      </h5>
+                    </div>
+                    <hr class="text-center" style="margin-top: 0; width: 30%">
+                  </div>
+                </div>
+              
+                <div id="ctn-amt" class="container" style="margin-bottom: 15px;">
+                  <div class="row">
+                    <div class="col-12 text-center">
+                      <label class="radio-inline">
+                        <input id="radio-1" type="radio" name="optradio" value="12"> 12</label>
+                      <label class="radio-inline">
+                        <input id="radio-2" type="radio" name="optradio" value="50"> 50</label>
+                      <label class="radio-inline">
+                        <input id="radio-3" type="radio" name="optradio" value="100"> 100</label>
+                      <label class="radio-inline">
+                        <input id="radio-4" type="radio" name="optradio" value="200"> 200</label>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-3 text-center">
+                      <input id="input-unit" type="number" class="form-control text-center no-spin" placeholder="กำหนดจำนวน">
+                    </div>
+                    <div class="col-3 text-center">
+                      <input id="input-unit-price" type="number" class="form-control text-center no-spin" placeholder="ราคาต่อหน่วย">
+                    </div>
+                    <div class="col-2 text-center" style="margin-top: 6px;">
+                      <button id="add-amt" class="btn btn-sm btn-success" onclick="add_unit();">เพิ่ม</button>
+                    </div>
+                    <div class="col-1"></div>
+                  </div>
+                  <br>
+                  <div id="show-amt-container" class="container">
+                    <!-- Append after click เพิ่ม -->
+                  </div>
+                </div>
+              
+                <div id="ctn-cus" class="container" style="margin-bottom: 15px;" hidden>
+                  <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-3 text-center">
+                      <input id="input-cus" type="text" class="form-control text-center" placeholder="เลือกลูกค้า">
+                    </div>
+                    <div class="col-3 text-center">
+                      <input id="input-cus-price" type="number" class="form-control text-center no-spin" placeholder="ราคาต่อหน่วย">
+                    </div>
+                    <div class="col-2 text-center" style="margin-top: 5px;">
+                      <button class="btn btn-sm btn-success" onclick="add_cus();">เพิ่ม</button>
+                    </div>
+                    <div class="col-1"></div>
+                  </div>
+                  <br>
+                  <div id="show-cus-container" class="container">
+                    <!-- Append after click เพิ่ม -->
+                  </div>
+                </div>
+              </div>
+              <br>
+              <!-- End div card -->
+            </div>
+            
+            <div class="row">
+              <div class="col-8"></div>
+              <div class="col-3 text-center">
+                <button class="btn btn-success" onclick="add_next();">เพิ่มสินค้า</button>
+                <button class="btn btn-primary"  onclick="save();">บันทึก</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- End page content wrapper -->
+    </div> <!-- End Wrapper -->
+
+    <!-- Menu Toggle -->
+    <script>
+      // Menu Toggle
+      $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+
+          if($("#menu-toggle").text() == "รายการ"){
+            $("#menu-toggle").text("กลับ");
+          }else if($("#menu-toggle").text() == "กลับ"){
+            $("#menu-toggle").text("รายการ");
+          }
+      });
+
+
+    </script>
+</body>
+</html>

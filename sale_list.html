@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+    
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">   
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    
+    <!-- Date Picker -->
+    <link  href="css/datepicker.css" rel="stylesheet">
+    <script src="js/datepicker.js"></script>
+    <script src="js/datepicker.th-TH.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet" >   
+
+    <script>     
+      arr = []; 
+      $(document).ready(function() {
+          $('[data-toggle="datepicker"]').datepicker({
+          language: 'th-TH',
+          format: 'dd/mm/yyyy',
+          autoHide: true
+        }).change(function(event) {
+          var date = $('#dpicker').val();
+          var split = date.split("/");// dd mm yyyy 
+          var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+          var d = new Date(split[2], split[1]-1, split[0]);         
+          var first = days[d.getDay()];
+          $('#dpicker').val(first + " " + date);
+          
+          $('.list-group').empty();          
+          arr = []; 
+          var dt = split[2] + "-" + split[1] + "-" + split[0];         
+          var dataString = "date=" + dt;
+            $.ajax({
+                type: "POST",
+                url: "http://150.95.26.163:8080/gitmew/php/get_order.php",
+                data: dataString,               
+                success: function(data){
+                    if(data != 'nothingnull'){                                 
+                      var obj = jQuery.parseJSON(data);
+                      console.log(obj);                        
+                      $.each(obj, function(i, field){
+                          $('.list-group').append("<li class='list-group-item text-center'>\
+                          <a id='li-"+field.order_id+"' onclick='show_order("+field.order_id+")' data-toggle='collapse'>\
+                            <div class='row'>\
+                            <div class='col-6'>"+ field.customer_name +"</div>\
+                            <div class='col-6'> รวม : "+field.sum_price+" บาท </div>\
+                            </div>\
+                          </a>\
+                          <div id='li-"+field.order_id+"-collapse' class='container text-center collapse'>\
+                          <br>\
+                            <div class='card card-body' id='card"+field.order_id+"'>\
+                              <div class='row'>\
+                              <div class='col-1'>ลำดับ</div>\
+                              <div class='col-3'>บาร์โค้ด</div>\
+                              <div class='col-3'>รายการสินค้า</div>\
+                              <div class='col-1'>ราคา</div>\
+                              <div class='col-1'>จำนวน</div>\
+                              <div class='col-1'>หน่วย</div>\
+                              <div class='col-2'>รวม</div>\
+                              </div> <hr> <br>\
+                            </div>\
+                          </div></li>\
+                          ");
+                      });
+                    }                 
+                }               
+            });         
+        });
+      });
+
+      function show_order(num){
+        $("#li-"+num+"-collapse").slideToggle("collapse");
+
+        if(jQuery.inArray(num, arr) == -1){
+          arr.push(num);       
+
+          var dataString = "order_id=" + num;
+          $.ajax({
+            url:"http://150.95.26.163:8080/gitmew/php/get_order_item.php",
+            method:"POST",  
+            data: dataString,            
+            success:function(data)
+            {               
+              var obj = jQuery.parseJSON(data);                  
+              $.each(obj, function(i, field){                    
+                $('#card'+num).append("<div class='row'>\
+                  <div class='col-1'>"+field.item_id+"</div>\
+                  <div class='col-3'>"+field.barcode+"</div>\
+                  <div class='col-3'>"+field.prod_name+"</div>\
+                  <div class='col-1'>"+field.prod_price+"</div>\
+                  <div class='col-1'>"+field.prod_amount+"</div>\
+                  <div class='col-1'>"+field.unit_name+"</div>\
+                  <div class='col-2'>"+field.prod_price*field.prod_amount+"</div>\
+                  </div> <hr>\
+                ");
+              });
+            }
+          });
+        }   
+      }
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
+                <li><a href="#">๐ รายการขายวันนี้</a></li>
+                <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
+                <li><a href="#">๐ เงินสด</a></li>
+                <li><a href="#">๐ ลูกหนี้</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/set_price.html">๐ กำหนดราคาสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/add_product.html">๐ เพิ่มสินค้า</a></li>
+                <li><a href="#">๐ สินค้าเข้า</a></li>
+                <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ขายส่ง</a></li>
+                <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
+                <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
+                <li><a href="#">๐ รายชื่อลูกค้า</a></li>
+                <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
+                <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
+                <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div> <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 rounded">
+              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                <h3 id="nav-title">รายการขายสินค้า</h3>
+              </div>
+            </nav>
+            <!-- End Navbar -->
+
+            <!-- Date Picker -->
+            <div class="container-fullwidth" style="margin-right: 35px;">
+              <div class="row">
+                <div class="col-10"></div>
+                <div class="col-2 input-group">
+                    <input id="dpicker" data-toggle="datepicker" type="text" class="form-control docs-date text-center" name="date" placeholder="Pick a date">
+                    <span class="input-group-btn">
+                      <button data-toggle="datepicker" type="button" class="btn btn-default docs-datepicker-trigger" disabled>
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                      </button>
+                    </span>
+                </div>
+              </div>
+            </div>
+            <!-- End Date Picker -->
+            
+            <!-- List -->
+            <div class="container" style="margin-top: 30px;">
+              <ul class="list-group">
+
+              </ul>
+            </div>
+        </div><!-- End page content wrapper -->
+    </div> <!-- End Wrapper -->
+    
+    <!-- Menu Toggle -->
+    <script>
+      // Menu Toggle
+      $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+
+          if($("#menu-toggle").text() == "รายการ"){
+            $("#menu-toggle").text("กลับ");
+          }else if($("#menu-toggle").text() == "กลับ"){
+            $("#menu-toggle").text("รายการ");
+          }
+      });
+    </script>
+</body>
+</html>

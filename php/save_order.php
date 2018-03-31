@@ -1,0 +1,76 @@
+<?php
+    $conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos");
+    $input  = $_POST['JSON'];
+    $obj = json_decode($input,true);  	
+    $cus  = $_POST['cus_id'];
+    $b  = $_POST['b_id'];
+    $dt  = $_POST['date'];
+    $sum  = $_POST['sum'];
+    $pay  = $_POST['pay'];
+    $dis  = $_POST['dis'];
+    $get_money  = $_POST['get_money'];
+    $change_money  = $_POST['change_money'];
+    $final_price  = $_POST['final_price'];
+    $comment  = $_POST['comment'];
+   
+    $sql = "SELECT order_number,count FROM sale_order ORDER BY order_id DESC LIMIT 1"; 
+    $result = mysqli_query($conn, $sql);   
+  
+    mysqli_autocommit($conn,FALSE); 
+    if(mysqli_num_rows($result) > 0){    
+        while($row = mysqli_fetch_array($result)){  
+            $number = $row['order_number'];
+            $year_old = substr($number,1,2);
+            $year_cur = date("y");
+            if($year_cur == $year_old){
+                $count = $row['count']+1;
+                $year = "S" . $year_cur . "-";
+                $order_number = $year . str_pad($count, 5, "0",STR_PAD_LEFT);
+                $sql2 = "INSERT INTO sale_order (order_number,customer_id,date_time,sum_price,total_price,
+                payment_type,note,branch,total_discount,get_money,change_money,count) 
+                VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$b','$dis','$get_money','$change_money','$count')"; 
+                $result2 = mysqli_query($conn, $sql2);
+                $last_id = mysqli_insert_id($conn);	
+            }else{
+                $year = "S" . $year_cur . "-";
+                $order_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
+                $sql3 = "INSERT INTO sale_order (order_number,customer_id,date_time,sum_price,total_price,
+                payment_type,note,branch,total_discount,get_money,change_money,count) 
+                VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$b','$dis','$get_money','$change_money',1)"; 
+                $result3 = mysqli_query($conn, $sql3);
+                $last_id = mysqli_insert_id($conn);	
+            }           
+        }
+    }else{
+        $year = "S" . date("y") . "-";
+        $order_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
+        $sql1 = "INSERT INTO sale_order (order_number,customer_id,date_time,sum_price,total_price,
+        payment_type,note,branch,total_discount,get_money,change_money,count) 
+        VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$b','$dis','$get_money','$change_money',1)"; 
+        $result1 = mysqli_query($conn, $sql1);
+        $last_id = mysqli_insert_id($conn);	
+    }   
+    foreach ($obj as $data)
+    {
+        $item = $data['item_id'];
+        $prod_id = $data['prod_id'];
+        $price = $data['price'];    
+        $amt = $data['amount'];    
+        $discount = $data['discount'];       
+        $bonus = $data['bonus'];          
+      
+        $sql1 = "INSERT INTO sale_order_item (order_id,item_id,prod_id,prod_price,prod_amount,prod_discount,bonus)
+         VALUE ('$last_id','$item','$prod_id','$price','$amt','$discount','$bonus')"; 
+        $result1 = mysqli_query($conn, $sql1);       
+    }
+
+    if($result){
+        echo $order_number;
+        mysqli_commit($conn);          
+    }else{
+        echo "fail";
+        mysqli_rollback($conn);
+    }
+
+    mysqli_close();
+?>

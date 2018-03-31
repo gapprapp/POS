@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>PPS Auto Group</title>
+
+  <!-- Bootstrap Import -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- Super cool dialog-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+  <!-- Easy-autocomplete -->
+  <script src="js/jquery.easy-autocomplete.min.js"></script>
+  <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+  <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+  <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+
+  <!-- Sidbar -->
+  <link href="css/simple-sidebar.css" rel="stylesheet">
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+  <!-- Main -->
+  <link href="css/untitled.css" rel="stylesheet">
+  <style>
+    .list-group-item {
+      padding: 6px 20px;
+      margin-bottom: 6px;
+    }
+  </style>
+
+  <script>
+    var max_page_no = 0;
+    $(document).ready(function() {
+      // Get max
+      var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
+      $.post(path, {
+        'start': 0,
+        "sort_by": sort_by,
+        "order": order,
+      }, function(data) {
+        url = new URL(window.location.href);
+        sl = url.searchParams.get("sl");
+        max_page_no = Math.ceil(data / 100);
+        if (sl == 1) {
+          // Go last page
+          pagination('last');
+        } else {
+          // Get First 100
+          $.ajax({
+            type: "POST",
+            url: "http://150.95.26.163:8080/gitmew/php/get_allprod.php",
+            data: {
+              'start': 0,
+              'sort_by': sort_by,
+              'order': order
+            },
+            cache: false,
+            crossDomain: true,
+            success: function(response) {
+
+              var obj = jQuery.parseJSON(response);
+              $.each(obj, function(i, field) {
+                var options_type = {
+                  url: function(phrase) {
+                    return "http://150.95.26.163:8080/gitmew/php/search_type.php";
+                  },
+
+                  getValue: function(element) {
+                    return element.prod_type_name;
+                  },
+
+                  ajaxSettings: {
+                    method: "POST",
+                    data: {}
+                  },
+
+                  preparePostData: function(data) {
+                    data.phrase = $("#type-" + i).val();
+                    return data;
+                  },
+
+                  list: {
+                    maxNumberOfElements: 3,
+
+                    showAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                    hideAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                  },
+                  theme: "blue-light",
+                };
+
+                var options_unit = {
+                  url: function(phrase) {
+                    return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
+                  },
+
+                  getValue: function(element) {
+                    return element.unit_name;
+                  },
+
+                  ajaxSettings: {
+                    method: "POST",
+                    data: {}
+                  },
+
+                  preparePostData: function(data) {
+                    data.phrase = $("#unit-" + i).val();
+                    return data;
+                  },
+
+                  list: {
+                    maxNumberOfElements: 3,
+
+                    showAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                    hideAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                  },
+                  theme: "blue-light",
+                };
+
+                text_html = "<li id='item-" + i + "' class='list-group-item text-center rounded'>" +
+                  "<span id='span-"+i+"' hidden>"+field.prod_id+"</span>"+
+                  "<div class='row'>" +
+                  "<div class='col-2' style='padding-right: 0;'>" +
+                  "<div class='input-group-prepend'>" +
+                  "<span class='input-group-text' style='margin-right: 8px;'>" + (i + 1) + "</span>" +
+                  "<input id='barcode-" + i + "' type='text' class='form-control text-center' value='" + field.barcode + "' disabled>" +
+                  "</div>" +
+                  "</div>" +
+                  "<div class='col-3'>" +
+                  "<input id='name-" + i + "' type='text' class='form-control text-center' value='" + field.prod_name + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1' style='padding-left: 0; padding-right: 0;'>" +
+                  "<input id='type-" + i + "' type='text' class='form-control text-center no-spin' value='" + field.prod_type_name + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='amount-1-" + i + "' type='number' class='form-control text-center no-spin' min='0' value='" + obj[i][0] + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='amount-2-" + i + "' type='number' class='form-control text-center no-spin' min='0' value='" + obj[i][1] + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='unit-" + i + "' type='text' class='form-control text-center no-spin' value='" + field.unit_name + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='fund-" + i + "' type='number' class='form-control text-center no-spin' min='0' value='" + field.prod_cost + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='price-" + i + "' type='number' class='form-control text-center no-spin' min='0' value='" + field.prod_price + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<button id='btn-edit-" + i + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + i + ")'>" +
+                  "<i id='i-edit-" + i + "' class='fa fa-edit'></i>" +
+                  "</button>" +
+                  "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                  "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
+                  "</button>" +
+                  "</div>" +
+                  "</div>" +
+                  "</li>"; // end text_html
+                $(".list-group").append(text_html);
+                $("#type-" + i).easyAutocomplete(options_type);
+                $("#unit-" + i).easyAutocomplete(options_unit);
+                $('#amount-1-' + i).numeric({
+                  allow: "."
+                });
+                $('#amount-2-' + i).numeric({
+                  allow: "."
+                });
+                $('#fund-' + i).numeric({
+                  allow: "."
+                });
+                $('#price-' + i).numeric({
+                  allow: "."
+                });
+              });
+            }
+          });
+        }
+      });
+    });
+
+    function open_edit(arg) {
+      $("#barcode-" + arg).prop('disabled', false);
+      $("#name-" + arg).prop('disabled', false);
+      $("#type-" + arg).prop('disabled', false);
+      $("#amount-1-" + arg).prop('disabled', false);
+      $("#amount-2-" + arg).prop('disabled', false);
+      $("#unit-" + arg).prop('disabled', false);
+      $("#fund-" + arg).prop('disabled', false);
+      $("#price-" + arg).prop('disabled', false);
+      $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
+      $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+      $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
+      $("#btn-del-" + arg).prop('hidden', false);
+    }
+
+    function del_row(arg) {
+      $.confirm({
+        icon: 'fa fa-warning',
+        title: 'แน่ใจหรือว่าต้องการลบ!',
+        content: 'ต้องการลบรายการสินค้าออกจากฐานข้อมูล!',
+        buttons: {
+          danger: {
+            btnClass: 'btn-danger',
+            text: 'ลบ', // With spaces and symbols,
+            action: function() {
+              var prod_id = $("#span-"+arg).text();
+              $.ajax({
+                url: "http://150.95.26.163:8080/gitmew/php/delete_prod.php",
+                type: "POST",
+                data: {
+                  'prod_id': prod_id
+                },
+                success: function(data) {
+                  if (data == "success") {
+                    $.alert('รายการสินได้ถูกลบแล้ว');
+                    $("#item-" + arg).remove();
+                  } else {
+                    $.alert('โปรดลองอีกครั้ง');
+                  }
+                }
+              });
+            }
+          },
+          ยกเลิก: function() {},
+        }
+      });
+    }
+
+    function save_edit(arg) {
+      $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
+      $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
+      $("#i-edit-" + arg).attr('class', 'fa fa-edit');
+      $("#btn-del-" + arg).prop('hidden', true);
+
+      $("#barcode-" + arg).prop('disabled', true);
+      $("#name-" + arg).prop('disabled', true);
+      $("#type-" + arg).prop('disabled', true);
+      $("#amount-1-" + arg).prop('disabled', true);
+      $("#amount-2-" + arg).prop('disabled', true);
+      $("#unit-" + arg).prop('disabled', true);
+      $("#fund-" + arg).prop('disabled', true);
+      $("#price-" + arg).prop('disabled', true);
+
+      //Ajax save prod.. ..
+      var prod_id = $("#span-"+arg).text();
+      var barcode = $("#barcode-" + arg).val();
+      var name = $("#name-" + arg).val();
+      var type = $("#type-" + arg).val();
+      var amt1 = $("#amount-1-" + arg).val();
+      var amt2 = $("#amount-2-" + arg).val();
+      var unit = $("#unit-" + arg).val();
+      var fund = $("#fund-" + arg).val();
+      var price = $("#price-" + arg).val();
+      if (amt1 == "") {
+        amt1 = 0;
+      }
+      if (amt2 == "") {
+        amt2 = 0;
+      }
+
+      $.ajax({
+        url: "http://150.95.26.163:8080/gitmew/php/update_prod.php",
+        type: "POST",
+        data: {
+          'prod_id' : prod_id,
+          'barcode': barcode,
+          'name': name,
+          'type': type,
+          'amt1': amt1,
+          'amt2': amt2,
+          'unit': unit,
+          'fund': fund,
+          'price': price
+        },
+        success: function(data) {
+          //alert(data);
+        }
+      });
+    }
+
+    var searched_name;
+    var searched_type;
+    var searched_barcode;
+
+    function search() {
+      searched_name = $("#search-name").val();
+      searched_type = $("#search-type").val();
+      searched_barcode = $("#search-barcode").val();
+
+      $('#btn-search').prop('disabled', true);
+
+      $(".list-group-item").remove();
+      max_page = page = prev_page = 1;
+      pagination('search');
+    }
+
+    var max_page = 1,
+      prev_page = 1;
+
+    function loadmore(arg) {
+      var prev_page_start = (100 * (prev_page - 1));
+      for (i = prev_page_start; i < (prev_page_start + 100); i++) {
+        $("#item-" + i).prop('hidden', true);
+      }
+
+      //console.log("loadmore.. .. max_page : " + max_page + " arg : " + arg + " prev_page : " + prev_page);
+      var start = (100 * (arg - 1));
+      var end = arg * 100;
+
+      var barcode = searched_barcode;
+      var name = searched_name;
+      var type = searched_type;
+
+      // new page
+      if (max_page < arg) {
+        //console.log("max_page < arg");
+        max_page = arg;
+        prev_page = arg;
+        $.ajax({
+          type: "POST",
+          url: "http://150.95.26.163:8080/gitmew/php/get_allprod.php",
+          data: {
+            'start': start,
+            "sort_by": sort_by,
+            "order": order,
+            'name': name,
+            'barcode': barcode,
+            'type': type
+          },
+          cache: false,
+          crossDomain: true,
+          success: function(response) {
+            if (start == 0) {
+              //find max_item
+              var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
+              $.post(path, {
+                'start': start,
+                "sort_by": sort_by,
+                "order": order,
+                'name': name,
+                'barcode': barcode,
+                'type': type
+              }, function(data) {
+                max_page_no = Math.ceil(data / 100);
+                if (max_page_no == 1) {
+                  $("#nav-pagination").prop('hidden', true);
+                } else if (max_page_no == 2) {
+                  $("#pg-rd a").text("#");
+                  $("#pg-rd").attr('class', 'page-item disabled');
+                } else {
+                  $("#nav-pagination").prop('hidden', false);
+                  $("#pg-rd a").text("3");
+                  $("#pg-rd").attr('class', 'page-item');
+                }
+              });
+            }
+            var obj = jQuery.parseJSON(response);
+            $.each(obj, function(i, field) {
+              var options_type = {
+                url: function(phrase) {
+                  return "http://150.95.26.163:8080/gitmew/php/search_type.php";
+                },
+
+                getValue: function(element) {
+                  return element.prod_type_name;
+                },
+
+                ajaxSettings: {
+                  method: "POST",
+                  data: {}
+                },
+
+                preparePostData: function(data) {
+                  data.phrase = $("#type-" + (start + i)).val();
+                  return data;
+                },
+
+                list: {
+                  maxNumberOfElements: 3,
+
+                  showAnimation: {
+                    type: "slide",
+                    time: 100
+                  },
+                  hideAnimation: {
+                    type: "slide",
+                    time: 100
+                  },
+                },
+                theme: "blue-light",
+              };
+
+              var options_unit = {
+                url: function(phrase) {
+                  return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
+                },
+
+                getValue: function(element) {
+                  return element.unit_name;
+                },
+
+                ajaxSettings: {
+                  method: "POST",
+                  data: {}
+                },
+
+                preparePostData: function(data) {
+                  data.phrase = $("#unit-" + (start + i)).val();
+                  return data;
+                },
+
+                list: {
+                  maxNumberOfElements: 3,
+
+                  showAnimation: {
+                    type: "slide",
+                    time: 100
+                  },
+                  hideAnimation: {
+                    type: "slide",
+                    time: 100
+                  },
+                },
+                theme: "blue-light",
+              };
+              text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
+                "<span id='span-"+(start + i)+"' hidden>"+field.prod_id+"</span>"+
+                "<div class='row'>" +
+                "<div class='col-2' style='padding-right: 0;'>" +
+                "<div class='input-group-prepend'>" +
+                "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
+                "<input id='barcode-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.barcode + "' disabled style='font-size: 90%;'>" +
+                "</div>" +
+                "</div>" +
+                "<div class='col-3'>" +
+                "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.prod_name + "' disabled>" +
+                "</div>" +
+                "<div class='col-1' style='padding-left: 0; padding-right: 0;'>" +
+                "<input id='type-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.prod_type_name + "' disabled style='font-size: 90%;'>" +
+                "</div>" +
+                "<div class='col-1'>" +
+                "<input id='amount-1-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + obj[i][0] + "' disabled>" +
+                "</div>" +
+                "<div class='col-1'>" +
+                "<input id='amount-2-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + obj[i][1] + "' disabled>" +
+                "</div>" +
+                "<div class='col-1'>" +
+                "<input id='unit-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.unit_name + "' disabled>" +
+                "</div>" +
+                "<div class='col-1'>" +
+                "<input id='fund-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + field.prod_cost + "' disabled>" +
+                "</div>" +
+                "<div class='col-1'>" +
+                "<input id='price-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + field.prod_price + "' disabled>" +
+                "</div>" +
+                "<div class='col-1'>" +
+                "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
+                "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
+                "</button>" +
+                "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                "</button>" +
+                "</div>" +
+                "</div>" +
+                "</li>"; // end text_html
+              $(".list-group").append(text_html);
+              $("#type-" + (start + i)).easyAutocomplete(options_type);
+              $("#unit-" + (start + i)).easyAutocomplete(options_unit);
+              $('#amount-1-' + (start + i)).numeric({
+                allow: "."
+              });
+              $('#amount-2-' + (start + i)).numeric({
+                allow: "."
+              });
+              $('#fund-' + (start + i)).numeric({
+                allow: "."
+              });
+              $('#price-' + (start + i)).numeric({
+                allow: "."
+              });
+            });
+            $('#btn-search').prop('disabled', false);
+          }
+        });
+      }
+      // old page
+      else if (max_page >= arg) {
+        //console.log("max_page >= arg");
+        if ($("#item-" + start).length == 0) {
+          //console.log("no item");
+          $.ajax({
+            type: "POST",
+            url: "http://150.95.26.163:8080/gitmew/php/get_allprod.php",
+            data: {
+              'start': start,
+              'sort_by': sort_by,
+              'order': order,
+              'name': name,
+              'barcode': barcode,
+              'type': type
+            },
+            cache: false,
+            crossDomain: true,
+            success: function(response) {
+              if (start == 0) {
+                //find max_item
+                var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
+                $.post(path, {
+                  'start': start,
+                  "sort_by": sort_by,
+                  "order": order,
+                  'name': name,
+                  'barcode': barcode,
+                  'type': type
+                }, function(data) {
+                  max_page_no = Math.ceil(data / 100);
+                  if (max_page_no == 1) {
+                    $("#nav-pagination").prop('hidden', true);
+                  } else if (max_page_no == 2) {
+                    $("#pg-rd a").text("#");
+                    $("#pg-rd").attr('class', 'page-item disabled');
+                  } else {
+                    $("#nav-pagination").prop('hidden', false);
+                    $("#pg-rd a").text("3");
+                    $("#pg-rd").attr('class', 'page-item');
+                  }
+                });
+              }
+              var obj = jQuery.parseJSON(response);
+              $.each(obj, function(i, field) {
+                var options_type = {
+                  url: function(phrase) {
+                    return "http://150.95.26.163:8080/gitmew/php/search_type.php";
+                  },
+
+                  getValue: function(element) {
+                    return element.prod_type_name;
+                  },
+
+                  ajaxSettings: {
+                    method: "POST",
+                    data: {}
+                  },
+
+                  preparePostData: function(data) {
+                    data.phrase = $("#type-" + (start + i)).val();
+                    return data;
+                  },
+
+                  list: {
+                    maxNumberOfElements: 3,
+
+                    showAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                    hideAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                  },
+                  theme: "blue-light",
+                };
+
+                var options_unit = {
+                  url: function(phrase) {
+                    return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
+                  },
+
+                  getValue: function(element) {
+                    return element.unit_name;
+                  },
+
+                  ajaxSettings: {
+                    method: "POST",
+                    data: {}
+                  },
+
+                  preparePostData: function(data) {
+                    data.phrase = $("#unit-" + (start + i)).val();
+                    return data;
+                  },
+
+                  list: {
+                    maxNumberOfElements: 3,
+
+                    showAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                    hideAnimation: {
+                      type: "slide",
+                      time: 100
+                    },
+                  },
+                  theme: "blue-light",
+                };
+                text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
+                  "<span id='span-"+(start + i)+"' hidden>"+field.prod_id+"</span>"+
+                  "<div class='row'>" +
+                  "<div class='col-2' style='padding-right: 0;'>" +
+                  "<div class='input-group-prepend'>" +
+                  "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
+                  "<input id='barcode-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.barcode + "' disabled style='font-size: 90%;'>" +
+                  "</div>" +
+                  "</div>" +
+                  "<div class='col-3'>" +
+                  "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.prod_name + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1' style='padding-left: 0; padding-right: 0;'>" +
+                  "<input id='type-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.prod_type_name + "' disabled style='font-size: 90%;'>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='amount-1-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + obj[i][0] + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='amount-2-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + obj[i][1] + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='unit-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.unit_name + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='fund-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + field.prod_cost + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<input id='price-" + (start + i) + "' type='number' class='form-control text-center no-spin' value='" + field.prod_price + "' disabled>" +
+                  "</div>" +
+                  "<div class='col-1'>" +
+                  "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
+                  "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
+                  "</button>" +
+                  "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                  "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                  "</button>" +
+                  "</div>" +
+                  "</div>" +
+                  "</li>"; // end text_html
+                $(".list-group").append(text_html);
+                $("#type-" + (start + i)).easyAutocomplete(options_type);
+                $("#unit-" + (start + i)).easyAutocomplete(options_unit);
+                $('#amount-1-' + (start + i)).numeric({
+                  allow: "."
+                });
+                $('#amount-2-' + (start + i)).numeric({
+                  allow: "."
+                });
+                $('#fund-' + (start + i)).numeric({
+                  allow: "."
+                });
+                $('#price-' + (start + i)).numeric({
+                  allow: "."
+                });
+              });
+              $('#btn-search').prop('disabled', false);
+            }
+          });
+        } else if (prev_page > arg) {
+          //console.log("prev_page > arg");
+          var max = max_page * 100;
+          // show page
+          for (i = start; i < end; i++) {
+            $("#item-" + i).prop('hidden', false); //show
+          }
+
+          // hidden all > arg
+          for (i = end; i < max; i++) {
+            $("#item-" + i).prop('hidden', true);
+          }
+        } else if (prev_page <= arg) {
+          //console.log("prev_page <= arg");
+          // show page
+          for (i = start; i < end; i++) {
+            $("#item-" + i).prop('hidden', false); //show
+          }
+          // hidden old
+          for (i = 0; i < start; i++) {
+            $("#item-" + i).prop('hidden', true);
+          }
+        }
+        prev_page = arg;
+      }
+    }
+
+    var is_sort = {
+      prod_name: '0',
+      prod_type_name: '0',
+      prod_cost: '0',
+      prod_price: '0'
+    };
+    var sort_by = "none",
+      order = "none";
+
+    function click_sort(arg) {
+      // clear other clicked_sort
+      for (var i = 0; i < 4; i++) {
+        //check
+        key = Object.keys(is_sort)[i];
+        if (key == arg) {
+          is_sort.key = 1;
+        } else {
+          $("#i-" + key).prop('hidden', true);
+          $("#i-" + key).attr('class', 'fa fa-sort-down');
+          $("#i-" + key).css('vertical-align', 'top');
+
+          order = "none";
+          sort_by = "none";
+        }
+      }
+
+      if ($("#i-" + arg).is(':hidden')) {
+        $("#i-" + arg).prop('hidden', false);
+        sort_by = arg;
+        order = "asc";
+      } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-down')) {
+        $("#i-" + arg).attr('class', 'fa fa-sort-up');
+        $("#i-" + arg).css('vertical-align', 'middle');
+        sort_by = arg;
+        order = "desc";
+      } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-up')) {
+        $("#i-" + arg).prop('hidden', true);
+        $("#i-" + arg).attr('class', 'fa fa-sort-down');
+        $("#i-" + arg).css('vertical-align', 'top');
+        order = "none";
+        sort_by = "none";
+      }
+
+      $(".list-group-item").remove();
+      max_page = page = prev_page = 1;
+      pagination('sort');
+    }
+
+    var page = 1;
+
+    function pagination(arg) {
+      //console.log("pagination arg : " + arg + " max_page_no : " + max_page_no);
+      //Check all list is save
+      var max = page * 100;
+      var start = max - 100;
+      var stop = 0;
+      for (var i = start; i <= max; i++) {
+        if ($("#i-edit-" + i).hasClass('fa fa-check-square')) {
+          alert("กรุณาบันทึกสินค้าก่อนเปลี่ยนหน้า");
+          $("#pg-" + arg + " a").attr('href', "#item-" + i);
+          var go_to = $(this).attr('href').offset();
+          $('ul').stop().animate({
+            scrollTop: go_to.top
+          });
+
+          stop = 1;
+          break;
+        }
+      }
+      if (stop == 1) {
+        $("#pg-" + arg + " a").attr('href', "#");
+        return 0;
+      }
+
+      if (arg == "sort" || arg == "search" || arg == "re") {
+        // pagination when sort.. ..
+        if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+        if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+        if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+        page = 1;
+        st = $("#pg-st a").text("1"); // 1 -> 2
+        nd = $("#pg-nd a").text("2");
+        rd = $("#pg-rd a").text("3");
+
+        if (arg == "search") {
+          // clear other clicked_sort
+          for (var j = 0; j < 4; j++) {
+            key = Object.keys(is_sort)[j];
+            $("#i-" + key).prop('hidden', true);
+            $("#i-" + key).attr('class', 'fa fa-sort-down');
+            $("#i-" + key).css('vertical-align', 'top');
+
+            order = "none";
+            sort_by = "none";
+          }
+        }
+      } else if (arg == "st") {
+        //console.log("st");
+        if (page != 2) {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page -= 1;
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 1); // 1 -> 2
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 1);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 1);
+        } else if (page == 2) {
+          if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = 1;
+
+        } else {
+          return 0;
+        }
+      } else if (arg == "nd") {
+
+        //console.log("nd");
+        if (page == 1) page++;
+        else if (page == max_page_no) page--;
+        if ($("#pg-nd").hasClass('active')) return 0;
+        else $("#pg-nd").attr('class', 'active');
+        if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+        if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+      } else if (arg == "rd") {
+        if (page + 1 == max_page_no) {
+          if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+          page = max_page_no;
+          st = $("#pg-st a").text(parseInt(max_page_no - 2));
+          nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+          rd = $("#pg-rd a").text(parseInt(max_page_no));
+        } else {
+          //console.log("rd");
+          if(page == max_page_no) return 0;
+
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          if (page == 1) page += 2; // page = 3
+          else page += 1;
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 1); // 1 -> 2
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 1);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 1);
+        }
+      } else if (arg == "prev") {
+        //console.log("prev");
+        if (page <= 11) {
+          if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = 1;
+          st = $("#pg-st a").text("1");
+          nd = $("#pg-nd a").text("2");
+          rd = $("#pg-rd a").text("3");
+        } else {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = page - 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 10);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 10);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 10);
+        }
+      } else if (arg == "next") {
+        //console.log("next");
+        if ($("#pg-st").hasClass('active')) {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+          page = page + 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 9);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 9);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 9);
+        } else {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+          page = page + 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 10);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 10);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 10);
+        }
+
+      } else if (arg == "last") {
+        //console.log("last");
+        if (max_page_no <= 3) {
+          if (max_page_no == 2) {
+            //console.log("2");
+            if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+            if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+            page = 2;
+            st = $("#pg-st a").text("1");
+            nd = $("#pg-nd a").text("2");
+            rd = $("#pg-rd a").text("3");
+          } else if (max_page_no == 3) {
+            //console.log("3");
+            if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+            if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+            page = 3;
+            st = $("#pg-st a").text("1");
+            nd = $("#pg-nd a").text("2");
+            rd = $("#pg-rd a").text("3");
+          }
+        } else {
+          if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+          page = max_page_no;
+          st = $("#pg-st a").text(parseInt(max_page_no - 2));
+          nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+          rd = $("#pg-rd a").text(parseInt(max_page_no));
+        }
+      }
+
+      // Un-Disabled li-prev
+      if (page > 1) {
+        $("#li-prev").prop('class', 'page-item');
+      } else if (page == 1) {
+        $("#li-prev").prop('class', 'page-item disabled');
+      }
+
+      loadmore(page);
+    }
+
+    function prev() {
+      pagination('prev');
+    }
+
+    function next() {
+      if (page + 10 < max_page_no) {
+        pagination('next');
+      } else if (page + 10 >= max_page_no) {
+        pagination('last');
+      }
+    }
+
+    function showall() {
+      location.reload();
+    }
+
+    function add_prod() {
+      window.location = "add_prod.html?mng=1";
+    }
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav" style="margin-top: 20px">
+        <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
+        <li><a href="#">๐ รายการขายวันนี้</a></li>
+        <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
+        <li><a href="#">๐ เงินสด</a></li>
+        <li><a href="#">๐ ลูกหนี้</a></li>
+        <li><a href="#">๐ ลูกหนี้ค้างจ่าย</a></li>
+        <li><a href="#">๐ เพิ่มสินค้า</a></li>
+        <li><a href="#">๐ สินค้าเข้า</a></li>
+        <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
+        <li><a href="#">๐ ขายส่ง</a></li>
+        <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
+        <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
+        <li><a href="#">๐ รายชื่อลูกค้า</a></li>
+        <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
+        <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
+        <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+      </ul>
+    </div>
+    <!-- End sidebar -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #87ceeb;">
+        <div class="clearfix">
+          <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+        </div>
+        <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+          <h3 id="nav-title">จัดการสินค้า</h3>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+      <div class="container-fullwidth justify-content-center">
+        <!-- 3 Search -->
+        <div class="row">
+          <div class="col-2"></div>
+          <div class="col-2 text-center">
+            บาร์โค๊ด
+          </div>
+          <div class="col-3 text-center">
+            ชื่อสินค้า
+          </div>
+          <div class="col-2 text-center">
+            ประเภท
+          </div>
+          <div class="col-3 text-center"></div>
+        </div>
+        <div class="row">
+          <div class="col-1"></div>
+          <div class="col-1 text-right">
+            <p style="padding-top: 5px; font-size: 120%;">ค้นหา :
+              <p/>
+          </div>
+          <div class="col-2 text-center">
+            <input id="search-barcode" type="number" class="form-control text-center no-spin">
+          </div>
+          <div class="col-3 text-center">
+            <input id="search-name" type="text" class="form-control text-center">
+          </div>
+          <div class="col-2 text-center">
+            <input id="search-type" type="text" class="form-control text-center">
+          </div>
+          <div class="col-3 text-left">
+            <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
+            <button class="btn btn-info btn-md" onclick="add_prod();">เพิ่มสินค้า</button>
+            <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด</button>
+          </div>
+        </div>
+      </div>
+      <hr style="width: 90%;">
+      <!-- Header -->
+      <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px;">
+        <div class="row" style="padding-right: 40px; padding-left: 40px;">
+          <div class="col-2 text-center">บาร์โค้ด</div>
+          <div class="col-3 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_name')">ชื่อสินค้า
+              <i id="i-prod_name" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+            </a>
+          </div>
+          <div class="col-1 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_type_name')">ประเภท
+              <i id="i-prod_type_name" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;"  hidden></i>
+            </a>
+          </div>
+          <div class="col-1 text-center" style="padding-left: 0px;">จน. (ร้านใหม่)</div>
+          <div class="col-1 text-center" style="padding-left: 0px;">คลังสินค้า</div>
+          <div class="col-1 text-center">หน่วย</div>
+          <div class="col-1 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_cost')">ทุน
+              <i id="i-prod_cost" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;"  hidden></i>
+            </a>
+          </div>
+          <div class="col-1 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_price')">ราคา
+              <i id="i-prod_price" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;"  hidden></i>
+            </a>
+          </div>
+        </div><br>
+
+        <ul class="list-group" style="padding-right: 20px; padding-left: 20px;">
+          <!-- Append text html -->
+        </ul> <br>
+
+      </div>
+
+      <nav id="nav-pagination">
+        <ul class="pagination justify-content-center">
+          <li id="li-prev" class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous" onclick="prev();">
+              <span aria-hidden="true">&laquo;</span>
+              <span class="sr-only">Previous</span>
+            </a>
+          </li>
+          <li id="pg-st" class="page-item active">
+            <a class="page-link scroll_to" href="#" onclick="pagination('st')">1</a>
+          </li>
+          <li id="pg-nd" class="page-item">
+            <a class="page-link scroll_to" href="#" onclick="pagination('nd')">2</a>
+          </li>
+          <li id="pg-rd" class="page-item">
+            <a class="page-link scroll_to" href="#" onclick="pagination('rd')">3</a>
+          </li>
+          <li id="li-next" class="page-item">
+            <a class="page-link" href="#" aria-label="Next" onclick="next();">
+              <span aria-hidden="true">&raquo;</span>
+              <span class="sr-only">Next</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <!-- End page content wrapper -->
+  </div>
+  <!-- End Wrapper -->
+
+  <!-- Menu Toggle -->
+  <script>
+    // Menu Toggle
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+
+      if ($("#menu-toggle").text() == "รายการ") {
+        $("#menu-toggle").text("กลับ");
+      } else if ($("#menu-toggle").text() == "กลับ") {
+        $("#menu-toggle").text("รายการ");
+      }
+    });
+  </script>
+</body>
+
+</html>

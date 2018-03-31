@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+    
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="jquery.auto-complete.min.js"></script>
+  
+    <!-- Date Picker -->
+    <link  href="css/datepicker.css" rel="stylesheet">
+    <script src="js/datepicker.js"></script>
+    <script src="js/datepicker.th-TH.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet" >
+    <link rel="stylesheet" href="css/jquery.auto-complete.css">
+
+    <script>
+      var number, name, price;
+      // Radio Check!!
+      var is_checked = "null";
+      $(function(){
+        $('input[type="radio"]').click(function(){
+          if ($(this).is(':checked')){
+            if(is_checked == $(this).attr('id')){
+              $(':radio').each(function () {
+                  $(this).removeAttr('checked');
+                  $('input[type="radio"]').prop('checked', false);
+                  $("#input-unit").prop('disabled', false);
+                });
+            }else{
+              //$(this).val();
+              $("#input-unit").attr('disabled', 'disabled');
+            }is_checked = $(this).attr('id');
+          }
+        });
+      });
+
+      // Drop Down unit click
+      $(function(){
+        $("#unit").click(function() {
+          $("#div-unit").prop('hidden', false);
+          $("#div-customer").prop('hidden', true);
+
+          $("#input-price").val("");
+
+          $(':radio').each(function () {
+            $(this).removeAttr('checked');
+            $('input[type="radio"]').prop('checked', false);
+            $("#input-unit").prop('disabled', false);
+          });
+        });
+
+        $("#customer").click(function() {
+          $("#div-customer").prop('hidden', false);
+          $("#div-unit").prop('hidden', true);
+
+          $("#input-price").val("");  
+        });
+
+        $("#retail").click(function() {
+          $("#div-customer").prop('hidden', true);
+          $("#div-unit").prop('hidden', true);
+          $("#set-price-header").text("กำหนดราคาค้าปลีก :");
+        });
+
+        $("#wholesale").click(function() {
+          $("#div-customer").prop('hidden', true);
+          $("#div-unit").prop('hidden', true);
+          $("#set-price-header").text("กำหนดราคาค้าส่ง :");
+        });
+      });
+
+      var c_unit = 0;
+      function add_unit() {
+        c_unit++;
+        if($("#input-name").val() == "" || $("#input-price").val() == ""){
+          return 0;
+        }
+        var text_html = "<div class='row'>"+
+                "<div class='col-4'></div>"+
+                "<div id='show-numcus-"+c_unit+"' class='col-2 text-center' ondblclick='setNumCus("+c_unit+");'></div>"+
+                "<div id='show-price-"+c_unit+"' class='col-2 text-center' ondblclick='setPrice("+c_unit+");'></div>"+
+                "<div class='col-1'><i id='i-del-"+c_unit+"' class='fa fa-close' style='color: red' onclick='delrow("+c_unit+");'></i><i hidden id='i-check-"+c_unit+"' class='fa fa-check' style='color: green' onclick='checkrow("+c_unit+");'></i></div>"+
+                "<div class='col-3'></div></div>";
+        //Append
+        $("#container-append").append(text_html);
+
+        var exist = false;
+        $('input[type="radio"]').each(function() {
+          if($(this).is(":checked")){
+            //alert($(this).val());
+            number = $(this).val();
+            // Exist Check
+            for(var i = 1; i <= c_unit; i++){
+              if(number == $("#show-numcus-"+i).text()){
+                alert("ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+                exist = true;
+              }
+            }
+            if(exist == false){
+              $("#show-numcus-" + c_unit).text(number);
+            }else{
+              delrow(c_unit);
+            }$(this).prop("checked", false);
+          }
+        });
+        
+        var isDisabled = $("#input-unit").prop('disabled');
+        if(!isDisabled){
+          number = $("#input-unit").val();
+          for(var i = 1; i <= c_unit; i++){
+            if(number == $("#show-numcus-"+i).text()){
+              if(number == ""){
+                delrow(c_unit);
+                return 0;
+              }
+              alert("ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+              exist = true;
+            }
+          }
+          if(exist == false){
+            $("#show-numcus-" + c_unit).text(number);
+            $("#input-unit").val("");
+          }
+          else{
+            delrow(c_unit);
+          }
+        }
+
+        price = $("#input-price").val();
+        $("#show-price-" + c_unit).text(price);
+        $("#input-price").val("");
+        $("#input-unit").removeAttr('disabled');
+      }
+
+      var c_cus = 0;
+      function add_cus() {
+        c_cus++;
+        if($("#input-name").val() == "" || $("#input-price").val() == "" || $("#input-customer").val() == ""){
+          return 0;
+        }
+        //Append
+        var text_html = "<div class='row'>"+
+          "<div class='col-4'></div>"+
+          "<div id='show-numcus-"+c_cus+"' class='col-2 text-center' ondblclick='setNumCus("+c_cus+");'></div>"+
+          "<div id='show-price-"+c_cus+"' class='col-2 text-center' ondblclick='setPrice("+c_cus+");'></div>"+
+          "<div class='col-1'><i id='i-del-"+c_cus+"' class='fa fa-close' style='color: red' onclick='delrow("+c_cus+");'></i><i hidden id='i-check-"+c_cus+"' class='fa fa-check' style='color: green' onclick='checkrow("+c_cus+");'></i></div>"+
+          "<div class='col-3'></div></div>";
+        //Append
+        $("#container-append").append(text_html);
+
+        var exist = false;
+        var cus = $("#input-customer").val();
+        var price = $("#input-price").val();
+
+        for(var i = 1; i <= c_cus; i++){
+          if(cus == $("#show-numcus-"+i).text()){
+            alert("ได้ตั้งค่าราคาของลูกค้า " + cus + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+            exist = true;
+          }
+        }
+
+        if(exist == false){
+          $("#show-numcus-" + c_cus).text(cus);
+          $("#show-price-" + c_cus).text(price);
+        }else{
+          delrow(c_cus);
+        }
+        
+        $("#input-customer").val("");
+        $("#input-price").val("");
+      }
+
+      function setNumCus(arg) {
+        var text = $("#show-numcus-"+arg).text();
+        $("#show-numcus-"+arg).text("");
+        var text_html = "<input id='set-numcus-"+arg+"' type='text' class='form-control text-center' value='" + text +"'>";
+        $("#show-numcus-"+arg).append(text_html);
+
+        $("#i-del-"+arg).prop('hidden', true);
+        $("#i-check-"+arg).prop('hidden', false);
+      }
+
+      function setPrice(arg) {
+        var text = $("#show-price-"+arg).text();
+        $("#show-price-"+arg).text("");
+        var text_html = "<input id='set-price-"+arg+"' type='number' class='form-control text-center' value='" + text +"'>";
+        $("#show-price-"+arg).append(text_html);
+
+        $("#i-del-"+arg).prop('hidden', true);
+        $("#i-check-"+arg).prop('hidden', false);
+      }
+
+      function delrow(arg) {
+        $("#i-del-"+arg).closest('.row').remove();
+        $("#i-del-"+arg).find('br').remove();
+      }
+
+      function checkrow(arg) {
+        var numcus = $("#set-numcus-"+arg).val();
+        var price = $("#set-price-"+arg).val();
+        var number = $("#set-numcus-"+arg).val();
+
+        for(var i = 1; i <= c_unit; i++){
+          if(number == $("#show-numcus-"+i).text()){
+            alert("ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+            return 0;
+          }
+        }
+
+        $("#set-numcus-"+arg).remove();
+        $("#set-price-"+arg).remove();
+
+        $("#show-numcus-"+arg).text(numcus);
+        $("#show-price-"+arg).text(price);
+
+        $("#i-del-"+arg).prop('hidden', false);
+        $("#i-check-"+arg).prop('hidden', true);
+      }
+
+      function cancel() {
+        $("#input-name").val("");
+        $("#input-price").val("");
+        $("#input-customer").val("");
+        $("#input-unit").val("");
+
+        if($("#input-unit").prop('disabled')){
+          $("#input-unit").prop('disabled', false);
+        }
+
+        $('input[type="radio"]').each(function() {
+          if($(this).is(":checked")){
+            $(this).prop("checked", false);
+          }
+        });
+
+        $("#container-append").empty();
+      }
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale_list.html">๐ รายการขายวันนี้</a></li>
+                <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
+                <li><a href="#">๐ เงินสด</a></li>
+                <li><a href="#">๐ ลูกหนี้</a></li>
+                <li><a href="#">๐ กำหนดราคาสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/add_product.html">๐ เพิ่มสินค้า</a></li>
+                <li><a href="#">๐ สินค้าเข้า</a></li>
+                <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ขายส่ง</a></li>
+                <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
+                <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
+                <li><a href="#">๐ รายชื่อลูกค้า</a></li>
+                <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
+                <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
+                <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div> <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 rounded">
+              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                <h3 id="nav-title">กำหนดราคาสินค้า</h3>
+              </div>
+            </nav>
+            <!-- End Navbar -->
+
+            <!-- DropDown -->
+            <div class="row">
+              <div class="col-10"></div>
+              <div class="col-2">
+                <div class="dropdown">
+                  <button id="dropdown" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 170px;">
+                    เลือกตัวกำหนดราคา
+                  </button>
+                  <div id="dd-item" class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton" style="width: 87%;">
+                    <a id="unit" class="dropdown-item">จำนวนสินค้า</a>
+                    <a id="customer" class="dropdown-item">ลูกค้า</a>
+                    <a id="retail" class="dropdown-item">ค้าปลีก</a>
+                    <a id="wholesale" class="dropdown-item">ค้าส่ง</a>
+                  </div>
+                </div>
+              </div>
+            </div> <br><!-- End DropDown -->
+
+            <div class="container">
+              <!-- สินค้า -->
+              <div class="col-12 text-center">
+                <h4>เลือกสินค้า : </h4>
+              </div>
+              <div class="row">
+                <div class="col-4"></div> <!-- Space -->
+                <div class="col-4 text-center">
+                  <input id="input-name" type="text" class="form-control text-center"> <!-- Auto Complete -->
+                  <div class="col-4"></div> <!-- Space -->
+              </div></div> <br>
+
+              <!-- ลูกค้า -->
+              <div id="div-customer" hidden>
+                <div class="col-12 text-center">
+                  <h4>เลือกชื่อลูกค้า : </h4>
+                </div>
+                <div class="row">
+                  <div class="col-4"></div> <!-- Space -->
+                  <div class="col-4 text-center">
+                    <input id="input-customer" type="text" class="form-control text-center">
+                    <div class="col-4"></div> <!-- Space -->
+                  </div> <br>
+                </div><br>
+                <!-- กำนหดเพิ่ม -->
+                <div class="col-12 text-center">
+                  <button class="btn btn-success btn-sm" style="width: 50px;" onclick="add_cus()">
+                    เพิ่ม
+                  </button>
+                </div>
+              </div>
+
+              <!-- จำนวน -->
+              <div id="div-unit">
+                <div class="col-12 text-center">
+                  <h4>จำนวน : </h4>
+                </div>
+                <div class="row">
+                  <div class="col-4"></div> <!-- Space -->
+                  <div class="col-4 text-center">
+                    <label class="radio-inline"><input id="radio-1" type="radio" name="optradio" value="12">12</label>
+                    <label class="radio-inline"><input id="radio-2" type="radio" name="optradio" value="50">50</label>
+                    <label class="radio-inline"><input id="radio-3" type="radio" name="optradio" value="100">100</label>
+                    <label class="radio-inline"><input id="radio-4" type="radio" name="optradio" value="200">200</label>
+                    <input id="input-unit" type="number" class="form-control text-center" min="0">
+                    <div class="col-4"></div> <!-- Space -->
+                  </div> 
+                </div><br>
+                <!-- กำนหดเพิ่ม -->
+                <div class="col-12 text-center">
+                  <button class="btn btn-success btn-sm" style="width: 50px;" onclick="add_unit()">
+                    เพิ่ม
+                  </button>
+                </div>
+              </div> 
+
+              <br> 
+
+              <div id="container-append">
+                
+              </div>
+            
+            <!-- กำหนดราคา -->
+            <div class="col-12 text-center">
+              <h4 id="set-price-header">กำหนดราคา : </h4>
+            </div>
+            <div class="row">
+              <div class="col-4"></div> <!-- Space -->
+              <div class="col-4 text-center">
+                <input id="input-price" type="number" class="form-control text-center" min=0>
+                <div class="col-4"></div> <!-- Space -->
+              </div>
+            </div><br>
+
+            <div class="col-12 text-center">
+              <button style="margin-right: 15px;" class="btn btn-success">บันทึก</button>
+              <button class="btn btn-danger" onclick="cancel();">ยกเลิก</button>
+            </div>
+        </div><!-- End page content wrapper -->
+    </div> <!-- End Wrapper -->
+    
+    <!-- Menu Toggle -->
+    <script>
+      // Menu Toggle
+      $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+
+          if($("#menu-toggle").text() == "รายการ"){
+            $("#menu-toggle").text("กลับ");
+          }else if($("#menu-toggle").text() == "กลับ"){
+            $("#menu-toggle").text("รายการ");
+          }
+      });
+
+      $("#dropdown").click(function(event) {
+        $("#dd-item").slideToggle("dropdown");
+      });
+
+      // When click drop down item
+      $(".dropdown-item").click(function(event) {
+        $("#dropdown").text($(this).text());
+        $("#dd-item").slideToggle("dropdown");
+        $("#container-append").empty();
+        c_cus = c_unit = 0;
+      });
+    </script>
+</body>
+</html>

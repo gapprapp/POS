@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>PPS Auto Group</title>
+
+  <!-- Bootstrap Import -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <!-- Super cool dialog-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+  <!-- Easy-autocomplete -->
+  <script src="js/jquery.easy-autocomplete.min.js"></script>
+  <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+  <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+  <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+
+  <!-- Sidbar -->
+  <link href="css/simple-sidebar.css" rel="stylesheet">
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+  <!-- Main -->
+  <link href="css/untitled.css" rel="stylesheet">
+  <style>
+    .item-row {
+      margin-bottom: 6px;
+    }
+  </style>
+
+  <script>
+    var mng = 0;
+    $(document).ready(function() {
+      url = new URL(window.location.href);
+      mng = url.searchParams.get("mng");
+
+      $("#amount-1").numeric({
+        allow: "."
+      });
+      $("#amount-2").numeric({
+        allow: "."
+      });
+      $("#fund").numeric({
+        allow: "."
+      });
+      $("#price").numeric({
+        allow: "."
+      });
+
+      var options_type = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search_type.php";
+        },
+
+        getValue: function(element) {
+          return element.prod_type_name;
+        },
+
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+
+        preparePostData: function(data) {
+          data.phrase = $("#type").val();
+          return data;
+        },
+
+        list: {
+          maxNumberOfElements: 3,
+
+          showAnimation: {
+            type: "slide",
+            time: 100
+          },
+          hideAnimation: {
+            type: "slide",
+            time: 100
+          },
+        },
+        theme: "blue-light",
+      };
+
+      var options_unit = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
+        },
+
+        getValue: function(element) {
+          return element.unit_name;
+        },
+
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+
+        preparePostData: function(data) {
+          data.phrase = $("#unit").val();
+          return data;
+        },
+
+        list: {
+          maxNumberOfElements: 3,
+
+          showAnimation: {
+            type: "slide",
+            time: 100
+          },
+          hideAnimation: {
+            type: "slide",
+            time: 100
+          },
+        },
+        theme: "blue-light",
+      };
+
+      $("#type").easyAutocomplete(options_type);
+      $("#unit").easyAutocomplete(options_unit);
+    });
+
+    function reset() {
+      $("#barcode").val("");
+      $("#name").val("");
+      $("#type").val("");
+      $("#amount-1").val("");
+      $("#amount-2").val("");
+      $("#unit").val("");
+      $("#fund").val("");
+      $("#price").val("");
+      $("#fileSelect").val("");
+      $('#fileSelect[rel=popover]').popover('dispose');
+      $("#noFile").text("วางไฟล์ที่นี่.. ..");
+      $(".file-upload").removeClass('active');
+    }
+
+    function open_edit(arg) {
+      // Check another edit is open
+      for (var i = 0; i <= j; i++) {
+        if ($("#i-edit-" + i).hasClass('fa fa-check-square')) {
+          alert("กรุณาบันทึกการเปลี่ยนแปลงสินค้า");
+          return 0;
+        }
+      }
+
+      $("#btn-add").prop('disabled', true);
+      $("#btn-reset").prop('disabled', true);
+
+      $("#barcode").prop('disabled', true);
+      $("#name").prop('disabled', true);
+      $("#type").prop('disabled', true);
+      $("#amount-1").prop('disabled', true);
+      $("#amount-2").prop('disabled', true);
+      $("#unit").prop('disabled', true);
+      $("#fund").prop('disabled', true);
+      $("#price").prop('disabled', true);
+
+      $("#barcode-" + arg).prop('disabled', false);
+      $("#name-" + arg).removeClass('disabled');
+      $("#name-" + arg).prop('readonly', false);
+      $("#type-" + arg).prop('disabled', false);
+      $("#amount-1-" + arg).prop('disabled', false);
+      $("#amount-2-" + arg).prop('disabled', false);
+      $("#unit-" + arg).prop('disabled', false);
+      $("#fund-" + arg).prop('disabled', false);
+      $("#price-" + arg).prop('disabled', false);
+      $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
+      $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+      $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
+      $("#btn-del-" + arg).prop('hidden', false);
+      $("#btn-upload-" + arg).prop('hidden', false);
+    }
+
+    function save_edit(arg) {
+      $("#btn-add").prop('disabled', false);
+      $("#btn-reset").prop('disabled', false);
+      $("#barcode").prop('disabled', false);
+      $("#name").prop('disabled', false);
+      $("#type").prop('disabled', false);
+      $("#amount-1").prop('disabled', false);
+      $("#amount-2").prop('disabled', false);
+      $("#unit").prop('disabled', false);
+      $("#fund").prop('disabled', false);
+      $("#price").prop('disabled', false);
+
+      $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
+      $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
+      $("#i-edit-" + arg).attr('class', 'fa fa-edit');
+      $("#btn-del-" + arg).prop('hidden', true);
+      $("#btn-upload-" + arg).prop('hidden', true);
+
+      $("#barcode-" + arg).prop('disabled', true);
+      $("#name-" + arg).addClass('disabled');
+      $("#type-" + arg).prop('disabled', true);
+      $("#amount-1-" + arg).prop('disabled', true);
+      $("#amount-2-" + arg).prop('disabled', true);
+      $("#unit-" + arg).prop('disabled', true);
+      $("#fund-" + arg).prop('disabled', true);
+      $("#price-" + arg).prop('disabled', true);
+
+      var barcode = $("#barcode-" + arg).val();
+      var name = $("#name-" + arg).val();
+      var type = $("#type-" + arg).val();
+      var amt1 = $("#amount-1-" + arg).val();
+      var amt2 = $("#amount-2-" + arg).val();
+      var unit = $("#unit-" + arg).val();
+      var fund = $("#fund-" + arg).val();
+      var price = $("#price-" + arg).val();
+      if (amt1 == "") {
+        amt1 = 0;
+      }
+      if (amt2 == "") {
+        amt2 = 0;
+      }
+
+      var input = document.getElementById("fileSelect");
+      var file = input.files[0];
+
+      if (file == undefined) {
+        //arr_b64.push("");
+        arr_data[arg - 1].barcode = barcode;
+        arr_data[arg - 1].name = name;
+        arr_data[arg - 1].type = type;
+        arr_data[arg - 1].amt1 = amt1;
+        arr_data[arg - 1].amt2 = amt2;
+        arr_data[arg - 1].unit = unit;
+        arr_data[arg - 1].fund = fund;
+        arr_data[arg - 1].price = price;
+      } else {
+        if (file.size < 15000000) {
+          arr_data[arg - 1].barcode = barcode;
+          arr_data[arg - 1].name = name;
+          arr_data[arg - 1].type = type;
+          arr_data[arg - 1].amt1 = amt1;
+          arr_data[arg - 1].amt2 = amt2;
+          arr_data[arg - 1].unit = unit;
+          arr_data[arg - 1].fund = fund;
+          arr_data[arg - 1].price = price;
+          arr_data[arg - 1].b64 = $("#fileSelect").data('img');
+
+          $("#name-" + arg).data('img', arr_data[arg - 1].b64);
+          $("#fileSelect").val("");
+          $('#fileSelect[rel=popover]').popover('dispose');
+          $("#noFile").text("วางไฟล์ที่นี่.. ..");
+          $(".file-upload").removeClass('active');
+
+          $("#name-" + arg).popover({
+            html: true,
+            trigger: 'hover',
+            placement: 'left',
+            content: function() {
+              return '<img src=' + $(this).data('img') + '>';
+            }
+          });
+
+        } else {
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'ไฟล์มีขนาดใหญ่เกินไป',
+            content: 'ไฟล์ขนาดเกิน 15 MB',
+          });
+        }
+      }
+    }
+
+    function arrange(arg){
+      arr_data.splice(arg-1,1);
+      $("#item-"+arg).remove();
+      for(i = arg+1; i <= j; i++){
+        $("#item-"+i).prop('id', 'item-'+(i-1));
+        $("#barcode-"+i).prop('id', 'barcode-'+(i-1));
+        $("#name-"+i).prop('id', 'name-'+(i-1));
+        $("#type-"+i).prop('id', 'type-'+(i-1));
+        $("#amount-1-"+i).prop('id', 'amount-1-'+(i-1));
+        $("#amount-2-"+i).prop('id', 'amount-2-'+(i-1));
+        $("#unit-"+i).prop('id', 'unit-'+(i-1));
+        $("#fund-"+i).prop('id', 'fund-'+(i-1));
+        $("#price-"+i).prop('id', 'price-'+(i-1));
+        $("#btn-del-"+i).attr('onclick', "del_row("+(i-1)+")");
+        $("#btn-del-"+i).prop('id', 'btn-del-'+(i-1));
+        $("#btn-edit-"+i).attr('onclick', "open_edit("+(i-1)+")");
+        $("#btn-edit-"+i).prop('id', 'btn-edit-'+(i-1));
+        $("#btn-upload-"+i).attr('onclick', "upload()");
+        $("#btn-upload-"+i).prop('id', 'btn-upload-'+(i-1));
+        $("#i-edit-"+i).prop('id', "i-edit-"+(i-1));
+        $("#i-del-"+i).prop('id', "i-del-"+(i-1));
+        $("#i-upload-"+i).prop('id', "i-upload-"+(i-1));
+        $("#no-"+i).prop("id", "no-"+(i-1));
+        $("#no-"+(i-1)).text($("#no-"+(i-1)).text()-1);
+      }
+      j--;
+      $("#span-no").text(j+1);
+    }
+
+    function del_row(arg) {
+      $.confirm({
+        icon: 'fa fa-warning',
+        title: 'แน่ใจหรือว่าต้องการลบ!',
+        content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
+        buttons: {
+          danger: {
+            btnClass: 'btn-danger',
+            text: 'ลบ',
+            action: function() {
+              arr_data[arg - 1].barcode = 0;
+              $("#item-" + arg).remove();
+              arrange(arg);
+              $("#btn-add").prop('disabled', false);
+              $("#btn-reset").prop('disabled', false);
+              $("#barcode").prop('disabled', false);
+              $("#name").prop('disabled', false);
+              $("#type").prop('disabled', false);
+              $("#amount-1").prop('disabled', false);
+              $("#amount-2").prop('disabled', false);
+              $("#unit").prop('disabled', false);
+              $("#fund").prop('disabled', false);
+              $("#price").prop('disabled', false);
+            }
+          },
+          ยกเลิก: function() {},
+        }
+      });
+    }
+
+    function save() {
+      // Nothing add
+      if (j == 0) {
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'ไม่มีสินค้าใหม่',
+          content: 'กรุณาเพิ่มสินค้าก่อนบันทึก',
+        });
+        return 0;
+      } else {
+        var json_string = "";
+        json_data = [];
+        $.each(arr_data, function(i, field) {
+          if (arr_data[i].barcode != 0) {
+
+            item = {}
+            item["barcode"] = arr_data[i].barcode;
+            item["name"] = arr_data[i].name;
+            item["type"] = arr_data[i].type;
+            item["amt1"] = arr_data[i].amt1;
+            item["amt2"] = arr_data[i].amt2;
+            item["unit"] = arr_data[i].unit;
+            item["fund"] = arr_data[i].fund;
+            item["price"] = arr_data[i].price;
+            item["b64"] = arr_data[i].b64;
+
+            json_data.push(item);
+
+          }
+        });
+        json_string = JSON.stringify(json_data);
+        var dataString = "JSON=" + json_string;
+        console.log(dataString);
+
+        $.ajax({
+          type: "POST",
+          url: "http://150.95.26.163:8080/gitmew/php/add_prod.php",
+          data: dataString,
+          success: function(data) {
+            if (data == "success") {
+              $.alert({
+                icon: 'fa fa-check',
+                title: 'บันทึกสำเร็จ',
+                content: 'เสร็จสิ้นการทำรายการ',
+              });
+              
+              if (mng == 1) {
+                // come from manage_prod.html
+                // i is all added item no.
+                window.location = "manage_prod.html?sl=1"; // showlast
+              }else{
+                reset();
+                $("#show_list_add").empty();
+                j=0;
+                arr_data = [];
+                $("#span-no").text(1);
+              }
+            } else {
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'พบปัญหา',
+                content: 'กรุณาลองอีกครั้ง',
+              });
+            }
+          }
+        });
+      }
+    }
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          $('#fileSelect').data('img', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function upload() {
+      $("#fileSelect").click();
+    }
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav" style="margin-top: 20px">
+        <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
+        <li><a href="#">๐ รายการขายวันนี้</a></li>
+        <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
+        <li><a href="#">๐ เงินสด</a></li>
+        <li><a href="#">๐ ลูกหนี้</a></li>
+        <li><a href="#">๐ ลูกหนี้ค้างจ่าย</a></li>
+        <li><a href="#">๐ เพิ่มสินค้า</a></li>
+        <li><a href="#">๐ สินค้าเข้า</a></li>
+        <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
+        <li><a href="#">๐ ขายส่ง</a></li>
+        <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
+        <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
+        <li><a href="#">๐ รายชื่อลูกค้า</a></li>
+        <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
+        <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
+        <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+      </ul>
+    </div>
+    <!-- End sidebar -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #86490b;">
+        <div class="clearfix">
+          <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+        </div>
+        <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+          <h3 id="nav-title">เพิ่มสินค้า</h3>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+      <hr style="width: 90%;">
+      <!-- Header -->
+      <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px;">
+        <div class="row" style="padding-right: 20px; padding-left: 100px;">
+          <div class="col-2 text-center">บาร์โค้ด</div>
+          <div class="col-3 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_name')">ชื่อสินค้า
+              <i id="i-prod_name" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+            </a>
+          </div>
+          <div class="col-1 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_type_name')">ประเภท
+              <i id="i-prod_type_name" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;"  hidden></i>
+            </a>
+          </div>
+          <div class="col-1 text-center" style="padding-left: 0px;">จน. (ร้านใหม่)</div>
+          <div class="col-1 text-center" style="padding-left: 0px;">คลังสินค้า</div>
+          <div class="col-1 text-center">หน่วย</div>
+          <div class="col-1 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_cost')">ทุน
+              <i id="i-prod_cost" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+            </a>
+          </div>
+          <div class="col-1 text-center">
+            <a href="#" style="color: black;" onclick="click_sort('prod_price')">ราคา
+              <i id="i-prod_price" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+            </a>
+          </div>
+        </div><br>
+
+        <!-- Show -->
+        <div id="show_list_add" class="container-fullwidth" style="padding-right: 20px; padding-left: 80px; margin-bottom:15px;">
+          <!-- Append here!! -->
+        </div>
+
+        <!-- Input -->
+        <div class="row" style="padding-right: 20px; padding-left: 80px;">
+          <div class="col-2" style='padding-left: 0px; padding-right: 0px;'>
+            <div class='input-group-prepend'>
+              <span id="span-no" class='input-group-text' style='margin-right: 8px;'>1</span>
+              <input id='barcode' type='text' class='form-control text-center'>
+            </div>
+          </div>
+          <div class='col-3'>
+            <input id="name" class="form-control text-center"></input>
+          </div>
+          <div class='col-1' style='padding-left: 0; padding-right: 0;'>
+            <input id='type' type='text' class='form-control text-center no-spin'>
+          </div>
+          <div class='col-1'>
+            <input id='amount-1' type='number' class='form-control text-center no-spin' min='0'>
+          </div>
+          <div class='col-1'>
+            <input id='amount-2' type='number' class='form-control text-center no-spin' min='0'>
+          </div>
+          <div class='col-1'>
+            <input id='unit' type='text' class='form-control text-center no-spin'>
+          </div>
+          <div class='col-1'>
+            <input id='fund' type='number' class='form-control text-center no-spin' min='0'>
+          </div>
+          <div class='col-1'>
+            <input id='price' type='number' class='form-control text-center no-spin' min='0'>
+          </div>
+        </div><br>
+        <!-- Two btn -->
+        <div class="row" style="padding-left: 60px; padding-right: 130px;">
+          <div class="col-5">
+            <div class="file-upload">
+              <div class="file-select">
+                <div class="file-select-button" id="fileName" style="font-size: 120%; font-family: 'Prompt', sans-serif;">เลือกไฟล์อัพโหลด</div>
+                <div class="file-select-name" id="noFile" style="font-size: 120%; font-family: 'Prompt', sans-serif;">วางไฟล์ที่นี่.. ..</div>
+                <form id="imageUploadForm" method="post" enctype="multipart/form-data">
+                  <input id="fileSelect" type="file" name="file" accept="image/*" rel="popover" data-img="">
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-2"></div>
+          <div class="col-5 text-right">
+            <button id="btn-add" class="btn btn-success" onclick="add();">เพิ่มรายการ</button>
+            <button id="btn-reset" class="btn btn-danger" onclick="reset();">ค่าเริ่มต้น</button>
+          </div>
+        </div> <br>
+
+        <!-- Save btn -->
+        <div class="row">
+          <div class="col-12 text-center">
+            <button class="btn btn-primary" onclick="save();">บันทึก</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End page content wrapper -->
+  </div>
+  <!-- End Wrapper -->
+
+  <!-- Menu Toggle -->
+  <script>
+    var j = 0; // .. for index added item .. ..
+    arr_data = [];
+    function add() {
+      var barcode = $("#barcode").val();
+      var name = $("#name").val();
+      var type = $("#type").val();
+      var amount_1 = $("#amount-1").val();
+      var amount_2 = $("#amount-2").val();
+      var unit = $("#unit").val();
+      var fund = $("#fund").val();
+      var price = $("#price").val();
+      if (barcode != "" && name != "" && type != "" && unit != "" && fund != "" && price != "") {
+        var input = document.getElementById("fileSelect");
+        var file = input.files[0];
+        if (file == undefined) {
+          //arr_b64.push("");
+          continue_add(file);
+        } else {
+          if (file.size < 15000000) {
+            continue_add(file);
+          } else {
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'ไฟล์มีขนาดใหญ่เกินไป',
+              content: 'ไฟล์ขนาดเกิน 15 MB',
+            });
+          }
+        }
+      } else {
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'ข้อมูลไม่ครบ',
+          content: 'กรุณากรอกข้อมูลให้ครบ',
+        });
+        return 0;
+      }
+    }
+
+    function continue_add(file) {
+      var barcode = $("#barcode").val();
+      var name = $("#name").val();
+      var type = $("#type").val();
+      var amount_1 = $("#amount-1").val();
+      var amount_2 = $("#amount-2").val();
+      var unit = $("#unit").val();
+      var fund = $("#fund").val();
+      var price = $("#price").val();
+      if (amount_1 == "") {
+        amount_1 = 0;
+      }
+      if (amount_2 == "") {
+        amount_2 = 0;
+      }
+
+      j++;
+
+      var options_type = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search_type.php";
+        },
+
+        getValue: function(element) {
+          return element.prod_type_name;
+        },
+
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+
+        preparePostData: function(data) {
+          data.phrase = $("#type-" + j).val();
+          return data;
+        },
+
+        list: {
+          maxNumberOfElements: 3,
+
+          showAnimation: {
+            type: "slide",
+            time: 100
+          },
+          hideAnimation: {
+            type: "slide",
+            time: 100
+          },
+        },
+        theme: "blue-light",
+      };
+
+      var options_unit = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
+        },
+
+        getValue: function(element) {
+          return element.unit_name;
+        },
+
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+
+        preparePostData: function(data) {
+          data.phrase = $("#unit-" + j).val();
+          return data;
+        },
+
+        list: {
+          maxNumberOfElements: 3,
+
+          showAnimation: {
+            type: "slide",
+            time: 100
+          },
+          hideAnimation: {
+            type: "slide",
+            time: 100
+          },
+        },
+        theme: "blue-light",
+      };
+
+      text_html =
+        "<div id='item-" + j + "' class='row item-row'>" +
+        "<div class='col-2' style='padding-left: 0px; padding-right: 0px;'>" +
+        "<div class='input-group-prepend'>" +
+        "<span id='no-"+j+"' class='input-group-text' style='margin-right: 8px;'>" + j + "</span>" +
+        "<input id='barcode-" + j + "' type='text' class='form-control text-center' value='" + barcode + "' disabled>" +
+        "</div>" +
+        "</div>" +
+        "<div class='col-3'>" +
+        "<input id='name-" + j + "' class='form-control text-center disabled' rel='popover' data-img='" + $("#fileSelect").data('img') + "' type='text' value='" + name + "' readonly>" +
+        "</div>" +
+        "<div class='col-1' style='padding-left: 0; padding-right: 0;'>" +
+        "<input id='type-" + j + "' type='text' class='form-control text-center no-spin' value='" + type + "' disabled>" +
+        "</div>" +
+        "<div class='col-1'>" +
+        "<input id='amount-1-" + j + "' type='number' class='form-control text-center no-spin' min='0' value='" + amount_1 + "' disabled>" +
+        "</div>" +
+        "<div class='col-1'>" +
+        "<input id='amount-2-" + j + "' type='number' class='form-control text-center no-spin' min='0' value='" + amount_2 + "' disabled>" +
+        "</div>" +
+        "<div class='col-1'>" +
+        "<input id='unit-" + j + "' type='text' class='form-control text-center no-spin' value='" + unit + "' disabled>" +
+        "</div>" +
+        "<div class='col-1'>" +
+        "<input id='fund-" + j + "' type='number' class='form-control text-center no-spin' min='0' value='" + fund + "' disabled>" +
+        "</div>" +
+        "<div class='col-1'>" +
+        "<input id='price-" + j + "' type='number' class='form-control text-center no-spin' min='0' value='" + price + "' disabled>" +
+        "</div>" +
+        "<div class='col-1' style='padding-left: 0px; padding-right: 0px;'>" +
+        "<button id='btn-edit-" + j + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + j + ")'>" +
+        "<i id='i-edit-" + j + "' class='fa fa-edit'></i>" +
+        "</button>" +
+        "<button id='btn-del-" + j + "' class='btn btn-sm btn-danger' style='margin-right: 5px;' onclick='del_row(" + j + ")' hidden>" +
+        "<i id='i-del-" + j + "' class='fa fa-minus'></i>" +
+        "</button>" +
+        "<button id='btn-upload-" + j + "' class='btn btn-sm btn-info' onclick='upload()' hidden>" +
+        "<i id='i-upload-" + j + "' class='fa fa-upload'></i>" +
+        "</button>" +
+        "</div>" +
+        "<script>" +
+        "$('#name-" + j + "[rel=popover]').popover({" +
+        "html: true," +
+        "trigger: 'hover'," +
+        "placement: 'left'," +
+        "content: function(){" +
+        "return '<img src='+$(this).data('img')+'>';}" +
+        "});" +
+        "</" + "script>" +
+        "</div>"; // end text_html
+      $("#show_list_add").append(text_html);
+      $("#type-" + j).easyAutocomplete(options_type);
+      $("#unit-" + j).easyAutocomplete(options_unit);
+      $("#span-no").text(j+1);
+      $("#amount-1-" + j).numeric({
+        allow: "."
+      });
+      $("#amount-2-" + j).numeric({
+        allow: "."
+      });
+      $("#fund-" + j).numeric({
+        allow: "."
+      });
+      $("#price-" + j).numeric({
+        allow: "."
+      });
+      if (file == undefined) {
+        item = {}
+        item["barcode"] = barcode;
+        item["name"] = name;
+        item["type"] = type;
+        item["amt1"] = amount_1;
+        item["amt2"] = amount_2;
+        item["unit"] = unit;
+        item["fund"] = fund;
+        item["price"] = price;
+        item["b64"] = "";
+        arr_data.push(item);
+        $("#name-"+j).popover('dispose');
+      } else {
+        item = {}
+        item["barcode"] = barcode;
+        item["name"] = name;
+        item["type"] = type;
+        item["amt1"] = amount_1;
+        item["amt2"] = amount_2;
+        item["unit"] = unit;
+        item["fund"] = fund;
+        item["price"] = price;
+        item["b64"] = $("#fileSelect").data('img');
+        //alert($("#fileSelect").data('img'));
+        arr_data.push(item);
+      }
+
+      $("#barcode").val("");
+      $("#name").val("");
+      $("#type").val("");
+      $("#amount-1").val("");
+      $("#amount-2").val("");
+      $("#unit").val("");
+      $("#fund").val("");
+      $("#price").val("");
+      $("#fileSelect").val("");
+      $('#fileSelect[rel=popover]').popover('dispose');
+      $("#noFile").text("วางไฟล์ที่นี่.. ..");
+      $(".file-upload").removeClass('active');
+    }
+
+    // Menu Toggle
+    $("#menu-toggle").click(function(e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+
+      if ($("#menu-toggle").text() == "รายการ") {
+        $("#menu-toggle").text("กลับ");
+      } else if ($("#menu-toggle").text() == "กลับ") {
+        $("#menu-toggle").text("รายการ");
+      }
+    });
+
+    //Select file
+    $('#fileSelect').bind('change', function() {
+      var filename = $("#fileSelect").val();
+      if (/^\s*$/.test(filename)) {
+        // no file
+        $(".file-upload").removeClass('active');
+        $("#noFile").text("วางไฟล์ที่นี่.. ..");
+      } else {
+        readURL(this); //set data-img of ch
+        $(".file-upload").addClass('active');
+        $("#noFile").text(filename.replace("C:\\fakepath\\", ""));
+
+        $('#fileSelect[rel=popover]').popover({
+          html: true,
+          trigger: 'hover',
+          placement: 'right',
+          content: function() {
+            return '<img src=' + $(this).data('img') + '>';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
