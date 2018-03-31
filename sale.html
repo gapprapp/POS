@@ -428,6 +428,7 @@
     var img;
     var prod_id;
     $(document).ready(function(){
+      alert(localStorage.user_id);
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
@@ -437,7 +438,7 @@
         $("#show_list_add").hide();
         $("#show_list_add").show();
 
-        $(document).keydown(function(objEvent) {
+        /*$(document).keydown(function(objEvent) {
           if (objEvent.keyCode == 9) {  //tab pressed
               objEvent.preventDefault(); // stops its action
               if(index_arr == index-1){
@@ -501,7 +502,7 @@
               $("#check").click();
               check();
           }
-        })
+        })*/
 
         detail();
 
