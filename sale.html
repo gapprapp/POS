@@ -35,6 +35,43 @@
         padding-top: 5px; 
       }
     </style>
+
+    <script>
+      function set_print_title(){
+        text_html = "<span><i class='fa fa-print'></i></span>";
+        $('input[name=print-radio]').each(function () {
+          if ($(this).is(":checked")) {
+            checked = $(this).val();
+            if (checked == "no") {
+              $("#print-title").text("ไม่พิมพ์ ");
+              $("#print-title").append(text_html);
+            } else if (checked == "print") {
+              $("#print-title").text("พิมพ์ ");
+              $("#print-title").append(text_html);
+            }
+          }
+        });
+      }
+
+      function set_pay_title() {
+        text_html = "<span><i class='fa fa-money'></i></span>";
+          $('input[name=pay-radio]').each(function () {
+            if ($(this).is(":checked")) {
+              checked = $(this).val();
+              if (checked == "เงินสด") {
+                $("#pay-title").text("เงินสด ");
+                $("#pay-title").append(text_html);
+              }else if (checked == "เงินโอน") {
+                $("#pay-title").text("เงินโอน ");
+                $("#pay-title").append(text_html);
+              }else if (checked == "ลูกหนี้") {
+                $("#pay-title").text("ลูกหนี้ ");
+                $("#pay-title").append(text_html);
+              }
+            }
+          });
+        }
+    </script>
 </head>
 
 <body>
@@ -77,9 +114,14 @@
             <div class="container-fullwidth justify-content-center">
               <!-- 4 4 4 4 4 4 4 4 -->
               <div class="row">
-                  <div class="col-6 text-center text-muted">เลขที่การขาย : ทำอัตโนมัติเมื่อบันทึก
+                <div id="date" class="col-6 text-center text-muted"></div>
+                <div class="col-6 text-center text-muted dropdown">ของออกจาก :
+                  <div class="btn-group">
+                    <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                
+                    </select>
                   </div>
-                  <div id="date" class="col-6 text-center text-muted"></div>
+                </div>
                 </div> <br>
                 <div class="row">
                   <div class="col-6 text-center text-muted">ชื่อลูกค้า :
@@ -87,11 +129,8 @@
                         <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่">
                     </div>
                   </div>
-                  <div class="col-6 text-center text-muted dropdown">ของออกจาก :
-                    <div class="btn-group">
-                      <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
-                      </select>
+                  <div class="col-6 text-center text-muted">ผู้ทำรายการ :
+                    <div id="user" class="btn-group col-4 text-center text-muted">สมพร สง่างาม
                     </div>
                   </div>
                   </div>
@@ -111,7 +150,7 @@
                 <div class="col-1"></div>
               </div> <br>
               <!-- Show -->
-              <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden; max-height: 340px;">
+              <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
                 <!-- Append here!! -->
               </div>
               <!-- Input -->
@@ -158,8 +197,7 @@
               </div>
             </div>
         </div><!-- End page content wrapper -->
-
-      <div class="container-fluid fixed-bottom" style="margin-bottom: 15px;">
+      <div id="ctn-bttm" class="container-fluid fixed-bottom" style="margin-bottom: 15px; z-index: 0;">
         <div class="row" style="margin-left: 70px;">
           <div class="col-1 text-center conclu-txt">
             <h3>รวม : </h3>
@@ -182,15 +220,15 @@
           <div class="col-1"></div>
           <div class="col-3 text-right" style="padding-top: 10px;">
             <div class="input-group">
-              <button class="btn btn-danger" style="text-align: center; margin-right: 10px;" data-toggle="modal" data-target="#myModal" onclick="check()">คิดเงิน</button>
-              <button class="btn btn-info" style="text-align: center; margin-right: 10px;" data-toggle="modal" data-target="#printModal">ตั้งค่าการพิมพ์
+              <button class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check()">คิดเงิน</button>
+              <button id="print-title" class="btn btn-info" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">พิมพ์
                 <span>
-                  <i class="fa fa-angle-down"></i>
+                  <i class="fa fa-print"></i>
                 </span>
               </button>
-              <button class="btn btn-warning" style="text-align: center;" data-toggle="modal" data-target="#payModal">เงื่อนไขการชำระเงิน
+              <button id='pay-title' class="btn btn-warning" style="text-align: center;" data-toggle="modal" data-target="#payModal">เงินสด
                 <span>
-                  <i class="fa fa-angle-down"></i>
+                  <i class="fa fa-money"></i>
                 </span>
               </button>
             </div>
@@ -203,7 +241,7 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <!-- Modal Header -->
-            <div class="col-12 text-center">
+            <div class="col-12 text-center" style="margin-top: 15px;">
               <h4 class="modal-title">คิดเงิน</h4>
               <hr style="width: 70%;">
             </div>
@@ -279,7 +317,7 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <!-- Modal Header -->
-            <div class="col-12 text-center">
+            <div class="col-12 text-center" style="margin-top: 15px;">
               <h4 class="modal-title">ตั้งค่าการพิมพ์</h4>
               <hr style="width: 70%;">
             </div>
@@ -294,7 +332,7 @@
               </div><br> <br>
               <!-- Modal footer -->
               <div class="col-12 text-center">              
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_print_title();">บันทึก</button>
               </div>
               <br>
             </div>
@@ -307,20 +345,20 @@
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <!-- Modal Header -->
-            <div class="col-12 text-center">
+            <div class="col-12 text-center" style="margin-top: 15px;">
               <h4 class="modal-title">เงื่อนไขการชำระเงิน</h4>
               <hr style="width: 70%;">
             </div>
       
-            <!-- Modal body -->
+            <!-- Pay body -->
             <div class="modal-body">
               <div class="col-12 text-center">
                 <label class="radio-inline">
-                  <input id='pay-1' type="radio" name="pay-radio" value="เงินสด" checked>เงินสด</label>
+                  <input type="radio" name="pay-radio" value="เงินสด" checked>เงินสด</label>
                 <label class="radio-inline">
-                  <input id='pay-2' type="radio" name="pay-radio" value="เงินโอน">เงินโอน</label>
+                  <input type="radio" name="pay-radio" value="เงินโอน">เงินโอน</label>
                 <label class="radio-inline">
-                  <input id='pay-3' type="radio" name="pay-radio" value="ลูกหนี้">ลูกหนี้</label>
+                  <input type="radio" name="pay-radio" value="ลูกหนี้">ลูกหนี้</label>
               </div>
               <div class="col-12">
                 <div class="form-group">
@@ -331,7 +369,7 @@
               <br>
               <!-- Modal footer -->
               <div class="col-12 text-center">                
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_pay_title();">บันทึก</button>
               </div>
               <br>
             </div>
@@ -638,19 +676,21 @@
       $('#total-net').val(sum - sum_dis);
      
     }
-
+    //var offset = $(window).height() - $("#ctn-bttm").offset().top;
+    
     function add(){
       // Added JS
       // BY The Kit
-
+      var bottom = $(window).height() - $("#show_list_add").offset().top - $("#show_list_add").height();
       // Always scroll to the bottom
-      if($("#show_list_add").height() == 340){
+      if(bottom < 200){
+        $("#show_list_add").css('max-height', $("#show_list_add").height());
         $("#show_list_add").animate({scrollTop: $('#show_list_add').prop('scrollHeight')});
       }
 
       $("#name").focus();
       var barcode = $('#barcode').val();
-          if(barcode != "" && $('#name').val() != ""){ 
+          if(barcode == "" && $('#name').val() == ""){ 
             index++;
             $('#show_list_add').append("<div id='list_add"+index+"' class='row' style='margin-left: 50px; margin-bottom: 5px;'>\
                 <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
@@ -877,7 +917,8 @@
                 //alert(data);
                 if(data != "fail"){ 
                   if(print == "print"){                 
-                    WinPrint.document.write("<div style='width: 8cm'>" +
+                    WinPrint.document.write("<style>@page { size: auto; margin: 0mm; }</style >"+
+                                            "<div style='width: 8cm'>" +
                                               "<div style='font-size: 0.6em; text-align:center;'>PPS AUTO  GROUP " +b_name+"</div>" +
                                               "<div style='font-size: 0.6em; text-align:center;'>"+data+"</div>" +
                                               "<div style='font-size: 0.6em; text-align:center;'>"+datetime+"</div>" +
