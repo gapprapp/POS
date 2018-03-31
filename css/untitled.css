@@ -73,11 +73,6 @@ body {
   font-size: 120%;
 }
 
-.footer, .push {
-  height: 300px;
-  /* .push must be the same height as .footer */
-}
-
 .added {
   color: black;
 }
