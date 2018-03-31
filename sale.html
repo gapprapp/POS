@@ -691,7 +691,7 @@
 
       $("#name").focus();
       var barcode = $('#barcode').val();
-          if(barcode == "" && $('#name').val() == ""){ 
+          if(barcode != "" && $('#name').val() != ""){ 
             index++;
             $('#show_list_add').append("<div id='list_add"+index+"' class='row' style='margin-left: 50px; margin-bottom: 5px;'>\
                 <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
