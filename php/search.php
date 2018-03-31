@@ -18,8 +18,10 @@
             $result1 = mysqli_query($conn, $sql);
             if(mysqli_num_rows($result1) > 0){
                 while($row1 = mysqli_fetch_array($result1)){
-                     $row['prod_price'] = $row1['special_prod_price'];
-                     //array_push($row,$sum);
+                     //$row['prod_price'] = $row1['special_prod_price'];
+                     $price = $row1['special_prod_price'];
+                     $a = array('prod_price'=>$price);
+                     array_push($row,$price);
                 }		
             }
         }
