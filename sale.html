@@ -517,8 +517,7 @@
             return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
           },
 
-          getValue: function(element) {
-            
+          getValue: function(element) {            
             return element.prod_name;
           },
 
@@ -540,7 +539,7 @@
           },
 
           list: {
-              maxNumberOfElements: 5,
+              maxNumberOfElements: 4,
 
               showAnimation: {
                   type: "slide",
@@ -564,10 +563,7 @@
                 $('#total').val(price);
               }
           },
-
-          //requestDelay: 400,
-
-          
+          requestDelay: 400,          
         };
 
         $("#name").easyAutocomplete(options);
@@ -594,7 +590,7 @@
           },
 
           list: {
-              maxNumberOfElements: 5,
+              maxNumberOfElements: 3,
 
               showAnimation: {
                   type: "slide",
@@ -609,10 +605,7 @@
                 cus_id = $("#cus").getSelectedItemData().customer_id;
               }
           },
-
-          //requestDelay: 400,
-
-          
+          requestDelay: 400,          
         };
 
         $("#cus").easyAutocomplete(options_cus);
@@ -643,12 +636,14 @@
     function chng_amt(){
       var amt = $('#amount').val();
       $.ajax({
-        type: POST,
+        type: "POST",
         url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
         data: {'prod_id' : prod_id,
                 'amount' : amt},
         success : function(data){
-          
+          if(data != "fail"){           
+            $('#total').val(data);
+          }
         }
       });
     }
@@ -893,11 +888,13 @@
 
       $('#net-price').val(total);
       $('#discount-money').val(dis);
-      $('#final-price').val(net);   
+      $('#final-price').val(net); 
+      $('#get-money').val(""); 
+      $('#change-money').val("");
     }   
    
     function save(){
-      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != ""){
+      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != 0){
         var no = 1;
         json = [];
         var text = "";
