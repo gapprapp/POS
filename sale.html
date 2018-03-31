@@ -414,7 +414,7 @@
         var money = $('#get-money').val();
         var net = $('#final-price').val();
         if(money - net < 0){
-          $('#change-money').val(0);
+          $('#change-money').val("");
         }else{
           $('#change-money').val(money - net);
         }
@@ -894,7 +894,7 @@
     }   
    
     function save(){
-      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != 0){
+      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != ""){
         var no = 1;
         json = [];
         var text = "";
@@ -927,9 +927,10 @@
         var final_price = $('#final-price').val();     
         var get_money = $('#get-money').val();
         var change_money = $('#change-money').val();
+        var cus_name = $('#cus').val();
         var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
-        + final_price + "&comment=" + comment;  
+        + final_price + "&comment=" + comment + "&name_cus=" + cus_name;  
 
         var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
         $.ajax({
