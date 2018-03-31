@@ -931,9 +931,10 @@
         var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
         + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
-
-
-        var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
+        
+        if(print == "print"){
+          var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
+        }       
         $.ajax({
             type: "POST",
             url:"http://150.95.26.163:8080/gitmew/php/save_order.php",
@@ -976,9 +977,7 @@
                     WinPrint.focus();
                     WinPrint.print();
                     WinPrint.close();   
-                  }else{
-                    WinPrint.close();
-                  }                           
+                  }                          
                   $('#show_list_add').empty();
                   jsonObj = [];
                   arr = [];
