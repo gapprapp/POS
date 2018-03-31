@@ -10,8 +10,20 @@
     $result = mysqli_query($connect, $query);
 
     if(mysqli_num_rows($result) > 0){    
-      while($row = mysqli_fetch_array($result)){      
-       $output[] = $row;
+      while($row = mysqli_fetch_array($result)){ 
+        if(isset($_GET['cus_id'])){
+            $prod_id = $row['prod_id'];
+            $cus_id = $_GET['cus_id'];
+            $sql = "SELECT special_prod_price FROM detail_customer WHERE prod_id = '$prod_id' AND customer_id = '$cus_id'";
+            $result1 = mysqli_query($conn, $sql);
+            if(mysqli_num_rows($result1) > 0){
+                while($row1 = mysqli_fetch_array($result1)){
+                     $row['prod_price'] = $row1['special_prod_price'];
+                     //array_push($row,$sum);
+                }		
+            }
+        }
+        $output[] = $row;
       }   
     }else{    
       $output = array('prod_name' => 'Not Found');

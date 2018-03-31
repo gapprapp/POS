@@ -844,9 +844,9 @@
           item ["prod_id"] =  jsonObj[i].prod_id;
           item ["discount"] =  jsonObj[i].discount;      
           if($('#box'+(i+1)).is(':checked') == true){
-            item ["bonus"] =  1;
+            item ["bonus"] =  true;
           }else{
-            item ["bonus"] =  0;
+            item ["bonus"] =  false;
           }
           json.push(item);         
           no++;
