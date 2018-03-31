@@ -563,14 +563,7 @@
                 $('#total').val(price);
               }
           },
-<<<<<<< HEAD
-
-          //requestDelay: 400,
-
-
-=======
           requestDelay: 400,          
->>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
         };
 
         $("#name").easyAutocomplete(options);
@@ -612,14 +605,7 @@
                 cus_id = $("#cus").getSelectedItemData().customer_id;
               }
           },
-<<<<<<< HEAD
-
-          //requestDelay: 400,
-
-
-=======
           requestDelay: 400,          
->>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
         };
 
         $("#cus").easyAutocomplete(options_cus);
@@ -647,8 +633,6 @@
       });
     }
 
-<<<<<<< HEAD
-=======
     function chng_amt(){
       var amt = $('#amount').val();
       $.ajax({
@@ -664,7 +648,6 @@
       });
     }
     
->>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
     var total_old,dis_old;
     function edit(arg){
       $("#btn_edit"+arg).prop('hidden', true);
@@ -905,17 +888,11 @@
 
       $('#net-price').val(total);
       $('#discount-money').val(dis);
-<<<<<<< HEAD
-      $('#final-price').val(net);
-    }
-
-=======
       $('#final-price').val(net); 
       $('#get-money').val(""); 
       $('#change-money').val("");
     }   
    
->>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
     function save(){
       if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != ""){
         var no = 1;
@@ -952,19 +929,10 @@
         var change_money = $('#change-money').val();
         var cus_name = $('#cus').val();
         var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
-<<<<<<< HEAD
-        + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price="
-        + final_price + "&comment=" + comment;
-=======
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
-<<<<<<< HEAD
-        + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;     
-        
-=======
-        + final_price + "&comment=" + comment + "&name_cus=" + cus_name;  
->>>>>>> 837de08d503b0ea2cc86a041c070caedaa31b11c
+        + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
 
->>>>>>> c6dd4e6994ab05848407357dd77047b8b43f500a
+
         var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
         $.ajax({
             type: "POST",
