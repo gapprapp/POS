@@ -126,7 +126,7 @@
                 <div class="row">
                   <div class="col-6 text-center text-muted">ชื่อลูกค้า :
                     <div class="btn-group col-4 text-center text-muted">
-                        <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่">
+                        <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
                     </div>
                   </div>
                   <div class="col-6 text-center text-muted">ผู้ทำรายการ :
@@ -167,13 +167,13 @@
                   <input id="barcode" type="text" class="form-control text-center" readonly>
                 </div>
                 <div class="col-3" style='padding-left: 5px; padding-right: 5px;'>
-                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="1">
+                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
                 </div>
                 <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="price" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
-                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" onchange="chng_amt()" data-index="2">
+                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" onchange="chng_amt()" data-index="3">
                 </div>
                 <div class="col-1">
                   <input id="unit" type="text" class="form-control text-center" readonly>
@@ -182,7 +182,7 @@
                   <input id="total" type="text" class="form-control text-center" readonly>
                 </div>
                 <div class="col-1" style='padding-right: 0px;'>
-                  <input id="prod-discount" type="number" class="form-control text-center no-spin">
+                  <input id="prod-discount" type="number" class="form-control text-center no-spin" data-index="4">
                 </div>
                 <div class="col-1"></div>
               </div> <br>
