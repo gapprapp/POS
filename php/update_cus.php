@@ -7,7 +7,7 @@
 
     mysqli_autocommit($conn,FALSE); 
     $sql = "UPDATE customer SET customer_name = '$name', address = '$addr', tel = '$tel'
-    WHERE cus_id = '$cus_id'"; 
+    WHERE customer_id = '$cus_id'"; 
     $result = mysqli_query($conn, $sql);  
 
     if($result){

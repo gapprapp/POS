@@ -16,7 +16,7 @@
 			$sql = "SELECT customer_id,customer_name,address,tel FROM customer LIMIT $start,100";
 		}		
 	}else if($sort_by != "none" && $order != "none"){
-		if($name){
+		if($name || $tel){
 			if($order == "asc"){
                 $sql = "SELECT customer_id,customer_name,address,tel FROM customer 
                 WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' ORDER BY $sort_by ASC LIMIT $start,100";
