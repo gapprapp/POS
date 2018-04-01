@@ -390,7 +390,7 @@
             var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
               "<div class='col-3'></div>" +
               "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>" + number + "</div>" +
-              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>" + price + "</div>" +
+              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>" +  $("#input-unit-price").val() + "</div>" +
               "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");'></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
               "<div class='col-3'></div> <hr style='width: 45%'></div> ";
             $("#show-amt-container").append(text_html);
@@ -474,8 +474,8 @@
 
         var exist = false;
         for (var i = 1; i <= c_cus; i++) {
-          if (cus == $("#show-cus-" + i).text() || cus == $("#set-cus-" + i).val()) {
-            alert("ได้ตั้งค่าราคาของลูกค้า " + cus + " ไว้แล้ว");
+          if ($("#input-cus").val() == $("#show-cus-" + i).text() || $("#input-cus").val() == $("#set-cus-" + i).val()) {
+            alert("ได้ตั้งค่าราคาของลูกค้า " + $("#input-cus").val() + " ไว้แล้ว");
             exist = true;
           }
         }
