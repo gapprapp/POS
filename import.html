@@ -42,6 +42,9 @@
         padding-left: 5px;
         padding-right: 5px;
       }
+      #title-amt, #title-cus{
+        cursor: pointer;
+      }
     </style>
 
     <script>
@@ -792,29 +795,29 @@
       
       function change_option(arg){
         if (arg == 'amt') {
-          // show cus
-          $("#title-amt").prop('hidden', true);
-          $("#title-cus").prop('hidden', false);
-
-          $("#ctn-amt").prop('hidden', true);
-          $("#ctn-cus").prop('hidden', false);
-        } else if (arg == 'cus') {
-          // show amt
-          $("#title-cus").prop('hidden', true);
-          $("#title-amt").prop('hidden', false);
-
-          $("#ctn-cus").prop('hidden', true);
+          if($("#ctn-amt").is(":visible")) return 0;
+          
           $("#ctn-amt").prop('hidden', false);
+          $("#ctn-cus").prop('hidden', true);
+          $("#card").fadeOut(200).fadeIn(200);
+        } else if (arg == 'cus') {
+          if ($("#ctn-cus").is(":visible")) return 0;
+
+          $("#ctn-cus").prop('hidden', false);
+          $("#ctn-amt").prop('hidden', true);
+          $("#card").fadeOut(200).fadeIn(200);
         }
-        $("#card").fadeOut(200).fadeIn(200);
+        
       }
 
       function collapse(){
         $("#card").slideToggle('collapse');
+        $("#i-down").toggleClass('flip');
       }
 
       function added_collapse(arg){
         $("#li-"+arg+"-collapse").slideToggle('collapse');
+        $("#li-"+arg+" i").toggleClass('flip');
       }
 
       function save(){      
@@ -949,7 +952,7 @@
               </div>
               <div class="col-1" style="margin-top: 5px;" onclick="collapse();">
                 <button class="btn btn-sm btn-info">
-                  <i class="fa fa-angle-down"></i>
+                  <i id='i-down' class="fa fa-angle-down"></i>
                 </button>
               </div>
             </div> <br>
@@ -960,15 +963,13 @@
               <div class="card card-body" style="width: 60%; margin: 0 auto">
                 <div class="container">
                   <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-12 text-center">
-                      <h5 id="title-amt">จำนวน / ราคา
-                        <i class="fa fa-angle-right" style="margin-left: 15px;" onclick="change_option('amt');"></i>
-                      </h5>
-                      <h5 id="title-cus" hidden>ลูกค้า / ราคา
-                        <i class="fa fa-angle-right" style="margin-left: 15px;" onclick="change_option('cus');"></i>
-                      </h5>
+                    <div class="col-6 text-right" onclick="change_option('amt');" style="border-right: 1px solid #e4e5e5;">
+                        <h5 id="title-amt">จำนวน / ราคา</h5>
                     </div>
-                    <hr class="text-center" style="margin-top: 0; width: 30%">
+                    <div class="col-6 text-left" onclick="change_option('cus');">
+                      <h5 id="title-cus">ลูกค้า / ราคา</h5>
+                    </div>
+                    <hr class="text-center" style="margin-top: 0; width: 45%">
                   </div>
                 </div>
               
