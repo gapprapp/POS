@@ -262,3 +262,8 @@ img{
 ::-webkit-scrollbar { 
     display: none; 
 }
+
+.flip {
+  transform: 1s;
+  transform: rotate(-180deg);
+}
