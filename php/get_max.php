@@ -58,5 +58,5 @@
 		echo "fail";
 	}
 	
-	mysqli_close();
+	mysqli_close($conn);
 ?>
