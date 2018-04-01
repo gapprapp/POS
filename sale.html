@@ -220,7 +220,7 @@
           <div class="col-1"></div>
           <div class="col-3 text-right" style="padding-top: 10px;">
             <div class="input-group">
-              <button class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check()">คิดเงิน</button>
+              <button id="btn_checkbill" class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check()">คิดเงิน</button>
               <button id="print-title" class="btn btn-info" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">พิมพ์
                 <span>
                   <i class="fa fa-print"></i>
@@ -237,7 +237,7 @@
       </div>
 
       <!-- The Modal -->
-      <div class="modal fade" id="myModal">
+      <div class="modal fade" id="myModal" tabindex='-1'>
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <!-- Modal Header -->
@@ -304,7 +304,7 @@
 
             <!-- Modal footer -->
             <div class="col-12 text-center">
-              <button type="button" class="btn btn-success" data-dismiss="modal" onclick="save()" style="margin-right: 15px;">บันทึก</button>
+              <button id="btn_save" type="button" class="btn btn-success" data-dismiss="modal" onclick="save()" style="margin-right: 15px;">บันทึก</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
             </div><br>
           </div>
@@ -313,7 +313,7 @@
       </div>
 
       <!-- Print Modal -->
-      <div class="modal fade" id="printModal">
+      <div class="modal fade" id="printModal" tabindex='-1'>
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <!-- Modal Header -->
@@ -341,7 +341,7 @@
       </div>
 
       <!-- Pay Modal -->
-      <div class="modal fade" id="payModal">
+      <div class="modal fade" id="payModal" tabindex='-1'>
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <!-- Modal Header -->
@@ -403,6 +403,13 @@
 
       });
 
+       $('#name').on('input', function() {
+            var name = $('#name').val();           
+            if(name == ""){
+               reset();
+            }            
+        });      
+
       $('#amount').on("keyup input", function(){
           var price = $('#price').val();
           var amount = $('#amount').val();
@@ -420,11 +427,21 @@
         }
       });
 
-    jsonObj = [];
-    arr = [];
-    var index = 0;
-    var i_tab = 1;
-    var index_arr = 0;
+      var modal = false;
+      $('#myModal').on('shown.bs.modal', function() {
+        $('#get-money').focus();
+        modal = true;
+      })
+
+      $('#printModal').on('shown.bs.modal', function() {        
+        modal = false;
+      })
+
+      $('#payModal').on('shown.bs.modal', function() {      
+        modal = false;
+      })
+
+    jsonObj = [];   
     var datetime;
     var sum = 0;
     var sum_dis = 0;
@@ -441,72 +458,32 @@
         $("#show_list_add").hide();
         $("#show_list_add").show();
 
-        /*$(document).keydown(function(objEvent) {
+        $(document).keydown(function(objEvent) {
           if (objEvent.keyCode == 9) {  //tab pressed
-              objEvent.preventDefault(); // stops its action
-              if(index_arr == index-1){
-                if(i_tab == index){
-                  i_tab = 1;
-                }
-                  $("#btn_remove"+i_tab).focus();
-                  i_tab++;
-              }else{
-                if(i_tab == index){
-                  i_tab = 1;
-                }
-                while(i_tab < index ){
-                  i_tab++;
-                  var tmp = i_tab-1;
-                  if(jQuery.inArray(tmp, arr ) == -1){
-                    $("#btn_remove"+tmp).focus();
-                    break;
-                  }
-                }
-              }
+              objEvent.preventDefault(); // stops its action         
           }
           if (objEvent.keyCode == 13) {  //enter pressed
-              objEvent.preventDefault();
-              if ($("#name").is(":focus") || $("#amount").is(":focus")) {
-                var $this = $(objEvent.target);
-                var i_enter = parseFloat($this.attr('data-index'));
-                i_tab = 1;
-                if(i_enter == 2){
-                    add();
-                }else{
-                    $('[data-index="' + (i_enter+1).toString() + '"]').focus();
-                }
+              objEvent.preventDefault();           
+              var $this = $(objEvent.target);
+              var i_enter = parseFloat($this.attr('data-index'));                      
+              if(i_enter == 4){
+                add();
+              }else if(isNaN(i_enter) && modal){
+                $("#btn_save").click();        
               }else{
-                var temp = i_tab-1;
-                $("#btn_remove"+temp).click();
-                arr.push(temp);
-                if(i_tab == index){
-                  i_tab = 1;
-                }
-                while(i_tab < index ){
-                  i_tab++;
-                  var tmp = i_tab-1;
-                  if(jQuery.inArray(tmp, arr ) == -1){
-                    $("#btn_remove"+tmp).focus();
-                    break;
-                  }
-                }
-              }
+                $('[data-index="' + (i_enter+1).toString() + '"]').focus();
+              }              
           }
           if (objEvent.keyCode == 113) {  //f2 pressed
-              i_tab = 1;
               add();
           }
           if (objEvent.keyCode == 115) {  //f4 pressed
-              i_tab = 1;
-              clear();
+              reset();
           }
           if (objEvent.keyCode == 118) {  //f7 pressed
-              i_tab = 1;
-              $("#check").click();
-              check();
+              $("#btn_checkbill").click();          
           }
-        })*/
-
+        })
         detail();
 
         setTimeout(function() {$("#cus").focus();}, 100);
@@ -530,6 +507,7 @@
             if($("#cus").val() == ""){
               alert("กรุณาใส่ชื่อลูกค้าก่อนทำรายการ");
               $("#cus").focus();
+              $("#name").val("");
               return 0;
             }else{
               data.phrase = $("#name").val();
@@ -612,7 +590,7 @@
     });
 
     function detail(){
-      $('#branch').empty();
+      $('#branch').empty();     
       //Date
       var d = new Date($.now());
       $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
@@ -627,10 +605,10 @@
         {
           var obj = jQuery.parseJSON(data);
           $.each(obj, function(i, field){
-            $('#branch').append("<option class='dropdown-item text-center' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
+            $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
           });
         }
-      });
+      });      
     }
 
     function chng_amt(){
@@ -699,7 +677,7 @@
 
     }
     //var offset = $(window).height() - $("#ctn-bttm").offset().top;
-
+    var index = 0;   
     function add(){
       // Added JS
       // BY The Kit
@@ -765,8 +743,7 @@
                 });\
                 </"+"script>\
                 </div>\
-            ");
-            index_arr++;
+            ");           
             sum += parseInt($('#total').val());
             if($('#prod-discount').val() != ""){
               sum_dis += parseInt($('#prod-discount').val());
@@ -857,8 +834,7 @@
       $('#total-net').val(sum - sum_dis);
 
       $('#list_add'+num).remove();
-      arrange(num);
-      index_arr--;
+      arrange(num);      
     }
 
     function bonus(num){
@@ -881,7 +857,7 @@
         $('#total-net').val(sum - sum_dis);
     }
 
-    function check(){
+    function check(){     
       var total = $('#total-price').val();
       var dis = $('#total-discount').val();
       var net = $('#total-net').val();
@@ -890,7 +866,7 @@
       $('#discount-money').val(dis);
       $('#final-price').val(net); 
       $('#get-money').val(""); 
-      $('#change-money').val("");
+      $('#change-money').val("");    
     }   
    
     function save(){
@@ -978,12 +954,10 @@
                     WinPrint.print();
                     WinPrint.close();   
                   }                          
-                  $('#show_list_add').empty();
-                  jsonObj = [];
-                  arr = [];
+                  /*$('#show_list_add').empty();
+                  jsonObj = [];               
                   index = 0;
-                  i_tab = 1;
-                  index_arr = 0;
+                  cus_id = 0;                 
                   sum = 0;
                   sum_dis = 0;
                   $('#total-net').val("0");
@@ -994,14 +968,15 @@
                   $('#discount-money').val("");
                   $('#get-money').val("");
                   $('#change-money').val("");
-                  $('#cus').val("");
-                  detail();
+                  $('#cus').val("");                  
+                  detail();*/
+                  location.reload();
                 }
             }
         });
 
       }else{
-        alert("กรุณากรอกเงินที่รับหรือเลือกลูกค้าด้วย");
+        alert("กรุณากรอกเงินที่รับหรือเลือกลูกค้าด้วย");      
       }
     }
     </script>
