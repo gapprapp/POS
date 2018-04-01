@@ -44,7 +44,7 @@
         var max_page_no = 0;
         $(document).ready(function () {
             // Get max
-            var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
+            var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
             $.post(path, {
                 'start': 0,
                 "sort_by": sort_by,
@@ -60,7 +60,7 @@
                     // Get First 100
                     $.ajax({
                         type: "POST",
-                        url: "http://150.95.26.163:8080/gitmew/php/get_allprod.php",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
                         data: {
                             'start': 0,
                             'sort_by': sort_by,
@@ -71,86 +71,19 @@
                         success: function (response) {
 
                             var obj = jQuery.parseJSON(response);
-                            $.each(obj, function (i, field) {
-                                var options_type = {
-                                    url: function (phrase) {
-                                        return "http://150.95.26.163:8080/gitmew/php/search_type.php";
-                                    },
-
-                                    getValue: function (element) {
-                                        return element.prod_type_name;
-                                    },
-
-                                    ajaxSettings: {
-                                        method: "POST",
-                                        data: {}
-                                    },
-
-                                    preparePostData: function (data) {
-                                        data.phrase = $("#type-" + i).val();
-                                        return data;
-                                    },
-
-                                    list: {
-                                        maxNumberOfElements: 3,
-
-                                        showAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                        hideAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                    },
-                                    
-                                };
-
-                                var options_unit = {
-                                    url: function (phrase) {
-                                        return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
-                                    },
-
-                                    getValue: function (element) {
-                                        return element.unit_name;
-                                    },
-
-                                    ajaxSettings: {
-                                        method: "POST",
-                                        data: {}
-                                    },
-
-                                    preparePostData: function (data) {
-                                        data.phrase = $("#unit-" + i).val();
-                                        return data;
-                                    },
-
-                                    list: {
-                                        maxNumberOfElements: 3,
-
-                                        showAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                        hideAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                    },
-                                    
-                                };
+                            $.each(obj, function (i, field) {            
 
                                 text_html = "<li id='item-" + i + "' class='list-group-item text-center rounded'>" +
-                                    "<span id='span-" + i + "' hidden>" + field.cus_id + "</span>" +
+                                    "<span id='span-" + i + "' hidden>" + field.customer_id + "</span>" +
                                     "<div class='row'>" +
                                     "<div class='col-3' style='padding-right: 0;'>" +
                                     "<div class='input-group-prepend'>" +
                                     "<span class='input-group-text' style='margin-right: 8px;'>" + (i + 1) + "</span>" +
-                                    "<input id='name-" + i + "' type='text' class='form-control text-center' value='" + field.name + "' disabled>" +
+                                    "<input id='name-" + i + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
                                     "</div>" +
                                     "</div>" +
                                     "<div class='col-6'>" +
-                                    "<input id='addr-" + i + "' type='text' class='form-control text-center' value='" + field.addr + "' disabled>" +
+                                    "<input id='addr-" + i + "' type='text' class='form-control text-center' value='" + field.address + "' disabled>" +
                                     "</div>" +
                                     "<div class='col-2' style='padding-left: 0; padding-right: 0;'>" +
                                     "<input id='tel-" + i + "' type='text' class='form-control text-center no-spin' value='" + field.tel + "' disabled>" +
@@ -195,7 +128,7 @@
                         action: function () {
                             var cus_id = $("#span-" + arg).text();
                             $.ajax({
-                                url: "http://150.95.26.163:8080/gitmew/php/delete_prod.php",
+                                url: "http://150.95.26.163:8080/gitmew/php/delete_cus.php",
                                 type: "POST",
                                 data: {
                                     'cus_id': cus_id
@@ -233,12 +166,12 @@
             var tel = $("#tel-" + arg).val();
 
             $.ajax({
-                url: "http://150.95.26.163:8080/gitmew/php/update_prod.php",
+                url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
                 type: "POST",
                 data: {
                     'cus_id': cus_id,
                     'name': name,
-                    'addr': addr,
+                    'address': addr,
                     'tel': tel
                 },
                 success: function (data) {
@@ -248,7 +181,6 @@
         }
 
         var searched_name;
-
         function search() {
             searched_name = $("#search-name").val();
 
@@ -283,13 +215,12 @@
                 prev_page = arg;
                 $.ajax({
                     type: "POST",
-                    url: "http://150.95.26.163:8080/gitmew/php/get_allprod.php",
+                    url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
                     data: {
                         'start': start,
                         "sort_by": sort_by,
                         "order": order,
-                        'name': name,
-                        'addr': addr,
+                        'name': name,                       
                         'tel': tel
                     },
                     cache: false,
@@ -297,13 +228,12 @@
                     success: function (response) {
                         if (start == 0) {
                             //find max_item
-                            var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
+                            var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
                             $.post(path, {
                                 'start': start,
                                 "sort_by": sort_by,
                                 "order": order,
-                                'name': name,
-                                'addr': addr,
+                                'name': name,                               
                                 'tel': tel
                             }, function (data) {
                                 max_page_no = Math.ceil(data / 100);
@@ -320,99 +250,32 @@
                             });
                         }
                         var obj = jQuery.parseJSON(response);
-                        $.each(obj, function (i, field) {
-                            var options_type = {
-                                url: function (phrase) {
-                                    return "http://150.95.26.163:8080/gitmew/php/search_type.php";
-                                },
-
-                                getValue: function (element) {
-                                    return element.prod_type_name;
-                                },
-
-                                ajaxSettings: {
-                                    method: "POST",
-                                    data: {}
-                                },
-
-                                preparePostData: function (data) {
-                                    data.phrase = $("#type-" + (start + i)).val();
-                                    return data;
-                                },
-
-                                list: {
-                                    maxNumberOfElements: 3,
-
-                                    showAnimation: {
-                                        type: "slide",
-                                        time: 100
-                                    },
-                                    hideAnimation: {
-                                        type: "slide",
-                                        time: 100
-                                    },
-                                },
-                                
-                            };
-
-                            var options_unit = {
-                                url: function (phrase) {
-                                    return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
-                                },
-
-                                getValue: function (element) {
-                                    return element.unit_name;
-                                },
-
-                                ajaxSettings: {
-                                    method: "POST",
-                                    data: {}
-                                },
-
-                                preparePostData: function (data) {
-                                    data.phrase = $("#unit-" + (start + i)).val();
-                                    return data;
-                                },
-
-                                list: {
-                                    maxNumberOfElements: 3,
-
-                                    showAnimation: {
-                                        type: "slide",
-                                        time: 100
-                                    },
-                                    hideAnimation: {
-                                        type: "slide",
-                                        time: 100
-                                    },
-                                },
-                                
-                            };
+                        $.each(obj, function (i, field) {                          
                             text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
-                                "<span id='span-" + (start + i) + "' hidden>" + field.cus_id + "</span>" +
-                                "<div class='row'>" +
-                                "<div class='col-3' style='padding-right: 0;'>" +
-                                "<div class='input-group-prepend'>" +
-                                "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
-                                "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.barcode + "' disabled style='font-size: 90%;'>" +
-                                "</div>" +
-                                "</div>" +
-                                "<div class='col-6'>" +
-                                "<input id='addr-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.prod_name + "' disabled>" +
-                                "</div>" +
-                                "<div class='col-2' style='padding-left: 0; padding-right: 0;'>" +
-                                "<input id='tel-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.prod_type_name + "' disabled style='font-size: 90%;'>" +
-                                "</div>" +
-                                "<div class='col-1'>" +
-                                "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
-                                "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
-                                "</button>" +
-                                "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
-                                "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
-                                "</button>" +
-                                "</div>" +
-                                "</div>" +
-                                "</li>"; // end text_html
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>" +
+                                    "<div class='row'>" +
+                                    "<div class='col-3' style='padding-right: 0;'>" +
+                                    "<div class='input-group-prepend'>" +
+                                    "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
+                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
+                                    "</div>" +
+                                    "</div>" +
+                                    "<div class='col-6'>" +
+                                    "<input id='addr-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.address + "' disabled>" +
+                                    "</div>" +
+                                    "<div class='col-2' style='padding-left: 0; padding-right: 0;'>" +
+                                    "<input id='tel-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.tel + "' disabled>" +
+                                    "</div>" +
+                                    "<div class='col-1'>" +
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
+                                    "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
+                                    "</button>" +
+                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                                    "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                    "</button>" +
+                                    "</div>" +
+                                    "</div>" +
+                                    "</li>"; // end text_html
                             $(".list-group").append(text_html);
                         });
                         $('#btn-search').prop('disabled', false);
@@ -426,27 +289,25 @@
                     //console.log("no item");
                     $.ajax({
                         type: "POST",
-                        url: "http://150.95.26.163:8080/gitmew/php/get_allprod.php",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
                         data: {
                             'start': start,
-                            'sort_by': sort_by,
-                            'order': order,
-                            'name': name,
-                            'barcode': barcode,
-                            'type': type
+                            "sort_by": sort_by,
+                            "order": order,
+                            'name': name,                       
+                            'tel': tel
                         },
                         cache: false,
                         crossDomain: true,
                         success: function (response) {
                             if (start == 0) {
                                 //find max_item
-                                var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
+                                var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
                                 $.post(path, {
                                     'start': start,
                                     "sort_by": sort_by,
                                     "order": order,
-                                    'name': name,
-                                    'addr': addr,
+                                    'name': name,                       
                                     'tel': tel
                                 }, function (data) {
                                     max_page_no = Math.ceil(data / 100);
@@ -463,88 +324,21 @@
                                 });
                             }
                             var obj = jQuery.parseJSON(response);
-                            $.each(obj, function (i, field) {
-                                var options_type = {
-                                    url: function (phrase) {
-                                        return "http://150.95.26.163:8080/gitmew/php/search_type.php";
-                                    },
-
-                                    getValue: function (element) {
-                                        return element.prod_type_name;
-                                    },
-
-                                    ajaxSettings: {
-                                        method: "POST",
-                                        data: {}
-                                    },
-
-                                    preparePostData: function (data) {
-                                        data.phrase = $("#type-" + (start + i)).val();
-                                        return data;
-                                    },
-
-                                    list: {
-                                        maxNumberOfElements: 3,
-
-                                        showAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                        hideAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                    },
-                                    
-                                };
-
-                                var options_unit = {
-                                    url: function (phrase) {
-                                        return "http://150.95.26.163:8080/gitmew/php/search_unit.php";
-                                    },
-
-                                    getValue: function (element) {
-                                        return element.unit_name;
-                                    },
-
-                                    ajaxSettings: {
-                                        method: "POST",
-                                        data: {}
-                                    },
-
-                                    preparePostData: function (data) {
-                                        data.phrase = $("#unit-" + (start + i)).val();
-                                        return data;
-                                    },
-
-                                    list: {
-                                        maxNumberOfElements: 3,
-
-                                        showAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                        hideAnimation: {
-                                            type: "slide",
-                                            time: 100
-                                        },
-                                    },
-                                    
-                                };
+                            $.each(obj, function (i, field) {                              
                                 text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
-                                    "<span id='span-" + (start + i) + "' hidden>" + field.cus_id + "</span>" +
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>" +
                                     "<div class='row'>" +
-                                    "<div class='col-3'>" +
+                                    "<div class='col-3' style='padding-right: 0;'>" +
                                     "<div class='input-group-prepend'>" +
                                     "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
-                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.barcode + "' disabled style='font-size: 90%;'>" +
+                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
                                     "</div>" +
                                     "</div>" +
                                     "<div class='col-6'>" +
-                                    "<input id='addr-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.prod_name + "' disabled>" +
+                                    "<input id='addr-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.address + "' disabled>" +
                                     "</div>" +
                                     "<div class='col-2' style='padding-left: 0; padding-right: 0;'>" +
-                                    "<input id='tel-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.prod_type_name + "' disabled style='font-size: 90%;'>" +
+                                    "<input id='tel-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.tel + "' disabled>" +
                                     "</div>" +
                                     "<div class='col-1'>" +
                                     "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
@@ -942,10 +736,10 @@
                             <p/>
                     </div>
                     <div class="col-4 text-center">
-                        <input id="search-name" type="number" class="form-control text-center no-spin">
+                        <input id="search-name" type="text" class="form-control text-center no-spin">
                     </div>
                     <div class="col-2 text-center">
-                        <input id="search-tel" type="text" class="form-control text-center">
+                        <input id="search-tel" type="number" class="form-control text-center">
                     </div>
                     <div class="col-3 text-center">
                         <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
@@ -960,7 +754,7 @@
             <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px;">
                 <div class="row" style="padding-right: 40px; padding-left: 40px;">
                     <div class="col-3 text-center">
-                        <a href="#" style="color: black;" onclick="click_sort('prod_name')">ชื่อลูกค้า
+                        <a href="#" style="color: black;" onclick="click_sort('customer_name')">ชื่อลูกค้า
                             <i id="i-prod_name" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
                         </a>
                     </div>
