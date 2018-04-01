@@ -181,8 +181,10 @@
         }
 
         var searched_name;
+        var searched_tel;
         function search() {
             searched_name = $("#search-name").val();
+            searched_tel = $("#search-tel").val();
 
             $('#btn-search').prop('disabled', true);
 
@@ -203,10 +205,9 @@
             //console.log("loadmore.. .. max_page : " + max_page + " arg : " + arg + " prev_page : " + prev_page);
             var start = (100 * (arg - 1));
             var end = arg * 100;
-
-            var barcode = searched_barcode;
+          
             var name = searched_name;
-            var type = searched_type;
+            var tel = searched_tel;
 
             // new page
             if (max_page < arg) {

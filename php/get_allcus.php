@@ -1,6 +1,7 @@
 <?php
 	$conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos");	
-	$name = $_POST['name'];	
+    $name = $_POST['name'];	
+    $tel = $_POST['tel'];	
 	$start = $_POST['start'];
 	$sort_by = $_POST['sort_by'];
 	$order = $_POST['order'];
