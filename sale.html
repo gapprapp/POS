@@ -126,7 +126,7 @@
                 <div class="row">
                   <div class="col-6 text-center text-muted">ชื่อลูกค้า :
                     <div class="btn-group col-4 text-center text-muted">
-                        <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่">
+                        <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
                     </div>
                   </div>
                   <div class="col-6 text-center text-muted">ผู้ทำรายการ :
@@ -167,13 +167,13 @@
                   <input id="barcode" type="text" class="form-control text-center" readonly>
                 </div>
                 <div class="col-3" style='padding-left: 5px; padding-right: 5px;'>
-                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="1">
+                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
                 </div>
                 <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="price" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
-                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" onchange="chng_amt()" data-index="2">
+                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" onchange="chng_amt()" data-index="3">
                 </div>
                 <div class="col-1">
                   <input id="unit" type="text" class="form-control text-center" readonly>
@@ -182,7 +182,7 @@
                   <input id="total" type="text" class="form-control text-center" readonly>
                 </div>
                 <div class="col-1" style='padding-right: 0px;'>
-                  <input id="prod-discount" type="number" class="form-control text-center no-spin">
+                  <input id="prod-discount" type="number" class="form-control text-center no-spin" data-index="4">
                 </div>
                 <div class="col-1"></div>
               </div> <br>
@@ -428,7 +428,7 @@
     var datetime;
     var sum = 0;
     var sum_dis = 0;
-    var cus_id;
+    var cus_id = 0;
     var img;
     var prod_id;
     $(document).ready(function(){      
@@ -907,9 +907,9 @@
           item ["prod_id"] =  jsonObj[i].prod_id;
           item ["discount"] =  jsonObj[i].discount;
           if($('#box'+(i+1)).is(':checked') == true){
-            item ["bonus"] =  true;
+            item ["bonus"] =  1;
           }else{
-            item ["bonus"] =  false;
+            item ["bonus"] =  0;
           }
           json.push(item);
           no++;
@@ -930,9 +930,11 @@
         var cus_name = $('#cus').val();
         var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
-        + final_price + "&comment=" + comment + "&name_cus=" + cus_name;  
-
-        var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
+        + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
+        
+        if(print == "print"){
+          var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
+        }       
         $.ajax({
             type: "POST",
             url:"http://150.95.26.163:8080/gitmew/php/save_order.php",
@@ -973,8 +975,8 @@
                     WinPrint.document.close();
                     WinPrint.focus();
                     WinPrint.print();
-                    WinPrint.close();
-                  }
+                    WinPrint.close();   
+                  }                          
                   $('#show_list_add').empty();
                   jsonObj = [];
                   arr = [];
