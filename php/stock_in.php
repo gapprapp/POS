@@ -93,10 +93,10 @@
         for($u = 0 ; $u < count($unit); $u++){
             $unit_amt = $unit[$u];
             $price = $unit_price[$u];
-            $item_id = $u+1;
+            //$item_id = $u+1;
             if($unit_amt != "-"){
-                $sql = "INSERT INTO detail_customer (prod_id,item_id,amt_threshold,prod_price) 
-                VALUE ('$prod_id','$item_id','$unit_amt','$price')"; 
+                $sql = "INSERT INTO detail_customer (prod_id,/*item_id,*/amt_threshold,prod_price) 
+                VALUE ('$prod_id',/*'$item_id',*/'$unit_amt','$price')"; 
                 $result = mysqli_query($conn, $sql);
             }
         }

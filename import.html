@@ -97,7 +97,54 @@
                 $('#barcode').val(barcode);
                 $('#price').val(price);
                 $('#fund').val(cost);     
-                $('#amount').val("1");                       
+                $('#amount').val("1");
+
+                $.ajax({
+                  type: "POST",
+                  url: "http://150.95.26.163:8080/gitmew/php/get_detail_cus.php",
+                  data: {'prod_id': prod_id},                                     
+                  success: function(data){                      
+                      if(data != "fail"){                
+                        var obj = jQuery.parseJSON(data);
+                        console.log(obj);                        
+                        $.each(obj, function(i, field){
+                          if(!field.prod_price){
+                            c_cus++;
+                            header = "<div id='head-seted-cus' class='row'>" +
+                              "<div class='col-3'></div>" +
+                              "<div class='col-3 text-center'>ชื่อลูกค้า</div>" +
+                              "<div class='col-2 text-center'>ราคา</div>" +
+                              "<div class='col-1'></div>" +
+                              "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                            $("#show-cus-container").append(header);                          
+
+                            var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
+                              "<div class='col-3'></div>" +
+                              "<div id='show-cus-" + c_cus + "' class='col-3 text-center'>"+ field.customer_id +"</div>" +
+                              "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center'>"+ field.special_prod_price +"</div>" +                              
+                              "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+                            $("#show-cus-container").append(text_html);
+                          }else{
+                            c_unit++;
+                            header = "<div id='head-seted-amt' class='row'>" +
+                            "<div class='col-3'></div>" +
+                            "<div class='col-3 text-center'>จำนวน</div>" +
+                            "<div class='col-2 text-center'>ราคา</div>" +
+                            "<div class='col-1'></div>" +
+                            "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                          $("#show-amt-container").append(header);
+
+                            var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
+                              "<div class='col-3'></div>" +
+                              "<div id='show-unit-" + c_unit + "' class='col-3 text-center'>" + field.amt_threshold + "</div>" +
+                              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center'>" + field.prod_price + "</div>" +                            
+                              "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+                            $("#show-amt-container").append(text_html);
+                          }
+                        });
+                      }
+                  }
+                });                       
               }
           },
         };
@@ -185,6 +232,46 @@
                 //cus_id = $("#input-cus").getSelectedItemData().customer_id;
               }
           },       
+        };
+
+        var options_cus = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+          },
+
+          getValue: function(element) {
+            //console.log(element);
+            return element.customer_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {
+            data.phrase = $("#input-cus").val();
+            return data;
+          },
+
+          list: {
+              maxNumberOfElements: 3,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+
+              onChooseEvent: function() {
+                //cus_id = $("#input-cus").getSelectedItemData().customer_id;
+              }
+          },       
+          theme: "blue-light",
         };
 
         $("#input-cus").easyAutocomplete(options_cus);
@@ -548,68 +635,67 @@
 
           //Splice Empty
           for(var m = 0; m < cus.length; m++){
-          if(cus[m] == "" || cus_price[m] == ""){
-            cus.splice(m,1);
-            cus_price.splice(m,1);
-            m--;
+            if(cus[m] == "" || cus_price[m] == ""){
+              cus.splice(m,1);
+              cus_price.splice(m,1);
+              m--;
+            }
           }
-          }
-
-              var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 15%; padding-right: 0px; margin-bottom: 5px'>"+
-                    "<div class='col-1 text-center'>"+
-                      "<input id='no-"+count+"' type='text' class='form-control text-center' value='"+(count+1)+"' readonly>"+
-                    "</div>"+
-                    "<div class='col-2 text-center pdlr'>"+
-                      "<input disabled id='barcode-"+count+"' type='text' class='form-control text-center added'>"+
-                    "</div>"+
-                    "<div class='col-4 text-center'>"+
-                      "<input id='name-"+count+"' type='text' class='form-control text-center added' rel='popover' data-img='"+img+"'  placeholder='พิมพ์ชื่อรายการสินค้าที่นี่' readonly>"+
-                    "</div>"+
-                    "<div class='col-1 text-center pdlr'>"+
-                      "<input disabled id='amount-"+count+"' type='number' class='form-control text-center added no-spin'>"+
-                    "</div>"+
-                    "<div class='col-1 text-center pdlr'>"+
-                      "<input disabled id='fund-"+count+"' type='number' class='form-control text-center added no-spin'>"+
-                    "</div>"+
-                    "<div class='col-1 text-center pdlr'>"+
-                      "<input disabled id='price-"+count+"' type='number' class='form-control text-center added no-spin'>"+
-                    "</div>"+
-                    "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
-                    "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
-                      "<i class='fa fa-angle-down'></i>" +
-                    "</button>" +
-                      "<button id='btn-edit-" + count +"' class='btn btn-sm btn-primary' style='margin-right: 4px;' onclick='added_edit(" + count +")'>"+
-                        "<i class='fa fa-edit'></i>"+
-                      "</button>"+
-                      "<button id='btn-save-" + count +"' class='btn btn-sm btn-success' style='margin-right: 4px;' onclick='save_edit("+count+");' hidden>" +
-                        "<i class='fa fa-check-square'></i>" +
-                      "</button>" +
-                      "<button id='btn-delete-" + count +"' class='btn btn-sm btn-danger' style='margin-right: 4px;' onclick='added_delete(" + count +")' hidden>" +
-                        "<i class='fa fa-minus'></i>" +
-                      "</button>" +
-                    "</div>"+
-                    "<div id='li-" + count + "-collapse' class='container text-center collapse' style='margin-top: 15px; margin-bottom: 15px;'>" +
-                      "<div class='card card-body' style='border: solid 1px black; background: white; padding: 20px; width: 60%; margin-left: 11%;'>" +
-                        "<div id='ctn-collapse-" + count + "' class='container'>" +
-                          "<div class='row' style='margin-bottom: 5px;'>" +
-                            "<div class='col-2'></div>" +
-                            "<div class='col-4'>จำนวน/ราคา</div>" +
-                            "<div class='col-4'>ลูกค้า/ราคา</div>" +
-                            "<div class='col-2'></div>" +
-                          "</div>" +
-                        "</div>" +
+          var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 15%; padding-right: 0px; margin-bottom: 5px'>"+
+                "<div class='col-1 text-center'>"+
+                  "<input id='no-"+count+"' type='text' class='form-control text-center' value='"+(count+1)+"' readonly>"+
+                "</div>"+
+                "<div class='col-2 text-center pdlr'>"+
+                  "<input disabled id='barcode-"+count+"' type='text' class='form-control text-center added'>"+
+                "</div>"+
+                "<div class='col-4 text-center'>"+
+                  "<input id='name-"+count+"' type='text' class='form-control text-center added' rel='popover' data-img='"+img+"'  placeholder='พิมพ์ชื่อรายการสินค้าที่นี่' readonly>"+
+                "</div>"+
+                "<div class='col-1 text-center pdlr'>"+
+                  "<input disabled id='amount-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                "</div>"+
+                "<div class='col-1 text-center pdlr'>"+
+                  "<input disabled id='fund-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                "</div>"+
+                "<div class='col-1 text-center pdlr'>"+
+                  "<input disabled id='price-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                "</div>"+
+                "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
+                "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
+                  "<i class='fa fa-angle-down'></i>" +
+                "</button>" +
+                  "<button id='btn-edit-" + count +"' class='btn btn-sm btn-primary' style='margin-right: 4px;' onclick='added_edit(" + count +")'>"+
+                    "<i class='fa fa-edit'></i>"+
+                  "</button>"+
+                  "<button id='btn-save-" + count +"' class='btn btn-sm btn-success' style='margin-right: 4px;' onclick='save_edit("+count+");' hidden>" +
+                    "<i class='fa fa-check-square'></i>" +
+                  "</button>" +
+                  "<button id='btn-delete-" + count +"' class='btn btn-sm btn-danger' style='margin-right: 4px;' onclick='added_delete(" + count +")' hidden>" +
+                    "<i class='fa fa-minus'></i>" +
+                  "</button>" +
+                "</div>"+
+                "<div id='li-" + count + "-collapse' class='container text-center collapse' style='margin-top: 15px; margin-bottom: 15px;'>" +
+                  "<div class='card card-body' style='border: solid 1px black; background: white; padding: 20px; width: 60%; margin-left: 11%;'>" +
+                    "<div id='ctn-collapse-" + count + "' class='container'>" +
+                      "<div class='row' style='margin-bottom: 5px;'>" +
+                        "<div class='col-2'></div>" +
+                        "<div class='col-4'>จำนวน/ราคา</div>" +
+                        "<div class='col-4'>ลูกค้า/ราคา</div>" +
+                        "<div class='col-2'></div>" +
                       "</div>" +
-                    "</div>"+
-                    "<script>" +
-                      "$('#name-" + count + "[rel=popover]').popover({" +
-                      "html: true," +
-                      "trigger: 'hover'," +
-                      "placement: 'left'," +
-                      "content: function(){" +
-                      "return '<img src='+$(this).data('img')+'>';}" +
-                      "});" +
-                    "</" + "script>" +
-                  "</div>";
+                    "</div>" +
+                  "</div>" +
+                "</div>"+
+                "<script>" +
+                  "$('#name-" + count + "[rel=popover]').popover({" +
+                  "html: true," +
+                  "trigger: 'hover'," +
+                  "placement: 'left'," +
+                  "content: function(){" +
+                  "return '<img src='+$(this).data('img')+'>';}" +
+                  "});" +
+                "</" + "script>" +
+              "</div>";
         $("#show_list_add").append(text_append);
 
         //Loop Lenght
