@@ -37,13 +37,13 @@
             <div class="container" style="margin-top: 15%;">
                 <div class="row">
                     <div class="col-12 text-center" >
-                        <input id="name" type="text" class="form-control-lg text-center no-border" placeholder="ชื่อผู้ใช้" style="width: 40%; background: white;">
+                        <input id="name" type="text" class="form-control-lg text-center no-border" placeholder="ชื่อผู้ใช้" style="width: 40%; background: white;" data-index="1">
                     </div>
                 </div><br>
 
                 <div class="row">
                     <div class="col-12 text-center" >
-                        <input id="password" type="password" class="form-control-lg text-center no-border" placeholder="รหัสผ่าน" style="width: 40%; background: white;">
+                        <input id="password" type="password" class="form-control-lg text-center no-border" placeholder="รหัสผ่าน" style="width: 40%; background: white;"  data-index="2">
                     </div>
                 </div><br><br>
 
@@ -63,6 +63,19 @@
     </div>
 
     <script>
+         $(document).keydown(function(objEvent) {         
+          if (objEvent.keyCode == 13) {  //enter pressed
+              objEvent.preventDefault();           
+              var $this = $(objEvent.target);
+              var i_enter = parseFloat($this.attr('data-index'));                      
+              if(i_enter == 2){
+                login();
+              }else{
+                $('[data-index="' + (i_enter+1).toString() + '"]').focus();
+              }              
+          }         
+        })
+
         function login(){
             var name = $('#name').val();
             var pass = $('#password').val();
