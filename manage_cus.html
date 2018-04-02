@@ -135,10 +135,18 @@
                                 },
                                 success: function (data) {
                                     if (data == "success") {
-                                        $.alert('รายการสินได้ถูกลบแล้ว');
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'รายการสินได้ถูกลบแล้ว',
+                                        });
                                         $("#item-" + arg).remove();
                                     } else {
-                                        $.alert('โปรดลองอีกครั้ง');
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'โปรดลองอีกครั้ง',
+                                        });
                                     }
                                 }
                             });
@@ -441,7 +449,11 @@
             var stop = 0;
             for (var i = start; i <= max; i++) {
                 if ($("#i-edit-" + i).hasClass('fa fa-check-square')) {
-                    alert("กรุณาบันทึกสินค้าก่อนเปลี่ยนหน้า");
+                    $.alert({
+                        icon: 'fa fa-warning',
+                        title: 'เตือน',
+                        content: 'กรุณาบันทึกสินค้าก่อนเปลี่ยนหน้า',
+                    });
                     $("#pg-" + arg + " a").attr('href', "#item-" + i);
                     var go_to = $(this).attr('href').offset();
                     $('ul').stop().animate({
