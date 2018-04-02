@@ -149,7 +149,11 @@
       // Check another edit is open
       for (var i = 0; i <= j; i++) {
         if ($("#i-edit-" + i).hasClass('fa fa-check-square')) {
-          alert("กรุณาบันทึกการเปลี่ยนแปลงสินค้า");
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'กรุณาบันทึก',
+            content: 'กรุณาบันทึกการเปลี่ยนแปลงสินค้า',
+          });
           return 0;
         }
       }

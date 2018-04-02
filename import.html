@@ -310,7 +310,11 @@
       var start_unit = 0;     
       function add_unit() {
         if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#input-unit-price").val() == ""){
-          alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'เตือน',
+            content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+          });
           return 0;
         }        
         c_unit++;       
@@ -324,7 +328,11 @@
             // Exist Check
             for(var i = 1; i <= c_unit; i++){
               if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
-                alert("ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว");
+                $.alert({
+                  icon: 'fa fa-warning',
+                  title: 'เตือน',
+                  content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
+                });
                 exist = true;
               }
             }
@@ -357,9 +365,17 @@
           for(var i = 1; i <= c_unit; i++){
             if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
               if(number == ""){
-                alert("กรุณากรอกจำนวน");
+                $.alert({
+                  icon: 'fa fa-warning',
+                  title: 'เตือน',
+                  content: "กุรณากรอกจำนวน",
+                });
               }else{
-                alert("ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว");
+                $.alert({
+                  icon: 'fa fa-warning',
+                  title: 'เตือน',
+                  content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
+                });
               }
               exist = true;
             }
@@ -438,7 +454,11 @@
 
         for(var i = 1; i <= c_unit; i++){
           if(unit == $("#show-unit-"+i).text()){
-            alert("ได้ตั้งค่าราคาของจำนวน " + unit + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "ได้ตั้งค่าราคาของจำนวน " + unit + " ไว้แล้ว",
+            });
             return 0;
           }
         }
@@ -457,14 +477,22 @@
       var start_cus = 0;  
       function add_cus() {
           if($("#input-cus").val() == "" || $("#input-cus-price").val() == ""){
-            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "กรุณากรอกข้อมูลให้ครบถ้วน",
+            });
             return 0;
           }
 
         var exist = false;
         for (var i = 1; i <= c_cus; i++) {
           if ($("#input-cus").val() == $("#show-cus-" + i).text() || $("#input-cus").val() == $("#set-cus-" + i).val()) {
-            alert("ได้ตั้งค่าราคาของลูกค้า " + $("#input-cus").val() + " ไว้แล้ว");
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "ได้ตั้งค่าราคาของลูกค้า " + $("#input-cus").val() + " ไว้แล้ว",
+            });
             exist = true;
           }
         }
@@ -551,7 +579,11 @@
 
         for(var i = 1; i <= c_cus; i++){
           if(cus == $("#show-cus-"+i).text()){
-            alert("ได้ตั้งค่าราคาของลูกค้า " + cus + " ไว้แล้ว หากต้องการแก้ไข กดดับเบิ้ลคลิก");
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "ได้ตั้งค่าราคาของลูกค้า " + cus + " ไว้แล้ว",
+            });
             return 0;
           }
         }
@@ -579,7 +611,11 @@
         {
           return 0;
         }else if($("#input-unit").val() != "" || $("#input-unit-price").val() != "" || $("#input-cus").val() != "" || $("#input-cus-price").val() != "" || checked == true){
-          alert("กรุณากดเพิ่มเพื่อกำหนดราคาก่อนเพิ่มสินค้าถัดไป");
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'เตือน',
+            content: "กรุณากดเพิ่มเพื่อกำหนดราคาก่อนเพิ่มสินค้าถัดไป",
+          });
         }else{
           saveAndShow();
         }
