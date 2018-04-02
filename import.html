@@ -894,7 +894,7 @@
               success: function(data){
                   alert(data);
                   if(data == "success"){                
-                    $('#show_list_add').empty();
+                    /*$('#show_list_add').empty();
                     obj = [];                
                     count = 0
                     c_cus = 0;
@@ -904,7 +904,8 @@
                     sup_id = 0;                                                       
                 
                     $('#sup').val("");
-                    detail();
+                    detail();*/
+                    location.reload();
                   }
               }
           });       
@@ -959,7 +960,6 @@
           <div class="container-fullwidth justify-content-center">
             <div class="row">
               <div id="date" class="col-6 text-center text-muted"></div>
-<<<<<<< HEAD
               <div class="col-6 text-center text-muted">ผู้ทำรายการ :
                 <div id="user" class="btn-group col-4 text-center text-muted">
                 </div>
@@ -977,24 +977,6 @@
   
                     </select>
                   </div>
-=======
-              <div class="col-6 text-center text-muted dropdown">นำของเข้า :
-                <div class="btn-group">
-                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              
-                  </select>
-                </div>
-              </div>
-            </div> <br>
-            <div class="row">
-              <div class="col-6 text-center text-muted">ชื่อผู้ผลิต :
-                <div class="btn-group col-4 text-center text-muted">
-                    <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิตที่นี่">
-                </div>
-              </div>
-              <div class="col-6 text-center text-muted">ผู้ทำรายการ :
-                <div id="user" class="btn-group col-4 text-center text-muted">
->>>>>>> 7bbabc244e1e6d66a6b8c0a07b1ef9eb165704ce
                 </div>
               </div>
             <hr style="width: 80%;">
