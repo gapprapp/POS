@@ -51,11 +51,11 @@
       var sup_id = 0;
       var prod_id,img;
       $(document).ready(function(){   
-        if(!localStorage.user_id){
+        /*if(!localStorage.user_id){
           alert("กรุณาเข้าสู่ระบบก่อน");
           window.location = "login.html";
         }
-        detail();
+        detail();*/
 
         setTimeout(function() {$("#sup").focus();}, 100);
 
@@ -1003,30 +1003,35 @@
 
           
           <!-- Header -->
-          <div class="container-fullwidth justify-content-center">
-            <div class="row">
-              <div id="date" class="col-6 text-center text-muted"></div>
-              <div class="col-6 text-center text-muted">ผู้ทำรายการ :
-                <div id="user" class="btn-group col-4 text-center text-muted">
-                </div>
-              </div>             
-              </div> <br>
-              <div class="row">
-                <div class="col-6 text-center text-muted">จากผู้ผลิต :
-                  <div class="btn-group col-4 text-center text-muted">
-                      <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิตที่นี่" data-index="1">
-                  </div>
-                </div>
-                <div class="col-6 text-center text-muted dropdown">นำของเข้า :
-                  <div class="btn-group">
-                    <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  
-                    </select>
-                  </div>
-                </div>
+          <div class="row">
+            <div class="col-1"></div>
+            <div id="date" class="col-5 text-center text-muted"></div>
+            <div class="col-2"></div>
+            <div class="col-3 text-left text-muted">ผู้ทำรายการ :
+              <div id="user" class="btn-group col-4 text-center text-muted">
               </div>
-            <hr style="width: 80%;">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-1"></div>
+            <div class="col-5 text-center text-muted">จากผู้ผลิต :
+              <div class="btn-group col-4 text-center text-muted">
+                <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิตที่นี่" data-index="1">
+              </div>
+            </div>
+            <div class="col-2"></div>
+            <div class="col-3 text-left text-muted dropdown">นำของเข้า :
+              <div class="btn-group">
+                <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          
+                </select>
+              </div>
+            </div>
+          </div>
+          <hr style="width: 80%;">
 
+          <div class="container-fullwidth justify-content-center">
             <div class="row" style="padding-left: 15%; padding-right: 0px; margin-bottom: 10px;">
               <div class="col-1 text-center">ลำดับ</div>
               <div class="col-2 text-center" pdlr>บาร์โค้ด</div>

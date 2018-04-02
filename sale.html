@@ -105,35 +105,40 @@
                 <h3 id="nav-title">ขายสินค้า</h3>
               </div>
             </nav>
+            
+            <!-- 4 4 4 4 4 4 4 4 -->
+            <div class="row">
+              <div class="col-1"></div>
+              <div id="date" class="col-5 text-center text-muted"></div>
+              <div class="col-2"></div>
+              <div class="col-3 text-left text-muted">ผู้ทำรายการ :
+                <div id="user" class="btn-group col-4 text-center text-muted">
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-1"></div>
+              <div class="col-5 text-center text-muted">ชื่อลูกค้า :
+                <div class="btn-group text-center text-muted">
+                  <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
+                </div>
+              </div>
+              <div class="col-2"></div>
+              <div class="col-3 text-left text-muted dropdown">ของออกจาก :
+                <div class="btn-group">
+                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              
+                  </select>
+                </div>
+              </div>
+            </div>
+            </div>
+            <hr style="width: 90%; margin-top: 0;">
 
             <div class="container-fullwidth justify-content-center">
-              <!-- 4 4 4 4 4 4 4 4 -->
-              <div class="row">
-                <div id="date" class="col-6 text-center text-muted"></div>
-                <div class="col-6 text-center text-muted dropdown">ของออกจาก :
-                  <div class="btn-group">
-                    <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
-                    </select>
-                  </div>
-                </div>
-                </div> <br>
-                <div class="row">
-                  <div class="col-6 text-center text-muted">ชื่อลูกค้า :
-                    <div class="btn-group col-4 text-center text-muted">
-                        <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
-                    </div>
-                  </div>
-                  <div class="col-6 text-center text-muted">ผู้ทำรายการ :
-                    <div id="user" class="btn-group col-4 text-center text-muted">
-                    </div>
-                  </div>
-                  </div>
-                </div>
-              <hr style="width: 90%;">
-
               <!-- Title -->
-              <div class="row" style="margin-left: 50px;">
+              <div class="row" style="margin-left: 50px; margin-bottom: 10px;">
                 <div class="col-1 text-center">แถม</div>
                 <div class="col-2 text-center">บาร์โค้ด</div>
                 <div class="col-3 text-center">รายการสินค้า</div>
@@ -143,7 +148,7 @@
                 <div class="col-1 text-center">รวม</div>
                 <div class="col-1 text-center">ส่วนลด</div>
                 <div class="col-1"></div>
-              </div> <br>
+              </div>
               <!-- Show -->
               <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
                 <!-- Append here!! -->
@@ -444,10 +449,10 @@
     var img;
     var prod_id;
     $(document).ready(function(){  
-      if(!localStorage.user_id){
+      /*if(!localStorage.user_id){
         alert("กรุณาเข้าสู่ระบบก่อน");
         window.location = "login.html";
-      }    
+      } */   
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
