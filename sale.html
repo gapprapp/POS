@@ -71,6 +71,10 @@
             }
           });
         }
+
+        function logout(){
+          localStorage.user_id = "";
+        }
     </script>
 </head>
 
@@ -79,22 +83,12 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
-                <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
-                <li><a href="#">๐ รายการขายวันนี้</a></li>
-                <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
-                <li><a href="#">๐ เงินสด</a></li>
-                <li><a href="#">๐ ลูกหนี้</a></li>
-                <li><a href="#">๐ ลูกหนี้ค้างจ่าย</a></li>
-                <li><a href="#">๐ เพิ่มสินค้า</a></li>
-                <li><a href="#">๐ สินค้าเข้า</a></li>
-                <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
-                <li><a href="#">๐ ขายส่ง</a></li>
-                <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
-                <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
-                <li><a href="#">๐ รายชื่อลูกค้า</a></li>
-                <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
-                <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
-                <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+              <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>              
+              <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
 
@@ -448,7 +442,11 @@
     var cus_id = 0;
     var img;
     var prod_id;
-    $(document).ready(function(){      
+    $(document).ready(function(){  
+      if(!localStorage.user_id){
+        alert("กรุณาเข้าสู่ระบบก่อน");
+        window.location = "login.html";
+      }    
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
@@ -977,6 +975,10 @@
       }else{
         alert("กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ");      
       }
+    }
+
+    function logout(){
+      localStorage.user_id = "";
     }
     </script>
 </body>

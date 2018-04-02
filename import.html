@@ -51,6 +51,10 @@
       var sup_id = 0;
       var prod_id,img;
       $(document).ready(function(){   
+        if(!localStorage.user_id){
+          alert("กรุณาเข้าสู่ระบบก่อน");
+          window.location = "login.html";
+        }
         detail();
 
         setTimeout(function() {$("#sup").focus();}, 100);
@@ -833,6 +837,7 @@
         // Save input val to obj[arg]
         //obj[arg].barcode = $("#barcode-"+arg).val();
         //obj[arg].name = $("#name-"+arg).val();
+        console.log(obj[arg].amount);
         obj[arg].amount = $("#amount-"+arg).val();
         var total = $("#amount-"+arg).val()*obj[arg].retail;
         obj[arg].total = total;
@@ -914,6 +919,10 @@
           alert("กรุณาเลือกผู้ผลิตก่อนบันทึก");
         }
       }
+
+      function logout(){
+        localStorage.user_id = "";
+      }
     </script>
 </head>
 
@@ -922,22 +931,12 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
-                <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/sale_list.html">๐ รายการขายวันนี้</a></li>
-                <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
-                <li><a href="#">๐ เงินสด</a></li>
-                <li><a href="#">๐ ลูกหนี้</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/set_price.html">๐ กำหนดราคาสินค้า</a></li>
-                <li><a href="#">๐ เพิ่มสินค้า</a></li>
-                <li><a href="#">๐ สินค้าเข้า</a></li>
-                <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ขายส่ง</a></li>
-                <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
-                <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
-                <li><a href="#">๐ รายชื่อลูกค้า</a></li>
-                <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
-                <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
-                <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>              
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div> <!-- End sidebar -->
 
