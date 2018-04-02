@@ -48,11 +48,16 @@
     </style>
 
     <script>
-      var sup_id,prod_id,img;
+      var sup_id = 0;
+      var prod_id,img;
       $(document).ready(function(){   
+        if(!localStorage.user_id){
+          alert("กรุณาเข้าสู่ระบบก่อน");
+          window.location = "login.html";
+        }
         detail();
 
-        setTimeout(function() {$("#name").focus();}, 100);
+        setTimeout(function() {$("#sup").focus();}, 100);
 
         var options = {
 
@@ -110,13 +115,18 @@
                         $.each(obj, function(i, field){
                           if(!field.prod_price){
                             c_cus++;
-                            header = "<div id='head-seted-cus' class='row'>" +
-                              "<div class='col-3'></div>" +
-                              "<div class='col-3 text-center'>ชื่อลูกค้า</div>" +
-                              "<div class='col-2 text-center'>ราคา</div>" +
-                              "<div class='col-1'></div>" +
-                              "<div class='col-3'></div> <hr style='width: 65%'></div> ";
-                            $("#show-cus-container").append(header);                          
+                            start_cus = c_cus;
+                            start_cus++;
+                            if(c_cus == 1){
+                              header = "<div id='head-seted-cus' class='row'>" +
+                                "<div class='col-3'></div>" +
+                                "<div class='col-3 text-center'>ชื่อลูกค้า</div>" +
+                                "<div class='col-2 text-center'>ราคา</div>" +
+                                "<div class='col-1'></div>" +
+                                "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                              $("#show-cus-container").append(header);  
+                            }
+                                                    
 
                             var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
                               "<div class='col-3'></div>" +
@@ -126,14 +136,18 @@
                             $("#show-cus-container").append(text_html);
                           }else{
                             c_unit++;
-                            header = "<div id='head-seted-amt' class='row'>" +
-                            "<div class='col-3'></div>" +
-                            "<div class='col-3 text-center'>จำนวน</div>" +
-                            "<div class='col-2 text-center'>ราคา</div>" +
-                            "<div class='col-1'></div>" +
-                            "<div class='col-3'></div> <hr style='width: 65%'></div> ";
-                          $("#show-amt-container").append(header);
-
+                            start_unit = c_unit;
+                            start_unit++;
+                            if(c_unit == 1){
+                               header = "<div id='head-seted-amt' class='row'>" +
+                                "<div class='col-3'></div>" +
+                                "<div class='col-3 text-center'>จำนวน</div>" +
+                                "<div class='col-2 text-center'>ราคา</div>" +
+                                "<div class='col-1'></div>" +
+                                "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                              $("#show-amt-container").append(header);
+                            }
+                           
                             var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
                               "<div class='col-3'></div>" +
                               "<div id='show-unit-" + c_unit + "' class='col-3 text-center'>" + field.amt_threshold + "</div>" +
@@ -193,46 +207,7 @@
 
         };
 
-        $("#sup").easyAutocomplete(options_sup);   
-
-         var options_cus = {
-
-          url: function(phrase) {
-            return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
-          },
-
-          getValue: function(element) {
-            //console.log(element);
-            return element.customer_name;
-          },
-
-          ajaxSettings: {
-            method: "POST",
-            data: {}
-          },
-
-          preparePostData: function(data) {
-            data.phrase = $("#input-cus").val();
-            return data;
-          },
-
-          list: {
-              maxNumberOfElements: 3,
-
-              showAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-              hideAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-
-              onChooseEvent: function() {
-                //cus_id = $("#input-cus").getSelectedItemData().customer_id;
-              }
-          },       
-        };
+        $("#sup").easyAutocomplete(options_sup);      
 
         var options_cus = {
 
@@ -270,8 +245,8 @@
               onChooseEvent: function() {
                 //cus_id = $("#input-cus").getSelectedItemData().customer_id;
               }
-          },       
-          theme: "blue-light",
+          },      
+          
         };
 
         $("#input-cus").easyAutocomplete(options_cus);
@@ -280,10 +255,13 @@
 
       var datetime;
       function detail(){
+        $('#branch').empty();     
         //Date
         var d = new Date($.now());
         $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
         datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+        $('#user').text(localStorage.name);
 
         $.ajax({
             url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
@@ -292,7 +270,7 @@
           {
             var obj = jQuery.parseJSON(data);
             $.each(obj, function(i, field){
-              $('#branch').append("<option class='dropdown-item text-center' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
+              $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
             });
           }
         });
@@ -319,6 +297,7 @@
       });
 
       var c_unit = 0;
+      var start_unit = 0;     
       function add_unit() {
         if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#input-unit-price").val() == ""){
           $.alert({
@@ -327,9 +306,8 @@
             content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
           });
           return 0;
-        }
-
-        c_unit++;
+        }        
+        c_unit++;       
         // Radio is checked
         var exist = false;
         $('input[type="radio"]').each(function() {
@@ -450,7 +428,7 @@
                 var count = $("#show-amt-container").children().length;
                 if (count == 2) {
                   $("#head-seted-amt").remove();
-                  c_unit = 0;
+                  c_unit--;
                 }
                 $("#unit-del-" + arg).closest('.row').remove();
               }
@@ -486,6 +464,7 @@
       }
 
       var c_cus = 0;
+      var start_cus = 0;  
       function add_cus() {
           if($("#input-cus").val() == "" || $("#input-cus-price").val() == ""){
             $.alert({
@@ -574,7 +553,7 @@
                 var count = $("#show-cus-container").children().length;
                 if (count == 2) {
                   $("#head-seted-cus").remove();
-                  c_cus = 0;
+                  c_cus--;
                 }
                 $("#cus-del-" + arg).closest('.row').remove();
               }
@@ -640,34 +619,30 @@
           var unit = [];
           var unit_price = [];
 
-          for(var i = 1; i <= c_unit; i++){
+          for(var i = start_unit; i <= c_unit; i++){
           unit.push($("#show-unit-"+i).text());
-          unit_price.push($("#show-unit-price-"+i).text());
-
-          $("#show-seted-amt-"+i).remove();
-          }
-          $("#head-seted-amt").remove();
+          unit_price.push($("#show-unit-price-"+i).text());         
+          }         
+          $("#show-amt-container").empty();
 
           //Splice Empty
           for(var j = 0; j < unit.length; j++){
-          if(unit[j] == "" || unit_price[j] == ""){
-            unit.splice(j,1);
-            unit_price.splice(j,1);
-            j--;
-          }
+            if(unit[j] == "" || unit_price[j] == ""){
+              unit.splice(j,1);
+              unit_price.splice(j,1);
+              j--;
+            }
           }
 
           /*********** Cus ************/         
           var cus = [];
           var cus_price = [];
 
-          for(var l = 1; l <= c_cus; l++){
+          for(var l = start_cus; l <= c_cus; l++){
           cus.push($("#show-cus-"+l).text());
-          cus_price.push($("#show-cus-price-"+l).text());
-
-          $("#show-seted-cus-"+l).remove();
+          cus_price.push($("#show-cus-price-"+l).text());         
           }
-          $("#head-seted-cus").remove();
+          $("#show-cus-container").empty();
 
           //Splice Empty
           for(var m = 0; m < cus.length; m++){
@@ -813,7 +788,8 @@
         // Obj will push at count's index
         // edit and delete will deal with this obj
         obj.push({unit: unit,unit_price: unit_price,cus: cus,cus_price: cus_price,amount: amount,retail: retail,prod_id: prod_id,total: total_cost});
-        //alert(JSON.stringify(obj)); // To json       
+        //alert(JSON.stringify(obj)); // To json 
+        console.log(obj);      
 
         count++;
         $("#no").val(count + 1);
@@ -897,6 +873,7 @@
         // Save input val to obj[arg]
         //obj[arg].barcode = $("#barcode-"+arg).val();
         //obj[arg].name = $("#name-"+arg).val();
+        console.log(obj[arg].amount);
         obj[arg].amount = $("#amount-"+arg).val();
         var total = $("#amount-"+arg).val()*obj[arg].retail;
         obj[arg].total = total;
@@ -946,8 +923,10 @@
         if(obj.length > 0 && $('#sup').val() != ""){
           //console.log(obj);
           var data_str = JSON.stringify(obj);         
-          var b_id = $('#branch option:selected').val();   
-          var dataString =  "JSON=" + data_str + "&b_id=" + b_id + "&date=" + datetime;
+          var b_id = $('#branch option:selected').val(); 
+          var sup_name = $('#sup').val();  
+          var dataString =  "JSON=" + data_str + "&b_id=" + b_id + "&date=" + datetime + "&sup_id=" + sup_id
+          + "&sup_name=" + sup_name + "&user_id=" + localStorage.user_id;
           //console.log(dataString);
           $.ajax({
               type: "POST",
@@ -956,14 +935,18 @@
               success: function(data){
                   alert(data);
                   if(data == "success"){                
-                    $('#show_list_add').empty();
+                    /*$('#show_list_add').empty();
                     obj = [];                
                     count = 0
                     c_cus = 0;
-                    c_unit = 0;                                                       
+                    c_unit = 0;
+                    start_cus = 0;
+                    start_unit = 0;
+                    sup_id = 0;                                                       
                 
                     $('#sup').val("");
-                    detail();
+                    detail();*/
+                    location.reload();
                   }
               }
           });       
@@ -971,6 +954,11 @@
         }else{
           alert("กรุณาเลือกผู้ผลิตก่อนบันทึก");
         }
+      }
+
+      function logout(){
+        localStorage.user_id = "";
+        window.location = "login.html";
       }
     </script>
 </head>
@@ -980,22 +968,12 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
-                <li class="sidebar-brand"><a id="sidebar-title" href="#">PPS Auto Group</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/sale_list.html">๐ รายการขายวันนี้</a></li>
-                <li><a href="#">๐ รายรับ/รายจ่าย</a></li>
-                <li><a href="#">๐ เงินสด</a></li>
-                <li><a href="#">๐ ลูกหนี้</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/set_price.html">๐ กำหนดราคาสินค้า</a></li>
-                <li><a href="#">๐ เพิ่มสินค้า</a></li>
-                <li><a href="#">๐ สินค้าเข้า</a></li>
-                <li><a href="#">๐ สินค้าเข้าย้อนหลัง</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ขายส่ง</a></li>
-                <li><a href="#">๐ ขายส่งย้อนหลัง</a></li>
-                <li><a href="#">๐ เพิ่มชื่อลูกค้า</a></li>
-                <li><a href="#">๐ รายชื่อลูกค้า</a></li>
-                <li><a href="#">๐ เพิ่มชื่อผู้ขาย</a></li>
-                <li><a href="#">๐ รายชื่อผู้ขาย</a></li> <br> <br> <br>
-                <li><a href="#">๐ ออกจากระบบ ๐</a></li>
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>              
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div> <!-- End sidebar -->
 
@@ -1008,7 +986,7 @@
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
-              <h3 id="nav-title">เพิ่มสินค้า</h3>
+              <h3 id="nav-title">สินค้าเข้า</h3>
             </div>
           </nav>
           <!-- End Navbar -->
@@ -1016,28 +994,27 @@
           
           <!-- Header -->
           <div class="container-fullwidth justify-content-center">
-
             <div class="row">
               <div id="date" class="col-6 text-center text-muted"></div>
-              <div class="col-6 text-center text-muted dropdown">นำของเข้า :
-                <div class="btn-group">
-                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              
-                  </select>
-                </div>
-              </div>
-            </div> <br>
-            <div class="row">
-              <div class="col-6 text-center text-muted">ชื่อผู้ผลิต :
-                <div class="btn-group col-4 text-center text-muted">
-                    <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิตที่นี่">
-                </div>
-              </div>
               <div class="col-6 text-center text-muted">ผู้ทำรายการ :
                 <div id="user" class="btn-group col-4 text-center text-muted">
                 </div>
+              </div>             
+              </div> <br>
+              <div class="row">
+                <div class="col-6 text-center text-muted">จากผู้ผลิต :
+                  <div class="btn-group col-4 text-center text-muted">
+                      <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิตที่นี่" data-index="1">
+                  </div>
+                </div>
+                <div class="col-6 text-center text-muted dropdown">นำของเข้า :
+                  <div class="btn-group">
+                    <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
             <hr style="width: 80%;">
 
             <div class="row" style="padding-left: 15%; padding-right: 0px; margin-bottom: 10px;">
@@ -1063,10 +1040,10 @@
                 <input id="barcode" type="text" class="form-control text-center" readonly>
               </div>
               <div class="col-4 text-center">
-                <input id="name" type="text" class="form-control text-center no-spin" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่">
+                <input id="name" type="text" class="form-control text-center no-spin" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
               </div>
               <div class="col-1 text-center pdlr">
-                <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin">
+                <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" data-index="3">
               </div>
               <div class="col-1 text-center pdlr">
                 <input id="fund" type="number" class="form-control text-center no-spin" readonly>
