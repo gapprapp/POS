@@ -52,7 +52,11 @@
       var prod_id,img;
       $(document).ready(function(){   
         if(!localStorage.user_id){
-          alert("กรุณาเข้าสู่ระบบก่อน");
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'เตือน',
+            content: "กรุณาเข้าสู่ระบบก่อน"
+          });
           window.location = "login.html";
         }
         detail();
@@ -970,11 +974,12 @@
           });       
           
         }else{
-          alert("กรุณาเลือกผู้ผลิตก่อนบันทึก");
+          //alert("กรุณาเลือกผู้ผลิตก่อนบันทึก");
           $.alert({
             icon: 'fa fa-warning',
             title: 'เตือน',
             content: "กรุณาเลือกผู้ผลิตก่อนบันทึก!",
+          });      
         }
       }
 
