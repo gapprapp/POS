@@ -75,7 +75,7 @@
             data: {}
           },
 
-          preparePostData: function(data) {
+          preparePostData: function(data) {           
             data.phrase = $("#name").val();
             return data;
           },
@@ -93,6 +93,16 @@
               },
 
               onChooseEvent: function() {
+                for(var b = 0; b < count; b++){
+                  if($("#name").val() == $("#name-"+b).val()){
+                    alert("มีการเพิ่มสินค้า " + $("#name").val() + "กรุณาแก้ไขที่จำนวนของสินค้าที่ได้เพิ่มแล้ว");
+                    $("#name").val("");
+                    $('#barcode').val("");
+                    $('#price').val("");
+                    $('#fund').val("");                 
+                    return 0;                
+                  }
+                }
                 var barcode = $("#name").getSelectedItemData().barcode;
                 var price = $("#name").getSelectedItemData().prod_price;
                 var cost = $("#name").getSelectedItemData().prod_cost;
@@ -578,7 +588,7 @@
       var obj = [];
       //obj.push({unit: ["0"],unit_price: ["0"],cus: ["0"],cus_price: ["0"],barcode: ["0"],name: ["0"], amount: ["0"],retail: ["0"],wholesale: ["0"]});
       var count = 0;
-      function saveAndShow() {
+      function saveAndShow() {       
           /*********** Unit ************/
           var unit = [];
           var unit_price = [];
