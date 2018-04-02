@@ -450,7 +450,11 @@
     var prod_id;
     $(document).ready(function(){  
       if(!localStorage.user_id){
-        alert("กรุณาเข้าสู่ระบบก่อน");
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณาเข้าสู่ระบบก่อน",
+        });
         window.location = "login.html";
       } 
         //Scroll
@@ -509,7 +513,11 @@
 
           preparePostData: function(data) {            
             if($("#cus").val() == ""){
-              alert("กรุณาใส่ชื่อลูกค้าก่อนทำรายการ");
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ",
+              });
               $("#cus").focus();
               $("#name").val("");
               return 0;
@@ -979,7 +987,11 @@
         });
 
       }else{
-        alert("กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ");      
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ",
+        });     
       }
     }
 
