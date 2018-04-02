@@ -16,6 +16,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
      <!-- Easy-autocomplete -->
      <script src="js/jquery.easy-autocomplete.min.js"></script>
      <link rel="stylesheet" href="css/easy-autocomplete.min.css">
@@ -453,7 +457,7 @@
         $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
-          content: "กรุณาเข้าสู่ระบบก่อน",
+          content: "กรุณาเข้าสู่ระบบก่อน"
         });
         window.location = "login.html";
       } 
@@ -516,7 +520,7 @@
               $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
-                content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ",
+                content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
               });
               $("#cus").focus();
               $("#name").val("");
@@ -990,7 +994,7 @@
         $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
-          content: "กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ",
+          content: "กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ"
         });     
       }
     }
