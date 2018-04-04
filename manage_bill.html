@@ -240,8 +240,7 @@
             //Ajax save prod.. ..
             var branch_id = $("#span-branch-" + arg).html();
             var pay = $("#pay-" + arg).val();
-            var order_id = $("#span-" + arg).html();
-            alert(pay + branch_id + order_id) ;          
+            var order_id = $("#span-" + arg).html();                    
 
             $.ajax({
                 url: "http://150.95.26.163:8080/gitmew/php/update_order.php",
@@ -251,8 +250,7 @@
                     'branch_id': branch_id,
                     'pay': pay                   
                 },
-                success: function (data) {
-                    alert(data);
+                success: function (data) {                    
                 }
             });
         }
