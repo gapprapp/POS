@@ -113,32 +113,32 @@
                             $.each(obj, function (i, field) {
 
                             text_html = "<li id='item-"+i+"' class='list-group-item text-center rounded'>"+
-                                    "<span id='span-" + i + "' hidden>" + field.customer_id + "</span>"+
+                                    "<span id='span-" + i + "' hidden>" + field.order_id + "</span>"+
                                     "<div class='row' style='margin-left: 10px;'>"+
                                     "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
                                     "<div class='input-group-prepend'>"
                                     "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
-                                    "<input id=bill_no-"+i+"'' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id=bill_no-"+i+"'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
                                     "</div>"+
                                     "</div>"+
                                     "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='cus-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='cus-"+i+"' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='user-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='user-"+i+"' type='text' class='form-control text-center' value='"+field.user_namer+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='branch-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='branch-"+i+"' type='text' class='form-control text-center' value='"+field.branch_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='pay-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='pay-"+i+"' type='text' class='form-control text-center' value='"+field.payment_type+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='total-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='total-"+i+"' type='text' class='form-control text-center' value='"+field.totla_price+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-2 text-right no-pd'>"+
                                     "<div class='input-group-prepend no-pd'>"+
-                                    "<input id='date-"+i+"' type='text' class='form-control text-center' value='' disabled style='margin-right: 5px;'>"+
+                                    "<input id='date-"+i+"' type='text' class='form-control text-center' value='"+field.date_time+"' disabled style='margin-right: 5px;'>"+
                                     "</div>"+
                                     "</div>"+
                                     "<div class='col-1 text-center' style='margin-top: 3px;'>"+
@@ -741,7 +741,7 @@
             window.location = "login.html";
         }
 
-        var b_id;
+        var b_id = 1;
         function setbranch(arg){
             b_id = arg;
             var b = $('#li-branch-'+arg).text()
@@ -831,7 +831,7 @@
                         <input id="search-user" type="text" class="form-control text-center no-spin">
                     </div>
                     <div class="col-1 text-center no-pd">
-                        <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">อ่างทอง</button>
+                        <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">สิงห์บุรี</button>
                         <ul id="branch" class="dropdown-menu drop-up text-center">
                             <li id="li-branch-1" class="li-branch" onclick="setbranch(1);" style="padding-bottom: 5px;">สิงห์บุรี</li>
                             <li id="li-branch-2" class="li-branch" onclick="setbranch(2);" style="padding-bottom: 5px;">คลังสินค้า</li>
@@ -891,50 +891,8 @@
                 <br>
 
                 <ul class="list-group">
-                    <!-- Append text html 
-                    <li id='item-1' class='list-group-item text-center rounded'>
-                        <span id='span-" + i + "' hidden>" + field.customer_id + "</span>
-                        <div class="row" style="margin-left: 10px;">
-                            <div class="col-2 text-center no-pd" style='margin-right: 16px;'>
-                                <div class='input-group-prepend'>
-                                    <span class='input-group-text' style='margin-right: 16px;'>1</span>
-                                    <input type="text" class="form-control text-center">
-                                </div>
-                            </div>
-                            <div class="col-2 text-center no-pd" style='margin-right: 16px;'>
-                                <input type="text" class="form-control text-center" value="">
-                            </div>
-                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
-                                <input type="text" class="form-control text-center" value="">
-                            </div>
-                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
-                                <input type="text" class="form-control text-center" value="">
-                            </div>
-                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
-                                <input type="text" class="form-control text-center" value="">
-                            </div>
-                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
-                                <input type="text" class="form-control text-center" value="">
-                            </div>
-                            <div class="col-2 text-right no-pd">
-                                <div class="input-group-prepend no-pd">
-                                    <input type="text" class="form-control text-center" value="" style="margin-right: 5px;">
-                                    
-                                </div>
-                            </div>
-                            <div class="col-1 text-center" style="margin-top: 3px;">
-                                <button id='btn-edit-1' class='btn btn-sm btn-primary' onclick='open_edit("1")'>
-                                    <i id='i-edit-1' class='fa fa-edit'></i>
-                                </button>
-                                <button id='btn-edit-1' class='btn btn-sm btn-info' onclick='bill_detail("1")'>
-                                    <i id='i-edit-1' class='fa fa-info-circle'></i>
-                                </button>
-                                <button id='btn-edit-1' class='btn btn-sm btn-danger' onclick='bill_detail("1")' hidden>
-                                    <i id='i-edit-1' class='fa fa-close'></i>
-                                </button>
-                            </div>
-                        </div>
-                    </li> -->
+                    <!--Append text html -->
+                   
                 </ul>
                 <br>
             </div>
