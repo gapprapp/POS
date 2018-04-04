@@ -175,7 +175,10 @@
             });            
         });
 
-        function open_edit(arg) {            
+        function open_edit(arg) {    
+            /*if(role == "user"){
+                return 0;
+            } */      
             $("#branch-" + arg).prop('disabled', false);
             $("#pay-" + arg).prop('disabled', false);
             $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
@@ -235,22 +238,21 @@
             $("#pay-" + arg).prop('disabled', true);
 
             //Ajax save prod.. ..
-            var cus_id = $("#span-" + arg).text();
-            var name = $("#name-" + arg).val();
-            var addr = $("#addr-" + arg).val();
-            var tel = $("#tel-" + arg).val();
+            var branch_id = $("#span-branch-" + arg).html();
+            var pay = $("#pay-" + arg).val();
+            var order_id = $("#span-" + arg).html();
+            alert(pay + branch_id + order_id) ;          
 
             $.ajax({
                 url: "http://150.95.26.163:8080/gitmew/php/update_order.php",
                 type: "POST",
                 data: {
-                    'cus_id': cus_id,
-                    'name': name,
-                    'address': addr,
-                    'tel': tel
+                    'order_id': order_id,
+                    'branch_id': branch_id,
+                    'pay': pay                   
                 },
                 success: function (data) {
-                    //alert(data);
+                    alert(data);
                 }
             });
         }
@@ -810,6 +812,11 @@
         function setbranchinput(id,arg){
             $("#branch-"+arg).val($("#li-branch-"+id).html());
             $('#span-branch-'+arg).text(id);
+        }
+
+        function bill_detail(arg){
+            var order_id = $('#span-'+arg).html();
+            window.location = "bill_info?order="+order_id;
         }
     </script>
 </head>
