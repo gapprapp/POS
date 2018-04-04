@@ -35,7 +35,7 @@
                 $year = "S" . $year_cur . "-";
                 $order_number = $year . str_pad($count, 5, "0",STR_PAD_LEFT);
                 $sql2 = "INSERT INTO sale_order (order_number,customer_id,date_time,sum_price,total_price,
-                payment_type,note,record_by,branch,total_discount,get_money,change_money,count) 
+                payment_type,note,user_id,branch_id,total_discount,get_money,change_money,count) 
                 VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$user_id','$b','$dis','$get_money','$change_money','$count')"; 
                 $result2 = mysqli_query($conn, $sql2);
                 $last_id = mysqli_insert_id($conn);	
@@ -43,7 +43,7 @@
                 $year = "S" . $year_cur . "-";
                 $order_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
                 $sql3 = "INSERT INTO sale_order (order_number,customer_id,date_time,sum_price,total_price,
-                payment_type,note,record_by,branch,total_discount,get_money,change_money,count) 
+                payment_type,note,user_id,branch_id,total_discount,get_money,change_money,count) 
                 VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$user_id','$b','$dis','$get_money','$change_money',1)"; 
                 $result3 = mysqli_query($conn, $sql3);
                 $last_id = mysqli_insert_id($conn);	
@@ -53,7 +53,7 @@
         $year = "S" . date("y") . "-";
         $order_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
         $sql1 = "INSERT INTO sale_order (order_number,customer_id,date_time,sum_price,total_price,
-        payment_type,note,record_by,branch,total_discount,get_money,change_money,count) 
+        payment_type,note,user_id,branch_id,total_discount,get_money,change_money,count) 
         VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$user_id','$b','$dis','$get_money','$change_money',1)"; 
         $result1 = mysqli_query($conn, $sql1);
         $last_id = mysqli_insert_id($conn);	
