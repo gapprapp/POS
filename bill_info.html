@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <!-- Easy-autocomplete -->
+    <script src="js/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet">
+
+    <script>
+        $(document).ready(function () {
+            var d = new Date($.now());
+            $('#date').text(d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
+        });
+    </script>
+
+    <style>
+        h1,h3,h4 {
+            color: #4c4c4c;
+        }
+
+        .no-pd{
+            padding-left: 0px; 
+            padding-right: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand">
+                    <a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a>
+                </li>
+                <li>
+                    <a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a>
+                </li>
+            </ul>
+        </div>
+        <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #a4e3b3;">
+                <div class="clearfix">
+                    <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+                </div>
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                    <h3 id="nav-title">รายละเอียดรายการ</h3>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+
+            <div id="cnt-show" class="container justify-content-center" style="width: 50%">
+                <div class="jumbotron text-center" style="background: #fdfcfb; padding-top: 20px; padding-bottom: 20px;">
+                    <h5 id="branch">PPS AUTO GROUP อ่างทอง</h5>
+                    <h5 style="margin-top: 15px;">S18-00018</h5>
+                    <h5 id='date' style="letter-spacing: 2px;"></h5>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-1"></div>
+                        <div class="col-2 text-left">
+                            <h5>ผู้บันทึก : </h5>
+                        </div>
+                        <div class="col-2 text-left no-pd">
+                            <h5 id='user'>somjeed</h5>
+                        </div>
+                        <div class="col-2 text-right">
+                            <h5>ลูกค้า : </h5>
+                        </div>
+                        <div class="col-5 text-left no-pd">
+                            <h5 id='cus'>ร้านศ.ไดนาโม(พี่สาวพี่เหน๋อ)</h5>
+                        </div>
+                    </div>
+                    <hr style="width: 80%">
+                    
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-2"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ชื่อสินค้า 1</h5>
+                        </div>
+                        <div class="col-3 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">999 x 3</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-2"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ชะชะชื่อสินค้า 2</h5>
+                        </div>
+                        <div class="col-3 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">999 x 31</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-2"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ฮัดเข้ยชื่อสินค้า 3</h5>
+                        </div>
+                        <div class="col-3 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">99 x 3</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-2"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>เห้ยตกใจชื่อสินค้า 4</h5>
+                        </div>
+                        <div class="col-3 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">999 x 3</h5>
+                        </div>
+                    </div>
+                    <hr style="width: 80%">
+
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>รวม</h5>
+                        </div>
+                        <div class="col-2 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">999999</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ลด</h5>
+                        </div>
+                        <div class="col-2 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">9000</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>สุทธิ</h5>
+                        </div>
+                        <div class="col-2 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">99999</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>รับ</h5>
+                        </div>
+                        <div class="col-2 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">5000</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 25px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ทอน</h5>
+                        </div>
+                        <div class="col-2 text-right">
+                            <h5 id='date' style="letter-spacing: 1px;">999</h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <button class="btn btn-lg btn-info" style="width: 20%;">
+                                แก้ไข <i class="fa fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End page content wrapper -->
+    </div>
+    <!-- End Wrapper -->
+
+    <!-- Menu Toggle -->
+    <script>
+        // Menu Toggle
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+
+            if ($("#menu-toggle").text() == "รายการ") {
+                $("#menu-toggle").text("กลับ");
+            } else if ($("#menu-toggle").text() == "กลับ") {
+                $("#menu-toggle").text("รายการ");
+            }
+        });
+    </script>
+</body>
+
+</html>
