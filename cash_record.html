@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <!-- Easy-autocomplete -->
+    <script src="js/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet">
+
+    <script>
+        $(document).ready(function () {
+            var d = new Date($.now());
+            $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
+        });
+    </script>
+
+    <style>
+        h1,h3,h4{
+            color: #4c4c4c;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand">
+                    <a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a>
+                </li>
+                <li>
+                    <a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a>
+                </li>
+            </ul>
+        </div>
+        <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #e3b3a4;">
+                <div class="clearfix">
+                    <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+                </div>
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                    <h3 id="nav-title">ตัดกะ</h3>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+
+            <div class="container justify-content-center">
+                    <div class="jumbotron text-center" style="background: #fdfcfb;">
+                        <h1 class="display-4">สวัสดี, คุณ admin</h1>
+                        <h3 style="margin-top: 55px;">สรุปยอดเงินในกะ</h3>
+                        <hr style="width: 80%">
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>สาขา : </h4>
+                            </div>
+                            <div class="col-5 text-left">
+                                <h4 id='branch' style="letter-spacing: 2px;">อ่างทอง</h4>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>วันที่บันทึก : </h4>
+                            </div>
+                            <div class="col-5 text-left">
+                                <h4 id='date' style="letter-spacing: 2px;"></h4>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>ผู้บันทึก : </h4>
+                            </div>
+                            <div class="col-5 text-left">
+                                <h4 id='user' style="letter-spacing: 2px;">admin</h4>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 25px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>จำนวนเงิน : </h4>
+                            </div>
+                            <div class="col-5 text-left">
+                                <h4 id='cash' style="letter-spacing: 2px;">9000.25 บาท</h4>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div class="col-12 text-center">
+                                <button class="btn btn-lg btn-danger" style="width: 20%;">
+                                    ตัดกะ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <!-- End page content wrapper -->
+    </div>
+    <!-- End Wrapper -->
+
+    <!-- Menu Toggle -->
+    <script>
+        // Menu Toggle
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+
+            if ($("#menu-toggle").text() == "รายการ") {
+                $("#menu-toggle").text("กลับ");
+            } else if ($("#menu-toggle").text() == "กลับ") {
+                $("#menu-toggle").text("รายการ");
+            }
+        });
+    </script>
+</body>
+
+</html>
