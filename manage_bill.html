@@ -56,7 +56,18 @@
 
     <script>
         var max_page_no = 0;
-        $(document).ready(function () {
+        $(document).ready(function () {  
+            /*$.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
+                type:"GET",
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    $.each(obj, function(i, field){
+                        $('#branch').append("<li id='li-branch-"+field.branch_id+"' class='li-branch' onclick='setbranch("+field.branch_id+");' style='padding-bottom: 5px;'>"+field.branch_name+"</li>");
+                    });
+                }
+            }); */             
             // datepicker
             $('[data-toggle="datepicker"]').datepicker({
                 language: 'th-TH',
@@ -72,7 +83,7 @@
             });
 
             // Get max
-            var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
+            var path = "http://150.95.26.163:8080/gitmew/php/get_max_order.php";
             $.post(path, {
                 'start': 0,
                 "sort_by": sort_by,
@@ -88,7 +99,7 @@
                     // Get First 100
                     $.ajax({
                         type: "POST",
-                        url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allorder.php",
                         data: {
                             'start': 0,
                             'sort_by': sort_by,
@@ -148,7 +159,7 @@
                         }
                     });
                 }
-            });
+            });            
         });
 
         function open_edit(arg) {
@@ -723,19 +734,18 @@
             } else if (page + 10 >= max_page_no) {
                 pagination('last');
             }
-        }
-
-        function add_cus() {
-            window.location = "add_cus.html?mng=1";
-        }
+        }       
 
         function logout() {
             localStorage.user_id = "";
             window.location = "login.html";
         }
 
+        var b_id;
         function setbranch(arg){
-            $("#branch").text(arg);
+            b_id = arg;
+            var b = $('#li-branch-'+arg).text()
+            $("#branch").text(b);
         }
 
         function setpay(arg){
@@ -822,14 +832,18 @@
                     </div>
                     <div class="col-1 text-center no-pd">
                         <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">อ่างทอง</button>
-                        <ul class="dropdown-menu drop-up text-center">
-                            <li id="li-branch-1" class="li-branch" onclick="setbranch('อ่างทอง');" style="padding-bottom: 5px;">อ่างทอง</li>
+                        <ul id="branch" class="dropdown-menu drop-up text-center">
+                            <li id="li-branch-1" class="li-branch" onclick="setbranch(1);" style="padding-bottom: 5px;">สิงห์บุรี</li>
+                            <li id="li-branch-2" class="li-branch" onclick="setbranch(2);" style="padding-bottom: 5px;">คลังสินค้า</li>
+                            <li id="li-branch-3" class="li-branch" onclick="setbranch(3);" style="padding-bottom: 5px;">อ่างทอง</li>
                         </ul>
                     </div>
                     <div class="col-1 text-center no-pd">
                         <button id='pay' class="btn btn-info" data-toggle="dropdown">เงินสด</button>
                         <ul class="dropdown-menu drop-up text-center">
                             <li id="li-pay-1" class="li-branch" onclick="setpay('เงินสด');" style="padding-bottom: 5px;">เงินสด</li>
+                            <li id="li-pay-1" class="li-branch" onclick="setpay('เงินโอน');" style="padding-bottom: 5px;">เงินโอน</li>
+                            <li id="li-pay-1" class="li-branch" onclick="setpay('ลูกหนี้');" style="padding-bottom: 5px;">ลูกหนี้</li>
                         </ul>
                     </div>
                     <!-- Date Picker -->
@@ -967,7 +981,7 @@
             } else if ($("#menu-toggle").text() == "กลับ") {
                 $("#menu-toggle").text("รายการ");
             }
-        });
+        });        
     </script>
 </body>
 
