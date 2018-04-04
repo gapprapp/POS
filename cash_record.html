@@ -56,10 +56,13 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
-                    console.log(obj);
-                    $.each(obj, function(i, field){
-                        $('#cash').text(parseFloat(field.total_price).toFixed(2) + " บาท");
-                    });
+                    if(obj == null){
+                        $('#cash').text("0.00 บาท");
+                    }else{
+                        $.each(obj, function(i, field){                      
+                            $('#cash').text(parseFloat(field.total_price).toFixed(2) + " บาท");
+                        });
+                    }
                 }
             });      
 
@@ -80,10 +83,13 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
-                    console.log(obj);
-                    $.each(obj, function(i, field){                      
-                        $('#cash').text(parseFloat(field.total_price).toFixed(2) + " บาท");
-                    });
+                    if(obj == null){
+                        $('#cash').text("0.00 บาท");
+                    }else{
+                        $.each(obj, function(i, field){                      
+                            $('#cash').text(parseFloat(field.total_price).toFixed(2) + " บาท");
+                        });
+                    }                   
                 }
             });    
         }
