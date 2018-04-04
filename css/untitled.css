@@ -10,6 +10,11 @@ body {
   background: #e4e5e5;
 }
 
+.form-control:focus {
+  border-color: none;
+  box-shadow: none;
+}
+
 #sidebar-title {
   font-size: 120%;
 }
@@ -17,6 +22,7 @@ body {
 #nav-title {
   color: white;
   margin-right: 75px;
+  letter-spacing: 2px;
 }
 
 .text-center {
