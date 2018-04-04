@@ -10,6 +10,11 @@ body {
   background: #e4e5e5;
 }
 
+.form-control:focus {
+  border-color: none;
+  box-shadow: none;
+}
+
 #sidebar-title {
   font-size: 120%;
 }

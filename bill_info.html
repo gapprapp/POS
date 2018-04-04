@@ -34,23 +34,57 @@
     <!-- Main -->
     <link href="css/untitled.css" rel="stylesheet">
 
+    <style>
+        h1,h3,h4 {
+            color: #4c4c4c;
+        }
+    
+        .no-pd {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    
+        input[type="text"] {
+            font-size: 20px;
+        }
+    </style>
+
     <script>
         $(document).ready(function () {
             var d = new Date($.now());
             $('#date').text(d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
         });
+
+        function edit(){
+            $("#ctn-show").prop('hidden', true);
+            $("#ctn-edit").prop('hidden', false);
+
+            //Copy val to input-val
+        }
+
+        function save(){
+            $("#ctn-show").prop('hidden', false);
+            $("#ctn-edit").prop('hidden', true);
+        }
+
+        function remove() {
+            $.confirm({
+                icon: 'fa fa-warning',
+                title: 'แน่ใจหรือว่าต้องการลบ!',
+                content: 'ต้องการลบรายการขายสินค้า!',
+                buttons: {
+                    danger: {
+                        btnClass: 'btn-danger',
+                        text: 'ลบ',
+                        action: function () {
+                            // goto bill info
+                        }
+                    },
+                    ยกเลิก: function () { },
+                }
+            });
+        }
     </script>
-
-    <style>
-        h1,h3,h4 {
-            color: #4c4c4c;
-        }
-
-        .no-pd{
-            padding-left: 0px; 
-            padding-right: 0px;
-        }
-    </style>
 </head>
 
 <body>
@@ -93,9 +127,16 @@
             </nav>
             <!-- End Navbar -->
 
-            <div id="cnt-show" class="container justify-content-center" style="width: 50%">
-                <div class="jumbotron text-center" style="background: #fdfcfb; padding-top: 20px; padding-bottom: 20px;">
-                    <h5 id="branch">PPS AUTO GROUP อ่างทอง</h5>
+            <div id="ctn-show" class="container justify-content-center" style="width: 50%">
+                <div class="jumbotron text-center" style="background: #fdfcfb; padding: 20px; ">
+                    <div class="row">
+                        <div class="col-7 text-right">
+                            <h5>PPS AUTO GROUP</h5>
+                        </div>
+                        <div class="col-4 text-left no-pd">
+                            <h5 id="branch">อ่างทอง</h5>
+                        </div>
+                    </div>
                     <h5 style="margin-top: 15px;">S18-00018</h5>
                     <h5 id='date' style="letter-spacing: 2px;"></h5>
                     <div class="row" style="margin-bottom: 5px;">
@@ -116,40 +157,24 @@
                     <hr style="width: 80%">
                     
                     <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-2"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px;">
-                            <h5>ชื่อสินค้า 1</h5>
+                        <div class="col-1"></div>
+                        <div class="col-5 text-left" style="padding-right: 0px;">
+                            <h5 id="prod-1">ชื่อสินค้า 1</h5>
                         </div>
-                        <div class="col-3 text-right">
-                            <h5 id='date' style="letter-spacing: 1px;">999 x 3</h5>
+                        <div class="col-5 text-right">
+                            <h5 id='price-1' style="letter-spacing: 1px;">999 x 3</h5>
                         </div>
+                        <div class="col-1"></div>
                     </div>
                     <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-2"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px;">
-                            <h5>ชะชะชื่อสินค้า 2</h5>
+                        <div class="col-1"></div>
+                        <div class="col-5 text-left" style="padding-right: 0px;">
+                            <h5 id="prod-2">ชื่อสินค้า 2</h5>
                         </div>
-                        <div class="col-3 text-right">
-                            <h5 id='date' style="letter-spacing: 1px;">999 x 31</h5>
+                        <div class="col-5 text-right">
+                            <h5 id='price-2' style="letter-spacing: 1px;">90 x 3</h5>
                         </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-2"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px;">
-                            <h5>ฮัดเข้ยชื่อสินค้า 3</h5>
-                        </div>
-                        <div class="col-3 text-right">
-                            <h5 id='date' style="letter-spacing: 1px;">99 x 3</h5>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-2"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px;">
-                            <h5>เห้ยตกใจชื่อสินค้า 4</h5>
-                        </div>
-                        <div class="col-3 text-right">
-                            <h5 id='date' style="letter-spacing: 1px;">999 x 3</h5>
-                        </div>
+                        <div class="col-1"></div>
                     </div>
                     <hr style="width: 80%">
 
@@ -189,7 +214,7 @@
                             <h5 id='date' style="letter-spacing: 1px;">5000</h5>
                         </div>
                     </div>
-                    <div class="row" style="margin-bottom: 25px;">
+                    <div class="row" style="margin-bottom: 35px;">
                         <div class="col-3"></div>
                         <div class="col-4 text-left" style="padding-right: 0px;">
                             <h5>ทอน</h5>
@@ -200,8 +225,139 @@
                     </div>
                     <div class="row">
                         <div class="col-12 text-center">
-                            <button class="btn btn-lg btn-info" style="width: 20%;">
+                            <button class="btn btn-lg btn-primary" style="width: 20%;" onclick="edit();">
                                 แก้ไข <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-lg btn-danger" style="width: 20%;" onclick="remove();">
+                                ลบ
+                                <i class="fa fa-close"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="ctn-edit" class="container justify-content-center" style="width: 50%" hidden>
+                <div class="jumbotron text-center" style="background: #fdfcfb; padding: 20px; ">
+                    <div class="row">
+                        <div class="col-7 text-right">
+                            <h5 style="margin-top: 2%;">PPS AUTO GROUP</h5>
+                        </div>
+                        <div class="col-3 text-left">
+                            <input id="input-branch" type="text" class="form-control text-center" value="อ่างทอง">
+                        </div>
+                    </div>
+                    
+                    <h5 style="margin-top: 15px;">S18-00018</h5>
+                    <h5 id='date' style="letter-spacing: 2px;"></h5>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-1"></div>
+                        <div class="col-2 text-left">
+                            <h5 style="margin-top: 5%;">ผู้บันทึก : </h5>
+                        </div>
+                        <div class="col-2 text-left no-pd">
+                            <input id="input-user" type="text" class="form-control text-center" value="somjeed">
+                        </div>
+                        <div class="col-2 text-right">
+                            <h5 style="margin-top: 5%;">ลูกค้า : </h5>
+                        </div>
+                        <div class="col-5 text-left no-pd">
+                            <input id="input-cus" type="text" class="form-control text-center" value="ร้านศ.ไดนาโม(พี่สาวพี่เหน๋อ)">
+                        </div>
+                    </div>
+                    <hr style="width: 80%">
+            
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-1"></div>
+                        <div class="col-5 text-left" style="padding-right: 0px;">
+                            <input id="input-prod-1" type="text" class="form-control text-left" value="ชื่อสินค้า 1">
+                        </div>
+                        <div class="col-5 text-right">
+                            <input id="input-price-1" type="text" class="form-control text-right" value="999 x 3">
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-1"></div>
+                        <div class="col-5 text-left" style="padding-right: 0px;">
+                            <input id="input-prod-1" type="text" class="form-control text-left" value="ชื่อสินค้า 1">
+                        </div>
+                        <div class="col-5 text-right">
+                            <input id="input-price-1" type="text" class="form-control text-right" value="999 x 3">
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-1"></div>
+                        <div class="col-5 text-left" style="padding-right: 0px;">
+                            <input id="input-prod-1" type="text" class="form-control text-left" value="ชื่อสินค้า 1">
+                        </div>
+                        <div class="col-5 text-right">
+                            <input id="input-price-1" type="text" class="form-control text-right" value="999 x 3">
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-1"></div>
+                        <div class="col-5 text-left" style="padding-right: 0px;">
+                            <input id="input-prod-1" type="text" class="form-control text-left" value="ชื่อสินค้า 1">
+                        </div>
+                        <div class="col-5 text-right">
+                            <input id="input-price-1" type="text" class="form-control text-right" value="999 x 3">
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                    <hr style="width: 80%">
+            
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>รวม</h5>
+                        </div>
+                        <div class="col-3 text-right no-pd">
+                            <input id="input-total" type="text" class="form-control text-right" value="999999">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ลด</h5>
+                        </div>
+                        <div class="col-3 text-right no-pd">
+                            <input id="input-dis" type="text" class="form-control text-right" value="9000">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>สุทธิ</h5>
+                        </div>
+                        <div class="col-3 text-right no-pd">
+                            <input id="input-net" type="text" class="form-control text-right" value="99999">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>รับ</h5>
+                        </div>
+                        <div class="col-3 text-right no-pd">
+                            <input id="input-get" type="text" class="form-control text-right" value="5000">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 35px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ทอน</h5>
+                        </div>
+                        <div class="col-3 text-right no-pd">
+                            <input id="input-change" type="text" class="form-control text-right" value="5000">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <button class="btn btn-lg btn-success" style="width: 20%;" onclick="save();">
+                                บันทึก
+                                <i class="fa fa-check-square"></i>
                             </button>
                         </div>
                     </div>
