@@ -56,18 +56,19 @@
 
     <script>
         var max_page_no = 0;
+        var dt = "";
         $(document).ready(function () {  
-            /*$.ajax({
+            $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
                 type:"GET",
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
                     $.each(obj, function(i, field){
-                        $('#branch').append("<li id='li-branch-"+field.branch_id+"' class='li-branch' onclick='setbranch("+field.branch_id+");' style='padding-bottom: 5px;'>"+field.branch_name+"</li>");
+                        $('#ul-branch').append("<li id='li-branch-"+field.branch_id+"' class='li-branch' onclick='setbranch("+field.branch_id+");' style='padding-bottom: 5px;'>"+field.branch_name+"</li>");
                     });
                 }
-            }); */             
+            });             
             // datepicker
             $('[data-toggle="datepicker"]').datepicker({
                 language: 'th-TH',
@@ -80,6 +81,7 @@
                 var d = new Date(split[2], split[1] - 1, split[0]);
                 var first = days[d.getDay()];
                 $('#dpicker').val(first + " " + date);
+                dt = split[2] + "-" + split[1] + "-" + split[0];         
             });
 
             // Get max
@@ -116,7 +118,7 @@
                                     "<span id='span-" + i + "' hidden>" + field.order_id + "</span>"+
                                     "<div class='row' style='margin-left: 10px;'>"+
                                     "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<div class='input-group-prepend'>"+
+                                    "<div class='input-group-prepend'>" +
                                     "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
                                     "<input id=bill_no-"+i+"'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
                                     "</div>"+
@@ -125,16 +127,27 @@
                                     "<input id='cus-"+i+"' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='user-"+i+"' type='text' class='form-control text-center' value='"+field.user_namer+"' disabled>"+
+                                    "<input id='user-"+i+"' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='branch-"+i+"' type='text' class='form-control text-center' value='"+field.branch_name+"' disabled>"+
+                                    "<input id='branch-"+i+"' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
+                                    "<span id='span-branch-" + i + "' hidden></span>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1,"+i+");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
+                                        "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2,"+i+");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
+                                        "<li id='li-branch-3' class='li-branch' onclick='setbranchinput(3,"+i+");' style='padding-bottom: 5px;'>อ่างทอง</li>" +
+                                    "</ul>" +
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='pay-"+i+"' type='text' class='form-control text-center' value='"+field.payment_type+"' disabled>"+
+                                    "<input id='pay-"+i+"' type='text' class='form-control text-center' value='"+field.payment_type+"' data-toggle='dropdown' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1,"+i+");' style='padding-bottom: 5px;'>เงินสด</li>" +
+                                        "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2,"+i+");' style='padding-bottom: 5px;'>เงินโอน</li>" +
+                                        "<li id='li-pay-3' class='li-branch' onclick='setpayinput(3,"+i+");' style='padding-bottom: 5px;'>ลูกหนี้</li>" +
+                                    "</ul>" +
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='total-"+i+"' type='text' class='form-control text-center' value='"+field.totla_price+"' disabled>"+
+                                    "<input id='total-"+i+"' type='text' class='form-control text-center' value='"+field.total_price+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-2 text-right no-pd'>"+
                                     "<div class='input-group-prepend no-pd'>"+
@@ -162,10 +175,12 @@
             });            
         });
 
-        function open_edit(arg) {
-            $("#name-" + arg).prop('disabled', false);
-            $("#addr-" + arg).prop('disabled', false);
-            $("#tel-" + arg).prop('disabled', false);
+        function open_edit(arg) {    
+            /*if(role == "user"){
+                return 0;
+            } */      
+            $("#branch-" + arg).prop('disabled', false);
+            $("#pay-" + arg).prop('disabled', false);
             $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
             $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
             $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
@@ -182,12 +197,12 @@
                         btnClass: 'btn-danger',
                         text: 'ลบ', // With spaces and symbols,
                         action: function () {
-                            var cus_id = $("#span-" + arg).text();
+                            var order_id = $("#span-" + arg).html();                           
                             $.ajax({
-                                url: "http://150.95.26.163:8080/gitmew/php/delete_cus.php",
+                                url: "http://150.95.26.163:8080/gitmew/php/delete_order.php",
                                 type: "POST",
                                 data: {
-                                    'cus_id': cus_id
+                                    'order_id': order_id
                                 },
                                 success: function (data) {
                                     if (data == "success") {
@@ -219,37 +234,37 @@
             $("#i-edit-" + arg).attr('class', 'fa fa-edit');
             $("#btn-del-" + arg).prop('hidden', true);
 
-            $("#name-" + arg).prop('disabled', true);
-            $("#addr-" + arg).prop('disabled', true);
-            $("#tel-" + arg).prop('disabled', true);
+            $("#branch-" + arg).prop('disabled', true);
+            $("#pay-" + arg).prop('disabled', true);
 
             //Ajax save prod.. ..
-            var cus_id = $("#span-" + arg).text();
-            var name = $("#name-" + arg).val();
-            var addr = $("#addr-" + arg).val();
-            var tel = $("#tel-" + arg).val();
+            var branch_id = $("#span-branch-" + arg).html();
+            var pay = $("#pay-" + arg).val();
+            var order_id = $("#span-" + arg).html();                    
 
             $.ajax({
-                url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
+                url: "http://150.95.26.163:8080/gitmew/php/update_order.php",
                 type: "POST",
                 data: {
-                    'cus_id': cus_id,
-                    'name': name,
-                    'address': addr,
-                    'tel': tel
+                    'order_id': order_id,
+                    'branch_id': branch_id,
+                    'pay': pay                   
                 },
-                success: function (data) {
-                    //alert(data);
+                success: function (data) {                    
                 }
             });
         }
 
-        var searched_name;
-        var searched_tel;
+        var searched_name = "";
+        var searched_user = "";
+        var searched_billno = "";      
+        var searched_pay = "";       
         function search() {
             searched_name = $("#search-name").val();
-            searched_tel = $("#search-tel").val();
-
+            searched_user = $("#search-user").val();
+            searched_billno = $("#search-billno").val();          
+            searched_pay = $("#pay").html();   
+            
             $('#btn-search').prop('disabled', true);
 
             $(".list-group-item").remove();
@@ -259,7 +274,6 @@
 
         var max_page = 1,
             prev_page = 1;
-
         function loadmore(arg) {
             var prev_page_start = (100 * (prev_page - 1));
             for (i = prev_page_start; i < (prev_page_start + 100); i++) {
@@ -270,8 +284,10 @@
             var start = (100 * (arg - 1));
             var end = arg * 100;
 
-            var name = searched_name;
-            var tel = searched_tel;
+            var name = searched_name;              
+            var number = searched_billno;
+            var user = searched_user;
+            var pay = searched_pay;           
 
             // new page
             if (max_page < arg) {
@@ -280,26 +296,34 @@
                 prev_page = arg;
                 $.ajax({
                     type: "POST",
-                    url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
+                    url: "http://150.95.26.163:8080/gitmew/php/get_allorder.php",
                     data: {
                         'start': start,
                         "sort_by": sort_by,
                         "order": order,
-                        'name': name,
-                        'tel': tel
+                        'cus_name': name,
+                        'b_id': b_id,
+                        'date': dt,
+                        'number': number,
+                        'user_name': user,
+                        'pay': pay
                     },
                     cache: false,
                     crossDomain: true,
                     success: function (response) {
                         if (start == 0) {
                             //find max_item
-                            var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
+                            var path = "http://150.95.26.163:8080/gitmew/php/get_max_order.php";
                             $.post(path, {
                                 'start': start,
                                 "sort_by": sort_by,
                                 "order": order,
-                                'name': name,
-                                'tel': tel
+                                'cus_name': name,
+                                'b_id': b_id,
+                                'date': dt,
+                                'number': number,
+                                'user_name': user,
+                                'pay': pay
                             }, function (data) {
                                 max_page_no = Math.ceil(data / 100);
                                 if (max_page_no == 1) {
@@ -317,32 +341,42 @@
                         var obj = jQuery.parseJSON(response);
                         $.each(obj, function (i, field) {
                             text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>"+
-                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>"+
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.order_id + "</span>"+
                                     "<div class='row' style='margin-left: 10px;'>"+
                                     "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<div class='input-group-prepend'>"
+                                    "<div class='input-group-prepend'>" +
                                     "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
-                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
                                     "</div>"+
                                     "</div>"+
                                     "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
+                                        "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
+                                        "<li id='li-branch-3' class='li-branch' onclick='setbranchinput(3," + (start + i) +");' style='padding-bottom: 5px;'>อ่างทอง</li>" +
+                                    "</ul>" +
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1," + (start + i) +");' style='padding-bottom: 5px;'>เงินสด</li>" +
+                                        "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2," + (start + i) +");' style='padding-bottom: 5px;'>เงินโอน</li>" +
+                                        "<li id='li-pay-3' class='li-branch' onclick='setpayinput(3," + (start + i) +");' style='padding-bottom: 5px;'>ลูกหนี้</li>" +
+                                    "</ul>" +
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.total_price+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-2 text-right no-pd'>"+
                                     "<div class='input-group-prepend no-pd'>"+
-                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled style='margin-right: 5px;'>"+
+                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.date_time+"' disabled style='margin-right: 5px;'>"+
                                     "</div>"+
                                     "</div>"+
                                     "<div class='col-1 text-center' style='margin-top: 3px;'>"+
@@ -371,26 +405,34 @@
                     //console.log("no item");
                     $.ajax({
                         type: "POST",
-                        url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allorder.php",
                         data: {
                             'start': start,
                             "sort_by": sort_by,
                             "order": order,
-                            'name': name,
-                            'tel': tel
+                            'cus_name': name,
+                            'b_id': b_id,
+                            'date': dt,
+                            'number': number,
+                            'user_name': user,
+                            'pay': pay
                         },
                         cache: false,
                         crossDomain: true,
                         success: function (response) {
                             if (start == 0) {
                                 //find max_item
-                                var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
+                                var path = "http://150.95.26.163:8080/gitmew/php/get_max_order.php";
                                 $.post(path, {
                                     'start': start,
                                     "sort_by": sort_by,
                                     "order": order,
-                                    'name': name,
-                                    'tel': tel
+                                    'cus_name': name,
+                                    'b_id': b_id,
+                                    'date': dt,
+                                    'number': number,
+                                    'user_name': user,
+                                    'pay': pay
                                 }, function (data) {
                                     max_page_no = Math.ceil(data / 100);
                                     if (max_page_no == 1) {
@@ -407,48 +449,58 @@
                             }
                             var obj = jQuery.parseJSON(response);
                             $.each(obj, function (i, field) {
-                                text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
-                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>" +
-                                    "<div class='row' style='margin-left: 10px;'>" +
-                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>" +
-                                    "<div class='input-group-prepend'>"
-                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>" +
-                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='' disabled>" +
-                                    "</div>" +
-                                    "</div>" +
-                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>" +
-                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
-                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
-                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
-                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
-                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-2 text-right no-pd'>" +
-                                    "<div class='input-group-prepend no-pd'>" +
-                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled style='margin-right: 5px;'>" +
-                                    "</div>" +
-                                    "</div>" +
-                                    "<div class='col-1 text-center' style='margin-top: 3px;'>" +
-                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")'>" +
-                                    "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
-                                    "</button>" +
-                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>" +
-                                    "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>" +
-                                    "</button>" +
+                                text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>"+
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.order_id + "</span>"+
+                                    "<div class='row' style='margin-left: 10px;'>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<div class='input-group-prepend'>" +
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
+                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
+                                        "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
+                                        "<li id='li-branch-3' class='li-branch' onclick='setbranchinput(3," + (start + i) +");' style='padding-bottom: 5px;'>อ่างทอง</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1," + (start + i) +");' style='padding-bottom: 5px;'>เงินสด</li>" +
+                                        "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2," + (start + i) +");' style='padding-bottom: 5px;'>เงินโอน</li>" +
+                                        "<li id='li-pay-3' class='li-branch' onclick='setpayinput(3," + (start + i) +");' style='padding-bottom: 5px;'>ลูกหนี้</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.total_price+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-right no-pd'>"+
+                                    "<div class='input-group-prepend no-pd'>"+
+                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.date_time+"' disabled style='margin-right: 5px;'>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>"+
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")'>"+
+                                        "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>"+
+                                        "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>"+
+                                    "</button>"+
                                     "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
-                                    "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
-                                    "</button>" +
-                                    "</div>" +
-                                    "</div>" +
-                                    "</li>";
+                                        "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                        "</button>" +
+                                    "</div>"+
+                                    "</div>"+
+                                "</li>";
                                 $(".list-group").append(text_html);
                             });
                             $('#btn-search').prop('disabled', false);
@@ -482,16 +534,16 @@
         }
 
         var is_sort = {
-            bill_no: '0',
-            date: '0',
-            cus: '0'
+            order_number: '0',
+            date_time: '0',
+            customer_id: '0'
         };
         var sort_by = "none",
             order = "none";
 
         function click_sort(arg) {
             // clear other clicked_sort
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < 3; i++) {
                 //check
                 key = Object.keys(is_sort)[i];
                 if (key == arg) {
@@ -529,7 +581,6 @@
         }
 
         var page = 1;
-
         function pagination(arg) {
             //console.log("pagination arg : " + arg + " max_page_no : " + max_page_no);
             //Check all list is save
@@ -751,6 +802,20 @@
         function setpay(arg){
             $("#pay").text(arg);
         }
+
+        function setpayinput(id,arg){
+            $("#pay-"+arg).val($("#li-pay-"+id).html());
+        }
+
+        function setbranchinput(id,arg){
+            $("#branch-"+arg).val($("#li-branch-"+id).html());
+            $('#span-branch-'+arg).text(id);
+        }
+
+        function bill_detail(arg){
+            var order_id = $('#span-'+arg).html();
+            window.location = "bill_info?order="+order_id;
+        }
     </script>
 </head>
 
@@ -832,18 +897,15 @@
                     </div>
                     <div class="col-1 text-center no-pd">
                         <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">สิงห์บุรี</button>
-                        <ul id="branch" class="dropdown-menu drop-up text-center">
-                            <li id="li-branch-1" class="li-branch" onclick="setbranch(1);" style="padding-bottom: 5px;">สิงห์บุรี</li>
-                            <li id="li-branch-2" class="li-branch" onclick="setbranch(2);" style="padding-bottom: 5px;">คลังสินค้า</li>
-                            <li id="li-branch-3" class="li-branch" onclick="setbranch(3);" style="padding-bottom: 5px;">อ่างทอง</li>
+                        <ul id="ul-branch" class="dropdown-menu drop-up text-center">                           
                         </ul>
                     </div>
                     <div class="col-1 text-center no-pd">
                         <button id='pay' class="btn btn-info" data-toggle="dropdown">เงินสด</button>
                         <ul class="dropdown-menu drop-up text-center">
-                            <li id="li-pay-1" class="li-branch" onclick="setpay('เงินสด');" style="padding-bottom: 5px;">เงินสด</li>
-                            <li id="li-pay-1" class="li-branch" onclick="setpay('เงินโอน');" style="padding-bottom: 5px;">เงินโอน</li>
-                            <li id="li-pay-1" class="li-branch" onclick="setpay('ลูกหนี้');" style="padding-bottom: 5px;">ลูกหนี้</li>
+                            <li id="li-pay" class="li-branch" onclick="setpay('เงินสด');" style="padding-bottom: 5px;">เงินสด</li>
+                            <li id="li-pay" class="li-branch" onclick="setpay('เงินโอน');" style="padding-bottom: 5px;">เงินโอน</li>
+                            <li id="li-pay" class="li-branch" onclick="setpay('ลูกหนี้');" style="padding-bottom: 5px;">ลูกหนี้</li>
                         </ul>
                     </div>
                     <!-- Date Picker -->
@@ -866,13 +928,13 @@
             <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px; margin-left: 5%; margin-right: 5%;">
                 <div class="row">
                     <div class="col-2 no-pd text-right">
-                        <a href="#" style="color: black;" onclick="click_sort('bill_no')">เลขที่รายการ
-                            <i id="i-bill_no" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        <a href="#" style="color: black;" onclick="click_sort('order_number')">เลขที่รายการ
+                            <i id="i-order_number" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
                         </a>
                     </div>
                     <div class="col-2 text-center" style="padding-left: 9%;">
-                        <a href="#" style="color: black;" onclick="click_sort('cus')">ลูกค้า
-                            <i id="i-cus" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        <a href="#" style="color: black;" onclick="click_sort('customer_id')">ลูกค้า
+                            <i id="i-customer_id" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
                         </a>
                     </div>
                     <div class="col-1 text-center" style="margin-left: 4%;">
@@ -882,8 +944,8 @@
                     <div class="col-1 text-center" style="margin-left: 1%;">การชำระ</div>
                     <div class="col-1 text-center no-pd" style="margin-left: 2px;">สุทธิ</div> 
                     <div class="col-2 text-center">
-                        <a href="#" style="color: black;" onclick="click_sort('date')">วันที่
-                            <i id="i-date" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        <a href="#" style="color: black;" onclick="click_sort('date_time')">วันที่
+                            <i id="i-date_time" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
                         </a>
                     </div>  
                     <div class="col-1"></div>               
