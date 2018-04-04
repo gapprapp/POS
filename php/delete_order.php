@@ -3,7 +3,8 @@
     $order_id = $_POST['order_id'];    
     
     mysqli_autocommit($conn,FALSE); 
-    $query = "UPDATE sale_order SET order_number = order_number.(cancle) WHERE order_id = '$order_id'";  
+    $txt = "(cancle)";
+    $query = "UPDATE sale_order SET order_number = CONCAT(order_number,'".$txt."') WHERE order_id = '$order_id'";  
     $result = mysqli_query($conn, $query);    
 
     if($result){

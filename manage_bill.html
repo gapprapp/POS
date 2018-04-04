@@ -56,7 +56,7 @@
 
     <script>
         var max_page_no = 0;
-        var dt;
+        var dt = "";
         $(document).ready(function () {  
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
@@ -194,7 +194,7 @@
                         btnClass: 'btn-danger',
                         text: 'ลบ', // With spaces and symbols,
                         action: function () {
-                            var order_id = $("#span-" + arg).text();
+                            var order_id = $("#span-" + arg).html();                           
                             $.ajax({
                                 url: "http://150.95.26.163:8080/gitmew/php/delete_order.php",
                                 type: "POST",
@@ -241,7 +241,7 @@
             var tel = $("#tel-" + arg).val();
 
             $.ajax({
-                url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
+                url: "http://150.95.26.163:8080/gitmew/php/update_order.php",
                 type: "POST",
                 data: {
                     'cus_id': cus_id,
@@ -255,18 +255,16 @@
             });
         }
 
-        var searched_name;
-        var searched_user;
-        var searched_billno;
-        var searched_branch;
-        var searched_pay;       
+        var searched_name = "";
+        var searched_user = "";
+        var searched_billno = "";      
+        var searched_pay = "";       
         function search() {
             searched_name = $("#search-name").val();
             searched_user = $("#search-user").val();
-            searched_billno = $("#search-billno").val();
-            searched_branch = $("#branch option:selected").val();
-            searched_pay = $("#pay").html();          
-
+            searched_billno = $("#search-billno").val();          
+            searched_pay = $("#pay").html();   
+            
             $('#btn-search').prop('disabled', true);
 
             $(".list-group-item").remove();
@@ -286,11 +284,10 @@
             var start = (100 * (arg - 1));
             var end = arg * 100;
 
-            var name = searched_name;
-            var b_id = searched_branch;           
+            var name = searched_name;              
             var number = searched_billno;
             var user = searched_user;
-            var pay = searched_pay;
+            var pay = searched_pay;           
 
             // new page
             if (max_page < arg) {
