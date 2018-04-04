@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Date Picker -->
+    <link href="css/datepicker.css" rel="stylesheet">
+    <script src="js/datepicker.js"></script>
+    <script src="js/datepicker.th-TH.js"></script>
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <!-- Easy-autocomplete -->
+    <script src="js/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet">
+    <style>
+        .list-group-item {
+            padding: 6px 20px;
+            margin-bottom: 6px;
+        }
+
+        .no-pd{
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .li-branch{
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        var max_page_no = 0;
+        $(document).ready(function () {
+            // datepicker
+            $('[data-toggle="datepicker"]').datepicker({
+                language: 'th-TH',
+                format: 'dd/mm/yyyy',
+                autoHide: true
+            }).change(function (event) {
+                var date = $('#dpicker').val();
+                var split = date.split("/");// dd mm yyyy 
+                var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+                var d = new Date(split[2], split[1] - 1, split[0]);
+                var first = days[d.getDay()];
+                $('#dpicker').val(first + " " + date);
+            });
+
+            // Get max
+            var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
+            $.post(path, {
+                'start': 0,
+                "sort_by": sort_by,
+                "order": order,
+            }, function (data) {
+                url = new URL(window.location.href);
+                sl = url.searchParams.get("sl");
+                max_page_no = Math.ceil(data / 100);
+                if (sl == 1) {
+                    // Go last page
+                    pagination('last');
+                } else {
+                    // Get First 100
+                    $.ajax({
+                        type: "POST",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
+                        data: {
+                            'start': 0,
+                            'sort_by': sort_by,
+                            'order': order
+                        },
+                        cache: false,
+                        crossDomain: true,
+                        success: function (response) {
+
+                            var obj = jQuery.parseJSON(response);
+                            $.each(obj, function (i, field) {
+
+                            text_html = "<li id='item-"+i+"' class='list-group-item text-center rounded'>"+
+                                    "<span id='span-" + i + "' hidden>" + field.customer_id + "</span>"+
+                                    "<div class='row' style='margin-left: 10px;'>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<div class='input-group-prepend'>"
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
+                                    "<input id=bill_no-"+i+"'' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='cus-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='user-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='branch-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='pay-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='total-"+i+"' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-right no-pd'>"+
+                                    "<div class='input-group-prepend no-pd'>"+
+                                    "<input id='date-"+i+"' type='text' class='form-control text-center' value='' disabled style='margin-right: 5px;'>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>"+
+                                    "<button id='btn-edit-"+i+"' class='btn btn-sm btn-primary' onclick='open_edit(" + i +")'>"+
+                                        "<i id='i-edit-"+i+"' class='fa fa-edit'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-info-"+i+"' class='btn btn-sm btn-info' onclick='bill_detail("+i+")'>"+
+                                        "<i id='i-info-"+i+"' class='fa fa-info-circle'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
+                                        "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
+                                        "</button>" +
+                                    "</div>"+
+                                "</div>"+
+                            "</li>";
+                            $(".list-group").append(text_html);
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        function open_edit(arg) {
+            $("#name-" + arg).prop('disabled', false);
+            $("#addr-" + arg).prop('disabled', false);
+            $("#tel-" + arg).prop('disabled', false);
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
+            $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
+            $("#btn-del-" + arg).prop('hidden', false);
+        }
+
+        function del_row(arg) {
+            $.confirm({
+                icon: 'fa fa-warning',
+                title: 'แน่ใจหรือว่าต้องการลบ!',
+                content: 'ต้องการลบรายการสินค้าออกจากฐานข้อมูล!',
+                buttons: {
+                    danger: {
+                        btnClass: 'btn-danger',
+                        text: 'ลบ', // With spaces and symbols,
+                        action: function () {
+                            var cus_id = $("#span-" + arg).text();
+                            $.ajax({
+                                url: "http://150.95.26.163:8080/gitmew/php/delete_cus.php",
+                                type: "POST",
+                                data: {
+                                    'cus_id': cus_id
+                                },
+                                success: function (data) {
+                                    if (data == "success") {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'รายการสินได้ถูกลบแล้ว',
+                                        });
+                                        $("#item-" + arg).remove();
+                                    } else {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'โปรดลองอีกครั้ง',
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    ยกเลิก: function () { },
+                }
+            });
+        }
+
+        function save_edit(arg) {
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
+            $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-edit');
+            $("#btn-del-" + arg).prop('hidden', true);
+
+            $("#name-" + arg).prop('disabled', true);
+            $("#addr-" + arg).prop('disabled', true);
+            $("#tel-" + arg).prop('disabled', true);
+
+            //Ajax save prod.. ..
+            var cus_id = $("#span-" + arg).text();
+            var name = $("#name-" + arg).val();
+            var addr = $("#addr-" + arg).val();
+            var tel = $("#tel-" + arg).val();
+
+            $.ajax({
+                url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
+                type: "POST",
+                data: {
+                    'cus_id': cus_id,
+                    'name': name,
+                    'address': addr,
+                    'tel': tel
+                },
+                success: function (data) {
+                    //alert(data);
+                }
+            });
+        }
+
+        var searched_name;
+        var searched_tel;
+        function search() {
+            searched_name = $("#search-name").val();
+            searched_tel = $("#search-tel").val();
+
+            $('#btn-search').prop('disabled', true);
+
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('search');
+        }
+
+        var max_page = 1,
+            prev_page = 1;
+
+        function loadmore(arg) {
+            var prev_page_start = (100 * (prev_page - 1));
+            for (i = prev_page_start; i < (prev_page_start + 100); i++) {
+                $("#item-" + i).prop('hidden', true);
+            }
+
+            //console.log("loadmore.. .. max_page : " + max_page + " arg : " + arg + " prev_page : " + prev_page);
+            var start = (100 * (arg - 1));
+            var end = arg * 100;
+
+            var name = searched_name;
+            var tel = searched_tel;
+
+            // new page
+            if (max_page < arg) {
+                //console.log("max_page < arg");
+                max_page = arg;
+                prev_page = arg;
+                $.ajax({
+                    type: "POST",
+                    url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
+                    data: {
+                        'start': start,
+                        "sort_by": sort_by,
+                        "order": order,
+                        'name': name,
+                        'tel': tel
+                    },
+                    cache: false,
+                    crossDomain: true,
+                    success: function (response) {
+                        if (start == 0) {
+                            //find max_item
+                            var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
+                            $.post(path, {
+                                'start': start,
+                                "sort_by": sort_by,
+                                "order": order,
+                                'name': name,
+                                'tel': tel
+                            }, function (data) {
+                                max_page_no = Math.ceil(data / 100);
+                                if (max_page_no == 1) {
+                                    $("#nav-pagination").prop('hidden', true);
+                                } else if (max_page_no == 2) {
+                                    $("#pg-rd a").text("#");
+                                    $("#pg-rd").attr('class', 'page-item disabled');
+                                } else {
+                                    $("#nav-pagination").prop('hidden', false);
+                                    $("#pg-rd a").text("3");
+                                    $("#pg-rd").attr('class', 'page-item');
+                                }
+                            });
+                        }
+                        var obj = jQuery.parseJSON(response);
+                        $.each(obj, function (i, field) {
+                            text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>"+
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>"+
+                                    "<div class='row' style='margin-left: 10px;'>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<div class='input-group-prepend'>"
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
+                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-right no-pd'>"+
+                                    "<div class='input-group-prepend no-pd'>"+
+                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled style='margin-right: 5px;'>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>"+
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")'>"+
+                                        "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>"+
+                                        "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
+                                        "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                        "</button>" +
+                                    "</div>"+
+                                    "</div>"+
+                                "</li>";
+                            $(".list-group").append(text_html);
+                        });
+                        $('#btn-search').prop('disabled', false);
+                    }
+                });
+            }
+            // old page
+            else if (max_page >= arg) {
+                //console.log("max_page >= arg");
+                if ($("#item-" + start).length == 0) {
+                    //console.log("no item");
+                    $.ajax({
+                        type: "POST",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allcus.php",
+                        data: {
+                            'start': start,
+                            "sort_by": sort_by,
+                            "order": order,
+                            'name': name,
+                            'tel': tel
+                        },
+                        cache: false,
+                        crossDomain: true,
+                        success: function (response) {
+                            if (start == 0) {
+                                //find max_item
+                                var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
+                                $.post(path, {
+                                    'start': start,
+                                    "sort_by": sort_by,
+                                    "order": order,
+                                    'name': name,
+                                    'tel': tel
+                                }, function (data) {
+                                    max_page_no = Math.ceil(data / 100);
+                                    if (max_page_no == 1) {
+                                        $("#nav-pagination").prop('hidden', true);
+                                    } else if (max_page_no == 2) {
+                                        $("#pg-rd a").text("#");
+                                        $("#pg-rd").attr('class', 'page-item disabled');
+                                    } else {
+                                        $("#nav-pagination").prop('hidden', false);
+                                        $("#pg-rd a").text("3");
+                                        $("#pg-rd").attr('class', 'page-item');
+                                    }
+                                });
+                            }
+                            var obj = jQuery.parseJSON(response);
+                            $.each(obj, function (i, field) {
+                                text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>" +
+                                    "<div class='row' style='margin-left: 10px;'>" +
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>" +
+                                    "<div class='input-group-prepend'>"
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>" +
+                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='' disabled>" +
+                                    "</div>" +
+                                    "</div>" +
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>" +
+                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
+                                    "</div>" +
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
+                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
+                                    "</div>" +
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
+                                    "</div>" +
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
+                                    "</div>" +
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>" +
+                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled>" +
+                                    "</div>" +
+                                    "<div class='col-2 text-right no-pd'>" +
+                                    "<div class='input-group-prepend no-pd'>" +
+                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='' disabled style='margin-right: 5px;'>" +
+                                    "</div>" +
+                                    "</div>" +
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>" +
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")'>" +
+                                    "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
+                                    "</button>" +
+                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>" +
+                                    "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>" +
+                                    "</button>" +
+                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
+                                    "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                    "</button>" +
+                                    "</div>" +
+                                    "</div>" +
+                                    "</li>";
+                                $(".list-group").append(text_html);
+                            });
+                            $('#btn-search').prop('disabled', false);
+                        }
+                    });
+                } else if (prev_page > arg) {
+                    //console.log("prev_page > arg");
+                    var max = max_page * 100;
+                    // show page
+                    for (i = start; i < end; i++) {
+                        $("#item-" + i).prop('hidden', false); //show
+                    }
+
+                    // hidden all > arg
+                    for (i = end; i < max; i++) {
+                        $("#item-" + i).prop('hidden', true);
+                    }
+                } else if (prev_page <= arg) {
+                    //console.log("prev_page <= arg");
+                    // show page
+                    for (i = start; i < end; i++) {
+                        $("#item-" + i).prop('hidden', false); //show
+                    }
+                    // hidden old
+                    for (i = 0; i < start; i++) {
+                        $("#item-" + i).prop('hidden', true);
+                    }
+                }
+                prev_page = arg;
+            }
+        }
+
+        var is_sort = {
+            bill_no: '0',
+            date: '0',
+            cus: '0'
+        };
+        var sort_by = "none",
+            order = "none";
+
+        function click_sort(arg) {
+            // clear other clicked_sort
+            for (var i = 0; i < 4; i++) {
+                //check
+                key = Object.keys(is_sort)[i];
+                if (key == arg) {
+                    is_sort.key = 1;
+                } else {
+                    $("#i-" + key).prop('hidden', true);
+                    $("#i-" + key).attr('class', 'fa fa-sort-down');
+                    $("#i-" + key).css('vertical-align', 'top');
+
+                    order = "none";
+                    sort_by = "none";
+                }
+            }
+
+            if ($("#i-" + arg).is(':hidden')) {
+                $("#i-" + arg).prop('hidden', false);
+                sort_by = arg;
+                order = "asc";
+            } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-down')) {
+                $("#i-" + arg).attr('class', 'fa fa-sort-up');
+                $("#i-" + arg).css('vertical-align', 'middle');
+                sort_by = arg;
+                order = "desc";
+            } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-up')) {
+                $("#i-" + arg).prop('hidden', true);
+                $("#i-" + arg).attr('class', 'fa fa-sort-down');
+                $("#i-" + arg).css('vertical-align', 'top');
+                order = "none";
+                sort_by = "none";
+            }
+
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('sort');
+        }
+
+        var page = 1;
+
+        function pagination(arg) {
+            //console.log("pagination arg : " + arg + " max_page_no : " + max_page_no);
+            //Check all list is save
+            var max = page * 100;
+            var start = max - 100;
+            var stop = 0;
+            for (var i = start; i <= max; i++) {
+                if ($("#i-edit-" + i).hasClass('fa fa-check-square')) {
+                    $.alert({
+                        icon: 'fa fa-warning',
+                        title: 'เตือน',
+                        content: 'กรุณาบันทึกสินค้าก่อนเปลี่ยนหน้า',
+                    });
+                    $("#pg-" + arg + " a").attr('href', "#item-" + i);
+                    var go_to = $(this).attr('href').offset();
+                    $('ul').stop().animate({
+                        scrollTop: go_to.top
+                    });
+
+                    stop = 1;
+                    break;
+                }
+            }
+            if (stop == 1) {
+                $("#pg-" + arg + " a").attr('href', "#");
+                return 0;
+            }
+
+            if (arg == "sort" || arg == "search" || arg == "re") {
+                // pagination when sort.. ..
+                if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+                if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+                if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                page = 1;
+                st = $("#pg-st a").text("1"); // 1 -> 2
+                nd = $("#pg-nd a").text("2");
+                rd = $("#pg-rd a").text("3");
+
+                if (arg == "search") {
+                    // clear other clicked_sort
+                    for (var j = 0; j < 4; j++) {
+                        key = Object.keys(is_sort)[j];
+                        $("#i-" + key).prop('hidden', true);
+                        $("#i-" + key).attr('class', 'fa fa-sort-down');
+                        $("#i-" + key).css('vertical-align', 'top');
+
+                        order = "none";
+                        sort_by = "none";
+                    }
+                }
+            } else if (arg == "st") {
+                //console.log("st");
+                if (page != 2) {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page -= 1;
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 1); // 1 -> 2
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 1);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 1);
+                } else if (page == 2) {
+                    if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page = 1;
+
+                } else {
+                    return 0;
+                }
+            } else if (arg == "nd") {
+
+                //console.log("nd");
+                if (page == 1) page++;
+                else if (page == max_page_no) page--;
+                if ($("#pg-nd").hasClass('active')) return 0;
+                else $("#pg-nd").attr('class', 'active');
+                if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+            } else if (arg == "rd") {
+                if (page + 1 == max_page_no) {
+                    if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+                    page = max_page_no;
+                    st = $("#pg-st a").text(parseInt(max_page_no - 2));
+                    nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+                    rd = $("#pg-rd a").text(parseInt(max_page_no));
+                } else {
+                    //console.log("rd");
+                    if (page == max_page_no) return 0;
+
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    if (page == 1) page += 2; // page = 3
+                    else page += 1;
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 1); // 1 -> 2
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 1);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 1);
+                }
+            } else if (arg == "prev") {
+                //console.log("prev");
+                if (page <= 11) {
+                    if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page = 1;
+                    st = $("#pg-st a").text("1");
+                    nd = $("#pg-nd a").text("2");
+                    rd = $("#pg-rd a").text("3");
+                } else {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page = page - 10;
+
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 10);
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 10);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 10);
+                }
+            } else if (arg == "next") {
+                //console.log("next");
+                if ($("#pg-st").hasClass('active')) {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+                    page = page + 10;
+
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 9);
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 9);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 9);
+                } else {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+                    page = page + 10;
+
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 10);
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 10);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 10);
+                }
+
+            } else if (arg == "last") {
+                //console.log("last");
+                if (max_page_no <= 3) {
+                    if (max_page_no == 2) {
+                        //console.log("2");
+                        if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                        if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                        if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                        page = 2;
+                        st = $("#pg-st a").text("1");
+                        nd = $("#pg-nd a").text("2");
+                        rd = $("#pg-rd a").text("3");
+                    } else if (max_page_no == 3) {
+                        //console.log("3");
+                        if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+                        if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                        if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+                        page = 3;
+                        st = $("#pg-st a").text("1");
+                        nd = $("#pg-nd a").text("2");
+                        rd = $("#pg-rd a").text("3");
+                    }
+                } else {
+                    if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+                    page = max_page_no;
+                    st = $("#pg-st a").text(parseInt(max_page_no - 2));
+                    nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+                    rd = $("#pg-rd a").text(parseInt(max_page_no));
+                }
+            }
+
+            // Un-Disabled li-prev
+            if (page > 1) {
+                $("#li-prev").prop('class', 'page-item');
+            } else if (page == 1) {
+                $("#li-prev").prop('class', 'page-item disabled');
+            }
+
+            loadmore(page);
+        }
+
+        function prev() {
+            pagination('prev');
+        }
+
+        function next() {
+            if (page + 10 < max_page_no) {
+                pagination('next');
+            } else if (page + 10 >= max_page_no) {
+                pagination('last');
+            }
+        }
+
+        function add_cus() {
+            window.location = "add_cus.html?mng=1";
+        }
+
+        function logout() {
+            localStorage.user_id = "";
+            window.location = "login.html";
+        }
+
+        function setbranch(arg){
+            $("#branch").text(arg);
+        }
+
+        function setpay(arg){
+            $("#pay").text(arg);
+        }
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand">
+                    <a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a>
+                </li>
+                <li>
+                    <a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a>
+                </li>
+                <li>
+                    <a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a>
+                </li>
+            </ul>
+        </div>
+        <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #87ceeb;">
+                <div class="clearfix">
+                    <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+                </div>
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                    <h3 id="nav-title">จัดการใบเสร็จ</h3>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <div class="container-fullwidth justify-content-center">
+                <!-- Search -->
+                <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-1" style='margin-left: 4%;'></div>
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
+                        เลขที่รายการ
+                    </div>
+                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                        ลูกค้า
+                    </div>
+                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                        ผู้บันทึก
+                    </div>
+                    <div class="col-1 text-center">
+                        สาขา
+                    </div>
+                    <div class="col-1 text-center">
+                        การชำระ
+                    </div>
+                    <div class="col-2 text-center" style="margin-left: 2%;">
+                        วันที่บันทึก
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-1 text-right" style='margin-left: 4%;'>
+                        <p style="padding-top: 5px; font-size: 120%;">ค้นหา :
+                            <p/>
+                    </div>
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
+                        <input id="search-billno" type="text" class="form-control text-center">
+                    </div>
+                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                        <input id="search-name" type="text" class="form-control text-center no-spin">
+                    </div>
+                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                        <input id="search-user" type="text" class="form-control text-center no-spin">
+                    </div>
+                    <div class="col-1 text-center no-pd">
+                        <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">อ่างทอง</button>
+                        <ul class="dropdown-menu drop-up text-center">
+                            <li id="li-branch-1" class="li-branch" onclick="setbranch('อ่างทอง');" style="padding-bottom: 5px;">อ่างทอง</li>
+                        </ul>
+                    </div>
+                    <div class="col-1 text-center no-pd">
+                        <button id='pay' class="btn btn-info" data-toggle="dropdown">เงินสด</button>
+                        <ul class="dropdown-menu drop-up text-center">
+                            <li id="li-pay-1" class="li-branch" onclick="setpay('เงินสด');" style="padding-bottom: 5px;">เงินสด</li>
+                        </ul>
+                    </div>
+                    <!-- Date Picker -->
+                    <div class="col-2 text-center">
+                        <div class="input-group-prepend">
+                            <button data-toggle="datepicker" type="button" class="btn btn-default docs-datepicker-trigger" style="margin-right: 5px;" disabled>
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                            </button>
+                            <input id="dpicker" data-toggle="datepicker" type="text" class="form-control docs-date text-center" name="date" placeholder="วันที่ต้องการค้นหา">
+                        </div>
+                    </div>
+                    <!-- End Date Picker -->
+                    <div class="col-1 text-center">
+                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
+                    </div>
+                </div>
+            </div>
+            <hr style="width: 90%;">
+            <!-- Header -->
+            <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px; margin-left: 5%; margin-right: 5%;">
+                <div class="row">
+                    <div class="col-2 no-pd text-right">
+                        <a href="#" style="color: black;" onclick="click_sort('bill_no')">เลขที่รายการ
+                            <i id="i-bill_no" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-2 text-center" style="padding-left: 9%;">
+                        <a href="#" style="color: black;" onclick="click_sort('cus')">ลูกค้า
+                            <i id="i-cus" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-1 text-center" style="margin-left: 4%;">
+                        ผู้บันทึก
+                    </div>
+                    <div class="col-1 text-center" style="margin-left: 1%;">สาขา</div>
+                    <div class="col-1 text-center" style="margin-left: 1%;">การชำระ</div>
+                    <div class="col-1 text-center no-pd" style="margin-left: 2px;">สุทธิ</div> 
+                    <div class="col-2 text-center">
+                        <a href="#" style="color: black;" onclick="click_sort('date')">วันที่
+                            <i id="i-date" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>  
+                    <div class="col-1"></div>               
+                </div>
+                <br>
+
+                <ul class="list-group">
+                    <!-- Append text html 
+                    <li id='item-1' class='list-group-item text-center rounded'>
+                        <span id='span-" + i + "' hidden>" + field.customer_id + "</span>
+                        <div class="row" style="margin-left: 10px;">
+                            <div class="col-2 text-center no-pd" style='margin-right: 16px;'>
+                                <div class='input-group-prepend'>
+                                    <span class='input-group-text' style='margin-right: 16px;'>1</span>
+                                    <input type="text" class="form-control text-center">
+                                </div>
+                            </div>
+                            <div class="col-2 text-center no-pd" style='margin-right: 16px;'>
+                                <input type="text" class="form-control text-center" value="">
+                            </div>
+                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
+                                <input type="text" class="form-control text-center" value="">
+                            </div>
+                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
+                                <input type="text" class="form-control text-center" value="">
+                            </div>
+                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
+                                <input type="text" class="form-control text-center" value="">
+                            </div>
+                            <div class="col-1 text-center no-pd" style='margin-right: 16px;'>
+                                <input type="text" class="form-control text-center" value="">
+                            </div>
+                            <div class="col-2 text-right no-pd">
+                                <div class="input-group-prepend no-pd">
+                                    <input type="text" class="form-control text-center" value="" style="margin-right: 5px;">
+                                    
+                                </div>
+                            </div>
+                            <div class="col-1 text-center" style="margin-top: 3px;">
+                                <button id='btn-edit-1' class='btn btn-sm btn-primary' onclick='open_edit("1")'>
+                                    <i id='i-edit-1' class='fa fa-edit'></i>
+                                </button>
+                                <button id='btn-edit-1' class='btn btn-sm btn-info' onclick='bill_detail("1")'>
+                                    <i id='i-edit-1' class='fa fa-info-circle'></i>
+                                </button>
+                                <button id='btn-edit-1' class='btn btn-sm btn-danger' onclick='bill_detail("1")' hidden>
+                                    <i id='i-edit-1' class='fa fa-close'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </li> -->
+                </ul>
+                <br>
+            </div>
+
+            <nav id="nav-pagination">
+                <ul class="pagination justify-content-center">
+                    <li id="li-prev" class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous" onclick="prev();">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li id="pg-st" class="page-item active">
+                        <a class="page-link scroll_to" href="#" onclick="pagination('st')">1</a>
+                    </li>
+                    <li id="pg-nd" class="page-item">
+                        <a class="page-link scroll_to" href="#" onclick="pagination('nd')">2</a>
+                    </li>
+                    <li id="pg-rd" class="page-item">
+                        <a class="page-link scroll_to" href="#" onclick="pagination('rd')">3</a>
+                    </li>
+                    <li id="li-next" class="page-item">
+                        <a class="page-link" href="#" aria-label="Next" onclick="next();">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!-- End page content wrapper -->
+    </div>
+    <!-- End Wrapper -->
+
+    <!-- Menu Toggle -->
+    <script>
+        // Menu Toggle
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+
+            if ($("#menu-toggle").text() == "รายการ") {
+                $("#menu-toggle").text("กลับ");
+            } else if ($("#menu-toggle").text() == "กลับ") {
+                $("#menu-toggle").text("รายการ");
+            }
+        });
+    </script>
+</body>
+
+</html>
