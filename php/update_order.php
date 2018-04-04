@@ -13,6 +13,7 @@
         }   
     }  
 
+    mysqli_autocommit($conn,FALSE); 
     if($b_id){
         if($b_id != $old_b){
             $query = "SELECT prod_id,prod_amount FROM sale_order_item WHERE order_id = '$order_id'";  
@@ -42,11 +43,13 @@
         $result = mysqli_query($conn, $query);
     }
 
-	if($result){
-		echo "success";
-	}else{
-		echo "fail";
-	}
+    if($result){
+        echo "success";
+        mysqli_commit($conn);          
+    }else{
+        echo "fail";
+        mysqli_rollback($conn);
+    }
 	
 	mysqli_close($conn);
 ?>
