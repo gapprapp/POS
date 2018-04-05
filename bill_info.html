@@ -62,7 +62,8 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);                   
-                    $('#branch').text(obj[0].branch_name);   
+                    $('#branch').text(obj[0].branch_name); 
+                    $('#date').text(obj[0].date_time); 
                     $('#number').text(obj[0].order_number); 
                     $('#user').text(obj[0].user_name);         
                     $('#cus').text(obj[0].customer_name); 
