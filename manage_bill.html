@@ -155,7 +155,7 @@
                                     "</div>"+
                                     "</div>"+
                                     "<div class='col-1 text-center' style='margin-top: 3px;'>"+
-                                    "<button id='btn-edit-"+i+"' class='btn btn-sm btn-primary' onclick='open_edit(" + i +")'>"+
+                                    "<button id='btn-edit-"+i+"' class='btn btn-sm btn-primary' onclick='open_edit(" + i +")' style='margin-right: 5px'>"+
                                         "<i id='i-edit-"+i+"' class='fa fa-edit'></i>"+
                                     "</button>"+
                                     "<button id='btn-info-"+i+"' class='btn btn-sm btn-info' onclick='bill_detail("+i+")'>"+
@@ -178,7 +178,8 @@
         function open_edit(arg) {    
             /*if(role == "user"){
                 return 0;
-            } */      
+            } */ 
+            $("#btn-info-"+arg).prop('hidden', true);     
             $("#branch-" + arg).prop('disabled', false);
             $("#pay-" + arg).prop('disabled', false);
             $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
@@ -229,6 +230,7 @@
         }
 
         function save_edit(arg) {
+            $("#btn-info-"+arg).prop('hidden', false);
             $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
             $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
             $("#i-edit-" + arg).attr('class', 'fa fa-edit');
