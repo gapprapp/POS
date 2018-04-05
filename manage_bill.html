@@ -57,7 +57,29 @@
     <script>
         var max_page_no = 0;
         var dt = "";
+        var role;
         $(document).ready(function () {  
+            if(!localStorage.user_id){
+                $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณาเข้าสู่ระบบก่อน"
+                });
+                window.location = "login.html";
+            } 
+
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/get_role.php",
+                type:"POST",
+                data:{'user_id': localStorage.user_id},
+                async: false,
+                success:function(data)
+                {                   
+                    role = data;
+                    console.log(role);
+                }
+            });    
+
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
                 type:"GET",
@@ -175,11 +197,16 @@
             });            
         });
 
-        function open_edit(arg) {    
-            /*if(role == "user"){
+        function open_edit(arg) {
+            if(role == "user"){
+                $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
+                });
                 return 0;
-            } */ 
-            $("#btn-info-"+arg).prop('hidden', true);     
+            }
+            $("#btn-info-" + arg).prop('hidden', true);      
             $("#branch-" + arg).prop('disabled', false);
             $("#pay-" + arg).prop('disabled', false);
             $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
@@ -210,7 +237,7 @@
                                         $.alert({
                                             icon: 'fa fa-warning',
                                             title: 'เตือน',
-                                            content: 'รายการสินได้ถูกลบแล้ว',
+                                            content: 'รายการสินค้าได้ถูกลบแล้ว',
                                         });
                                         $("#item-" + arg).remove();
                                     } else {
@@ -817,7 +844,7 @@
         function bill_detail(arg){
             var order_id = $('#span-'+arg).html();
             window.location = "bill_info.html?order="+order_id;
-        }
+        }       
     </script>
 </head>
 
@@ -826,24 +853,14 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
-                <li class="sidebar-brand">
-                    <a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a>
-                </li>
-                <li>
-                    <a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a>
-                </li>
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                     
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
         <!-- End sidebar -->

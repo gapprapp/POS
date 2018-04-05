@@ -49,8 +49,10 @@
         }
     </style>
 
-    <script>
-        var order_id;
+    <script>   
+
+        var order_id,branch_id;
+        var count;
         $(document).ready(function () {
             url = new URL(window.location.href);
             order_id = url.searchParams.get("order"); 
@@ -61,7 +63,8 @@
                 data:{'order_id':order_id},
                 success:function(data)
                 {
-                    var obj = jQuery.parseJSON(data);                   
+                    var obj = jQuery.parseJSON(data); 
+                    branch_id = obj[0].branch_id;                  
                     $('#branch').text(obj[0].branch_name); 
                     $('#date').text(obj[0].date_time); 
                     $('#number').text(obj[0].order_number); 
@@ -71,19 +74,38 @@
                     $('#discount').text(obj[0].total_discount);           
                     $('#total').text(obj[0].total_price);           
                     $('#get').text(obj[0].get_money);    
-                    $('#change').text(obj[0].change_money);    
+                    $('#change').text(obj[0].change_money);                      
                     $.each(obj, function(i, field){   
                         if(i > 0){
                             $('#show_prod').append("<div class='row' style='margin-bottom: 5px;'>" +
                             "<div class='col-1'></div>" +
                             "<div class='col-5 text-left' style='padding-right: 0px;'>" +
-                                "<h5 id='prod-1'>ชื่อสินค้า 1</h5>" +
+                                "<h5 id='prod-1'>"+obj[i].prod_name+"</h5>" +
                             "</div>" +
                             "<div class='col-5 text-right'>" +
-                                "<h5 id='price-1' style='letter-spacing: 1px;'>999 x 3</h5>" +
+                                "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+obj[i].prod_price+" x "+obj[i].prod_amount+"</h5>" +
                             "</div>" +
                             "<div class='col-1'></div>" +
                             "</div>");
+
+                            $('#show_edit').append("<div class='row' style='margin-bottom: 10px;'>" +
+                            "<span id='span-" + i + "' hidden>" + obj[i].prod_id + "</span>"+
+                            "<div class='col-1'></div>" +
+                            "<div class='col-5 text-left' style='padding-right: 0px;'>" +
+                                "<h5 id='input-prod'>"+obj[i].prod_name+"</h5>" +
+                            "</div>" +
+                            "<div class='col-2 text-right' style='padding-top: 10px;'>" +
+                                "<h5 id='input-price-"+i+"'>"+obj[i].prod_price+"</h5>" +
+                            "</div>" +
+                            "<div class='col-1 text-right' style='padding-top: 10px;'>" +
+                                "<h5>x</h5>" +
+                            "</div>" +
+                            "<div class='col-2 text-right'>" +
+                                "<input id='input-amt-"+i+"' onchange='chng_amt("+i+","+obj[i].prod_amount+")' type='text' class='form-control text-right' value='"+obj[i].prod_amount+"'>" +
+                            "</div>" +
+                           " <div class='col-1'></div>" +
+                            "</div>"); 
+                            count = i;                  
                         }                       
                     });
                                   
@@ -93,16 +115,92 @@
            
         });
 
+        function chng_amt(arg,amt_old){
+            var amt = $('#input-amt-' + arg).val();
+            var prod_id = $('#span-'+arg).html();
+            var price = $('#input-price-' + arg).html();
+            var total_old = price*amt_old;
+            var total = price*amt;
+            $.ajax({
+                type: "POST",
+                url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
+                data: {'prod_id' : prod_id,
+                        'amount' : amt},
+                success : function(data){
+                    if(data != "fail"){           
+                        $('#input-sum').text($('#input-sum').html()-total_old+parseInt(data));                       
+                    }else{
+                        $('#input-sum').text($('#input-sum').html()-total_old+parseInt(total));                      
+                    }
+                    $('#input-total').text($('#input-sum').html()-$('#input-discount').val());
+                    $('#input-change').text($('#input-get').val()-$('#input-total').html());
+                }
+            });
+        }
+
         function edit(){
             $("#ctn-show").prop('hidden', true);
             $("#ctn-edit").prop('hidden', false);
 
             //Copy val to input-val
+            $('#input-branch').text($('#branch').html()); 
+            $('#input-date').text($('#date').html()); 
+            $('#input-number').text($('#number').html()); 
+            $('#input-user').text($('#user').html());         
+            $('#input-cus').text($('#cus').html()); 
+            $('#input-sum').text($('#sum').html());    
+            $('#input-discount').val($('#discount').html());           
+            $('#input-total').text($('#total').html());           
+            $('#input-get').val($('#get').html());    
+            $('#input-change').text($('#change').html());                        
         }
 
         function save(){
-            $("#ctn-show").prop('hidden', false);
-            $("#ctn-edit").prop('hidden', true);
+            json = [];
+            for(var j = 1 ; j <= count ; j++){
+                item = {}
+                item ["item_id"] =  j;
+                item ["amt"] = $('#input-amt-' + j).val();  
+                item ["prod_id"] = $('#span-'+j).html();           
+                json.push(item);
+
+                $('#price-'+j).text($('#input-price-' + j).html()+ " x " +  $('#input-amt-' + j).val());
+            }
+            var jsonString = JSON.stringify(json);
+            var sum = $('#input-sum').html()
+            var dis = $('#input-discount').val()
+            var total = $('#input-total').html()
+            var get = $('#input-get').val()
+            var change = $('#input-change').html()
+            var datastr = {'JSON': jsonString, 
+            'sum': sum, 
+            'discount': dis, 
+            'total': total, 
+            'get': get, 
+            'change': change,
+            'order_id':order_id,
+            'branch_id':branch_id};
+            //console.log(datastr);
+
+            $.ajax({
+                url: "http://150.95.26.163:8080/gitmew/php/update_order_item.php",
+                type: "POST",
+                data: datastr,
+                success: function (data) {
+                    if(data == "success"){                 
+                      
+                        $('#sum').text($('#input-sum').html());    
+                        $('#discount').text($('#input-discount').val());           
+                        $('#total').text($('#input-total').html());           
+                        $('#get').text($('#input-get').val());    
+                        $('#change').text($('#input-change').html()); 
+
+                        $("#ctn-show").prop('hidden', false);
+                        $("#ctn-edit").prop('hidden', true);    
+                    }                         
+                }
+            });
+          
         }
 
         function remove() {
@@ -114,13 +212,40 @@
                     danger: {
                         btnClass: 'btn-danger',
                         text: 'ลบ',
-                        action: function () {
-                            // goto bill info
+                        action: function () {                                                    
+                            $.ajax({
+                                url: "http://150.95.26.163:8080/gitmew/php/delete_order.php",
+                                type: "POST",
+                                data: {
+                                    'order_id': order_id
+                                },
+                                success: function (data) {
+                                    if (data == "success") {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'รายการสินค้าได้ถูกลบแล้ว',
+                                        }); 
+                                        window.location = "manage_bill.html";                                       
+                                    } else {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'โปรดลองอีกครั้ง',
+                                        });
+                                    }
+                                }
+                            });
                         }
                     },
                     ยกเลิก: function () { },
                 }
             });
+        }
+
+        function logout(){
+            localStorage.user_id = "";
+            window.location = "login.html";
         }
     </script>
 </head>
@@ -130,24 +255,14 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
-                <li class="sidebar-brand">
-                    <a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a>
-                </li>
-                <li>
-                    <a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a>
-                </li>
-                <li>
-                    <a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a>
-                </li>
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                     
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
         <!-- End sidebar -->
@@ -289,22 +404,7 @@
                     <hr style="width: 80%">
             
                     <div id="show_edit">                       
-                        <div class="row" style="margin-bottom: 10px;">
-                            <div class="col-1"></div>
-                            <div class="col-5 text-left" style="padding-right: 0px;">
-                                <h5 id="input-prod-1">product1</h5>
-                            </div>
-                            <div class="col-2 text-right" style="padding-top: 10px;">
-                                <h5 id="input-price-1">999</h5>
-                            </div>
-                            <div class="col-1 text-right" style="padding-top: 10px;">
-                                <h5 id="input-price-1">x</h5>
-                            </div>
-                            <div class="col-2 text-right">
-                                <input id="input-amt-1" type="text" class="form-control text-right" value="3">
-                            </div>
-                            <div class="col-1"></div>
-                        </div>                     
+                      
                     </div>
                    
                     <hr style="width: 80%">
@@ -381,6 +481,23 @@
             } else if ($("#menu-toggle").text() == "กลับ") {
                 $("#menu-toggle").text("รายการ");
             }
+        });
+
+        $('#input-get').on("keyup input", function(){           
+            var money = $('#input-get').val();
+            var net = $('#input-total').html();
+            if(money - net < 0){
+                $('#input-change').text("");
+            }else{
+                $('#input-change').text(money - net);
+            }
+        });
+
+        $('#input-discount').on("keyup input", function(){
+            var dis = $('#input-discount').val();
+            var sum = $('#input-sum').html();          
+            $('#input-total').text(sum - dis);
+            $('#input-change').text($('#input-get').val() - $('#input-total').html());            
         });
     </script>
 </body>
