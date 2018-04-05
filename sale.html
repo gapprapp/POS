@@ -908,7 +908,7 @@
           json.push(item);
           no++;
 
-          text = text + "<div class='txt-left'>"+jsonObj[i].name+"</div>" + "<div class='txt-right'>"+jsonObj[i].price+" x "+jsonObj[i].amount+"</div> </div>";
+          text = text + "<div class='txt-left'>"+jsonObj[i].name+"</div>" + "<div class='txt-right'>"+jsonObj[i].price+" x "+jsonObj[i].amount+"</div>";
         });
         var jsonString = JSON.stringify(json);
         var print = $('input[name=print-radio]:checked').val();
@@ -939,17 +939,17 @@
                 if(data != "fail"){
                   if(print == "print"){
                     WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1.1cm; font-size: 0.6em; text-align:right; float: right; } .txt-left{ font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%; } .txt-ct{ font-size: 0.6em; text-align: center; }</style>" +
-                      "<div style='width: 7.9cm'>" +
-                      "<div class='txt-ct'>PPS AUTO GROUP " + b_name + "</div>" +
-                      "<div class='txt-ct'>" + data + "</div>" +
-                      "<div class='txt-ct'>" + datetime + "</div>" +
-                      "<div class='txt-left'>ผู้บันทึก :" + localStorage.name + "</div>" +
-                      "<div class='txt-right'>ลูกค้า :" + cus_name + "</div>" +
-                      "<hr style='width: 80%;'>" +
+                      "<div style='width: 7.5cm;'>" +
+                        "<div class='txt-ct'>PPS AUTO GROUP " + b_name + "</div>" +
+                        "<div class='txt-ct'>" + data + "</div>" +
+                        "<div class='txt-ct'>" + datetime + "</div>" +
+                        "<div class='txt-ct'>ผู้บันทึก :" + localStorage.name + "</div>" +
+                        "<div class='txt-ct'>ลูกค้า :" + cus_name + "</div>" +
+                      "<hr style='width: 80%; border-top: 1px dashed; border-bottom: none;'>" +
 
                       ""+text+""+
 
-                      "<hr style='width: 80%;'>" +
+                      "<hr style='width: 80%; border-bottom: 1px dashed; border-top: none;'>" +
 
                       "<div class='txt-left'>รวม</div>" +
                       "<div class='txt-right'>3000</div>" +
