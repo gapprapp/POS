@@ -49,23 +49,7 @@
         }
     </style>
 
-    <script>
-        $('#input-get').on("keyup input", function(){
-            var money = $('#input-get').val();
-            var net = $('#input-total').html();
-            if(money - net < 0){
-                $('#input-change').text("");
-            }else{
-                $('#input-change').text(money - net);
-            }
-        });
-
-        $('#input-discount').on("keyup input", function(){
-            var dis = $('#input-discount').val();
-            var sum = $('#input-sum').html();          
-            $('#input-total').text(sum - dis);
-            $('#input-change').text(('#input-get').val() - ('#input-total').html());            
-        });
+    <script>   
 
         var order_id,branch_id;
         var count;
@@ -134,7 +118,7 @@
         function chng_amt(arg,amt_old){
             var amt = $('#input-amt-' + arg).val();
             var prod_id = $('#span-'+arg).html();
-            var price = $('#input-price-' + arg).val();
+            var price = $('#input-price-' + arg).html();
             var total_old = price*amt_old;
             var total = price*amt;
             $.ajax({
@@ -149,7 +133,7 @@
                         $('#input-sum').text($('#input-sum').html()-total_old+parseInt(total));                      
                     }
                     $('#input-total').text($('#input-sum').html()-$('#input-discount').val());
-                    $('#input-change').text($('#input-total').html()-$('#input-get').val());
+                    $('#input-change').text($('#input-get').val()-$('#input-total').html());
                 }
             });
         }
@@ -183,14 +167,20 @@
                 $('#price-'+j).text($('#input-price-' + j).html()+ " x " +  $('#input-amt-' + j).val());
             }
             var jsonString = JSON.stringify(json);
+            var sum = $('#input-sum').html()
+            var dis = $('#input-discount').val()
+            var total = $('#input-total').html()
+            var get = $('#input-get').val()
+            var change = $('#input-change').html()
             var datastr = {'JSON': jsonString, 
-            'sum': $('input-sum').html(), 
-            'discount': $('input-discount').val(), 
-            'total': $('input-total').html(), 
-            'get': $('input-get').val(), 
-            'change': $('input-change').html(),
+            'sum': sum, 
+            'discount': dis, 
+            'total': total, 
+            'get': get, 
+            'change': change,
             'order_id':order_id,
             'branch_id':branch_id};
+            //console.log(datastr);
 
             $.ajax({
                 url: "http://150.95.26.163:8080/gitmew/php/update_order_item.php",
@@ -496,6 +486,23 @@
             } else if ($("#menu-toggle").text() == "กลับ") {
                 $("#menu-toggle").text("รายการ");
             }
+        });
+
+        $('#input-get').on("keyup input", function(){           
+            var money = $('#input-get').val();
+            var net = $('#input-total').html();
+            if(money - net < 0){
+                $('#input-change').text("");
+            }else{
+                $('#input-change').text(money - net);
+            }
+        });
+
+        $('#input-discount').on("keyup input", function(){
+            var dis = $('#input-discount').val();
+            var sum = $('#input-sum').html();          
+            $('#input-total').text(sum - dis);
+            $('#input-change').text($('#input-get').val() - $('#input-total').html());            
         });
     </script>
 </body>
