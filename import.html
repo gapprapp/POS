@@ -79,7 +79,7 @@
             data: {}
           },
 
-          preparePostData: function(data) {           
+          preparePostData: function(data) {          
             data.phrase = $("#name").val();
             return data;
           },
@@ -1190,6 +1190,17 @@
           }
       });
 
+      $('#name').on('input', function() {
+        var name = $('#name').val();           
+        if(name == ""){
+          $('#barcode').val("");
+          $('#price').val("");
+          $('#fund').val("");     
+          $('#amount').val("1");
+          $("#show-cus-container").empty();
+          $("#show-amt-container").empty();
+        }            
+      });      
 
     </script>
 </body>

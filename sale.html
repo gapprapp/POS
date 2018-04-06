@@ -271,7 +271,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ลด : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="discount-money" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 4px; padding-bottom: 4px; color: #fd8b5e">
+                    <input id="discount-money" onchange="chng_discount()"  data-index="5" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 4px; padding-bottom: 4px; color: #fd8b5e">
                   </div>
                   <div class="col-2"></div>
                 </div> <br>
@@ -291,7 +291,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>รับ : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="get-money" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 5px; padding-bottom: 4px; color: #DBBD5B">
+                    <input id="get-money" type="number" data-index="6" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 5px; padding-bottom: 4px; color: #DBBD5B">
                   </div>
                   <div class="col-2"></div>
                 </div> <br>
@@ -408,18 +408,31 @@
 
       });
 
-       $('#name').on('input', function() {
-            var name = $('#name').val();           
-            if(name == ""){
-               reset();
-            }            
-        });      
+      $('#name').on('keyup input', function() {
+          var name = $('#name').val();           
+          if(name == ""){
+              reset();
+          }            
+      });      
 
       $('#amount').on("keyup input", function(){
           var price = $('#price').val();
           var amount = $('#amount').val();
           var total = price*amount;
           $('#total').val(total);
+      });
+
+      $('#discount-money').on("keyup input", function(){
+        var sum = $('#net-price').val();
+        var dis = $('#discount-money').val();       
+        $('#final-price').val(sum - dis);
+        var money = $('#get-money').val();  
+        var net = $('#final-price').val();  
+        if(money - net < 0){
+          $('#change-money').val("");
+        }else{
+          $('#change-money').val(money - net);
+        }    
       });
 
       $('#get-money').on("keyup input", function(){
@@ -430,17 +443,11 @@
         }else{
           $('#change-money').val(money - net);
         }
-      });
-
-      /*$('#discount-money').on("keyup input", function(){
-        var discount = $('#discount-money').val();
-        var net = $('#final-price').val();
-        $('#final-price').val(net - discount);
-      });*/
+      });     
 
       var modal = false;
       $('#myModal').on('shown.bs.modal', function() {
-        $('#get-money').focus();
+        $('#discount-money').focus();
         modal = true;
       })
 
@@ -484,10 +491,10 @@
           if (objEvent.keyCode == 13) {  //enter pressed
               objEvent.preventDefault();           
               var $this = $(objEvent.target);
-              var i_enter = parseFloat($this.attr('data-index'));                      
+              var i_enter = parseFloat($this.attr('data-index'));                    
               if(i_enter == 4){
                 add();
-              }else if(isNaN(i_enter) && modal){
+              }else if(i_enter == 6 && modal){
                 $("#btn_save").click();        
               }else{
                 $('[data-index="' + (i_enter+1).toString() + '"]').focus();
@@ -647,6 +654,20 @@
           }
         }
       });
+    }
+
+    function chng_discount(){   
+      var dis_old = $('#total-discount').val();  
+      var dis = $('#discount-money').val();      
+      if(dis_old > dis){
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณากรอกลดราคาเท่ากับหรือมากกว่า " + dis_old
+        });  
+        $('#discount-money').val(dis_old);    
+        $('#discount-money').focus();
+      }
     }
     
     var total_old,dis_old;
