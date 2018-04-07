@@ -43,14 +43,14 @@
     <script>
         var max_page_no = 0;
         $(document).ready(function () {
-            if(!localStorage.user_id){
+            /*if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }   
+            } */  
             // Get max
             var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
             $.post(path, {
@@ -100,7 +100,7 @@
                                     "<button id='btn-edit-" + i + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + i + ")'>" +
                                     "<i id='i-edit-" + i + "' class='fa fa-edit'></i>" +
                                     "</button>" +
-                                    "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                                    "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
                                     "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
                                     "</button>" +
                                     "</div>" +
@@ -287,7 +287,7 @@
                                     "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
                                     "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
                                     "</button>" +
-                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
                                     "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                                     "</button>" +
                                     "</div>" +
@@ -361,7 +361,7 @@
                                     "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
                                     "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
                                     "</button>" +
-                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
                                     "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                                     "</button>" +
                                     "</div>" +
@@ -659,8 +659,113 @@
             location.reload();
         }
 
+        function add_new_cus(arg){
+            // add cus to db
+            // check 
+            if($("#add-name-"+arg).val() != "" && $("#add-addr-"+arg).val() != "" && $("#add-tel-"+arg).val() != ""){
+                $("#add-name-"+arg).prop('disabled', true);
+                $("#add-addr-"+arg).prop('disabled', true);
+                $("#add-tel-"+arg).prop('disabled', true);
+
+                $("#btn-add-"+arg).prop('hidden', true);
+                $("#btn-add-edit-"+arg).prop('hidden', false);
+            }else{
+                $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: "กรุณากรอกข้อมูลลูกค้าให้ครบถ้วน"
+                });
+            }
+            
+        }
+
+        function edit_new_cus(arg){
+            $("#add-name-"+arg).prop('disabled', false);
+            $("#add-addr-"+arg).prop('disabled', false);
+            $("#add-tel-"+arg).prop('disabled', false);
+
+            $("#btn-add-save-"+arg).prop('hidden', false);
+            $("#btn-add-edit-"+arg).prop('hidden', true);
+            $("#btn-add-del-"+arg).prop('hidden', false);
+        }
+
+        function save_new_cus(arg){
+            // update cus to db
+            $("#add-name-"+arg).prop('disabled', true);
+            $("#add-addr-"+arg).prop('disabled', true);
+            $("#add-tel-"+arg).prop('disabled', true);
+
+            $("#btn-add-save-"+arg).prop('hidden', true);
+            $("#btn-add-edit-"+arg).prop('hidden', false);
+            $("#btn-add-del-"+arg).prop('hidden', true);
+        }
+
+        function del_new_cus(arg){
+            $("#add-"+arg).remove();
+            for(i = arg+1; i <= add_index; i++){
+                $("#add-"+i).prop('id', "add-"+(i-1));
+                str = $("#add-no-"+i).text()-1;
+                $("#add-no-"+i).text("+"+str+"");
+                $("#add-no-"+i).prop('id', "add-no-"+(i-1));
+                $("#add-name-"+i).prop('id', "add-name-"+(i-1));
+                $("#add-addr-"+i).prop('id', "add-addr-"+(i-1));
+                $("#add-tel-"+i).prop('id', "add-tel-"+(i-1));
+
+                $("#btn-add-save"+i).attr('onclick', "save_new_cus(" + (i - 1) + ")");
+                $("#btn-add-edit"+i).attr('onclick', "edit_new_cus(" + (i - 1) + ")");
+                $("#btn-add-del"+i).attr('onclick', "del_new_cus(" + (i - 1) + ")");
+
+                $("#btn-add-save"+i).prop('id', "btn-add-save-"+(i-1));
+                $("#btn-add-edit"+i).prop('id', "btn-add-edit-"+(i-1));
+                $("#btn-add-del"+i).prop('id', "btn-add-del-"+(i-1));
+            }
+            add_index--;
+        }
+
+        var add_index = 0;
         function add_cus() {
-            window.location = "add_cus.html?mng=1";
+
+            // Check before is added
+            if(add_index > 0 && $("#btn-add-"+add_index).is(':visible')){
+                return 0;
+            }
+            add_index++;
+            if(add_index == 1)
+                $(".add-group").prop('hidden', false);
+
+            var text_html = "<li id='add-"+add_index+"' class='list-group-item text-center rounded'>"+
+                    "<div class='row'>"+
+                        "<div class='col-3 text-center'>"+
+                            "<div class='input-group-prepend'>"+
+                                "<span id='add-no-"+add_index+"' class='input-group-text' style='margin-right: 8px;'>+"+add_index+"</span>"+
+                                "<input id='add-name-"+add_index+"' type='text' class='form-control text-center'>"+
+                           " </div>"+
+                        "</div>"+
+                        "<div class='col-6 text-center'>"+
+                            "<input id='add-addr-"+add_index+"' type='text' class='form-control text-center'>"+
+                        "</div>"+
+                        "<div class='col-2 text-center'>"+
+                            "<input id='add-tel-"+add_index+"' type='text' class='form-control text-center'>"+
+                        "</div>"+
+                        "<div class='col-1' text-center' style='margin-top: 3px;'>"+
+                            "<button id='btn-add-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_new_cus("+add_index+")'>"+
+                                "<i id='i-edit-1' class='fa fa-plus'></i>"+
+                            "</button>"+
+                            "<button id='btn-add-save-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='save_new_cus("+add_index+")' hidden>"+
+                                "<i id='i-edit-1' class='fa fa-check-square'></i>"+
+                            "</button>"+
+                            "<button id='btn-add-edit-"+add_index+"' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='edit_new_cus("+add_index+")' hidden>"+
+                                "<i id='i-edit-1' class='fa fa-edit'></i>"+
+                            "</button>"+
+                            "<button id='btn-add-del-"+add_index+"' class='btn btn-sm btn-danger' onclick='del_new_cus("+add_index+")' data-toggle='modal'data-target='#myModal' hidden>"+
+                                "<i id='i-del-' class='fa fa-minus'></i>"+
+                            "</button>"+
+                        "</div>"+
+                    "</div>"+
+                "</li>";
+
+            $('.add-group').append(text_html);
+            $("#add-name-"+add_index).focus();
         }
 
         function logout(){
@@ -748,6 +853,36 @@
                     <div class="col-1 text-center"></div>
                 </div>
                 <br>
+
+            <!-- Add -->
+            <ul class="add-group" style="padding-right: 20px; padding-left: 20px;" hidden>
+                <!-- Append text html 
+                <li id='add-1' class='list-group-item text-center rounded'>
+                    <div class="row">
+                        <div class="col-3 text-center">
+                            <div class="input-group-prepend">
+                                <span class='input-group-text' style='margin-right: 8px;'>+1</span>
+                                <input id="add-name-1" type="text" class="form-control text-center">
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <input id="add-addr-1" type="text" class="form-control text-center">
+                        </div>
+                        <div class="col-2 text-center">
+                            <input id="add-tel-1" type="text" class="form-control text-center">
+                        </div>
+                        <div class="col-1 text-center" style="margin-top: 3px;">
+                            <button id='btn-add-1' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_cus("1")'>
+                                <i id='i-edit-1' class='fa fa-plus'></i>
+                            </button>
+                            <button id='btn-del-1' class='btn btn-sm btn-danger' onclick='del_row("1")' data-toggle='modal'
+                                data-target='#myModal' hidden>
+                                <i id='i-del-' class='fa fa-minus'></i>
+                            </button>
+                        </div>
+                    </div>
+                </li>-->
+            </ul>    
 
                 <ul class="list-group" style="padding-right: 20px; padding-left: 20px;">
                     <!-- Append text html -->
