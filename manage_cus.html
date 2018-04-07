@@ -43,6 +43,14 @@
     <script>
         var max_page_no = 0;
         $(document).ready(function () {
+            if(!localStorage.user_id){
+                $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณาเข้าสู่ระบบก่อน"
+                });
+                window.location = "login.html";
+            }   
             // Get max
             var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
             $.post(path, {

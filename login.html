@@ -97,9 +97,13 @@
                             content: "ชื่อหรือรหัสผ่านไม่ถูกต้อง",
                         });
                     }else{
-                        localStorage.name = name
-                        localStorage.user_id = data;
-                        window.location = "sale.html";
+                        var obj = jQuery.parseJSON(data);
+                        $.each(obj, function(i, field){
+                            localStorage.name = name
+                            localStorage.user_id = field.user_id;
+                            localStorage.role = field.role;
+                            window.location = "sale.html";
+                        });                      
                     }
                     }                            
                 });  

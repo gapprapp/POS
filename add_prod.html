@@ -42,6 +42,14 @@
   <script>
     var mng = 0;
     $(document).ready(function() {
+      if(!localStorage.user_id){
+        $.alert({
+        icon: 'fa fa-warning',
+        title: 'เตือน',
+        content: "กรุณาเข้าสู่ระบบก่อน"
+        });
+        window.location = "login.html";
+      }   
       url = new URL(window.location.href);
       mng = url.searchParams.get("mng");
 

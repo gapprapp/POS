@@ -66,19 +66,16 @@
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            } 
+            }   
 
-            $.ajax({
-                url:"http://150.95.26.163:8080/gitmew/php/get_role.php",
-                type:"POST",
-                data:{'user_id': localStorage.user_id},
-                async: false,
-                success:function(data)
-                {                   
-                    role = data;
-                    console.log(role);
-                }
-            });    
+            if(localStorage.role == "user"){
+                $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
+                });
+                window.history.back();
+            }          
 
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
@@ -198,11 +195,11 @@
         });
 
         function open_edit(arg) {
-            if(role == "user"){
+            if(localStorage.role == "manager"){
                 $.alert({
                     icon: 'fa fa-warning',
                     title: 'เตือน',
-                    content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
+                    content: 'อนุญาติสำหรับแอดมินเท่านั้น',
                 });
                 return 0;
             }
