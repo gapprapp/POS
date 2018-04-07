@@ -84,7 +84,7 @@
 </head>
 
 <body>
-    <div id="wrapper" style="overflow-y: hidden;">
+    <div id="wrapper">
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
@@ -172,7 +172,7 @@
                 <div class="col-2" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="barcode" type="text" class="form-control text-center" readonly>
                 </div>
-                <div class="col-3" style='padding-left: 5px; padding-right: 5px;'>
+                <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
                 </div>
                 <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
@@ -817,7 +817,7 @@
       // BY The Kit
       var bottom = $(window).height() - $("#show_list_add").offset().top - $("#show_list_add").height();
       // Always scroll to the bottom
-      if(bottom < 200){
+      if(bottom < 250){
         $("#show_list_add").css('max-height', $("#show_list_add").height());
         $("#show_list_add").animate({scrollTop: $('#show_list_add').prop('scrollHeight')});
       }      
