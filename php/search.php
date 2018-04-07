@@ -1,5 +1,4 @@
 <?php
-//fetch.php
     $conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos"); 
     $data = $_POST['phrase'];   
       
@@ -11,6 +10,8 @@
 
     if(mysqli_num_rows($result) > 0){    
       while($row = mysqli_fetch_array($result)){ 
+        $old = array('old_price' => $row['prod_price']);
+        array_push($row,$old);
         if(isset($_GET['cus_id'])){
             $prod_id = $row['prod_id'];
             $cus_id = $_GET['cus_id'];
@@ -21,7 +22,7 @@
                      $row['prod_price'] = $row1['special_prod_price'];                    
                 }		
             }
-        }
+        }       
         $output[] = $row;
       }   
     }else{    
@@ -33,5 +34,6 @@
     }else{
         echo "fail";
     }
+    mysqli_close($conn);
 
 ?>
