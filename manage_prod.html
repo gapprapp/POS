@@ -203,6 +203,9 @@
                   "<button id='btn-edit-" + i + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + i + ")'>" +
                   "<i id='i-edit-" + i + "' class='fa fa-edit'></i>" +
                   "</button>" +
+                  "<button id='btn-info-" + i + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
+                   " <i class='fa fa-info-circle'></i>"+
+                  "</button>"+
                   "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' data-toggle='modal' data-target='#myModal' hidden>" +
                   "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
                   "</button>" +
@@ -242,6 +245,7 @@
       $("#price-" + arg).prop('disabled', false);
       $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
       $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+      $("#btn-info-"+arg).prop('hidden',true);
       $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
       $("#btn-del-" + arg).prop('hidden', false);
     }
@@ -518,6 +522,9 @@
                 "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
                 "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
                 "</button>" +
+                "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
+                   " <i class='fa fa-info-circle'></i>"+
+                  "</button>"+
                 "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
                 "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                 "</button>" +
@@ -690,6 +697,9 @@
                   "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
                   "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
                   "</button>" +
+                  "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
+                   " <i class='fa fa-info-circle'></i>"+
+                  "</button>"+
                   "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
                   "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                   "</button>" +
@@ -1332,10 +1342,6 @@
         content: 'บันทึกรูปภาพเสร็จสิ้น',
       });
     }
-
-    function del_amt(){
-      // 
-    }
   </script>
 </head>
 
@@ -1402,9 +1408,6 @@
             <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
             <button class="btn btn-info btn-md" onclick="add_prod();">เพิ่มสินค้า</button>
             <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด</button>
-            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#infoModal" onclick="show_info('1');">
-              <i class="fa fa-info-circle"></i>
-            </button>
           </div>
         </div>
       </div>
