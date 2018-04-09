@@ -121,8 +121,6 @@
                 $('#price').val(price);
                 $('#fund').val(cost);     
                 $('#amount').val("1");
-                $("#show-cus-container").empty();
-                $("#show-amt-container").empty();
 
                 $.ajax({
                   type: "POST",
@@ -1132,7 +1130,7 @@
                       <input id="input-unit-price" type="number" class="form-control text-center no-spin" placeholder="ราคาต่อหน่วย">
                     </div>
                     <div class="col-2 text-center" style="margin-top: 6px;">
-                      <button id="add-amt" class="btn btn-sm btn-success" onclick="add_unit();">เพิ่ม</button>
+                      <button class="btn btn-sm btn-success" onclick="add_unit();">เพิ่ม</button>
                     </div>
                     <div class="col-1"></div>
                   </div>
