@@ -16,8 +16,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <link href="css/magicsuggest-min.css" rel="stylesheet">
-    <script src="js/magicsuggest-min.js"></script>
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+     <!-- Easy-autocomplete -->
+     <script src="js/jquery.easy-autocomplete.min.js"></script>
+     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
 
     <!-- Sidbar -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
@@ -78,7 +84,7 @@
 </head>
 
 <body>
-    <div id="wrapper" style="overflow-y: hidden;">
+    <div id="wrapper">
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
@@ -86,7 +92,9 @@
               <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
               <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
               <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>              
+              <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+              <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                
               <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
@@ -103,35 +111,40 @@
                 <h3 id="nav-title">ขายสินค้า</h3>
               </div>
             </nav>
+            
+            <!-- 4 4 4 4 4 4 4 4 -->
+            <div class="row">
+              <div class="col-2"></div>
+              <div id="date" class="col-2 text-left text-muted"></div>
+              <div class="col-4"></div>
+              <div class="col-3 text-left text-muted">ผู้ทำรายการ :
+                <div id="user" class="btn-group col-4 text-center text-muted">
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-2"></div>
+              <div class="col-5 text-left text-muted">ชื่อลูกค้า :
+                <div class="btn-group text-center text-muted">
+                  <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
+                </div>
+              </div>
+              <div class="col-1"></div>
+              <div class="col-4 text-left text-muted dropdown">ของออกจาก :
+                <div class="btn-group">
+                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              
+                  </select>
+                </div>
+              </div>
+            </div>
+            </div>
+            <hr style="width: 90%; margin-top: 0;">
 
             <div class="container-fullwidth justify-content-center">
-              <!-- 4 4 4 4 4 4 4 4 -->
-              <div class="row">
-                <div id="date" class="col-6 text-center text-muted"></div>
-                <div class="col-6 text-center text-muted dropdown">ของออกจาก :
-                  <div class="btn-group">
-                    <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
-                    </select>
-                  </div>
-                </div>
-                </div> <br>
-                <div class="row">
-                  <div class="col-6 text-center text-muted">ชื่อลูกค้า :
-                    <div class="btn-group col-4 text-center text-muted">
-                        <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
-                    </div>
-                  </div>
-                  <div class="col-6 text-center text-muted">ผู้ทำรายการ :
-                    <div id="user" class="btn-group col-4 text-center text-muted">
-                    </div>
-                  </div>
-                  </div>
-                </div>
-              <hr style="width: 90%;">
-
               <!-- Title -->
-              <div class="row" style="margin-left: 50px;">
+              <div class="row" style="margin-left: 50px; margin-bottom: 10px;">
                 <div class="col-1 text-center">แถม</div>
                 <div class="col-2 text-center">บาร์โค้ด</div>
                 <div class="col-3 text-center">รายการสินค้า</div>
@@ -141,7 +154,7 @@
                 <div class="col-1 text-center">รวม</div>
                 <div class="col-1 text-center">ส่วนลด</div>
                 <div class="col-1"></div>
-              </div> <br>
+              </div>
               <!-- Show -->
               <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
                 <!-- Append here!! -->
@@ -159,7 +172,7 @@
                 <div class="col-2" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="barcode" type="text" class="form-control text-center" readonly>
                 </div>
-                <div class="col-3" style='padding-left: 5px; padding-right: 5px;'>
+                <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
                 </div>
                 <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
@@ -213,7 +226,7 @@
           <div class="col-1"></div>
           <div class="col-3 text-right" style="padding-top: 10px;">
             <div class="input-group">
-              <button id="btn_checkbill" class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check()">คิดเงิน</button>
+              <button id="btn_checkbill" class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check_bill()">คิดเงิน</button>
               <button id="print-title" class="btn btn-info" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">พิมพ์
                 <span>
                   <i class="fa fa-print"></i>
@@ -258,8 +271,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ลด : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="discount-money" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 4px; padding-bottom: 4px; color: #fd8b5e"
-                    readonly>
+                    <input id="discount-money" onchange="chng_discount()"  data-index="5" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 4px; padding-bottom: 4px; color: #fd8b5e">
                   </div>
                   <div class="col-2"></div>
                 </div> <br>
@@ -279,7 +291,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>รับ : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="get-money" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 5px; padding-bottom: 4px; color: #DBBD5B">
+                    <input id="get-money" type="number" data-index="6" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 5px; padding-bottom: 4px; color: #DBBD5B">
                   </div>
                   <div class="col-2"></div>
                 </div> <br>
@@ -396,18 +408,31 @@
 
       });
 
-       $('#name').on('input', function() {
-            var name = $('#name').val();           
-            if(name == ""){
-               reset();
-            }            
-        });      
+      $('#name').on('keyup input', function() {
+          var name = $('#name').val();           
+          if(name == ""){
+              reset();
+          }            
+      });      
 
       $('#amount').on("keyup input", function(){
           var price = $('#price').val();
           var amount = $('#amount').val();
           var total = price*amount;
           $('#total').val(total);
+      });
+
+      $('#discount-money').on("keyup input", function(){
+        var sum = $('#net-price').val();
+        var dis = $('#discount-money').val();       
+        $('#final-price').val(sum - dis);
+        var money = $('#get-money').val();  
+        var net = $('#final-price').val();  
+        if(money - net < 0){
+          $('#change-money').val("");
+        }else{
+          $('#change-money').val(money - net);
+        }    
       });
 
       $('#get-money').on("keyup input", function(){
@@ -418,11 +443,11 @@
         }else{
           $('#change-money').val(money - net);
         }
-      });
+      });     
 
       var modal = false;
       $('#myModal').on('shown.bs.modal', function() {
-        $('#get-money').focus();
+        $('#discount-money').focus();
         modal = true;
       })
 
@@ -436,16 +461,21 @@
 
     jsonObj = [];   
     var datetime;
-    var sum = 0;
+    //var sum = 0;
     var sum_dis = 0;
     var cus_id = 0;
     var img;
     var prod_id;
+    var old_price;
     $(document).ready(function(){  
       if(!localStorage.user_id){
-        alert("กรุณาเข้าสู่ระบบก่อน");
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณาเข้าสู่ระบบก่อน"
+        });
         window.location = "login.html";
-      }    
+      } 
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
@@ -462,10 +492,10 @@
           if (objEvent.keyCode == 13) {  //enter pressed
               objEvent.preventDefault();           
               var $this = $(objEvent.target);
-              var i_enter = parseFloat($this.attr('data-index'));                      
+              var i_enter = parseFloat($this.attr('data-index'));                    
               if(i_enter == 4){
                 add();
-              }else if(isNaN(i_enter) && modal){
+              }else if(i_enter == 6 && modal){
                 $("#btn_save").click();        
               }else{
                 $('[data-index="' + (i_enter+1).toString() + '"]').focus();
@@ -485,11 +515,69 @@
 
         setTimeout(function() {$("#cus").focus();}, 100);
 
-        $('#name').magicSuggest({
-            data: 'http://150.95.26.163:8080/gitmew/php/search.php',
-            valueField: 'prod_id',
-            displayField: 'prod_name'
-        });
+        var options = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
+          },
+
+          getValue: function(element) {
+            //console.log(element);           
+            return element.prod_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {            
+            if($("#cus").val() == ""){
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
+              });
+              $("#cus").focus();
+              $("#name").val("");
+              return 0;
+            }else{
+              data.phrase = $("#name").val();
+              return data;
+            }
+           
+          },
+
+          list: {
+              maxNumberOfElements: 4,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+
+              onChooseEvent: function() {
+                var barcode = $("#name").getSelectedItemData().barcode;
+                var price = $("#name").getSelectedItemData().prod_price;
+                var unit_name = $("#name").getSelectedItemData().unit_name;
+                prod_id = $("#name").getSelectedItemData().prod_id;
+                img = $("#name").getSelectedItemData().img_string;
+                old_price = $("#name").getSelectedItemData()[7].old_price;
+
+                $('#barcode').val(barcode);
+                $('#price').val(price);
+                $('#unit').val(unit_name);
+                $('#total').val(price);
+              }
+          },
+          //requestDelay: 400,          
+        };
+
+        $("#name").easyAutocomplete(options);
 
         var options_cus = {
 
@@ -526,9 +614,62 @@
 
               onChooseEvent: function() {
                 cus_id = $("#cus").getSelectedItemData().customer_id;
+                if(jsonObj.length > 0 || $('#barcode').val != ""){
+                  if(jsonObj.length > 0){
+                    var sum_de = 0;
+                    for(var c = 0;c < jsonObj.length; c++){
+                      var arg = c+1;                     
+                      var amt = jsonObj[c].amount;
+                      var prod = jsonObj[c].prod_id;
+                      $.ajax({
+                        url:"http://150.95.26.163:8080/gitmew/php/check_detail_cus.php",
+                        method:"POST",
+                        data:{'cus_id': cus_id,'amt':amt,'prod_id':prod},
+                        async:false,
+                        success:function(data)
+                        {
+                          if(data != "fail"){
+                            var obj = jQuery.parseJSON(data);                          
+                            if(obj != null){
+                              $.each(obj, function(i, field){
+                                if(field.special_prod_price){
+                                  $('#price-'+arg).val(field.special_prod_price);
+                                  $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                                  jsonObj[c].price = field.special_prod_price;
+                                  jsonObj[c].total = $('#total-'+arg).val();
+                                }
+                                if(field.prod_price){                             
+                                  $('#total-'+arg).val(field.prod_price);                                 
+                                  jsonObj[c].total = $('#total-'+arg).val();
+                                  //jsonObj[c].check_amt = 1;
+                                }
+                              });
+                            }else{
+                              if(jsonObj[c].check_amt == 1){
+                                $('#price-'+arg).val(jsonObj[c].price_old);                                                 
+                                jsonObj[c].price = jsonObj[c].price_old;
+                              }else{
+                                $('#price-'+arg).val(jsonObj[c].price_old);
+                                $('#total-'+arg).val($('#price-'+arg).val()*amt );                                                           
+                                jsonObj[c].price = jsonObj[c].price_old;
+                                jsonObj[c].total = $('#total-'+arg).val();
+                              }
+                            }
+                          }                     
+                        }
+                      }); 
+                    sum_de += parseInt(jsonObj[c].total);
+                    }
+                    $('#total-price').val(sum_de);
+                    $('#total-net').val(sum_de-$('#total-discount').val());
+                  }
+                  if($('#barcode').val() != ""){
+                    reset();  
+                  }
+                }
               }
           },
-          requestDelay: 400,          
+          //requestDelay: 400,          
         };
 
         $("#cus").easyAutocomplete(options_cus);
@@ -556,6 +697,7 @@
       });      
     }
 
+    var check = 0;
     function chng_amt(){
       var amt = $('#amount').val();
       $.ajax({
@@ -566,44 +708,91 @@
         success : function(data){
           if(data != "fail"){           
             $('#total').val(data);
+            check = 1;
+          }else{
+            check = 0;
           }
         }
       });
     }
+
+    function chng_amt_edit(arg){
+      var amt = $('#amount-'+arg).val();
+      var prod = jsonObj[arg-1].prod_id;     
+      $.ajax({
+        type: "POST",
+        url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
+        data: {'prod_id' : prod,
+                'amount' : amt},
+        async:false,
+        success : function(data){
+          if(data != "fail"){           
+            $('#total-'+arg).val(data);
+            jsonObj[arg-1].check_amt = 1;          
+          }else{
+            jsonObj[arg-1].check_amt = 0; 
+          }
+        }
+      });
+    }
+
+    function chng_discount(){   
+      var dis_old = $('#total-discount').val();  
+      var dis = $('#discount-money').val();      
+      if(dis_old > dis){
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณากรอกลดราคาเท่ากับหรือมากกว่า " + dis_old
+        });  
+        $('#discount-money').val(dis_old);    
+        $('#discount-money').focus();
+      }
+    }
     
     var total_old,dis_old;
     function edit(arg){
-      $("#btn_edit"+arg).prop('hidden', true);
-      $("#btn_check" + arg).prop('hidden', false);
-      $("#btn_remove"+arg).prop('hidden', false);
-      $("#amount-" + arg).prop('readonly', false);
-      $("#dis-" + arg).prop('readonly', false);
-      var price = $('#price-'+arg).val();
-      var amt = $("#amount-" + arg).val();
-      var dis = $("#dis-" + arg).val();
-      total_old = price*amt;
-      if(dis == ""){
-        dis_old = 0;
-      }else{
-        dis_old = dis;
+      var stop = false;
+      for(var e = 1; e <= jsonObj.length; e++){
+        if($("#btn_check" + e).is(":visible")){
+          stop = true;
+        }
       }
+      if(stop){
+        return 0;
+      }else{
+        $("#btn_edit"+arg).prop('hidden', true);
+        $("#btn_check" + arg).prop('hidden', false);
+        $("#btn_remove"+arg).prop('hidden', false);
+        $("#amount-" + arg).prop('readonly', false);
+        $("#dis-" + arg).prop('readonly', false);
+        //var price = $('#price-'+arg).val();
+        //var amt = $("#amount-" + arg).val();
+        var dis = $("#dis-" + arg).val();
+        total_old = $("#total-" + arg).val();
+        if(dis == ""){
+          dis_old = 0;
+        }else{
+          dis_old = dis;
+        }
 
-      $('#amount-'+arg).on("keyup input", function(){
-          var price = $('#price-'+arg).val();
-          var amt = $("#amount-" + arg).val();
-          var total = price*amt;
-          $('#total-'+arg).val(total);
-      });
-
+        $('#amount-'+arg).on("keyup input", function(){
+            var price = $('#price-'+arg).val();
+            var amt = $("#amount-" + arg).val();
+            var total = price*amt;
+            $('#total-'+arg).val(total);
+        });
+      }    
     }
 
     function update(arg){
       $("#btn_edit" + arg).prop('hidden', false);
       $("#btn_check" + arg).prop('hidden', true);
       $("#btn_remove" + arg).prop('hidden', true);
-      $("#amount-" + arg).prop('disabled', true);
-      $("#dis-" + arg).prop('disabled', true);
+      $("#amount-" + arg).prop('readonly', true);
+      $("#dis-" + arg).prop('readonly', true);
 
+      var sum = $('#total-price').val();
       var dis = $("#dis-" + arg).val();
       if(dis == ""){
         dis = 0;
@@ -628,12 +817,13 @@
       // BY The Kit
       var bottom = $(window).height() - $("#show_list_add").offset().top - $("#show_list_add").height();
       // Always scroll to the bottom
-      if(bottom < 200){
+      if(bottom < 250){
         $("#show_list_add").css('max-height', $("#show_list_add").height());
         $("#show_list_add").animate({scrollTop: $('#show_list_add').prop('scrollHeight')});
-      }
+      }      
 
       $("#name").focus();
+      var sum = parseInt($('#total-price').val());
       var barcode = $('#barcode').val();
           if(barcode != "" && $('#name').val() != ""){
             index++;
@@ -656,7 +846,7 @@
                   <input id='price-"+index+"' class='form-control text-center' value='"+ $('#price').val() +"' readonly>\
                 </div>\
                 <div class='col-1' style='padding-left: 10px; padding-right: 0px;'>\
-                  <input id='amount-"+index+"' class='form-control text-center' min='1' value='"+ $('#amount').val() +"' readonly>\
+                  <input id='amount-"+index+"' onchange='chng_amt_edit("+index+")' class='form-control text-center no-spin' min='1' value='"+ $('#amount').val() +"' readonly>\
                 </div>\
                 <div class='col-1'>\
                   <input id='unit-"+index+"' class='form-control text-center' value='"+ $('#unit').val() +"' readonly>\
@@ -700,6 +890,8 @@
             item ["price"] =  $('#price').val();
             item ["amount"] =  $('#amount').val();
             item ["total"] =  $('#total').val();
+            item ["price_old"] =  old_price;
+            item ["check_amt"] =  check;
             if($('#prod-discount').val() != ""){
               item ["discount"] =  $('#prod-discount').val();
             }else{
@@ -768,6 +960,7 @@
         $('#box'+num).prop('checked', false);
         bonus(num);
       }
+      var sum = parseInt($('#total-price').val());
       var h_total = parseInt($('#total-'+num).val());
       var h_dis = parseInt($('#dis-'+num).val());
       sum -= h_total;
@@ -783,26 +976,27 @@
     }
 
     function bonus(num){
-        var h_total = parseInt($('#total-'+num).val());
-        var h_dis = parseInt($('#dis-'+num).val());
+      var sum = parseInt($('#total-price').val());
+      var h_total = parseInt($('#total-'+num).val());
+      var h_dis = parseInt($('#dis-'+num).val());
 
-        if($('#box'+num).is(':checked') == true){
-            sum -= h_total;
-            if(!isNaN(h_dis)){
-              sum_dis -= h_dis;
-            }
-        }else{
-            sum += h_total;
-            if(!isNaN(h_dis)){
-              sum_dis += h_dis;
-            }
-        }
-        $('#total-price').val(sum);
-        $('#total-discount').val(sum_dis);
-        $('#total-net').val(sum - sum_dis);
+      if($('#box'+num).is(':checked') == true){
+          sum -= h_total;
+          if(!isNaN(h_dis)){
+            sum_dis -= h_dis;
+          }
+      }else{
+          sum += h_total;
+          if(!isNaN(h_dis)){
+            sum_dis += h_dis;
+          }
+      }
+      $('#total-price').val(sum);
+      $('#total-discount').val(sum_dis);
+      $('#total-net').val(sum - sum_dis);
     }
 
-    function check(){     
+    function check_bill(){     
       var total = $('#total-price').val();
       var dis = $('#total-discount').val();
       var net = $('#total-net').val();
@@ -835,7 +1029,7 @@
           json.push(item);
           no++;
 
-          text = text + "<div class='txt-left'>"+jsonObj[i].name+"</div>" + "<div class='txt-right'>"+jsonObj[i].price+" x "+jsonObj[i].amount+"</div> </div>";
+          text = text + "<div class='txt-left'>"+jsonObj[i].name+"</div>" + "<div class='txt-right'>"+jsonObj[i].price+" x "+jsonObj[i].amount+"</div>";
         });
         var jsonString = JSON.stringify(json);
         var print = $('input[name=print-radio]:checked').val();
@@ -866,32 +1060,32 @@
                 if(data != "fail"){
                   if(print == "print"){
                     WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1.1cm; font-size: 0.6em; text-align:right; float: right; } .txt-left{ font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%; } .txt-ct{ font-size: 0.6em; text-align: center; }</style>" +
-                      "<div style='width: 7.9cm'>" +
-                      "<div class='txt-ct'>PPS AUTO GROUP " + b_name + "</div>" +
-                      "<div class='txt-ct'>" + data + "</div>" +
-                      "<div class='txt-ct'>" + datetime + "</div>" +
-                      "<div class='txt-left'>ผู้บันทึก : สมศร หมอนข้าง</div>" +
-                      "<div class='txt-right'>ลูกค้า : สมพร หมอนหนุน</div>" +
-                      "<hr style='width: 80%;'>" +
+                      "<div style='width: 7.5cm;'>" +
+                        "<div class='txt-ct'>PPS AUTO GROUP " + b_name + "</div>" +
+                        "<div class='txt-ct'>" + data + "</div>" +
+                        "<div class='txt-ct'>" + datetime + "</div>" +
+                        "<div class='txt-ct'>ผู้บันทึก :" + localStorage.name + "</div>" +
+                        "<div class='txt-ct'>ลูกค้า :" + cus_name + "</div>" +
+                      "<hr style='width: 80%; border-top: 1px dashed; border-bottom: none;'>" +
 
-                      "+text+"+
+                      ""+text+""+
 
-                      "<hr style='width: 80%;'>" +
+                      "<hr style='width: 80%; border-bottom: 1px dashed; border-top: none;'>" +
 
                       "<div class='txt-left'>รวม</div>" +
-                      "<div class='txt-right'>3000</div>" +
+                      "<div class='txt-right'>"+sum_price+"</div>" +
 
                       "<div class='txt-left'>ลด</div>" +
-                      "<div class='txt-right'>200</div>" +
+                      "<div class='txt-right'>"+ discount+"</div>" +
 
                       "<div class='txt-left'>สุทธิ</div>" +
-                      "<div class='txt-right'>2800</div>" +
+                      "<div class='txt-right'>"+ final_price+"</div>" +
 
                       "<div class='txt-left'>รับ</div>" +
-                      "<div class='txt-right'>3000</div>" +
+                      "<div class='txt-right'>"+ get_money+"</div>" +
 
                       "<div class='txt-left'>ทอน</div>" +
-                      "<div class='txt-right'>200</div>" +
+                      "<div class='txt-right'>"+ change_money+"</div>" +
                       "</div>");
                     WinPrint.document.close();
                     WinPrint.focus();
@@ -920,7 +1114,11 @@
         });
 
       }else{
-        alert("กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ");      
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ"
+        });     
       }
     }
 
