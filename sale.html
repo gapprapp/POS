@@ -624,38 +624,31 @@
                       $.ajax({
                         url:"http://150.95.26.163:8080/gitmew/php/check_detail_cus.php",
                         method:"POST",
-                        data:{'cus_id': cus_id,'amt':amt,'prod_id':prod},
+                        data:{'cus_id': cus_id,'prod_id':prod},
                         async:false,
                         success:function(data)
                         {
-                          if(data != "fail"){
-                            var obj = jQuery.parseJSON(data);
-                            console.log(obj);                          
-                            if(obj != null){
-                              $.each(obj, function(i, field){
-                                if(field.special_prod_price){
-                                  $('#price-'+arg).val(field.special_prod_price);
-                                  $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                                  jsonObj[c].price = field.special_prod_price;
-                                  jsonObj[c].total = $('#total-'+arg).val();
-                                  jsonObj[c].price_cus = field.special_prod_price;
-                                }
-                                if(field.prod_price){                             
-                                  $('#price-'+arg).val(field.prod_price);
-                                  $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                                  jsonObj[c].price = field.prod_price;
-                                  jsonObj[c].total = $('#total-'+arg).val();                             
-                                }
-                              });
-                            }else{
-                              if(jsonObj[c].check_amt == 0){
-                                $('#price-'+arg).val(jsonObj[c].price_old);
-                                $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                                jsonObj[c].price = jsonObj[c].price_old;
-                                jsonObj[c].total = $('#total-'+arg).val();       
-                              }                              
+                          if(data != "fail"){  
+                            console.log("have value");                         
+                            if(jsonObj[c].check_amt == 0){
+                              console.log("amt = 0");      
+                              $('#price-'+arg).val(data);
+                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                              jsonObj[c].price = data;
+                              jsonObj[c].total = $('#total-'+arg).val();                            
                             }
-                          }                     
+                            jsonObj[c].price_cus = data;                   
+                          }else{                      
+                            console.log("not have value");  
+                            if(jsonObj[c].check_amt == 0){
+                              console.log("amt = 0");      
+                              $('#price-'+arg).val(jsonObj[c].price_old);
+                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                              jsonObj[c].price = jsonObj[c].price_old;
+                              jsonObj[c].total = $('#total-'+arg).val();                            
+                            }                         
+                            jsonObj[c].price_cus = jsonObj[c].price_old;                        
+                          }                   
                         }
                       }); 
                     sum_de += parseInt(jsonObj[c].total);
