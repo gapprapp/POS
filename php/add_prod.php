@@ -17,7 +17,8 @@
         $unit = $data['unit']; 
         $fund = $data['fund']; 
         $price = $data['price']; 
-        $b64 = $data['b64'];     
+        $base64 = $data['b64'];  
+        $b64 = str_replace(" ","+",$base64);
        
         $sql = "SELECT prod_type FROM prod_type WHERE prod_type_name = '$type'";
         $result = mysqli_query($conn, $sql);
@@ -51,7 +52,7 @@
         $sql = "INSERT INTO product_branch(prod_id,branch_id,amount) VALUES ('$last_prod',1,'$amt1')";
         $result = mysqli_query($conn, $sql);
         $sql = "INSERT INTO product_branch(prod_id,branch_id,amount) VALUES ('$last_prod',2,'$amt2')";
-        $result = mysqli_query($conn, $sql);     
+        $result = mysqli_query($conn, $sql);  
     }  
 
     if($result){

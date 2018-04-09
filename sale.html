@@ -190,7 +190,7 @@
                 <div class="col-1" style='padding-right: 0px;'>
                   <input id="prod-discount" type="number" class="form-control text-center no-spin" data-index="4">
                 </div>
-                <div class="col-1"></div>
+                <div class="col-1"></div>              
               </div> <br>
 
               <!-- Two fuking btn-->
@@ -566,7 +566,7 @@
                 var unit_name = $("#name").getSelectedItemData().unit_name;
                 prod_id = $("#name").getSelectedItemData().prod_id;
                 img = $("#name").getSelectedItemData().img_string;
-                old_price = $("#name").getSelectedItemData()[7].old_price;
+                old_price = $("#name").getSelectedItemData()[7].old_price;                     
 
                 $('#barcode').val(barcode);
                 $('#price').val(price);
@@ -687,7 +687,16 @@
             $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
           });
         }
-      });      
+      });    
+
+       /*$.ajax({
+          url:"http://150.95.26.163:8080/gitmew/php/test.php",
+          method:"GET",
+        success:function(data)
+        {    
+          document.getElementById("test").src = data;     
+        }
+      });*/    
     }
 
     var check = 0;
