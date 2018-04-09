@@ -297,24 +297,6 @@
       }
 
       var number, name, price;
-      // Radio Check!!
-      var is_checked = "null";
-      $(function(){
-        $('input[type="radio"]').click(function(){
-          if ($(this).is(':checked')){
-            if(is_checked == $(this).attr('id')){
-              $(':radio').each(function () {
-                  $(this).removeAttr('checked');
-                  $('input[type="radio"]').prop('checked', false);
-                  $("#input-unit").prop('disabled', false);
-                });
-            }else{
-              //$(this).val();
-              $("#input-unit").attr('disabled', 'disabled');
-            }is_checked = $(this).attr('id');
-          }
-        });
-      });
 
       var c_unit = 0;
       var start_unit = 0;     
