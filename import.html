@@ -121,6 +121,8 @@
                 $('#price').val(price);
                 $('#fund').val(cost);     
                 $('#amount').val("1");
+                $("#show-cus-container").empty();
+                $("#show-amt-container").empty();
 
                 $.ajax({
                   type: "POST",
