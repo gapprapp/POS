@@ -9,7 +9,7 @@
     $start = $_POST['start'];
     $sort_by = $_POST['sort_by'];
     $order = $_POST['order'];
-    $txt = "(cancle)";
+    $txt = "(cancel)";
 
     $sql;
 	if($sort_by == "none" && $order == "none"){
