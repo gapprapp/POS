@@ -43,14 +43,14 @@
     <script>
         var max_page_no = 0;
         $(document).ready(function () {
-            /*if(!localStorage.user_id){
+            if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            } */  
+            }   
             // Get max
             var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
             $.post(path, {
@@ -663,12 +663,35 @@
             // add cus to db
             // check 
             if($("#add-name-"+arg).val() != "" && $("#add-addr-"+arg).val() != "" && $("#add-tel-"+arg).val() != ""){
-                $("#add-name-"+arg).prop('disabled', true);
-                $("#add-addr-"+arg).prop('disabled', true);
-                $("#add-tel-"+arg).prop('disabled', true);
+                var name = $('#add-name-'+arg).val();
+                var addr = $('#add-addr-'+arg).val();
+                var tel = $('#add-tel-'+arg).val();
+                $.ajax({
+                    url: "http://150.95.26.163:8080/gitmew/php/add_cus.php",
+                    type: "POST",
+                    data: {                     
+                        'name': name,
+                        'address': addr,
+                        'tel': tel
+                    },
+                    success: function (data) {
+                        if(data == "fail"){
+                            $.alert({
+                                icon: 'fa fa-warning',
+                                title: 'เตือน',
+                                content: "กรุณาลองอีกครั้ง"
+                            });
+                        }else{
+                            //$('#add-id-'+arg).text(data);
+                            $("#add-name-"+arg).prop('disabled', true);
+                            $("#add-addr-"+arg).prop('disabled', true);
+                            $("#add-tel-"+arg).prop('disabled', true);
 
-                $("#btn-add-"+arg).prop('hidden', true);
-                $("#btn-add-edit-"+arg).prop('hidden', false);
+                            $("#btn-add-"+arg).prop('hidden', true);
+                            $("#btn-add-edit-"+arg).prop('hidden', false);
+                        }                        
+                    }
+                });
             }else{
                 $.alert({
                     icon: 'fa fa-warning',
@@ -690,36 +713,102 @@
         }
 
         function save_new_cus(arg){
-            // update cus to db
-            $("#add-name-"+arg).prop('disabled', true);
-            $("#add-addr-"+arg).prop('disabled', true);
-            $("#add-tel-"+arg).prop('disabled', true);
+            var cus_id = $("#add-id-" + arg).text();
+            var name = $("#add-name-" + arg).val();
+            var addr = $("#add-addr-" + arg).val();
+            var tel = $("#add-tel-" + arg).val();           
 
-            $("#btn-add-save-"+arg).prop('hidden', true);
-            $("#btn-add-edit-"+arg).prop('hidden', false);
-            $("#btn-add-del-"+arg).prop('hidden', true);
+            $.ajax({
+                url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
+                type: "POST",
+                data: {
+                    'cus_id': cus_id,
+                    'name': name,
+                    'address': addr,
+                    'tel': tel
+                },
+                success: function (data) {
+                    if(data == "success"){
+                        $("#add-name-"+arg).prop('disabled', true);
+                        $("#add-addr-"+arg).prop('disabled', true);
+                        $("#add-tel-"+arg).prop('disabled', true);
+
+                        $("#btn-add-save-"+arg).prop('hidden', true);
+                        $("#btn-add-edit-"+arg).prop('hidden', false);
+                        $("#btn-add-del-"+arg).prop('hidden', true);
+                    }else{
+                        $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'เตือน',
+                            content: "กรุณาลองอีกครั้ง"
+                        });
+                    }
+                }
+            });    
+           
         }
 
         function del_new_cus(arg){
-            $("#add-"+arg).remove();
-            for(i = arg+1; i <= add_index; i++){
-                $("#add-"+i).prop('id', "add-"+(i-1));
-                str = $("#add-no-"+i).text()-1;
-                $("#add-no-"+i).text("+"+str+"");
-                $("#add-no-"+i).prop('id', "add-no-"+(i-1));
-                $("#add-name-"+i).prop('id', "add-name-"+(i-1));
-                $("#add-addr-"+i).prop('id', "add-addr-"+(i-1));
-                $("#add-tel-"+i).prop('id', "add-tel-"+(i-1));
+            console.log(arg);
+            $.confirm({
+                icon: 'fa fa-warning',
+                title: 'แน่ใจหรือว่าต้องการลบ!',
+                content: 'ต้องการลบรายการสินค้า!',
+                buttons: {
+                    danger: {
+                        btnClass: 'btn-danger',
+                        text: 'ลบ', // With spaces and symbols,
+                        action: function () {
+                            var cus_id = $("#add-id-" + arg).text();
+                            $.ajax({
+                                url: "http://150.95.26.163:8080/gitmew/php/delete_cus.php",
+                                type: "POST",
+                                async:false,
+                                data: {
+                                    'cus_id': cus_id
+                                },
+                                success: function (data) {
+                                    if (data == "success") {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'รายการสินได้ถูกลบแล้ว',
+                                        });
+                                        $("#add-"+arg).remove();
+                                        for(i = arg+1; i <= add_index; i++){
+                                            $("#add-"+i).prop('id', "add-"+(i-1));
+                                            str = $("#add-no-"+i).text()-1;
+                                            $("#add-no-"+i).text("+"+str+"");
+                                            $("#add-no-"+i).prop('id', "add-no-"+(i-1));
+                                            $("#add-name-"+i).prop('id', "add-name-"+(i-1));
+                                            $("#add-addr-"+i).prop('id', "add-addr-"+(i-1));
+                                            $("#add-tel-"+i).prop('id', "add-tel-"+(i-1));
 
-                $("#btn-add-save"+i).attr('onclick', "save_new_cus(" + (i - 1) + ")");
-                $("#btn-add-edit"+i).attr('onclick', "edit_new_cus(" + (i - 1) + ")");
-                $("#btn-add-del"+i).attr('onclick', "del_new_cus(" + (i - 1) + ")");
+                                            $("#btn-add-"+i).attr('onclick', "add_new_cus(" + (i - 1) + ")");
+                                            $("#btn-add-save-"+i).attr('onclick', "save_new_cus(" + (i - 1) + ")");
+                                            $("#btn-add-edit-"+i).attr('onclick', "edit_new_cus(" + (i - 1) + ")");
+                                            $("#btn-add-del-"+i).attr('onclick', "del_new_cus(" + (i - 1) + ")");
 
-                $("#btn-add-save"+i).prop('id', "btn-add-save-"+(i-1));
-                $("#btn-add-edit"+i).prop('id', "btn-add-edit-"+(i-1));
-                $("#btn-add-del"+i).prop('id', "btn-add-del-"+(i-1));
-            }
-            add_index--;
+                                            $("#btn-add-"+i).prop('id', "btn-add-"+(i-1));
+                                            $("#btn-add-save-"+i).prop('id', "btn-add-save-"+(i-1));
+                                            $("#btn-add-edit-"+i).prop('id', "btn-add-edit-"+(i-1));
+                                            $("#btn-add-del-"+i).prop('id', "btn-add-del-"+(i-1));
+                                        }
+                                        add_index--;
+                                    } else {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'โปรดลองอีกครั้ง',
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    ยกเลิก: function () { },
+                }
+            });         
         }
 
         var add_index = 0;
@@ -727,13 +816,16 @@
 
             // Check before is added
             if(add_index > 0 && $("#btn-add-"+add_index).is(':visible')){
+                $(".add-group").prop('hidden', true);
+                add_index--;
                 return 0;
-            }
-            add_index++;
-            if(add_index == 1)
-                $(".add-group").prop('hidden', false);
+            }             
+            add_index++;      
+            $("#add-"+add_index).remove();                            
+            $(".add-group").prop('hidden', false);
 
             var text_html = "<li id='add-"+add_index+"' class='list-group-item text-center rounded'>"+
+                    "<span id='add-id-"+add_index+"' hidden></span>" +
                     "<div class='row'>"+
                         "<div class='col-3 text-center'>"+
                             "<div class='input-group-prepend'>"+
