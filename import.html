@@ -127,7 +127,7 @@
                   url: "http://150.95.26.163:8080/gitmew/php/get_detail_cus.php",
                   data: {'prod_id': prod_id},                                     
                   success: function(data){                      
-                      if(data != "fail"){                
+                      if(data != "null"){                
                         var obj = jQuery.parseJSON(data);
                         console.log(obj);                        
                         $.each(obj, function(i, field){

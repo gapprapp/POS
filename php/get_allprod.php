@@ -57,7 +57,7 @@
 		while($row = $result->fetch_assoc()){						
 			$prod_id = $row['prod_id'];
 
-			$query = "SELECT amount FROM product_branch WHERE prod_id = '$prod_id'";
+			$query = "SELECT amount FROM product_branch WHERE prod_id = '$prod_id' ORDER BY branch_id ASC";
 			$result1 = mysqli_query($conn, $query);	
 			
 			if(mysqli_num_rows($result1) > 0){    

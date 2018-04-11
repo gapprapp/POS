@@ -54,15 +54,16 @@
 
   <script>
     var max_page_no = 0;
+    var cus_id;
     $(document).ready(function() {
-      /*if(!localStorage.user_id){
+      if(!localStorage.user_id){
           $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
           content: "กรุณาเข้าสู่ระบบก่อน"
           });
           window.location = "login.html";
-      }*/   
+      }   
 
       if(localStorage.role == "user"){
           $.alert({
@@ -71,7 +72,41 @@
               content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
           });
           window.history.back();
-      }          
+      }   
+      var options_cus = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+        },
+        getValue: function(element) {
+          //console.log(element);
+          return element.customer_name;
+        },
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+        preparePostData: function(data) {
+          data.phrase = $("#input-cus").val();
+          return data;
+        },
+        list: {
+            maxNumberOfElements: 3,
+            showAnimation: {
+                type: "slide",
+                time: 100
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 100
+            },
+            onChooseEvent: function() {
+              cus_id = $("#input-cus").getSelectedItemData().customer_id;
+            }
+        },      
+
+        };
+        $("#input-cus").easyAutocomplete(options_cus);
+
       // Get max
       var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
       $.post(path, {
@@ -206,7 +241,7 @@
                   "<button id='btn-info-" + i + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
-                  "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                  "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
                   "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
                   "</button>" +
                   "</div>" +
@@ -291,21 +326,7 @@
       });
     }
 
-    function save_edit(arg) {
-      $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
-      $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
-      $("#i-edit-" + arg).attr('class', 'fa fa-edit');
-      $("#btn-del-" + arg).prop('hidden', true);
-
-      $("#barcode-" + arg).prop('disabled', true);
-      $("#name-" + arg).prop('disabled', true);
-      $("#type-" + arg).prop('disabled', true);
-      $("#amount-1-" + arg).prop('disabled', true);
-      $("#amount-2-" + arg).prop('disabled', true);
-      $("#unit-" + arg).prop('disabled', true);
-      $("#fund-" + arg).prop('disabled', true);
-      $("#price-" + arg).prop('disabled', true);
-
+    function save_edit(arg) {    
       //Ajax save prod.. ..
       var prod_id = $("#span-"+arg).text();
       var barcode = $("#barcode-" + arg).val();
@@ -322,7 +343,7 @@
       if (amt2 == "") {
         amt2 = 0;
       }
-
+     
       $.ajax({
         url: "http://150.95.26.163:8080/gitmew/php/update_prod.php",
         type: "POST",
@@ -338,7 +359,22 @@
           'price': price
         },
         success: function(data) {
-          //alert(data);
+          if(data == "success"){
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
+            $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-edit');
+            $("#btn-del-" + arg).prop('hidden', true);
+            $("#btn-info-"+arg).prop('hidden',false);
+
+            $("#barcode-" + arg).prop('disabled', true);
+            $("#name-" + arg).prop('disabled', true);
+            $("#type-" + arg).prop('disabled', true);
+            $("#amount-1-" + arg).prop('disabled', true);
+            $("#amount-2-" + arg).prop('disabled', true);
+            $("#unit-" + arg).prop('disabled', true);
+            $("#fund-" + arg).prop('disabled', true);
+            $("#price-" + arg).prop('disabled', true);
+          }
         }
       });
     }
@@ -525,7 +561,7 @@
                 "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
-                "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
                 "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                 "</button>" +
                 "</div>" +
@@ -700,7 +736,7 @@
                   "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
-                  "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                  "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
                   "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                   "</button>" +
                   "</div>" +
@@ -1022,9 +1058,85 @@
     }
 
     var prod_id;
+    unit_get = [];
     function show_info(arg){
       // ajax get data for show in moodal
-      prod_id = arg;      
+      prod_id = arg;    
+      $.ajax({
+        url: "http://150.95.26.163:8080/gitmew/php/get_prod_info.php",
+        type: "POST",
+        data: {
+          'prod_id' : prod_id,        
+        },
+        //async:false,
+        success: function(data) { 
+            console.log(data);    
+            if(data != "null"){
+              var obj = jQuery.parseJSON(data);
+              console.log(obj);
+              $("#show-amt-container").empty();     
+              $("#show-cus-container").empty(); 
+              unit_get = [];  
+              c_cus = 0;   
+              c_unit = 0;             
+              $.each(obj, function(i, field){
+                if(i == obj.length-1){
+                  $("#row-img").prop('hidden', false);
+                  $("#img").attr('src', obj[i].img_string);
+                  $('#fileSelect').data('img', obj[i].img_string);
+                }else{
+                  if(!field.prod_price){                    
+                    c_cus++;
+                    start_cus = c_cus;
+                    start_cus++;
+                    if(c_cus == 1){
+                      header = "<div id='head-seted-cus' class='row'>" +
+                        "<div class='col-3'></div>" +
+                        "<div class='col-3 text-center'>ชื่อลูกค้า</div>" +
+                        "<div class='col-2 text-center'>ราคา</div>" +
+                        "<div class='col-1'></div>" +
+                        "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                      $("#show-cus-container").append(header);  
+                    }                                            
+
+                    var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
+                      "<span id='span-cus-"+c_cus+"' hidden>"+field.customer_id+"</span>" +
+                      "<div class='col-3'></div>" +
+                      "<div id='show-cus-" + c_cus + "' class='col-3 text-center' ondblclick='setCus(" + c_cus + ");'>"+field.prod_id+"</div>" +
+                      "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center' ondblclick='setCusPrice(" + c_cus + ");'>"+ field.special_prod_price +"</div>" +
+                      "<div class='col-1'><i id='cus-del-" + c_cus + "' class='fa fa-close' style='color: red' onclick='delrow_cus(" + c_cus + ");' hidden></i><i id='cus-check-" + c_cus + "' class='fa fa-check' style='color: green' onclick='checkrow_cus(" + c_cus + ");' hidden></i></div>" +
+                      "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+                    $("#show-cus-container").append(text_html);
+                  }else{                   
+                    c_unit++;
+                    start_unit = c_unit;
+                    start_unit++;
+                    if(c_unit == 1){
+                        header = "<div id='head-seted-amt' class='row'>" +
+                        "<div class='col-3'></div>" +
+                        "<div class='col-3 text-center'>จำนวน</div>" +
+                        "<div class='col-2 text-center'>ราคา</div>" +
+                        "<div class='col-1'></div>" +
+                        "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                      $("#show-amt-container").append(header);
+                    }
+                    
+                    var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
+                      "<div class='col-3'></div>" +
+                      "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>" + field.amt_threshold + "</div>" +
+                      "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>" + field.prod_price + "</div>" +
+                      "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
+                      "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+                    $("#show-amt-container").append(text_html);
+                    unit_get.push({old_unit:field.amt_threshold,
+                    unit:field.amt_threshold,
+                    unit_price:field.prod_price});
+                  }
+                }
+              });            
+            }
+        }
+      });  
     }
 
     function readURL(input) {
@@ -1205,6 +1317,22 @@
         $("#unit-del-"+arg).prop('hidden', false);
         $("#unit-check-"+arg).prop('hidden', true);
       }
+    
+    unit_add = [];   
+    function save_unit(){
+      for(var u = 1; u < start_unit; u++){
+        unit_get[u-1].unit = $("#show-unit-"+u).text();
+        unit_get[u-1].unit_price = $("#show-unit-price-"+u).text();         
+      } 
+      unit_add = [];
+      for(var v = start_unit; v <= c_unit; v++){        
+        unit_add.push({unit:$("#show-unit-"+v).text(),
+        unit_price:$("#show-unit-price-"+v).text()});           
+      } 
+      var str_uget = JSON.stringify(unit_get);   
+      var str_uadd = JSON.stringify(unit_add);   
+      console.log(str_uget + str_uadd); 
+    }
     var c_cus = 0;
     var start_cus = 0;  
     function add_cus() {
@@ -1244,6 +1372,7 @@
         }
 
         var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
+          "<span id='span-cus-"+c_cus+"' hidden>"+cus_id+"</span>" +
           "<div class='col-3'></div>" +
           "<div id='show-cus-" + c_cus + "' class='col-3 text-center' ondblclick='setCus(" + c_cus + ");'></div>" +
           "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center' ondblclick='setCusPrice(" + c_cus + ");'></div>" +
@@ -1329,6 +1458,24 @@
       $("#cus-del-"+arg).prop('hidden', false);
       $("#cus-check-"+arg).prop('hidden', true);
     }  
+   
+    cus_add = [];
+    cus_get = [];
+    function save_cus(){
+      cus_get = [];
+      for(var c = 1; c < start_cus; c++){
+        cus_get.push({cus_id:$("#span-cus-"+c).text(),
+        cus_price:$("#show-cus-price-"+c).text()});      
+      } 
+      cus_add = [];
+      for(var d = start_cus; d <= c_cus; d++){        
+        cus_add.push({cus_id:$("#span-cus-"+d).text(),
+        cus_price:$("#show-cus-price-"+d).text()});            
+      } 
+      var str_cget = JSON.stringify(cus_get);   
+      var str_cadd = JSON.stringify(cus_add);    
+      console.log(str_cget + str_cadd);   
+    }
 
     function save_pic(){
       var input = document.getElementById("fileSelect");
@@ -1347,9 +1494,9 @@
             },
             success: function(data) {
               if(data == "success"){
-                $("#row-img").prop('hidden', true);
-                $("#img").attr("src","");
-                $('#fileSelect').data('img', '');
+                //$("#row-img").prop('hidden', true);
+                //$("#img").attr("src","");
+                //$('#fileSelect').data('img', '');
                 $(".file-upload").removeClass('active');
                 $("#noFile").text("วางไฟล์ที่นี่.. ..");
                 $("#fileSelect").val("");     
@@ -1566,7 +1713,7 @@
             </div><br>
             <!-- Modal footer -->
             <div class="col-12 text-center">
-              <button type="button" class="btn btn-success" onclick="set_pay_title();">บันทึก <i class="fa fa-save"></i></button>
+              <button type="button" class="btn btn-success" onclick="save_unit();">บันทึก <i class="fa fa-save"></i></button>
               <button type="button" class="btn btn-primary" onclick="edit_amt();">แก้ไข <i class="fa fa-edit"></i></button>
               <button type="button" class="btn btn-danger" onclick="del_amt();">ลบ <i class="fa fa-close"></i></button>
             </div>
@@ -1594,7 +1741,7 @@
             </div><br>
             <!-- Modal footer -->
             <div class="col-12 text-center">
-              <button type="button" class="btn btn-success" onclick="set_pay_title();">บันทึก <i class="fa fa-save"></i></button>
+              <button type="button" class="btn btn-success" onclick="save_cus();">บันทึก <i class="fa fa-save"></i></button>
               <button type="button" class="btn btn-primary" onclick="set_pay_title();">แก้ไข <i class="fa fa-edit"></i></button>
               <button type="button" class="btn btn-danger" onclick="set_pay_title();">ลบ <i class="fa fa-close"></i></button>
             </div>
