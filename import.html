@@ -546,6 +546,48 @@
 
         $("#cus-del-"+arg).prop('hidden', true);
         $("#cus-check-"+arg).prop('hidden', false);
+
+         var options_cus = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+          },
+
+          getValue: function(element) {
+            //console.log(element);
+            return element.customer_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {
+            data.phrase = $("#set-cus-"+arg).val();
+            return data;
+          },
+
+          list: {
+              maxNumberOfElements: 3,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+
+              onChooseEvent: function() {
+                //cus_id = $("#set-cus-"+arg).getSelectedItemData().customer_id;
+              }
+          },      
+
+          };
+
+          $("#set-cus-"+arg).easyAutocomplete(options_cus);
       }
 
       function setCusPrice(arg) {
