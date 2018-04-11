@@ -1021,8 +1021,10 @@
       window.location = "login.html";
     }
 
+    var prod_id;
     function show_info(arg){
       // ajax get data for show in moodal
+      prod_id = arg;      
     }
 
     function readURL(input) {
@@ -1329,18 +1331,51 @@
     }  
 
     function save_pic(){
-      $("#row-img").prop('hidden', true);
-      $("#img").attr('src', '');
-      $('#fileSelect').data('img', '');
-      $(".file-upload").removeClass('active');
-      $("#noFile").text("วางไฟล์ที่นี่.. ..");
-      $("#fileSelect").val("");
+      var input = document.getElementById("fileSelect");
+      var file = input.files[0];
+      if (file == undefined) {
+        return 0;         
+      }else{
+        if (file.size < 15000000) {
+          var image = $("#fileSelect").data('img')
+          $.ajax({
+            url: "http://150.95.26.163:8080/gitmew/php/update_img.php",
+            type: "POST",
+            data: {
+              'prod_id' : prod_id,              
+              'img': image
+            },
+            success: function(data) {
+              if(data == "success"){
+                $("#row-img").prop('hidden', true);
+                $("#img").attr("src","");
+                $('#fileSelect').data('img', '');
+                $(".file-upload").removeClass('active');
+                $("#noFile").text("วางไฟล์ที่นี่.. ..");
+                $("#fileSelect").val("");     
 
-      $.alert({
-        icon: 'fa fa-check-circle',
-        title: 'สำเร็จ',
-        content: 'บันทึกรูปภาพเสร็จสิ้น',
-      });
+                $.alert({
+                  icon: 'fa fa-check-circle',
+                  title: 'สำเร็จ',
+                  content: 'บันทึกรูปภาพเสร็จสิ้น',
+                });
+              }else{
+                $.alert({
+                  icon: 'fa fa-warning',
+                  title: 'แจ้งเตือน',
+                  content: 'โปรดลองอีกครั้ง',
+                });
+              }
+            }
+          });
+        }else{
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'ไฟล์มีขนาดใหญ่เกินไป',
+            content: 'ไฟล์ขนาดเกิน 15 MB',
+          });
+        }
+      }      
     }
   </script>
 </head>
@@ -1579,7 +1614,7 @@
             </div> <br>
             <div id="row-img" class="row" hidden>
               <div class="col-12 text-center">
-               <img id='img' alt="" style="width: 400px; height: 400px;">
+               <img id='img' src="" alt="" style="width: 400px; height: 400px;">
               </div>
             </div> <br>
             <!-- Modal footer -->
