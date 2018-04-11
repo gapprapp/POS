@@ -1038,76 +1038,32 @@
     }
 
     var c_unit = 0;
-      var start_unit = 0;     
-      function add_unit() {
-        if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#input-unit-price").val() == ""){
-          $.alert({
-            icon: 'fa fa-warning',
-            title: 'เตือน',
-            content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-          });
-          return 0;
-        }        
-        c_unit++;       
-        // Radio is checked
-        var exist = false;
-        $('input[type="radio"]').each(function() {
-          if($(this).is(":checked")){
-            //alert($(this).val());
-            number = $(this).val();
-            price = $("#input-unit-price").val();
-            // Exist Check
-            for(var i = 1; i <= c_unit; i++){
-              if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
-                });
-                exist = true;
-              }
-            }
-            if(exist == false){
-              if (c_unit == 1) {
-                header = "<div id='head-seted-amt' class='row'>" +
-                  "<div class='col-3'></div>" +
-                  "<div class='col-3 text-center'>จำนวน</div>" +
-                  "<div class='col-2 text-center'>ราคา</div>" +
-                  "<div class='col-1'></div>" +
-                  "<div class='col-3'></div> <hr style='width: 65%'></div> ";
-                $("#show-amt-container").append(header);
-              }
-
-              var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
-                "<div class='col-3'></div>" +
-                "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>"+ number +"</div>" +
-                "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>"+ price +"</div>" +
-                "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
-                "<div class='col-3'></div> <hr style='width: 45%'></div> ";
-              $("#show-amt-container").append(text_html);
-            }
-            $(this).prop("checked", false);
-          }
+    var start_unit = 0;     
+    function add_unit() {
+      if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#input-unit-price").val() == ""){
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
         });
-
-        var isDisabled = $("#input-unit").prop('disabled');
-        if(!isDisabled){
-          number = $("#input-unit").val();
+        return 0;
+      }        
+      c_unit++;       
+      // Radio is checked
+      var exist = false;
+      $('input[type="radio"]').each(function() {
+        if($(this).is(":checked")){
+          //alert($(this).val());
+          number = $(this).val();
+          price = $("#input-unit-price").val();
+          // Exist Check
           for(var i = 1; i <= c_unit; i++){
             if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
-              if(number == ""){
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "กุรณากรอกจำนวน",
-                });
-              }else{
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
-                });
-              }
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
+              });
               exist = true;
             }
           }
@@ -1124,62 +1080,106 @@
 
             var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
               "<div class='col-3'></div>" +
-              "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>" + number + "</div>" +
-              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>" +  $("#input-unit-price").val() + "</div>" +
+              "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>"+ number +"</div>" +
+              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>"+ price +"</div>" +
               "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
               "<div class='col-3'></div> <hr style='width: 45%'></div> ";
             $("#show-amt-container").append(text_html);
-            $("#input-unit").val("");
+          }
+          $(this).prop("checked", false);
+        }
+      });
+
+      var isDisabled = $("#input-unit").prop('disabled');
+      if(!isDisabled){
+        number = $("#input-unit").val();
+        for(var i = 1; i <= c_unit; i++){
+          if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
+            if(number == ""){
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กุรณากรอกจำนวน",
+              });
+            }else{
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
+              });
+            }
+            exist = true;
           }
         }
-        $("#input-unit-price").val("");
-        $("#input-unit").removeAttr('disabled');
-      }
-
-      function setUnit(arg) {
-        var text = $("#show-unit-"+arg).text();
-        $("#show-unit-"+arg).text("");
-        var text_html = "<input id='set-unit-"+arg+"' type='text' class='form-control text-center' value='"+text+"'>";
-        $("#show-unit-"+arg).append(text_html);
-
-        $("#unit-del-"+arg).prop('hidden', true);
-        $("#unit-check-"+arg).prop('hidden', false);
-      }
-
-      function setUnitPrice(arg) {
-        var text = $("#show-unit-price-"+arg).text();
-        $("#show-unit-price-"+arg).text("");
-        var text_html = "<input id='set-unit-price-"+arg+"' type='number' class='form-control text-center' value='"+text+"'>";
-        $("#show-unit-price-"+arg).append(text_html);
-
-        $("#unit-del-"+arg).prop('hidden', true);
-        $("#unit-check-"+arg).prop('hidden', false);
-      }
-
-      function delrow_amt(arg) {
-        $.confirm({
-          icon: 'fa fa-warning',
-          title: 'แน่ใจหรือว่าต้องการลบ!',
-          content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
-          buttons: {
-            danger: {
-              btnClass: 'btn-danger',
-              text: 'ลบ',
-              action: function () {
-                var count = $("#show-amt-container").children().length;
-                if (count == 2) {
-                  $("#head-seted-amt").remove();
-                  c_unit--;
-                }
-                $("#unit-del-" + arg).closest('.row').remove();
-              }
-            },
-            ยกเลิก: function () { },
+        if(exist == false){
+          if (c_unit == 1) {
+            header = "<div id='head-seted-amt' class='row'>" +
+              "<div class='col-3'></div>" +
+              "<div class='col-3 text-center'>จำนวน</div>" +
+              "<div class='col-2 text-center'>ราคา</div>" +
+              "<div class='col-1'></div>" +
+              "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+            $("#show-amt-container").append(header);
           }
-        });
-      }
 
-      function checkrow_unit(arg) {
+          var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
+            "<div class='col-3'></div>" +
+            "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>" + number + "</div>" +
+            "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>" +  $("#input-unit-price").val() + "</div>" +
+            "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
+            "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+          $("#show-amt-container").append(text_html);
+          $("#input-unit").val("");
+        }
+      }
+      $("#input-unit-price").val("");
+      $("#input-unit").removeAttr('disabled');
+    }
+
+    function setUnit(arg) {
+      var text = $("#show-unit-"+arg).text();
+      $("#show-unit-"+arg).text("");
+      var text_html = "<input id='set-unit-"+arg+"' type='text' class='form-control text-center' value='"+text+"'>";
+      $("#show-unit-"+arg).append(text_html);
+
+      $("#unit-del-"+arg).prop('hidden', true);
+      $("#unit-check-"+arg).prop('hidden', false);
+    }
+
+    function setUnitPrice(arg) {
+      var text = $("#show-unit-price-"+arg).text();
+      $("#show-unit-price-"+arg).text("");
+      var text_html = "<input id='set-unit-price-"+arg+"' type='number' class='form-control text-center' value='"+text+"'>";
+      $("#show-unit-price-"+arg).append(text_html);
+
+      $("#unit-del-"+arg).prop('hidden', true);
+      $("#unit-check-"+arg).prop('hidden', false);
+    }
+
+    function delrow_amt(arg) {
+      $.confirm({
+        icon: 'fa fa-warning',
+        title: 'แน่ใจหรือว่าต้องการลบ!',
+        content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
+        buttons: {
+          danger: {
+            btnClass: 'btn-danger',
+            text: 'ลบ',
+            action: function () {
+              var count = $("#show-amt-container").children().length;
+              if (count == 2) {
+                $("#head-seted-amt").remove();
+                c_unit--;
+              }
+              $("#unit-del-" + arg).closest('.row').remove();
+            }
+          },
+          ยกเลิก: function () { },
+        }
+      });
+    }
+
+    function checkrow_unit(arg) {
         var unit = $("#set-unit-"+arg).val();
         var price = $("#set-unit-price-"+arg).val();
 
