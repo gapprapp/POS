@@ -1398,7 +1398,7 @@
         $("#unit-check-"+arg).prop('hidden', true);
       }
     
-    unit_add = [];   
+    unit_add = [];    
     function save_unit(){
       //console.log(start_unit);
       for(var u = 1; u < start_unit; u++){
@@ -1508,6 +1508,7 @@
     }
 
     function edit_cus(){ 
+      option = [];   
       var all_cus = 0;
       for(var i = 1; i <= c_cus; i++){
         if($("#set-cus-"+i).is(':visible')){          
@@ -1533,7 +1534,7 @@
           $("#cus-del-"+i).prop('hidden', true);
           $("#cus-check-"+i).prop('hidden', false);
        
-          var options_cus = {
+          option[i] = {
 
             url: function(phrase) {
               return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
@@ -1574,9 +1575,9 @@
                 }
             },      
 
-            };
+          };
          
-          $("#set-cus-"+i).easyAutocomplete(options_cus);     
+          $("#set-cus-"+i).easyAutocomplete(option[i]);     
         }      
       }
     }
