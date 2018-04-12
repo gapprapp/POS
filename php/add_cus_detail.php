@@ -13,7 +13,7 @@
         $cus_id = $data['cus_id'];    
         $cus_price = $data['cus_price'];
 
-        $sql = "UPDATE detail_customer SET customer_id = '$unit',special_prod_price = '$unit_price' 
+        $sql = "UPDATE detail_customer SET customer_id = '$cus_id',special_prod_price = '$cus_price' 
         WHERE customer_id = '$old_cus' AND prod_id = '$prod_id'"; 
         $result = mysqli_query($conn, $sql);    
     }
