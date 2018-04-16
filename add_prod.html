@@ -377,13 +377,14 @@
         });
         json_string = JSON.stringify(json_data);
         var dataString = "JSON=" + json_string;
-        console.log(dataString);
+        //console.log(dataString);
 
         $.ajax({
           type: "POST",
           url: "http://150.95.26.163:8080/gitmew/php/add_prod.php",
           data: dataString,
           success: function(data) {
+            console.log(data);
             if (data == "success") {
               $.alert({
                 icon: 'fa fa-check',
@@ -775,7 +776,7 @@
         item["fund"] = fund;
         item["price"] = price;
         item["b64"] = $("#fileSelect").data('img');
-        //alert($("#fileSelect").data('img'));
+        //console.log($("#fileSelect").data('img'));
         arr_data.push(item);
       }
 

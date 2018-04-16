@@ -12,13 +12,21 @@
             $result1 = mysqli_query($conn, $sql);
             if(mysqli_num_rows($result1) > 0) {
                 while($row1 = $result1->fetch_assoc()){
-                    $row['customer_id'] = $row1['customer_name'];
+                    $row['prod_id'] = $row1['customer_name'];
                 }
             }
 			$output[] = $row;
 		}
 	}
-
+    
+	$sql = "SELECT img_string FROM product WHERE prod_id = '$prod_id'";
+    $result = mysqli_query($conn, $sql);
+    if(mysqli_num_rows($result) > 0) {
+		while($row = $result->fetch_assoc()){         
+			array_push($output,$row);
+		}
+    }
+    
 	if($result){
 		echo json_encode($output);		   
 	}else{

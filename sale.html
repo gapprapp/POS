@@ -179,7 +179,7 @@
                   <input id="price" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
-                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" onchange="chng_amt()" data-index="3">
+                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" oninput ="chng_amt()" data-index="3">
                 </div>
                 <div class="col-1">
                   <input id="unit" type="text" class="form-control text-center" readonly>
@@ -190,7 +190,7 @@
                 <div class="col-1" style='padding-right: 0px;'>
                   <input id="prod-discount" type="number" class="form-control text-center no-spin" data-index="4">
                 </div>
-                <div class="col-1"></div>
+                <div class="col-1"></div>              
               </div> <br>
 
               <!-- Two fuking btn-->
@@ -415,12 +415,12 @@
           }            
       });      
 
-      $('#amount').on("keyup input", function(){
+      /*$('#amount').on("keyup input", function(){
           var price = $('#price').val();
           var amount = $('#amount').val();
           var total = price*amount;
           $('#total').val(total);
-      });
+      });*/
 
       $('#discount-money').on("keyup input", function(){
         var sum = $('#net-price').val();
@@ -466,7 +466,7 @@
     var cus_id = 0;
     var img;
     var prod_id;
-    var old_price;
+    var old_price,price;
     $(document).ready(function(){  
       if(!localStorage.user_id){
         $.alert({
@@ -562,11 +562,11 @@
 
               onChooseEvent: function() {
                 var barcode = $("#name").getSelectedItemData().barcode;
-                var price = $("#name").getSelectedItemData().prod_price;
+                price = $("#name").getSelectedItemData().prod_price;
                 var unit_name = $("#name").getSelectedItemData().unit_name;
                 prod_id = $("#name").getSelectedItemData().prod_id;
                 img = $("#name").getSelectedItemData().img_string;
-                old_price = $("#name").getSelectedItemData()[7].old_price;
+                old_price = $("#name").getSelectedItemData()[7].old_price;                     
 
                 $('#barcode').val(barcode);
                 $('#price').val(price);
@@ -624,38 +624,31 @@
                       $.ajax({
                         url:"http://150.95.26.163:8080/gitmew/php/check_detail_cus.php",
                         method:"POST",
-                        data:{'cus_id': cus_id,'amt':amt,'prod_id':prod},
+                        data:{'cus_id': cus_id,'prod_id':prod},
                         async:false,
                         success:function(data)
                         {
-                          if(data != "fail"){
-                            var obj = jQuery.parseJSON(data);                          
-                            if(obj != null){
-                              $.each(obj, function(i, field){
-                                if(field.special_prod_price){
-                                  $('#price-'+arg).val(field.special_prod_price);
-                                  $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                                  jsonObj[c].price = field.special_prod_price;
-                                  jsonObj[c].total = $('#total-'+arg).val();
-                                }
-                                if(field.prod_price){                             
-                                  $('#total-'+arg).val(field.prod_price);                                 
-                                  jsonObj[c].total = $('#total-'+arg).val();
-                                  //jsonObj[c].check_amt = 1;
-                                }
-                              });
-                            }else{
-                              if(jsonObj[c].check_amt == 1){
-                                $('#price-'+arg).val(jsonObj[c].price_old);                                                 
-                                jsonObj[c].price = jsonObj[c].price_old;
-                              }else{
-                                $('#price-'+arg).val(jsonObj[c].price_old);
-                                $('#total-'+arg).val($('#price-'+arg).val()*amt );                                                           
-                                jsonObj[c].price = jsonObj[c].price_old;
-                                jsonObj[c].total = $('#total-'+arg).val();
-                              }
+                          if(data != "fail"){  
+                            console.log("have value");                         
+                            if(jsonObj[c].check_amt == 0){
+                              console.log("amt = 0");      
+                              $('#price-'+arg).val(data);
+                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                              jsonObj[c].price = data;
+                              jsonObj[c].total = $('#total-'+arg).val();                            
                             }
-                          }                     
+                            jsonObj[c].price_cus = data;                   
+                          }else{                      
+                            console.log("not have value");  
+                            if(jsonObj[c].check_amt == 0){
+                              console.log("amt = 0");      
+                              $('#price-'+arg).val(jsonObj[c].price_old);
+                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                              jsonObj[c].price = jsonObj[c].price_old;
+                              jsonObj[c].total = $('#total-'+arg).val();                            
+                            }                         
+                            jsonObj[c].price_cus = jsonObj[c].price_old;                        
+                          }                   
                         }
                       }); 
                     sum_de += parseInt(jsonObj[c].total);
@@ -694,7 +687,16 @@
             $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
           });
         }
-      });      
+      });    
+
+       /*$.ajax({
+          url:"http://150.95.26.163:8080/gitmew/php/test.php",
+          method:"GET",
+        success:function(data)
+        {    
+          document.getElementById("test").src = data;     
+        }
+      });*/    
     }
 
     var check = 0;
@@ -705,11 +707,19 @@
         url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
         data: {'prod_id' : prod_id,
                 'amount' : amt},
-        success : function(data){
+        //async:false,
+        success : function(data){        
           if(data != "fail"){           
-            $('#total').val(data);
+            $('#price').val(data);
+            $('#total').val($('#price').val()*amt);
             check = 1;
           }else{
+            if(old_price != price){
+              $('#price').val(price);
+            }else{
+              $('#price').val(old_price);
+            }          
+            $('#total').val($('#price').val()*amt);
             check = 0;
           }
         }
@@ -724,12 +734,19 @@
         url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
         data: {'prod_id' : prod,
                 'amount' : amt},
-        async:false,
+        //async:false,
         success : function(data){
           if(data != "fail"){           
-            $('#total-'+arg).val(data);
+            $('#price-'+arg).val(data);
+            $('#total-'+arg).val($('#price-'+arg).val()*amt);
             jsonObj[arg-1].check_amt = 1;          
           }else{
+            if(jsonObj[arg-1].price_old != jsonObj[arg-1].price_cus){
+              $('#price-'+arg).val(jsonObj[arg-1].price_cus);
+            }else{
+              $('#price-'+arg).val(jsonObj[arg-1].price_old);
+            }          
+            $('#total-'+arg).val($('#price-'+arg).val()*amt);
             jsonObj[arg-1].check_amt = 0; 
           }
         }
@@ -776,12 +793,12 @@
           dis_old = dis;
         }
 
-        $('#amount-'+arg).on("keyup input", function(){
+        /*$('#amount-'+arg).on("keyup input", function(){
             var price = $('#price-'+arg).val();
             var amt = $("#amount-" + arg).val();
             var total = price*amt;
             $('#total-'+arg).val(total);
-        });
+        });*/
       }    
     }
 
@@ -846,7 +863,7 @@
                   <input id='price-"+index+"' class='form-control text-center' value='"+ $('#price').val() +"' readonly>\
                 </div>\
                 <div class='col-1' style='padding-left: 10px; padding-right: 0px;'>\
-                  <input id='amount-"+index+"' onchange='chng_amt_edit("+index+")' class='form-control text-center no-spin' min='1' value='"+ $('#amount').val() +"' readonly>\
+                  <input id='amount-"+index+"' oninput='chng_amt_edit("+index+")' class='form-control text-center no-spin' min='1' value='"+ $('#amount').val() +"' readonly>\
                 </div>\
                 <div class='col-1'>\
                   <input id='unit-"+index+"' class='form-control text-center' value='"+ $('#unit').val() +"' readonly>\
@@ -891,6 +908,7 @@
             item ["amount"] =  $('#amount').val();
             item ["total"] =  $('#total').val();
             item ["price_old"] =  old_price;
+            item["price_cus"] = price;
             item ["check_amt"] =  check;
             if($('#prod-discount').val() != ""){
               item ["discount"] =  $('#prod-discount').val();

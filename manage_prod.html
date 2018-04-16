@@ -54,15 +54,16 @@
 
   <script>
     var max_page_no = 0;
+    var cus_id;
     $(document).ready(function() {
-      /*if(!localStorage.user_id){
+      if(!localStorage.user_id){
           $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
           content: "กรุณาเข้าสู่ระบบก่อน"
           });
           window.location = "login.html";
-      }*/   
+      }   
 
       if(localStorage.role == "user"){
           $.alert({
@@ -71,7 +72,42 @@
               content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
           });
           window.history.back();
-      }          
+      }   
+      var options_cus = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+        },
+        getValue: function(element) {
+          //console.log(element);
+          return element.customer_name;
+        },
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+        preparePostData: function(data) {
+          data.phrase = $("#input-cus").val();
+          return data;
+        },
+        list: {
+            maxNumberOfElements: 3,
+            showAnimation: {
+                type: "slide",
+                time: 100
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 100
+            },
+            onChooseEvent: function() {
+              cus_id = $("#input-cus").getSelectedItemData().customer_id;
+            }
+        },      
+
+        };
+        $("#input-cus").easyAutocomplete(options_cus);
+        $('div.easy-autocomplete').removeAttr('style');
+
       // Get max
       var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
       $.post(path, {
@@ -206,7 +242,7 @@
                   "<button id='btn-info-" + i + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
-                  "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                  "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
                   "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
                   "</button>" +
                   "</div>" +
@@ -291,21 +327,7 @@
       });
     }
 
-    function save_edit(arg) {
-      $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
-      $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
-      $("#i-edit-" + arg).attr('class', 'fa fa-edit');
-      $("#btn-del-" + arg).prop('hidden', true);
-
-      $("#barcode-" + arg).prop('disabled', true);
-      $("#name-" + arg).prop('disabled', true);
-      $("#type-" + arg).prop('disabled', true);
-      $("#amount-1-" + arg).prop('disabled', true);
-      $("#amount-2-" + arg).prop('disabled', true);
-      $("#unit-" + arg).prop('disabled', true);
-      $("#fund-" + arg).prop('disabled', true);
-      $("#price-" + arg).prop('disabled', true);
-
+    function save_edit(arg) {    
       //Ajax save prod.. ..
       var prod_id = $("#span-"+arg).text();
       var barcode = $("#barcode-" + arg).val();
@@ -322,7 +344,7 @@
       if (amt2 == "") {
         amt2 = 0;
       }
-
+     
       $.ajax({
         url: "http://150.95.26.163:8080/gitmew/php/update_prod.php",
         type: "POST",
@@ -338,7 +360,22 @@
           'price': price
         },
         success: function(data) {
-          //alert(data);
+          if(data == "success"){
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
+            $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-edit');
+            $("#btn-del-" + arg).prop('hidden', true);
+            $("#btn-info-"+arg).prop('hidden',false);
+
+            $("#barcode-" + arg).prop('disabled', true);
+            $("#name-" + arg).prop('disabled', true);
+            $("#type-" + arg).prop('disabled', true);
+            $("#amount-1-" + arg).prop('disabled', true);
+            $("#amount-2-" + arg).prop('disabled', true);
+            $("#unit-" + arg).prop('disabled', true);
+            $("#fund-" + arg).prop('disabled', true);
+            $("#price-" + arg).prop('disabled', true);
+          }
         }
       });
     }
@@ -525,7 +562,7 @@
                 "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
-                "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
                 "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                 "</button>" +
                 "</div>" +
@@ -700,7 +737,7 @@
                   "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
-                  "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' data-toggle='modal' data-target='#myModal' hidden>" +
+                  "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
                   "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
                   "</button>" +
                   "</div>" +
@@ -1021,8 +1058,91 @@
       window.location = "login.html";
     }
 
+    var prod_id;
+    unit_get = [];
+    cus_get = [];
     function show_info(arg){
       // ajax get data for show in moodal
+      prod_id = arg;    
+      $.ajax({
+        url: "http://150.95.26.163:8080/gitmew/php/get_prod_info.php",
+        type: "POST",
+        data: {
+          'prod_id' : prod_id,        
+        },
+        //async:false,
+        success: function(data) { 
+            //console.log(data);
+            $("#show-amt-container").empty();     
+            $("#show-cus-container").empty(); 
+            c_cus = 0;   
+            c_unit = 0; 
+            unit_get = [];
+            cus_get = [];             
+            if(data != "null"){
+              var obj = jQuery.parseJSON(data);
+              //console.log(obj);                        
+              $.each(obj, function(i, field){
+                if(i == obj.length-1){
+                  $("#row-img").prop('hidden', false);
+                  $("#img").attr('src', obj[i].img_string);
+                  $('#fileSelect').data('img', obj[i].img_string);
+                }else{
+                  if(!field.prod_price){                    
+                    c_cus++;
+                    start_cus = c_cus;
+                    start_cus++;
+                    if(c_cus == 1){
+                      header = "<div id='head-seted-cus' class='row'>" +
+                        "<div class='col-3'></div>" +
+                        "<div class='col-3 text-center'>ชื่อลูกค้า</div>" +
+                        "<div class='col-2 text-center'>ราคา</div>" +
+                        "<div class='col-1'></div>" +
+                        "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                      $("#show-cus-container").append(header);  
+                    }                                            
+
+                    var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
+                      "<span id='span-cus-"+c_cus+"' hidden>"+field.customer_id+"</span>" +
+                      "<div class='col-3'></div>" +
+                      "<div id='show-cus-" + c_cus + "' class='col-3 text-center'>"+field.prod_id+"</div>" +
+                      "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center'>"+ field.special_prod_price +"</div>" +
+                      "<div class='col-1'><i id='cus-del-" + c_cus + "' class='fa fa-close' style='color: red' onclick='delrow_cus(" + c_cus + ");' hidden></i><i id='cus-check-" + c_cus + "' class='fa fa-check' style='color: green' onclick='checkrow_cus(" + c_cus + ");' hidden></i></div>" +
+                      "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+                    $("#show-cus-container").append(text_html);
+                    cus_get.push({old_cus:field.customer_id,
+                    cus_id:field.customer_id,
+                    cus_price:field.special_prod_price});
+                  }else{                   
+                    c_unit++;
+                    start_unit = c_unit;
+                    start_unit++;
+                    if(c_unit == 1){
+                        header = "<div id='head-seted-amt' class='row'>" +
+                        "<div class='col-3'></div>" +
+                        "<div class='col-3 text-center'>จำนวน</div>" +
+                        "<div class='col-2 text-center'>ราคา</div>" +
+                        "<div class='col-1'></div>" +
+                        "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+                      $("#show-amt-container").append(header);
+                    }
+                    
+                    var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
+                      "<div class='col-3'></div>" +
+                      "<div id='show-unit-" + c_unit + "' class='col-3 text-center'>" + field.amt_threshold + "</div>" +
+                      "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center'>" + field.prod_price + "</div>" +
+                      "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
+                      "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+                    $("#show-amt-container").append(text_html);
+                    unit_get.push({old_unit:field.amt_threshold,
+                    unit:field.amt_threshold,
+                    unit_price:field.prod_price});
+                  }
+                }
+              });            
+            }
+        }
+      });  
     }
 
     function readURL(input) {
@@ -1038,76 +1158,32 @@
     }
 
     var c_unit = 0;
-      var start_unit = 0;     
-      function add_unit() {
-        if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#input-unit-price").val() == ""){
-          $.alert({
-            icon: 'fa fa-warning',
-            title: 'เตือน',
-            content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
-          });
-          return 0;
-        }        
-        c_unit++;       
-        // Radio is checked
-        var exist = false;
-        $('input[type="radio"]').each(function() {
-          if($(this).is(":checked")){
-            //alert($(this).val());
-            number = $(this).val();
-            price = $("#input-unit-price").val();
-            // Exist Check
-            for(var i = 1; i <= c_unit; i++){
-              if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
-                });
-                exist = true;
-              }
-            }
-            if(exist == false){
-              if (c_unit == 1) {
-                header = "<div id='head-seted-amt' class='row'>" +
-                  "<div class='col-3'></div>" +
-                  "<div class='col-3 text-center'>จำนวน</div>" +
-                  "<div class='col-2 text-center'>ราคา</div>" +
-                  "<div class='col-1'></div>" +
-                  "<div class='col-3'></div> <hr style='width: 65%'></div> ";
-                $("#show-amt-container").append(header);
-              }
-
-              var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
-                "<div class='col-3'></div>" +
-                "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>"+ number +"</div>" +
-                "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>"+ price +"</div>" +
-                "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
-                "<div class='col-3'></div> <hr style='width: 45%'></div> ";
-              $("#show-amt-container").append(text_html);
-            }
-            $(this).prop("checked", false);
-          }
+    var start_unit = 0;     
+    function add_unit() {
+      if($("#input-unit-price").val() == ""){
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
         });
-
-        var isDisabled = $("#input-unit").prop('disabled');
-        if(!isDisabled){
-          number = $("#input-unit").val();
+        return 0;
+      }        
+      c_unit++;       
+      // Radio is checked
+      var exist = false;
+      $('input[type="radio"]').each(function() {
+        if($(this).is(":checked")){
+          //alert($(this).val());
+          number = $(this).val();
+          price = $("#input-unit-price").val();
+          // Exist Check
           for(var i = 1; i <= c_unit; i++){
             if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
-              if(number == ""){
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "กุรณากรอกจำนวน",
-                });
-              }else{
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
-                });
-              }
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
+              });
               exist = true;
             }
           }
@@ -1124,43 +1200,159 @@
 
             var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
               "<div class='col-3'></div>" +
-              "<div id='show-unit-" + c_unit + "' class='col-3 text-center' ondblclick='setUnit(" + c_unit + ");'>" + number + "</div>" +
-              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center' ondblclick='setUnitPrice(" + c_unit + ");'>" +  $("#input-unit-price").val() + "</div>" +
+              "<div id='show-unit-" + c_unit + "' class='col-3 text-center'>"+ number +"</div>" +
+              "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center'>"+ price +"</div>" +
               "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
               "<div class='col-3'></div> <hr style='width: 45%'></div> ";
             $("#show-amt-container").append(text_html);
-            $("#input-unit").val("");
+          }
+          $(this).prop("checked", false);
+        }
+      });
+
+      var isDisabled = $("#input-unit").prop('disabled');
+      if(!isDisabled){
+        number = $("#input-unit").val();
+        for(var i = 1; i <= c_unit; i++){
+          if(number == $("#show-unit-"+i).text() || number == $("#set-unit-"+i).val()){
+            if(number == ""){
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กุรณากรอกจำนวน",
+              });
+            }else{
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "ได้ตั้งค่าราคาของจำนวน " + number + " ไว้แล้ว",
+              });
+            }
+            exist = true;
           }
         }
-        $("#input-unit-price").val("");
-        $("#input-unit").removeAttr('disabled');
+        if(exist == false){
+          if (c_unit == 1) {
+            header = "<div id='head-seted-amt' class='row'>" +
+              "<div class='col-3'></div>" +
+              "<div class='col-3 text-center'>จำนวน</div>" +
+              "<div class='col-2 text-center'>ราคา</div>" +
+              "<div class='col-1'></div>" +
+              "<div class='col-3'></div> <hr style='width: 65%'></div> ";
+            $("#show-amt-container").append(header);
+          }
+
+          var text_html = "<div id='show-seted-amt-" + c_unit + "' class='row'>" +
+            "<div class='col-3'></div>" +
+            "<div id='show-unit-" + c_unit + "' class='col-3 text-center'>" + number + "</div>" +
+            "<div id='show-unit-price-" + c_unit + "' class='col-2 text-center'>" +  $("#input-unit-price").val() + "</div>" +
+            "<div class='col-1'><i id='unit-del-" + c_unit + "' class='fa fa-close' style='color: red' onclick='delrow_amt(" + c_unit + ");' hidden></i><i id='unit-check-" + c_unit + "' class='fa fa-check' style='color: green' onclick='checkrow_unit(" + c_unit + ");' hidden></i></div>" +
+            "<div class='col-3'></div> <hr style='width: 45%'></div> ";
+          $("#show-amt-container").append(text_html);
+          $("#input-unit").val("");
+        }
       }
+      $("#input-unit-price").val("");
+      $("#input-unit").removeAttr('disabled');
+    }
 
-      function setUnit(arg) {
-        var text = $("#show-unit-"+arg).text();
-        $("#show-unit-"+arg).text("");
-        var text_html = "<input id='set-unit-"+arg+"' type='text' class='form-control text-center' value='"+text+"'>";
-        $("#show-unit-"+arg).append(text_html);
+    function edit_unit(){ 
+      var all_unit = 0;
+      for(var i = 1; i <= c_unit; i++){
+        if($("#set-unit-"+i).is(':visible')){          
+               
+        }else{
+          all_unit++;
+        }      
+      }     
+      for(var i = 1; i <= c_unit; i++){
+        if($("#set-unit-"+i).is(':visible')){              
+          checkrow_unit(i);         
+        }else if(all_unit == c_unit){
+          var text = $("#show-unit-"+i).text();
+          $("#show-unit-"+i).text("");
+          var text_html = "<input id='set-unit-"+i+"' type='text' class='form-control text-center' value='"+text+"'>";
+          $("#show-unit-"+i).append(text_html);
 
-        $("#unit-del-"+arg).prop('hidden', true);
-        $("#unit-check-"+arg).prop('hidden', false);
+          var text = $("#show-unit-price-"+i).text();
+          $("#show-unit-price-"+i).text("");
+          var text_html = "<input id='set-unit-price-"+i+"' type='number' class='form-control text-center' value='"+text+"'>";
+          $("#show-unit-price-"+i).append(text_html);
+
+          $("#unit-del-"+i).prop('hidden', true);
+          $("#unit-check-"+i).prop('hidden', false);
+        }      
       }
+    }
+    
+    function del_unit(){
+      var all_unit = 0;
+      var check = false;
+      for(var i = 1; i <= c_unit; i++){
+        if($("#set-unit-"+i).is(':visible')){          
+            check = true;   
+        }    
+      }     
+      for(var i = 1; i <= c_unit; i++){
+        if($("#unit-del-"+i).is(':visible')){          
+               
+        }else{
+          all_unit++;
+        }      
+      }    
+      if(check){
+        return 0;
+      } 
+      for(var i = 1; i <= c_unit; i++){
+        if($("#unit-del-"+i).is(':visible')){
+          $("#unit-del-"+i).prop('hidden', true);
+        }else if(all_unit == c_unit){
+          $("#unit-del-"+i).prop('hidden', false);
+          $("#unit-check-"+i).prop('hidden', true);
+        }        
+      }     
+    }
 
-      function setUnitPrice(arg) {
-        var text = $("#show-unit-price-"+arg).text();
-        $("#show-unit-price-"+arg).text("");
-        var text_html = "<input id='set-unit-price-"+arg+"' type='number' class='form-control text-center' value='"+text+"'>";
-        $("#show-unit-price-"+arg).append(text_html);
-
-        $("#unit-del-"+arg).prop('hidden', true);
-        $("#unit-check-"+arg).prop('hidden', false);
-      }
-
-      function delrow_amt(arg) {
+    function delrow_amt(arg) {
+      if(arg < start_unit){
         $.confirm({
           icon: 'fa fa-warning',
           title: 'แน่ใจหรือว่าต้องการลบ!',
-          content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
+          content: 'ต้องการลบรายการจำนวนออกจากรายการ!',
+          buttons: {
+            danger: {
+              btnClass: 'btn-danger',
+              text: 'ลบ',
+              action: function () {
+                $.ajax({
+                  url: "http://150.95.26.163:8080/gitmew/php/delete_unit_detail.php",
+                  type: "POST",
+                  data: {
+                    'old_unit' : unit_get[arg-1].old_unit,               
+                    'prod_id': prod_id,          
+                  },
+                  success: function(data) {
+                    console.log(data);
+                    if(data == "success"){
+                      var count = $("#show-amt-container").children().length;
+                      if (count == 2) {
+                        $("#head-seted-amt").remove();
+                        //c_unit = 0;
+                      }
+                      $("#unit-del-" + arg).closest('.row').remove();
+                    }
+                  }
+                });                
+              }
+            },
+            ยกเลิก: function () { },
+          }
+        });
+      }else if(arg >= start_unit){
+        $.confirm({
+          icon: 'fa fa-warning',
+          title: 'แน่ใจหรือว่าต้องการลบ!',
+          content: 'ต้องการลบรายการจำนวนออกจากรายการ!',
           buttons: {
             danger: {
               btnClass: 'btn-danger',
@@ -1169,7 +1361,7 @@
                 var count = $("#show-amt-container").children().length;
                 if (count == 2) {
                   $("#head-seted-amt").remove();
-                  c_unit--;
+                  //c_unit = 0;
                 }
                 $("#unit-del-" + arg).closest('.row').remove();
               }
@@ -1178,13 +1370,15 @@
           }
         });
       }
+     
+    }
 
-      function checkrow_unit(arg) {
+    function checkrow_unit(arg) {
         var unit = $("#set-unit-"+arg).val();
         var price = $("#set-unit-price-"+arg).val();
-
+      
         for(var i = 1; i <= c_unit; i++){
-          if(unit == $("#show-unit-"+i).text()){
+          if(i != arg && (unit == $("#show-unit-"+i).text() || unit == $("#set-unit-"+i).val())){          
             $.alert({
               icon: 'fa fa-warning',
               title: 'เตือน',
@@ -1193,16 +1387,68 @@
             return 0;
           }
         }
-
+      
         $("#set-unit-"+arg).remove();
         $("#set-unit-price-"+arg).remove();
 
         $("#show-unit-"+arg).text(unit);
         $("#show-unit-price-"+arg).text(price);
 
-        $("#unit-del-"+arg).prop('hidden', false);
+        //$("#unit-del-"+arg).prop('hidden', false);
         $("#unit-check-"+arg).prop('hidden', true);
       }
+    
+    unit_add = [];    
+    function save_unit(){
+      //console.log(start_unit);
+      for(var u = 1; u < start_unit; u++){
+        unit_get[u-1].unit = $("#show-unit-"+u).text();
+        unit_get[u-1].unit_price = $("#show-unit-price-"+u).text();         
+      } 
+      unit_add = [];
+      for(var v = start_unit; v <= c_unit; v++){        
+        unit_add.push({unit:$("#show-unit-"+v).text(),
+        unit_price:$("#show-unit-price-"+v).text()});           
+      } 
+      final_unit_get = [];
+      for(var w = 0; w < unit_get.length; w++){        
+        if(unit_get[w].unit != ""){
+          final_unit_get.push({old_unit:unit_get[w].old_unit,
+          unit:unit_get[w].unit,
+          unit_price:unit_get[w].unit_price
+          });
+        }
+      } 
+      final_unit_add = [];
+      for(var w = 0; w < unit_add.length; w++){        
+        if(unit_add[w].unit != ""){
+          final_unit_add.push({unit:unit_add[w].unit,
+          unit_price:unit_add[w].unit_price
+          });
+        }
+      } 
+      var str_uget = JSON.stringify(final_unit_get);   
+      var str_uadd = JSON.stringify(final_unit_add);    
+      console.log(str_uget + str_uadd);
+      if(final_unit_add.length == 0 && final_unit_get.length == 0){
+        return 0;
+      } 
+      $.ajax({
+        url: "http://150.95.26.163:8080/gitmew/php/add_unit_detail.php",
+        type: "POST",
+        data: {
+          'JSON_uget' : str_uget,
+          'JSON_uadd': str_uadd,
+          'prod_id': prod_id,          
+        },
+        success: function(data) {
+          console.log(data);
+          if(data == "success"){
+            show_info(prod_id);
+          }
+        }
+      });
+    }
     var c_cus = 0;
     var start_cus = 0;  
     function add_cus() {
@@ -1242,9 +1488,10 @@
         }
 
         var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
+          "<span id='span-cus-"+c_cus+"' hidden>"+cus_id+"</span>" +
           "<div class='col-3'></div>" +
-          "<div id='show-cus-" + c_cus + "' class='col-3 text-center' ondblclick='setCus(" + c_cus + ");'></div>" +
-          "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center' ondblclick='setCusPrice(" + c_cus + ");'></div>" +
+          "<div id='show-cus-" + c_cus + "' class='col-3 text-center'></div>" +
+          "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center'></div>" +
           "<div class='col-1'><i id='cus-del-" + c_cus + "' class='fa fa-close' style='color: red' onclick='delrow_cus(" + c_cus + ");' hidden></i><i id='cus-check-" + c_cus + "' class='fa fa-check' style='color: green' onclick='checkrow_cus(" + c_cus + ");' hidden></i></div>" +
           "<div class='col-3'></div> <hr style='width: 45%'></div> ";
         $("#show-cus-container").append(text_html);
@@ -1260,47 +1507,166 @@
       }
     }
 
-    function setCus(arg) {
-      var text = $("#show-cus-"+arg).text();
-      $("#show-cus-"+arg).text("");
-      var text_html = "<input id='set-cus-"+arg+"' type='text' class='form-control text-center' value='"+text+"'>";
-      $("#show-cus-"+arg).append(text_html);
+    function edit_cus(){ 
+      option = [];   
+      var all_cus = 0;
+      for(var i = 1; i <= c_cus; i++){
+        if($("#set-cus-"+i).is(':visible')){          
+               
+        }else{
+          all_cus++;
+        }      
+      }     
+      for(var i = 1; i <= c_cus; i++){
+        if($("#set-cus-"+i).is(':visible')){              
+          checkrow_cus(i);         
+        }else if(all_cus == c_cus){         
+          var text = $("#show-cus-"+i).text();
+          $("#show-cus-"+i).text("");
+          var text_html = "<input id='set-cus-"+i+"' type='text' class='form-control text-center' value='"+text+"'>";
+          $("#show-cus-"+i).append(text_html);
+      
+          var text = $("#show-cus-price-"+i).text();
+          $("#show-cus-price-"+i).text("");
+          var text_html = "<input id='set-cus-price-"+i+"' type='number' class='form-control text-center' value='"+text+"'>";
+          $("#show-cus-price-"+i).append(text_html);
+    
+          $("#cus-del-"+i).prop('hidden', true);
+          $("#cus-check-"+i).prop('hidden', false);
+       
+          option[i] = {
 
-      $("#cus-del-"+arg).prop('hidden', true);
-      $("#cus-check-"+arg).prop('hidden', false);
+            url: function(phrase) {
+              return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+            },
+
+            getValue: function(element) {
+              //console.log(element);
+              return element.customer_name;
+            },
+
+            ajaxSettings: {
+              method: "POST",
+              data: {}
+            },
+
+            preparePostData: function(data) {
+              console.log(i);
+              data.phrase = $("#set-cus-"+i).val();
+              //console.log(data.phrase);
+              return data;
+            },
+
+            list: {
+                maxNumberOfElements: 3,
+
+                showAnimation: {
+                    type: "slide",
+                    time: 100
+                },
+                hideAnimation: {
+                    type: "slide",
+                    time: 100
+                },
+
+                onChooseEvent: function() {
+                  console.log(i);
+                  $("#span-cus-"+i).text($("#set-cus-"+i).getSelectedItemData().customer_id);
+                }
+            },      
+
+          };
+         
+          $("#set-cus-"+i).easyAutocomplete(option[i]);     
+        }      
+      }
     }
-
-    function setCusPrice(arg) {
-        var text = $("#show-cus-price-"+arg).text();
-        $("#show-cus-price-"+arg).text("");
-        var text_html = "<input id='set-cus-price-"+arg+"' type='number' class='form-control text-center' value='"+text+"'>";
-        $("#show-cus-price-"+arg).append(text_html);
-
-        $("#cus-del-"+arg).prop('hidden', true);
-        $("#cus-check-"+arg).prop('hidden', false);
+    
+    function del_cus(){
+      var all_cus = 0;
+      var check = false;
+      for(var i = 1; i <= c_cus; i++){
+        if($("#set-cus-"+i).is(':visible')){          
+            check = true;   
+        }    
+      }     
+      for(var i = 1; i <= c_cus; i++){
+        if($("#cus-del-"+i).is(':visible')){          
+               
+        }else{
+          all_cus++;
+        }      
+      }    
+      if(check){
+        return 0;
+      } 
+      for(var i = 1; i <= c_cus; i++){
+        if($("#cus-del-"+i).is(':visible')){
+          $("#cus-del-"+i).prop('hidden', true);
+        }else if(all_cus == c_cus){
+          $("#cus-del-"+i).prop('hidden', false);
+          $("#cus-check-"+i).prop('hidden', true);
+        }        
+      }     
     }
-
+   
     function delrow_cus(arg) {
-      $.confirm({
-        icon: 'fa fa-warning',
-        title: 'แน่ใจหรือว่าต้องการลบ!',
-        content: 'ต้องการลบรายการสินค้าออกจากรายการ!',
-        buttons: {
-          danger: {
-            btnClass: 'btn-danger',
-            text: 'ลบ',
-            action: function () {
-              var count = $("#show-cus-container").children().length;
-              if (count == 2) {
-                $("#head-seted-cus").remove();
-                c_cus--;
+      if(arg < start_cus){
+        $.confirm({
+          icon: 'fa fa-warning',
+          title: 'แน่ใจหรือว่าต้องการลบ!',
+          content: 'ต้องการลบรายการลูกค้าออกจากรายการ!',
+          buttons: {
+            danger: {
+              btnClass: 'btn-danger',
+              text: 'ลบ',
+              action: function () {
+                $.ajax({
+                  url: "http://150.95.26.163:8080/gitmew/php/delete_cus_detail.php",
+                  type: "POST",
+                  data: {
+                    'old_cus' : cus_get[arg-1].old_cus,               
+                    'prod_id': prod_id,          
+                  },
+                  success: function(data) {
+                    console.log(data);
+                    if(data == "success"){
+                      var count = $("#show-cus-container").children().length;
+                      if (count == 2) {
+                        $("#head-seted-cus").remove();
+                        //c_cus--;
+                      }
+                      $("#cus-del-" + arg).closest('.row').remove();
+                    }
+                  }
+                });                
               }
-              $("#cus-del-" + arg).closest('.row').remove();
-            }
-          },
-          ยกเลิก: function () { },
-        }
-      });
+            },
+            ยกเลิก: function () { },
+          }
+        });
+      }else if(arg >= start_cus){
+        $.confirm({
+          icon: 'fa fa-warning',
+          title: 'แน่ใจหรือว่าต้องการลบ!',
+          content: 'ต้องการลบรายการลูกค้าออกจากรายการ!',
+          buttons: {
+            danger: {
+              btnClass: 'btn-danger',
+              text: 'ลบ',
+              action: function () {
+                var count = $("#show-cus-container").children().length;
+                if (count == 2) {
+                  $("#head-seted-cus").remove();
+                  //c_cus--;
+                }
+                $("#cus-del-" + arg).closest('.row').remove();
+              }
+            },
+            ยกเลิก: function () { },
+          }
+        });
+      }      
     }
 
     function checkrow_cus(arg) {
@@ -1308,7 +1674,7 @@
       var price = $("#set-cus-price-"+arg).val();
 
       for(var i = 1; i <= c_cus; i++){
-        if(cus == $("#show-cus-"+i).text()){
+        if(i != arg && (cus == $("#show-cus-"+i).text() || cus == $("#set-cus-"+i).val())){
           $.alert({
             icon: 'fa fa-warning',
             title: 'เตือน',
@@ -1324,23 +1690,107 @@
       $("#show-cus-"+arg).text(cus);
       $("#show-cus-price-"+arg).text(price);
 
-      $("#cus-del-"+arg).prop('hidden', false);
+      //$("#cus-del-"+arg).prop('hidden', false);
       $("#cus-check-"+arg).prop('hidden', true);
     }  
+   
+    cus_add = [];  
+    function save_cus(){     
+      for(var c = 1; c < start_cus; c++){
+        cus_get[c-1].cus_id = $("#span-cus-"+c).text();
+        cus_get[c-1].cus_price = $("#show-cus-price-"+c).text();      
+      } 
+      cus_add = [];
+      for(var d = start_cus; d <= c_cus; d++){        
+        cus_add.push({cus_id:$("#span-cus-"+d).text(),
+        cus_price:$("#show-cus-price-"+d).text()});            
+      } 
+      final_cus_get = [];
+      for(var w = 0; w < cus_get.length; w++){        
+        if(cus_get[w].cus_id != ""){
+          final_cus_get.push({old_cus:cus_get[w].old_cus,
+          cus_id:cus_get[w].cus_id,
+          cus_price:cus_get[w].cus_price
+          });
+        }
+      } 
+      final_cus_add = [];
+      for(var w = 0; w < cus_add.length; w++){        
+        if(cus_add[w].cus_id != ""){
+          final_cus_add.push({cus_id:cus_add[w].cus_id,
+          cus_price:cus_add[w].cus_price
+          });
+        }
+      } 
+      var str_cget = JSON.stringify(final_cus_get);   
+      var str_cadd = JSON.stringify(final_cus_add);    
+      console.log(str_cget + str_cadd);  
+      if(final_cus_add.length == 0 && final_cus_get.length == 0){
+        return 0;
+      } 
+      $.ajax({
+        url: "http://150.95.26.163:8080/gitmew/php/add_cus_detail.php",
+        type: "POST",
+        data: {
+          'JSON_cget' : str_cget,
+          'JSON_cadd': str_cadd,
+          'prod_id': prod_id,          
+        },
+        success: function(data) {
+          console.log(data);
+          if(data == "success"){
+            show_info(prod_id);
+          }
+        }
+      }); 
+    }
 
     function save_pic(){
-      $("#row-img").prop('hidden', true);
-      $("#img").attr('src', '');
-      $('#fileSelect').data('img', '');
-      $(".file-upload").removeClass('active');
-      $("#noFile").text("วางไฟล์ที่นี่.. ..");
-      $("#fileSelect").val("");
+      var input = document.getElementById("fileSelect");
+      var file = input.files[0];
+      if (file == undefined) {
+        return 0;         
+      }else{
+        if (file.size < 15000000) {
+          var image = $("#fileSelect").data('img')
+          $.ajax({
+            url: "http://150.95.26.163:8080/gitmew/php/update_img.php",
+            type: "POST",
+            data: {
+              'prod_id' : prod_id,              
+              'img': image
+            },
+            success: function(data) {
+              if(data == "success"){
+                //$("#row-img").prop('hidden', true);
+                //$("#img").attr("src","");
+                //$('#fileSelect').data('img', '');
+                $(".file-upload").removeClass('active');
+                $("#noFile").text("วางไฟล์ที่นี่.. ..");
+                $("#fileSelect").val("");     
 
-      $.alert({
-        icon: 'fa fa-check-circle',
-        title: 'สำเร็จ',
-        content: 'บันทึกรูปภาพเสร็จสิ้น',
-      });
+                $.alert({
+                  icon: 'fa fa-check-circle',
+                  title: 'สำเร็จ',
+                  content: 'บันทึกรูปภาพเสร็จสิ้น',
+                });
+              }else{
+                $.alert({
+                  icon: 'fa fa-warning',
+                  title: 'แจ้งเตือน',
+                  content: 'โปรดลองอีกครั้ง',
+                });
+              }
+            }
+          });
+        }else{
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'ไฟล์มีขนาดใหญ่เกินไป',
+            content: 'ไฟล์ขนาดเกิน 15 MB',
+          });
+        }
+      }      
     }
   </script>
 </head>
@@ -1536,9 +1986,9 @@
             </div><br>
             <!-- Modal footer -->
             <div class="col-12 text-center">
-              <button type="button" class="btn btn-success" onclick="set_pay_title();">บันทึก <i class="fa fa-save"></i></button>
-              <button type="button" class="btn btn-primary" onclick="edit_amt();">แก้ไข <i class="fa fa-edit"></i></button>
-              <button type="button" class="btn btn-danger" onclick="del_amt();">ลบ <i class="fa fa-close"></i></button>
+              <button type="button" class="btn btn-success" onclick="save_unit();">บันทึก <i class="fa fa-save"></i></button>
+              <button type="button" class="btn btn-primary" onclick="edit_unit();">แก้ไข <i class="fa fa-edit"></i></button>
+              <button type="button" class="btn btn-danger" onclick="del_unit();">ลบ <i class="fa fa-close"></i></button>
             </div>
             <br>
           </div>
@@ -1564,9 +2014,9 @@
             </div><br>
             <!-- Modal footer -->
             <div class="col-12 text-center">
-              <button type="button" class="btn btn-success" onclick="set_pay_title();">บันทึก <i class="fa fa-save"></i></button>
-              <button type="button" class="btn btn-primary" onclick="set_pay_title();">แก้ไข <i class="fa fa-edit"></i></button>
-              <button type="button" class="btn btn-danger" onclick="set_pay_title();">ลบ <i class="fa fa-close"></i></button>
+              <button type="button" class="btn btn-success" onclick="save_cus();">บันทึก <i class="fa fa-save"></i></button>
+              <button type="button" class="btn btn-primary" onclick="edit_cus();">แก้ไข <i class="fa fa-edit"></i></button>
+              <button type="button" class="btn btn-danger" onclick="del_cus();">ลบ <i class="fa fa-close"></i></button>
             </div>
             <br>
           </div>
@@ -1584,7 +2034,7 @@
             </div> <br>
             <div id="row-img" class="row" hidden>
               <div class="col-12 text-center">
-               <img id='img' alt="" style="width: 400px; height: 400px;">
+               <img id='img' src="" alt="" style="width: 400px; height: 400px;">
               </div>
             </div> <br>
             <!-- Modal footer -->
