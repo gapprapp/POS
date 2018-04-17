@@ -45,20 +45,23 @@
       #title-amt, #title-cus{
         cursor: pointer;
       }
+      .udl{
+        text-decoration: underline;
+      }
     </style>
 
     <script>
       var sup_id = 0;
       var prod_id,img;
       $(document).ready(function(){   
-        if(!localStorage.user_id){
+        /*if(!localStorage.user_id){
           $.alert({
             icon: 'fa fa-warning',
             title: 'เตือน',
             content: "กรุณาเข้าสู่ระบบก่อน"
           });
           window.location = "login.html";
-        }
+        }*/
         detail();
 
         setTimeout(function() {$("#sup").focus();}, 100);
@@ -712,7 +715,7 @@
               m--;
             }
           }
-          var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 15%; padding-right: 0px; margin-bottom: 5px'>"+
+          var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 5%; padding-right: 0px; margin-bottom: 5px'>"+
                 "<div class='col-1 text-center'>"+
                   "<input id='no-"+count+"' type='text' class='form-control text-center' value='"+(count+1)+"' readonly>"+
                 "</div>"+
@@ -746,7 +749,7 @@
                   "</button>" +
                 "</div>"+
                 "<div id='li-" + count + "-collapse' class='container text-center collapse' style='margin-top: 15px; margin-bottom: 15px;'>" +
-                  "<div class='card card-body' style='border: solid 1px black; background: white; padding: 20px; width: 60%; margin-left: 11%;'>" +
+                  "<div class='card card-body' style='border: solid 1px black; background: white; padding: 20px; width: 70%; margin-left: 11%;'>" +
                     "<div id='ctn-collapse-" + count + "' class='container'>" +
                       "<div class='row' style='margin-bottom: 5px;'>" +
                         "<div class='col-2'></div>" +
@@ -956,17 +959,20 @@
         if (arg == 'amt') {
           if($("#ctn-amt").is(":visible")) return 0;
           
+          $("#title-cus").removeClass('udl');
+          $("#title-amt").addClass('udl');
           $("#ctn-amt").prop('hidden', false);
           $("#ctn-cus").prop('hidden', true);
           $("#card").fadeOut(200).fadeIn(200);
         } else if (arg == 'cus') {
           if ($("#ctn-cus").is(":visible")) return 0;
 
+          $("#title-amt").removeClass('udl');
+          $("#title-cus").addClass('udl');
           $("#ctn-cus").prop('hidden', false);
           $("#ctn-amt").prop('hidden', true);
           $("#card").fadeOut(200).fadeIn(200);
         }
-        
       }
 
       function collapse(){
@@ -1090,16 +1096,17 @@
               </div>
             </div>
           </div>
-          <hr style="width: 80%;">
+          <hr style="width: 70%;">
 
           <div class="container-fullwidth justify-content-center">
-            <div class="row" style="padding-left: 15%; padding-right: 0px; margin-bottom: 10px;">
+            <div class="row" style="padding-left: 5%; padding-right: 0px; margin-bottom: 10px;">
               <div class="col-1 text-center">ลำดับ</div>
               <div class="col-2 text-center" pdlr>บาร์โค้ด</div>
               <div class="col-4 text-center">ชื่อสินค้า</div>
               <div class="col-1 text-center">จำนวน</div>
               <div class="col-1 text-center">ทุน</div>
               <div class="col-1 text-center">ราคา</div>
+              <div class="col-1 text-center">ราคารวม</div>
             </div> 
 
             <!-- Collapse -->
@@ -1108,7 +1115,7 @@
             </div>
 
             <!-- Input -->
-            <div class="row" style="padding-left: 15%; padding-right: 0px;">
+            <div class="row" style="padding-left: 5%; padding-right: 0px;">
               <div class="col-1 text-center">
                 <input id="no" type="text" class="form-control text-center" value="1" readonly>
               </div>
@@ -1127,6 +1134,9 @@
               <div class="col-1 text-center pdlr">
                 <input id="price" type="number" class="form-control text-center no-spin" readonly>
               </div>
+              <div class="col-1 text-center pdlr">
+                <input id="net" type="number" class="form-control text-center no-spin" readonly>
+              </div>
               <div class="col-1" style="margin-top: 5px;" onclick="collapse();">
                 <button class="btn btn-sm btn-info">
                   <i id='i-down' class="fa fa-angle-down"></i>
@@ -1137,17 +1147,19 @@
             
             <div id="card" class="collapse">
               <!-- Card -->
-              <div class="card card-body" style="width: 60%; margin: 0 auto">
+              <div class="card card-body" style="width: 70%; margin: 0 auto">
                 <div class="container">
-                  <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-6 text-right" onclick="change_option('amt');" style="border-right: 1px solid #e4e5e5;">
-                        <h5 id="title-amt">จำนวน / ราคา</h5>
+                  <div class="row" style="margin-top: 5px;">
+                    <div class="col-3"></div>
+                    <div class="col-3 text-center pt" onclick="change_option('amt');">
+                      <h5 id="title-amt" class="modal-title udl">จำนวน / ราคา</h5>
                     </div>
-                    <div class="col-6 text-left" onclick="change_option('cus');">
-                      <h5 id="title-cus">ลูกค้า / ราคา</h5>
+                    <div class="col-3 text-center pt" onclick="change_option('cus');" style=" border-left: 1px solid;">
+                      <h5 id="title-cus"  class="modal-title">ลูกค้า / ราคา</h5>
                     </div>
-                    <hr class="text-center" style="margin-top: 0; width: 45%">
+                    <div class="col-3"></div>
                   </div>
+                  <hr class="text-center" style="margin-top: 10px; width: 45%">
                 </div>
               
                 <div id="ctn-amt" class="container" style="margin-bottom: 15px;">
@@ -1208,7 +1220,7 @@
             
             <div class="row">
               <div class="col-8"></div>
-              <div class="col-3 text-center">
+              <div class="col-3 text-right">
                 <button class="btn btn-success" onclick="add_next();">เพิ่มสินค้า</button>
                 <button class="btn btn-primary"  onclick="save();">บันทึก</button>
               </div>
