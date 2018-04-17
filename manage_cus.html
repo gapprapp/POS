@@ -43,6 +43,12 @@
     <script>
         var max_page_no = 0;
         $(document).ready(function () {
+            $("#pg-st").addClass('disabled');
+            $("#pg-nd").addClass('disabled');
+            $("#pg-rd").addClass('disabled');
+            $("#li-next").addClass('disabled');
+            $("#li-prev").addClass('disabled');
+
             if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
@@ -60,7 +66,11 @@
             }, function (data) {
                 url = new URL(window.location.href);
                 sl = url.searchParams.get("sl");
-                max_page_no = Math.ceil(data / 100);
+                max_page_no = Math.ceil(data/100);
+                if(max_page_no == 2){
+                    $("#pg-rd a").text("#");
+                    $("#pg-rd").addClass('disabled');
+                }
                 if (sl == 1) {
                     // Go last page
                     pagination('last');
@@ -76,8 +86,14 @@
                         },
                         cache: false,
                         crossDomain: true,
+                        beforeSend: function() {
+                            $("#pg-st").addClass('disabled');
+                            $("#pg-nd").addClass('disabled');
+                            $("#pg-rd").addClass('disabled');
+                            $("#li-next").addClass('disabled');
+                            $("#li-prev").addClass('disabled');
+                        },
                         success: function (response) {
-
                             var obj = jQuery.parseJSON(response);
                             $.each(obj, function (i, field) {            
 
@@ -108,6 +124,10 @@
                                     "</li>"; // end text_html
                                 $(".list-group").append(text_html);
                             });
+                            $("#pg-st").removeClass('disabled');
+                            $("#pg-nd").removeClass('disabled');
+                            $("#pg-rd").removeClass('disabled');
+                            $("#li-next").removeClass('disabled');
                         }
                     });
                 }
@@ -242,6 +262,13 @@
                     },
                     cache: false,
                     crossDomain: true,
+                    beforeSend: function() {
+                            $("#pg-st").addClass('disabled');
+                            $("#pg-nd").addClass('disabled');
+                            $("#pg-rd").addClass('disabled');
+                            $("#li-next").addClass('disabled');
+                            $("#li-prev").addClass('disabled');
+                        },
                     success: function (response) {
                         if (start == 0) {
                             //find max_item
@@ -296,6 +323,11 @@
                             $(".list-group").append(text_html);
                         });
                         $('#btn-search').prop('disabled', false);
+                        $("#pg-st").removeClass('disabled');
+                        $("#pg-nd").removeClass('disabled');
+                        $("#pg-rd").removeClass('disabled');
+                        $("#li-next").removeClass('disabled');
+                        $("#li-prev").removeClass('disabled');
                     }
                 });
             }
@@ -316,6 +348,13 @@
                         },
                         cache: false,
                         crossDomain: true,
+                        beforeSend: function() {
+                            $("#pg-st").addClass('disabled');
+                            $("#pg-nd").addClass('disabled');
+                            $("#pg-rd").addClass('disabled');
+                            $("#li-next").addClass('disabled');
+                            $("#li-prev").addClass('disabled');
+                        },
                         success: function (response) {
                             if (start == 0) {
                                 //find max_item
@@ -370,6 +409,11 @@
                                 $(".list-group").append(text_html);
                             });
                             $('#btn-search').prop('disabled', false);
+                            $("#pg-st").removeClass('disabled');
+                            $("#pg-nd").removeClass('disabled');
+                            $("#pg-rd").removeClass('disabled');
+                            $("#li-next").removeClass('disabled');
+                            $("#li-prev").removeClass('disabled');
                         }
                     });
                 } else if (prev_page > arg) {
@@ -609,7 +653,7 @@
                         page = 2;
                         st = $("#pg-st a").text("1");
                         nd = $("#pg-nd a").text("2");
-                        rd = $("#pg-rd a").text("3");
+                        rd = $("#pg-rd a").text("#");
                     } else if (max_page_no == 3) {
                         //console.log("3");
                         if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
