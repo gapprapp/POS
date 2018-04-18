@@ -1102,33 +1102,45 @@
                 //alert(data);
                 if(data != "fail"){
                   if(print == "print"){
-                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1.1cm; font-size: 0.6em; text-align:right; float: right; } .txt-left{ font-size: 0.6em; margin-left: 1.1cm; float: left; width: 60%; } .txt-ct{ font-size: 0.6em; text-align: center; }</style>" +
+                    var date = datetime.split("");
+                    var time = date[1];
+                    var date = date[0];
+                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1.1cm; font-size: 0.8em; text-align:right; float: right; } .txt-left{ font-size: 0.8em; margin-left: 1.1cm; float: left; width: 60%; }.txt-left-2{ font-size: 0.8em; margin-left: 1.1cm; float: left; width: 80%; } .txt-ct{ font-size: 0.8em; text-align: center; margin-bottom: 0.6em}</style>" +
                       "<div style='width: 7.5cm;'>" +
-                        "<div class='txt-ct'>PPS AUTO GROUP " + b_name + "</div>" +
-                        "<div class='txt-ct'>" + data + "</div>" +
-                        "<div class='txt-ct'>" + datetime + "</div>" +
-                        "<div class='txt-ct'>ผู้บันทึก :" + localStorage.name + "</div>" +
-                        "<div class='txt-ct'>ลูกค้า :" + cus_name + "</div>" +
+                        "<div class='txt-ct'>พรประสิทธิ์</div>" +
+                        "<div class='txt-ct'>PPS AUTO</div>" +
+                        "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>" +
+                        "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>" +
+                        "<div class='txt-ct' style='font-weight: bold;'>ใบเสร็จรับเงิน</div>" +
+                        "<div class='txt-left'>ลูกค้า : "+cus_name+"</div>" +
+                        "<div class='txt-left'>ประเภท : </div>" +
+                        "<div class='txt-left'>เลขที่บิล : " + data + "</div>" +
+                        "<div class='txt-left'>วันที่ขาย : "+date+"</div>" +
+                        "<div class='txt-right'>เวลา : "+time+"</div>" +
+                        
                       "<hr style='width: 80%; border-top: 1px dashed; border-bottom: none;'>" +
+                      "<div class='txt-left'>รายการ</div>"+
+                      "<div class='txt-left-2'>จำนวน</div>"+
+                      "<div class='txt-right'>ราคา</div>"+
 
                       ""+text+""+
 
                       "<hr style='width: 80%; border-bottom: 1px dashed; border-top: none;'>" +
 
-                      "<div class='txt-left'>รวม</div>" +
-                      "<div class='txt-right'>"+sum_price+"</div>" +
+                      "<div class='txt-left'>ราคารวม : </div>" +
+                      "<div class='txt-right'>"+sum_price+" บาท</div>" +
 
-                      "<div class='txt-left'>ลด</div>" +
-                      "<div class='txt-right'>"+ discount+"</div>" +
+                      "<div class='txt-left'>ส่วนลด : </div>" +
+                      "<div class='txt-right'>"+ discount+" บาท</div>" +
 
                       "<div class='txt-left'>สุทธิ</div>" +
-                      "<div class='txt-right'>"+ final_price+"</div>" +
+                      "<div class='txt-right'>"+ final_price+" บาท</div>" +
 
-                      "<div class='txt-left'>รับ</div>" +
-                      "<div class='txt-right'>"+ get_money+"</div>" +
+                      "<div class='txt-ct'>ขอบคุณที่ใช้บริการ</div>" +
+                      "<div class='txt-left'>พนักงานขาย :" + localStorage.name + "</div>" +
+                      "<div class='txt-left'>รับเงิน : "+ get_money+" บาท</div>" +
+                      "<div class='txt-right'>ทอน : "+ change_money+" บาท</div>" +
 
-                      "<div class='txt-left'>ทอน</div>" +
-                      "<div class='txt-right'>"+ change_money+"</div>" +
                       "</div>");
                     WinPrint.document.close();
                     WinPrint.focus();
