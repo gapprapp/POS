@@ -517,14 +517,14 @@
     var prod_id;
     var old_price,price;
     $(document).ready(function(){  
-      if(!localStorage.user_id){
+      /*if(!localStorage.user_id){
         $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
           content: "กรุณาเข้าสู่ระบบก่อน"
         });
         window.location = "login.html";
-      }
+      }*/ 
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
@@ -1116,8 +1116,9 @@
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
         + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
         
-        if(print == "print" && print_type == "bill"){
+        if(print == "print"){
           var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
+        }
         $.ajax({
             type: "POST",
             url:"http://150.95.26.163:8080/gitmew/php/save_order.php",
@@ -1126,7 +1127,7 @@
             success: function(data){
                 //alert(data);
                 if(data != "fail"){
-                  if(print == "print"){
+                  if(print_type == "bill"){
                     var date = datetime.split(" ");
                     var time = date[1];
                     var date = date[0];
@@ -1162,7 +1163,43 @@
                     WinPrint.focus();
                     WinPrint.print();
                     WinPrint.close();   
-                  }                          
+                  }else if(print_type == "a4"){
+                    var date = datetime.split(" ");
+                    var time = date[1];
+                    var date = date[0];
+                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
+"<div style='width: 7.5cm;'>"+
+  "<div class='txt-ct'>A4A4A4A4A4A4A4A4A4</div>"+
+  "<div class='txt-ct'>PPS AUTO</div>"+
+  "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>"+
+  "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
+  "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
+  "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
+  "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
+  "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
+  "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
+  "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
+  
+  "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
+  ""+text+""+
+  "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='txt-left'>ราคารวม : </div>"+
+  "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
+  "<div class='txt-left'>ส่วนลด : </div>"+
+  "<div class='txt-right'>"+discount+" บาท</div><br>"+
+  "<div class='txt-left'>สุทธิ : </div>"+
+  "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
+  "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
+  "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
+  "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
+  "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
+"</div>");
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+                    WinPrint.close();   
+                  }                           
                   /*$('#show_list_add').empty();
                   jsonObj = [];               
                   index = 0;
