@@ -48,20 +48,44 @@
       .udl{
         text-decoration: underline;
       }
+
+      .conclu-txt{
+        border: solid #767676;
+        margin-left: 5px;
+        padding-top: 5px;
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+
+      .conclu-price{
+        border: solid #767676;
+        background: #767676;
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+
+      .conclu-price-input{
+        font-weight: bold; 
+        font-size: 22px;
+        padding-top: 4px; 
+        padding-bottom: 4px; 
+        padding-left: 0px; 
+        padding-right: 0px;
+      }
     </style>
 
     <script>
       var sup_id = 0;
       var prod_id,img;
       $(document).ready(function(){   
-        /*if(!localStorage.user_id){
+        if(!localStorage.user_id){
           $.alert({
             icon: 'fa fa-warning',
             title: 'เตือน',
             content: "กรุณาเข้าสู่ระบบก่อน"
           });
           window.location = "login.html";
-        }*/
+        }
         detail();
 
         setTimeout(function() {$("#sup").focus();}, 100);
@@ -1219,15 +1243,39 @@
             </div>
             
             <div class="row">
-              <div class="col-8"></div>
-              <div class="col-3 text-right">
+              <div class="col-10"></div>
+              <div class="col-2 text-center">
                 <button class="btn btn-success" onclick="add_next();">เพิ่มสินค้า</button>
-                <button class="btn btn-primary"  onclick="save();">บันทึก</button>
               </div>
             </div>
           </div>
-
         </div><!-- End page content wrapper -->
+
+        <div id="ctn-bttm" class="container-fluid fixed-bottom" style="margin-bottom: 15px; z-index: 0;">
+        <div class="row" style="margin-left: 70px;">
+          <div class="col-2 text-center conclu-txt">
+            <h4>มูลค่าสินค้ารวม</h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #5dbe5d;" readonly>
+          </div>
+          <div class="col-1 text-center conclu-txt">
+            <h4>ค่าขนส่ง</h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-ship" type="text" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e;" readonly>
+          </div>
+          <div class="col-1 text-center conclu-txt">
+            <h4>ส่งโดย</h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="ship-by" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff;" readonly>
+          </div>
+          <div class="col-2 text-right" style="padding-top: 10px;">
+            <button class="btn btn-primary"  onclick="save();">บันทึก</button>
+          </div>
+        </div>
+      </div>
     </div> <!-- End Wrapper -->
 
     <!-- Menu Toggle -->
