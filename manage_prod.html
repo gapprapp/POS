@@ -251,7 +251,7 @@
                   "<button id='btn-edit-" + i + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + i + ")'>" +
                   "<i id='i-edit-" + i + "' class='fa fa-edit'></i>" +
                   "</button>" +
-                  "<button id='btn-info-" + i + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
+                  "<button id='btn-info-" + i + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+",\""+field.prod_name+"\");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
                   "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
@@ -582,7 +582,7 @@
                 "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
                 "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
                 "</button>" +
-                "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
+                "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+",\""+field.prod_name+"\");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
                 "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
@@ -769,7 +769,7 @@
                   "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
                   "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
                   "</button>" +
-                  "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+");'>"+
+                  "<button id='btn-info-" + (start + i) + "' class='btn btn-info btn-sm' data-toggle='modal' data-target='#infoModal' onclick='show_info("+field.prod_id+",\""+field.prod_name+"\");'>"+
                    " <i class='fa fa-info-circle'></i>"+
                   "</button>"+
                   "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
@@ -1101,9 +1101,10 @@
     var prod_id;
     unit_get = [];
     cus_get = [];
-    function show_info(arg){
+    function show_info(arg,name){
       // ajax get data for show in moodal
       prod_id = arg;    
+      $('#info-prod_name').text(name);
       $.ajax({
         url: "http://150.95.26.163:8080/gitmew/php/get_prod_info.php",
         type: "POST",
@@ -1970,7 +1971,7 @@
       <div class="modal-dialog modal-lg modal-dialog-top">
         <div class="modal-content">
           <div class="col-12 text-center" style="margin-top: 15px;">
-            <h4 id='info-prod_name'>สินค้า 1</h4>
+            <h4 id='info-prod_name'></h4>
           </div>
           <!-- Modal Header -->
           <div class="row" style="margin-top: 15px;">
