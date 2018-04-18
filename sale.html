@@ -38,6 +38,31 @@
         margin-left: 5px;
         padding-top: 5px;
       }
+
+      .conclu-price{
+        border: solid #767676;
+        background: #767676;
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+
+      .conclu-price-input{
+        font-weight: bold; 
+        font-size: 22px;
+        padding-top: 4px; 
+        padding-bottom: 4px; 
+        padding-left: 0px; 
+        padding-right: 0px;
+      }
+
+      .check-bill-input{
+        font-weight: bold; 
+        background: #767676; 
+        color: black; 
+        font-size: 26px;
+        padding-top: 5px; 
+        padding-bottom: 4px; 
+      }
     </style>
 
     <script>
@@ -206,22 +231,22 @@
       <div id="ctn-bttm" class="container-fluid fixed-bottom" style="margin-bottom: 15px; z-index: 0;">
         <div class="row" style="margin-left: 70px;">
           <div class="col-1 text-center conclu-txt">
-            <h3>รวม : </h3>
+            <h4>รวม : </h4>
           </div>
-          <div class="col-1 text-center" style="border: solid #767676; background: #767676; padding-left: 0px; padding-right: 0px;">
-            <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border" style="font-weight: bold; background: #767676;font-size: 24px; padding-top: 4px; padding-bottom: 4px; padding-left: 0px; padding-right: 0px; color: #5dbe5d" readonly>
-          </div>
-          <div class="col-1 text-center conclu-txt">
-            <h3>ลด : </h3>
-          </div>
-          <div class="col-1 text-center" style="border: solid #767676; background: #767676; padding-left: 0px; padding-right: 0px;">
-            <input id="total-discount" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border" style="font-weight: bold; background: #767676;font-size: 24px; padding-top: 4px; padding-bottom: 4px; padding-left: 0px; padding-right: 0px; color: #fd8b5e" readonly>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #5dbe5d" readonly>
           </div>
           <div class="col-1 text-center conclu-txt">
-            <h3>สุทธิ : </h3>
+            <h4>ลด : </h4>
           </div>
-          <div class="col-1 text-center" style="border: solid #767676; background: #767676; padding-left: 0px; padding-right: 0px;">
-            <input id="total-net" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border" style="font-weight: bold; background: #767676;font-size: 24px; padding-top: 4px; padding-bottom: 4px; padding-left: 0px; padding-right: 0px; color: #ffffff" readonly>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-discount" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e" readonly>
+          </div>
+          <div class="col-1 text-center conclu-txt">
+            <h4>สุทธิ : </h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-net" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff" readonly>
           </div>
           <div class="col-1"></div>
           <div class="col-3 text-right" style="padding-top: 10px;">
@@ -261,7 +286,7 @@
                     <h3>รวม : </h3>
                   </div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="net-price" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 5px; padding-bottom: 4px; color: #5dbe5d"
+                    <input id="net-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #5dbe5d;"
                       readonly>
                   </div>
                   <div class="col-2"></div>
@@ -271,7 +296,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ลด : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="discount-money" onchange="chng_discount()"  data-index="5" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 4px; padding-bottom: 4px; color: #fd8b5e">
+                    <input id="discount-money" onchange="chng_discount()"  data-index="5" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #fd8b5e;">
                   </div>
                   <div class="col-2"></div>
                 </div> <br>
@@ -280,7 +305,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>สุทธิ : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="final-price" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 4px; padding-bottom: 4px; color: #ffffff"
+                    <input id="final-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #ffffff;"
                     readonly>
                   </div>
                   <div class="col-2"></div>
@@ -291,7 +316,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>รับ : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="get-money" type="number" data-index="6" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 5px; padding-bottom: 4px; color: #DBBD5B">
+                    <input id="get-money" type="number" data-index="6" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style=" background: #767676;  color: #DBBD5B;">
                   </div>
                   <div class="col-2"></div>
                 </div> <br>
@@ -300,7 +325,7 @@
                   <div class="col-2"></div>
                   <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ทอน : </h3></div>
                   <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="change-money" type="number" class="form-control form-control-lg text-center no-spin no-border" style="font-size: 18px; font-weight: bold; background: #767676; color: black; font-size: 26px; padding-top: 5px; padding-bottom: 4px; color: #A5FAE9"
+                    <input id="change-money" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #A5FAE9"
                     readonly>
                   </div>
                   <div class="col-2"></div>
