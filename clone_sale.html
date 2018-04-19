@@ -1,83 +1,1247 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"> 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <!-- Easy-autocomplete -->
-  <script src="js/jquery.easy-autocomplete.js"></script>
-  <link rel="stylesheet" href="css/easy-autocomplete.min.css">
-  <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
-  <style>
-    .easy-autocomplete-container { 
-      max-height: 200px; 
-      overflow-y: auto; 
-    }
-  </style>  
-  <script>
-  $(function() {
-    var options = {url: function(phrase) {
-        return "http://150.95.26.163:8080/gitmew/php/search.php";
-      },
-      getValue: function(element) {     
-        return element.prod_name;
-      },
-      ajaxSettings: {
-        method: "POST",
-        data: {}
-      },
-      preparePostData: function(data) {   
-        if($("#cus").val() == ""){
-          $.alert({
-            icon: 'fa fa-warning',
-            title: 'เตือน',
-            content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
-          });
-          $("#cus").focus();
-          $("#name").val("");
-          return 0;
-        }else{
-          data.phrase = $("#name").val();
-          return data;
-        }
-      },
-      minCharNumber: 3,
-      list: {         
-          maxNumberOfElements: 1000,
-          showAnimation: {
-              type: "slide",
-              time: 100
-          },
-          hideAnimation: {
-              type: "slide",
-              time: 100
-          },
-          onChooseEvent: function() {
-            var barcode = $("#name").getSelectedItemData().barcode;
-            price = $("#name").getSelectedItemData().prod_price;
-            var unit_name = $("#name").getSelectedItemData().unit_name;
-            prod_id = $("#name").getSelectedItemData().prod_id;
-            img = $("#name").getSelectedItemData().img_string;
-            old_price = $("#name").getSelectedItemData()[7].old_price;                     
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-            $('#barcode').val(barcode);
-            $('#price').val(price);
-            $('#unit').val(unit_name);
-            $('#total').val(price);
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+     <!-- Easy-autocomplete -->
+     <script src="js/jquery.easy-autocomplete.js"></script>
+     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet" >
+
+    <style>
+      .conclu-txt{
+        border: solid #767676;
+        margin-left: 5px;
+        padding-top: 5px;
+      }
+
+      .conclu-price{
+        border: solid #767676;
+        background: #767676;
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+
+      .conclu-price-input{
+        font-weight: bold; 
+        font-size: 22px;
+        padding-top: 4px; 
+        padding-bottom: 4px; 
+        padding-left: 0px; 
+        padding-right: 0px;
+      }
+
+      .check-bill-input{
+        font-weight: bold; 
+        background: #767676; 
+        color: black; 
+        font-size: 26px;
+        padding-top: 5px; 
+        padding-bottom: 4px; 
+      }      
+    </style>
+
+    <script>
+      function set_print_title(){
+        text_html = "<span><i class='fa fa-print'></i></span>";
+        $('input[name=print-radio]').each(function () {
+          if ($(this).is(":checked")) {
+            checked = $(this).val();
+            if (checked == "no") {
+              $("#print-title").text("ไม่พิมพ์ ");
+              $("#print-title").append(text_html);
+            } else if (checked == "print") {
+              $('input[name=print-option]').each(function () {
+                if ($(this).is(":checked")) {
+                  check = $(this).val();
+                  if(check == "bill"){
+                    $("#print-title").text("ใบเสร็จ ");
+                  }else{
+                    $("#print-title").text("ใบรายการขาย ");
+                  }
+                  $("#print-title").append(text_html);
+                }
+              });
+            }
           }
-      },     
-      requestDelay: 300,          
-      };
+        });
+      }
 
-    $("#name").easyAutocomplete(options);
-  
-  });
-  </script>
+      function set_pay_title() {
+        text_html = "<span><i class='fa fa-money'></i></span>";
+        text_print = "<span><i class='fa fa-print'></i></span>";
+          $('input[name=pay-radio]').each(function () {
+            if ($(this).is(":checked")) {
+              checked = $(this).val();
+              if (checked == "เงินสด") {
+                $("#pay-title").text("เงินสด ");
+                $("#print-title").text("ใบเสร็จ ");
+              }else if (checked == "เงินโอน") {
+                $("#pay-title").text("เงินโอน ");
+                $("#print-title").text("ใบเสร็จ ");
+              }else if (checked == "ลูกหนี้") {
+                $("#pay-title").text("ลูกหนี้ ");
+                $("#print-title").text("ใบรายการขาย ");
+              } $("#pay-title").append(text_html); $("#print-title").append(text_print); 
+            }
+          });
+        }
+
+        function logout(){
+          localStorage.user_id = "";
+          window.location = "login.html";
+        }
+    </script>
 </head>
+
 <body>
- 
-<div>
-  <input type="text" id="name"> 
- 
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+              <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+              <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                
+              <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #860b0b;">
+              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                <h3 id="nav-title">ขายสินค้า</h3>
+              </div>
+            </nav>
+            
+            <!-- 4 4 4 4 4 4 4 4 -->
+            <div class="row">
+              <div class="col-2"></div>
+              <div id="date" class="col-2 text-left text-muted"></div>
+              <div class="col-4"></div>
+              <div class="col-3 text-left text-muted">ผู้ทำรายการ :
+                <div id="user" class="btn-group col-4 text-center text-muted">
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-2"></div>
+              <div class="col-5 text-left text-muted">ชื่อลูกค้า :
+                <div class="btn-group text-center text-muted">
+                  <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
+                </div>
+              </div>
+              <div class="col-1"></div>
+              <div class="col-4 text-left text-muted dropdown">ของออกจาก :
+                <div class="btn-group">
+                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              
+                  </select>
+                </div>
+              </div>
+            </div>
+            </div>
+            <hr style="width: 90%; margin-top: 0;">
+
+            <div class="container-fullwidth justify-content-center">
+              <!-- Title -->
+              <div class="row" style="margin-left: 50px; margin-bottom: 10px;">
+                <div class="col-1 text-center">แถม</div>
+                <div class="col-2 text-center">บาร์โค้ด</div>
+                <div class="col-3 text-center">รายการสินค้า</div>
+                <div class="col-1 text-center">ราคา</div>
+                <div class="col-1 text-center">จำนวน</div>
+                <div class="col-1 text-center">หน่วย</div>
+                <div class="col-1 text-center">รวม</div>
+                <div class="col-1 text-center">ส่วนลด</div>
+                <div class="col-1"></div>
+              </div>
+              <!-- Show -->
+              <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
+                <!-- Append here!! -->
+              </div>
+              <!-- Input -->
+              <div class="row" style="margin-left: 50px;">
+                <div class="col-1" style="padding-left: 5px; padding-right: 5px;">
+                  <div class="input-group">
+                    <span class="input-group-addon">
+                      <input id="box" type="checkbox" class="btn btn-default">
+                    </span>
+                    <input id="no" type="text" class="form-control text-center" readonly>
+                  </div>
+                </div>
+                <div class="col-2" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="barcode" type="text" class="form-control text-center" readonly>
+                </div>
+                <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
+                </div>
+                <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="price" type="number" class="form-control text-center no-spin" readonly>
+                </div>
+                <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
+                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" oninput ="chng_amt()" data-index="3">
+                </div>
+                <div class="col-1">
+                  <input id="unit" type="text" class="form-control text-center" readonly>
+                </div>
+                <div class="col-1" style='padding-left: 0px; padding-right: 0px;'>
+                  <input id="total" type="text" class="form-control text-center" readonly>
+                </div>
+                <div class="col-1" style='padding-right: 0px;'>
+                  <input id="prod-discount" type="number" class="form-control text-center no-spin" data-index="4">
+                </div>
+                <div class="col-1"></div>              
+              </div> <br>
+
+              <!-- Two fuking btn-->
+              <div class="row" style="margin-right: 25px;">
+                <div class="col-9"></div>
+                <div class="col-3 text-center">
+                  <button class="btn btn-success" onclick="add()">เพิ่มรายการ</button>
+                  <button class="btn btn-danger" onclick="reset()">ค่าเริ่มต้น</button>
+                </div>
+              </div>
+            </div>
+        </div><!-- End page content wrapper -->
+      <div id="ctn-bttm" class="container-fluid fixed-bottom" style="margin-bottom: 15px; z-index: 0;">
+        <div class="row" style="margin-left: 70px;">
+          <div class="col-1 text-center conclu-txt">
+            <h4>รวม : </h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #5dbe5d" readonly>
+          </div>
+          <div class="col-1 text-center conclu-txt">
+            <h4>ลด : </h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-discount" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e" readonly>
+          </div>
+          <div class="col-1 text-center conclu-txt">
+            <h4>สุทธิ : </h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-net" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff" readonly>
+          </div>
+          <div class="col-1"></div>
+          <div class="col-3 text-right" style="padding-top: 10px;">
+            <div class="input-group">
+              <button id="btn_checkbill" class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check_bill()">คิดเงิน</button>
+              <button id="print-title" class="btn btn-info" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
+                <span>
+                  <i class="fa fa-print"></i>
+                </span>
+              </button>
+              <button id='pay-title' class="btn btn-warning" style="text-align: center;" data-toggle="modal" data-target="#payModal">เงินสด
+                <span>
+                  <i class="fa fa-money"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Modal -->
+      <div class="modal fade" id="myModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">คิดเงิน</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="container">
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;">
+                    <h3>รวม : </h3>
+                  </div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="net-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #5dbe5d;"
+                      readonly>
+                  </div>
+                  <div class="col-2"></div>
+                </div><br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ลด : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="discount-money" onchange="chng_discount()"  data-index="5" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #fd8b5e;">
+                  </div>
+                  <div class="col-2"></div>
+                </div> <br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>สุทธิ : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="final-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #ffffff;"
+                    readonly>
+                  </div>
+                  <div class="col-2"></div>
+                </div>
+                <br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>รับ : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="get-money" type="number" data-index="6" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style=" background: #767676;  color: #DBBD5B;">
+                  </div>
+                  <div class="col-2"></div>
+                </div> <br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ทอน : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="change-money" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #A5FAE9"
+                    readonly>
+                  </div>
+                  <div class="col-2"></div>
+                </div> <br>
+            </div> <br>
+
+            <!-- Modal footer -->
+            <div class="col-12 text-center">
+              <button id="btn_save" type="button" class="btn btn-success" data-dismiss="modal" onclick="save()" style="margin-right: 15px;">บันทึก</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+            </div><br>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Print Modal -->
+      <div class="modal fade" id="printModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">ตั้งค่าการพิมพ์</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="col-12 text-center">
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input type="radio" name="print-radio" value="print" checked>พิมพ์</label>
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input type="radio" name="print-radio" value="no">ไม่พิมพ์</label>
+              </div>
+              <div id="print-option-title" class="col-12 text-center">
+                <h5 style="text-decoration: underline;">ตัวเลือก</h5>
+              </div>
+              <div id="print-option" class="col-12 text-center">
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="bill" type="radio" name="print-option" value="bill" checked>ใบเสร็จ</label>
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="a4" type="radio" name="print-option" value="a4">ใบรายการขาย(A4)</label>
+              </div><br>
+              <!-- Modal footer -->
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_print_title();">บันทึก</button>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pay Modal -->
+      <div class="modal fade" id="payModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">เงื่อนไขการชำระเงิน</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Pay body -->
+            <div class="modal-body">
+              <div class="col-12 text-center">
+                <label class="radio-inline">
+                  <input type="radio" name="pay-radio" value="เงินสด" checked>เงินสด</label>
+                <label class="radio-inline">
+                  <input type="radio" name="pay-radio" value="เงินโอน">เงินโอน</label>
+                <label class="radio-inline">
+                  <input type="radio" name="pay-radio" value="ลูกหนี้">ลูกหนี้</label>
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="comment">หมายเหตุ:</label>
+                  <textarea class="form-control" rows="5" id="comment" disabled></textarea>
+                </div>
+              </div>
+              <br>
+              <!-- Modal footer -->
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_pay_title();">บันทึก</button>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- End Wrapper -->
+
+    <script>
+      $('input:radio[name="pay-radio"]').change(
+          function () {
+            text_html = "<span><i class='fa fa-print'></i></span>";
+            if ($(this).is(':checked') && $(this).val() == "เงินโอน") {
+              $('textarea').prop('disabled', false);
+              $("#bill").prop("checked", true);
+            }else if ($(this).is(':checked') && $(this).val() == "ลูกหนี้") {
+              $('textarea').prop('disabled', false);
+              $("#bill").prop("checked", false);
+              $("#a4").prop("checked", true);
+            }else if ($(this).is(':checked') && $(this).val() == "เงินสด") {
+              $('textarea').prop('disabled', true);
+              $("#bill").prop("checked", true);
+              $('textarea').val("");
+            }
+      });
+
+      $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+
+          if($("#menu-toggle").text() == "รายการ"){
+            $("#menu-toggle").text("กลับ");
+          }else if($("#menu-toggle").text() == "กลับ"){
+            $("#menu-toggle").text("รายการ");
+          }
+
+      });
+
+      $('#name').on('keyup input', function() {
+          var name = $('#name').val();           
+          if(name == ""){
+              reset();
+          }            
+      });      
+
+      /*$('#amount').on("keyup input", function(){
+          var price = $('#price').val();
+          var amount = $('#amount').val();
+          var total = price*amount;
+          $('#total').val(total);
+      });*/
+
+      $('#discount-money').on("keyup input", function(){
+        var sum = $('#net-price').val();
+        var dis = $('#discount-money').val();       
+        $('#final-price').val(sum - dis);
+        var money = $('#get-money').val();  
+        var net = $('#final-price').val();  
+        if(money - net < 0){
+          $('#change-money').val("");
+        }else{
+          $('#change-money').val(money - net);
+        }    
+      });
+
+      $('#get-money').on("keyup input", function(){
+        var money = $('#get-money').val();
+        var net = $('#final-price').val();
+        if(money - net < 0){
+          $('#change-money').val("");
+        }else{
+          $('#change-money').val(money - net);
+        }
+      });     
+
+      var modal = false;
+      $('#myModal').on('shown.bs.modal', function() {
+        $('#discount-money').focus();
+        modal = true;
+      })
+
+      $('#printModal').on('shown.bs.modal', function() {        
+        modal = false;
+      })
+
+      $('#payModal').on('shown.bs.modal', function() {      
+        modal = false;
+      })
+
+    jsonObj = [];   
+    var datetime;
+    //var sum = 0;
+    var sum_dis = 0;
+    var cus_id = 0;
+    var img;
+    var prod_id;
+    var old_price,price;
+    $(document).ready(function(){  
+      /*if(!localStorage.user_id){
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณาเข้าสู่ระบบก่อน"
+        });
+        window.location = "login.html";
+      }*/ 
+        //Scroll
+        $("#show_list_add").scroll(function() {
+          console.log("Scroll");
+        });
+
+        // Hide
+        $("#show_list_add").hide();
+        $("#show_list_add").show();
+
+        $(document).keydown(function(objEvent) {
+          if (objEvent.keyCode == 9) {  //tab pressed
+              objEvent.preventDefault(); // stops its action         
+          }
+          if (objEvent.keyCode == 13) {  //enter pressed
+              objEvent.preventDefault();           
+              var $this = $(objEvent.target);
+              var i_enter = parseFloat($this.attr('data-index'));                    
+              if(i_enter == 4){
+                add();
+              }else if(i_enter == 6 && modal){
+                $("#btn_save").click();        
+              }else{
+                $('[data-index="' + (i_enter+1).toString() + '"]').focus();
+              }              
+          }
+          if (objEvent.keyCode == 113) {  //f2 pressed
+              add();
+          }
+          if (objEvent.keyCode == 115) {  //f4 pressed
+              reset();
+          }
+          if (objEvent.keyCode == 118) {  //f7 pressed
+              $("#btn_checkbill").click();          
+          }
+        })
+        detail();
+
+        setTimeout(function() {$("#cus").focus();}, 100);
+
+        var options = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
+        },
+        getValue: function(element) {     
+          return element.prod_name;
+        },
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+        preparePostData: function(data) {   
+          if($("#cus").val() == ""){
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
+            });
+            $("#cus").focus();
+            $("#name").val("");
+            return 0;
+          }else{
+            data.phrase = $("#name").val();
+            return data;
+          }
+        },
+        minCharNumber: 3,
+        list: {         
+            maxNumberOfElements: 1000,
+            showAnimation: {
+                type: "slide",
+                time: 100
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 100
+            },
+            onChooseEvent: function() {
+              var barcode = $("#name").getSelectedItemData().barcode;
+              price = $("#name").getSelectedItemData().prod_price;
+              var unit_name = $("#name").getSelectedItemData().unit_name;
+              prod_id = $("#name").getSelectedItemData().prod_id;
+              img = $("#name").getSelectedItemData().img_string;
+              old_price = $("#name").getSelectedItemData()[7].old_price;                     
+
+              $('#barcode').val(barcode);
+              $('#price').val(price);
+              $('#unit').val(unit_name);
+              $('#total').val(price);
+            }
+        },     
+        requestDelay: 300,
+        theme: "blue-light",         
+        };
+
+        $("#name").easyAutocomplete(options);
+
+        var options_cus = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+          },
+
+          getValue: function(element) {
+            //console.log(element);
+            return element.customer_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {
+            data.phrase = $("#cus").val();
+            return data;
+          },
+          minCharNumber: 2,
+          list: {
+              maxNumberOfElements: 100,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+
+              onChooseEvent: function() {
+                cus_id = $("#cus").getSelectedItemData().customer_id;
+                if(jsonObj.length > 0 || $('#barcode').val != ""){
+                  if(jsonObj.length > 0){
+                    var sum_de = 0;
+                    for(var c = 0;c < jsonObj.length; c++){
+                      var arg = c+1;                     
+                      var amt = jsonObj[c].amount;
+                      var prod = jsonObj[c].prod_id;
+                      $.ajax({
+                        url:"http://150.95.26.163:8080/gitmew/php/check_detail_cus.php",
+                        method:"POST",
+                        data:{'cus_id': cus_id,'prod_id':prod},
+                        async:false,
+                        success:function(data)
+                        {
+                          if(data != "fail"){  
+                            console.log("have value");                         
+                            if(jsonObj[c].check_amt == 0){
+                              console.log("amt = 0");      
+                              $('#price-'+arg).val(data);
+                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                              jsonObj[c].price = data;
+                              jsonObj[c].total = $('#total-'+arg).val();                            
+                            }
+                            jsonObj[c].price_cus = data;                   
+                          }else{                      
+                            console.log("not have value");  
+                            if(jsonObj[c].check_amt == 0){
+                              console.log("amt = 0");      
+                              $('#price-'+arg).val(jsonObj[c].price_old);
+                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                              jsonObj[c].price = jsonObj[c].price_old;
+                              jsonObj[c].total = $('#total-'+arg).val();                            
+                            }                         
+                            jsonObj[c].price_cus = jsonObj[c].price_old;                        
+                          }                   
+                        }
+                      }); 
+                    sum_de += parseInt(jsonObj[c].total);
+                    }
+                    $('#total-price').val(sum_de);
+                    $('#total-net').val(sum_de-$('#total-discount').val());
+                  }
+                  if($('#barcode').val() != ""){
+                    reset();  
+                  }
+                }
+              }
+          },
+          requestDelay: 300,  
+          theme: "blue-light",          
+        };
+
+        $("#cus").easyAutocomplete(options_cus);
+    });
+
+    function detail(){
+      $('#branch').empty();     
+      //Date
+      var d = new Date($.now());
+      $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
+      datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+      $('#user').text(localStorage.name);
+
+      $.ajax({
+          url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
+          method:"GET",
+        success:function(data)
+        {
+          var obj = jQuery.parseJSON(data);
+          $.each(obj, function(i, field){
+            $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
+          });
+        }
+      });    
+
+       /*$.ajax({
+          url:"http://150.95.26.163:8080/gitmew/php/test.php",
+          method:"GET",
+        success:function(data)
+        {    
+          document.getElementById("test").src = data;     
+        }
+      });*/    
+    }
+
+    var check = 0;
+    function chng_amt(){
+      var amt = $('#amount').val();
+      $.ajax({
+        type: "POST",
+        url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
+        data: {'prod_id' : prod_id,
+                'amount' : amt},
+        //async:false,
+        success : function(data){        
+          if(data != "fail"){           
+            $('#price').val(data);
+            $('#total').val($('#price').val()*amt);
+            check = 1;
+          }else{
+            if(old_price != price){
+              $('#price').val(price);
+            }else{
+              $('#price').val(old_price);
+            }          
+            $('#total').val($('#price').val()*amt);
+            check = 0;
+          }
+        }
+      });
+    }
+
+    function chng_amt_edit(arg){
+      var amt = $('#amount-'+arg).val();
+      var prod = jsonObj[arg-1].prod_id;     
+      $.ajax({
+        type: "POST",
+        url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
+        data: {'prod_id' : prod,
+                'amount' : amt},
+        //async:false,
+        success : function(data){
+          if(data != "fail"){           
+            $('#price-'+arg).val(data);
+            $('#total-'+arg).val($('#price-'+arg).val()*amt);
+            jsonObj[arg-1].check_amt = 1;          
+          }else{
+            if(jsonObj[arg-1].price_old != jsonObj[arg-1].price_cus){
+              $('#price-'+arg).val(jsonObj[arg-1].price_cus);
+            }else{
+              $('#price-'+arg).val(jsonObj[arg-1].price_old);
+            }          
+            $('#total-'+arg).val($('#price-'+arg).val()*amt);
+            jsonObj[arg-1].check_amt = 0; 
+          }
+        }
+      });
+    }
+
+    function chng_discount(){   
+      var dis_old = $('#total-discount').val();  
+      var dis = $('#discount-money').val();      
+      if(dis_old > dis){
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณากรอกลดราคาเท่ากับหรือมากกว่า " + dis_old
+        });  
+        $('#discount-money').val(dis_old);    
+        $('#discount-money').focus();
+      }
+    }
+    
+    var total_old,dis_old;
+    function edit(arg){
+      var stop = false;
+      for(var e = 1; e <= jsonObj.length; e++){
+        if($("#btn_check" + e).is(":visible")){
+          stop = true;
+        }
+      }
+      if(stop){
+        return 0;
+      }else{
+        $("#btn_edit"+arg).prop('hidden', true);
+        $("#btn_check" + arg).prop('hidden', false);
+        $("#btn_remove"+arg).prop('hidden', false);
+        $("#amount-" + arg).prop('readonly', false);
+        $("#dis-" + arg).prop('readonly', false);
+        //var price = $('#price-'+arg).val();
+        //var amt = $("#amount-" + arg).val();
+        var dis = $("#dis-" + arg).val();
+        total_old = $("#total-" + arg).val();
+        if(dis == ""){
+          dis_old = 0;
+        }else{
+          dis_old = dis;
+        }
+
+        /*$('#amount-'+arg).on("keyup input", function(){
+            var price = $('#price-'+arg).val();
+            var amt = $("#amount-" + arg).val();
+            var total = price*amt;
+            $('#total-'+arg).val(total);
+        });*/
+      }    
+    }
+
+    function update(arg){
+      $("#btn_edit" + arg).prop('hidden', false);
+      $("#btn_check" + arg).prop('hidden', true);
+      $("#btn_remove" + arg).prop('hidden', true);
+      $("#amount-" + arg).prop('readonly', true);
+      $("#dis-" + arg).prop('readonly', true);
+
+      var sum = $('#total-price').val();
+      var dis = $("#dis-" + arg).val();
+      if(dis == ""){
+        dis = 0;
+      }
+
+      jsonObj[arg-1].amount =  $('#amount-'+arg).val();
+      jsonObj[arg-1].total =  $('#total-'+arg).val();
+      jsonObj[arg-1].discount =  dis;
+
+      sum = sum-total_old+parseInt($('#total-'+arg).val());
+      sum_dis = sum_dis-dis_old+parseInt(dis);
+
+      $('#total-price').val(sum);
+      $('#total-discount').val(sum_dis);
+      $('#total-net').val(sum - sum_dis);
+
+    }
+    //var offset = $(window).height() - $("#ctn-bttm").offset().top;
+    var index = 0;   
+    function add(){
+      // Added JS
+      // BY The Kit
+      var bottom = $(window).height() - $("#show_list_add").offset().top - $("#show_list_add").height();
+      // Always scroll to the bottom
+      if(bottom < 250){
+        $("#show_list_add").css('max-height', $("#show_list_add").height());
+        $("#show_list_add").animate({scrollTop: $('#show_list_add').prop('scrollHeight')});
+      }      
+
+      $("#name").focus();
+      var sum = parseInt($('#total-price').val());
+      var barcode = $('#barcode').val();
+          if(barcode != "" && $('#name').val() != ""){
+            index++;
+            $('#show_list_add').append("<div id='list_add"+index+"' class='row' style='margin-left: 50px; margin-bottom: 5px;'>\
+                <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
+                  <div class='input-group'>\
+                    <span class='input-group-addon'>\
+                      <input id='box"+index+"' onclick='bonus("+index+")' type='checkbox' class='btn btn-default'>\
+                    </span>\
+                    <input id='added_no"+index+"' class='form-control text-center added' type='text' readonly value='"+index+"'>\
+                </div>\
+                </div>\
+                <div class='col-2' style='padding-left: 5px; padding-right: 5px;'>\
+                  <input id='barcode-"+index+"' class='form-control text-center' value='"+ barcode +"' disabled>\
+                </div>\
+                <div class='col-3' style='padding-left: 5px; padding-right: 5px;'>\
+                  <input id='name-"+ index +"' class='form-control text-center' rel='popover' data-img='"+img+"' value='"+ $('#name').val() +"' readonly>\
+                </div>\
+                <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
+                  <input id='price-"+index+"' class='form-control text-center' value='"+ $('#price').val() +"' readonly>\
+                </div>\
+                <div class='col-1' style='padding-left: 10px; padding-right: 0px;'>\
+                  <input id='amount-"+index+"' oninput='chng_amt_edit("+index+")' class='form-control text-center no-spin' min='1' value='"+ $('#amount').val() +"' readonly>\
+                </div>\
+                <div class='col-1'>\
+                  <input id='unit-"+index+"' class='form-control text-center' value='"+ $('#unit').val() +"' readonly>\
+                </div>\
+                <div class='col-1' style='padding-left: 0px; padding-right: 0px;'>\
+                  <input id='total-"+index+"' class='form-control text-center' value='"+ $('#total').val() +"' readonly>\
+                </div>\
+                <div class='col-1' style='padding-right: 0px;'>\
+                  <input id='dis-"+index+"' class='form-control text-center' value='"+ $('#prod-discount').val() +"' readonly>\
+                </div>\
+                <div class='col-1 text-center' style='padding-left: 0px; padding-right: 0px;'>\
+                  <button id='btn_edit"+ index + "' class='btn btn-sm btn-primary' style='margin-top: 4px;' onclick='edit(" + index + ")'>\
+                    <i class='fa fa-edit'></i>\
+                  </button>\
+                  <button id='btn_check"+ index + "' class='btn btn-sm btn-success' style='margin-top: 4px;' onclick='update(" + index + ")' hidden>\
+                    <i class='fa fa-check-square'></i>\
+                  </button>\
+                  <button id='btn_remove"+ index + "' class='btn btn-sm btn-danger' style='margin-top: 4px;' onclick='remove(" + index + ")' hidden>\
+                    <i class='fa fa-minus'></i>\
+                  </button>\
+                </div>\
+                <script>\
+                $('#name-"+index+"[rel=popover]').popover({\
+                html: true,\
+                trigger: 'hover',\
+                placement: 'left',\
+                content: function(){\
+                return '<img src='+$(this).data('img')+'>';}\
+                });\
+                </"+"script>\
+                </div>\
+            ");           
+            sum += parseInt($('#total').val());
+            if($('#prod-discount').val() != ""){
+              sum_dis += parseInt($('#prod-discount').val());
+            }
+
+            item = {}
+            item ["prod_id"] =  prod_id;
+            item ["name"] =  $('#name').val();
+            item ["price"] =  $('#price').val();
+            item ["amount"] =  $('#amount').val();
+            item ["total"] =  $('#total').val();
+            item ["price_old"] =  old_price;
+            item["price_cus"] = price;
+            item ["check_amt"] =  check;
+            if($('#prod-discount').val() != ""){
+              item ["discount"] =  $('#prod-discount').val();
+            }else{
+              item ["discount"] =  0;
+            }
+            jsonObj.push(item);
+
+            $('#barcode').val("");
+            $('#name').val("");
+            $('#price').val("");
+            $('#amount').val("1");
+            $('#unit').val("");
+            $('#total').val("");
+            $('#prod-discount').val("");
+
+            $('#total-price').val(sum);
+            $('#total-discount').val(sum_dis);
+            $('#total-net').val(sum - sum_dis);
+
+            //$('#span_no').text("(" + index_arr + ")");
+          }
+    }
+
+    function reset(){
+      //console.log("clear");
+      $("#name").focus();
+      $('#barcode').val("");
+      $('#name').val("");
+      $('#price').val("");
+      $('#amount').val("1");
+      $('#unit').val("");
+      $('#total').val("");
+      $('#prod-discount').val("");
+      $('#box').attr("checked",false);
+    }
+
+    function arrange(arg){
+      jsonObj.splice(arg-1,1);
+      for(i = arg+1; i <= index; i++){
+        console.log(i);
+        $("#list_add"+i).prop('id', 'list_add'+(i-1));
+        $("#barcode-"+i).prop('id', 'barcode-'+(i-1));
+        $("#name-"+i).prop('id', 'name-'+(i-1));
+        $("#total-"+i).prop('id', 'total-'+(i-1));
+        $("#amount-"+i).prop('id', 'amount-'+(i-1));
+        $("#dis-"+i).prop('id', 'dis-'+(i-1));
+        $("#unit-"+i).prop('id', 'unit-'+(i-1));
+        $("#added_no"+i).val(i-1);
+        $("#added_no"+i).prop('id', 'added_no'+(i-1));
+        $("#price-"+i).prop('id', 'price-'+(i-1));
+        $("#box"+i).attr('onclick', "bonus("+(i-1)+")");
+        $("#box"+i).prop('id', 'box'+(i-1));
+        $("#btn_edit"+i).attr('onclick', "edit("+(i-1)+")");
+        $("#btn_edit"+i).prop('id', 'btn_edit'+(i-1));
+        $("#btn_check"+i).attr('onclick', "update("+(i-1)+")");
+        $("#btn_check"+i).prop('id', 'btn_check'+(i-1));
+        $("#btn_remove"+i).attr('onclick', "remove("+(i-1)+")");
+        $("#btn_remove"+i).prop('id', 'btn_remove'+(i-1));
+      }
+      index--;
+      //$("#span-no").text(j+1);
+    }
+
+    function remove(num){
+      if($('#box'+num).is(':checked') == true){
+        $('#box'+num).prop('checked', false);
+        bonus(num);
+      }
+      var sum = parseInt($('#total-price').val());
+      var h_total = parseInt($('#total-'+num).val());
+      var h_dis = parseInt($('#dis-'+num).val());
+      sum -= h_total;
+      if(!isNaN(h_dis)){
+        sum_dis -= h_dis;
+      }
+      $('#total-price').val(sum);
+      $('#total-discount').val(sum_dis);
+      $('#total-net').val(sum - sum_dis);
+
+      $('#list_add'+num).remove();
+      arrange(num);      
+    }
+
+    function bonus(num){
+      var sum = parseInt($('#total-price').val());
+      var h_total = parseInt($('#total-'+num).val());
+      var h_dis = parseInt($('#dis-'+num).val());
+
+      if($('#box'+num).is(':checked') == true){
+          sum -= h_total;
+          if(!isNaN(h_dis)){
+            sum_dis -= h_dis;
+          }
+      }else{
+          sum += h_total;
+          if(!isNaN(h_dis)){
+            sum_dis += h_dis;
+          }
+      }
+      $('#total-price').val(sum);
+      $('#total-discount').val(sum_dis);
+      $('#total-net').val(sum - sum_dis);
+    }
+
+    function check_bill(){     
+      var total = $('#total-price').val();
+      var dis = $('#total-discount').val();
+      var net = $('#total-net').val();
+
+      $('#net-price').val(total);
+      $('#discount-money').val(dis);
+      $('#final-price').val(net); 
+      $('#get-money').val(""); 
+      $('#change-money').val("");    
+    }   
+   
+    function save(){
+      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != ""){
+        var no = 1;
+        json = [];
+        var text = "";
+        $.each(jsonObj, function(i, field){
+          item = {}
+          item ["item_id"] =  no;
+          item ["name"] =  jsonObj[i].name;
+          item ["price"] =  jsonObj[i].price;
+          item ["amount"] =  jsonObj[i].amount;
+          item ["prod_id"] =  jsonObj[i].prod_id;
+          item ["discount"] =  jsonObj[i].discount;
+          if($('#box'+(i+1)).is(':checked') == true){
+            item ["bonus"] =  1;
+          }else{
+            item ["bonus"] =  0;
+          }
+          json.push(item);
+          no++;
+
+        net_prod = jsonObj[i].price * jsonObj[i].amount;
+        text = text + "<div class='left'>"+jsonObj[i].name+"("+jsonObj[i].price+")</div>" + "<div class='mid'>"+jsonObj[i].amount+"</div>" + "<div class='right'>"+net_prod+"</div>";
+        });
+        var jsonString = JSON.stringify(json);
+        var print = $('input[name=print-radio]:checked').val();
+        var print_type = $('input[name=print-option]:checked').val();
+        var pay_type = $('input[name=pay-radio]:checked').val();
+        var comment = $('textarea').val();
+        var b_id = $('#branch option:selected').val();
+        var b_name = $('#branch option:selected').html();
+        var sum_price = $('#net-price').val();
+        var discount = $('#discount-money').val();
+        var final_price = $('#final-price').val();
+        var get_money = $('#get-money').val();
+        var change_money = $('#change-money').val();
+        var cus_name = $('#cus').val();
+        var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
+        + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
+        + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
+        
+        if(print == "print"){
+          var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
+        }
+        $.ajax({
+            type: "POST",
+            url:"http://150.95.26.163:8080/gitmew/php/save_order.php",
+            data: dataString,
+            async: false,
+            success: function(data){
+                //alert(data);
+                if(data != "fail"){
+                  if(print_type == "bill"){
+                    var date = datetime.split(" ");
+                    var time = date[1];
+                    var date = date[0];
+                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
+"<div style='width: 7.5cm;'>"+
+  "<div class='txt-ct'>พรประสิทธิ์</div>"+
+  "<div class='txt-ct'>PPS AUTO</div>"+
+  "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>"+
+  "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
+  "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
+  "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
+  "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
+  "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
+  "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
+  "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
+  
+  "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
+  ""+text+""+
+  "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='txt-left'>ราคารวม : </div>"+
+  "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
+  "<div class='txt-left'>ส่วนลด : </div>"+
+  "<div class='txt-right'>"+discount+" บาท</div><br>"+
+  "<div class='txt-left'>สุทธิ : </div>"+
+  "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
+  "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
+  "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
+  "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
+  "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
+"</div>");
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+                    WinPrint.close();   
+                  }else if(print_type == "a4"){
+                    var date = datetime.split(" ");
+                    var time = date[1];
+                    var date = date[0];
+                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
+"<div style='width: 7.5cm;'>"+
+  "<div class='txt-ct'>A4A4A4A4A4A4A4A4A4</div>"+
+  "<div class='txt-ct'>PPS AUTO</div>"+
+  "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>"+
+  "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
+  "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
+  "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
+  "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
+  "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
+  "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
+  "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
+  
+  "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
+  ""+text+""+
+  "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='txt-left'>ราคารวม : </div>"+
+  "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
+  "<div class='txt-left'>ส่วนลด : </div>"+
+  "<div class='txt-right'>"+discount+" บาท</div><br>"+
+  "<div class='txt-left'>สุทธิ : </div>"+
+  "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
+  "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
+  "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
+  "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
+  "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
+"</div>");
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+                    WinPrint.close();   
+                  }                           
+                  /*$('#show_list_add').empty();
+                  jsonObj = [];               
+                  index = 0;
+                  cus_id = 0;                 
+                  sum = 0;
+                  sum_dis = 0;
+                  $('#total-net').val("0");
+                  $('#total-price').val("0");
+                  $('#total-discount').val("0");
+                  $('#net-price').val("");
+                  $('#final-price').val("");
+                  $('#discount-money').val("");
+                  $('#get-money').val("");
+                  $('#change-money').val("");
+                  $('#cus').val("");                  
+                  detail();*/
+                  location.reload();
+                }
+            }
+        });
+
+      }else{
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ"
+        });     
+      }
+    }
+
+    function logout(){
+      localStorage.user_id = "";
+      window.location = "login.html";
+    }
+
+    $('input:radio[name="print-radio"]').change(
+        function(){
+          if ($(this).is(':checked')) {
+            checked = $(this).val();
+            if(checked == "print"){
+              $("#print-option").prop('hidden', false);
+              $("#print-option-title").prop('hidden', false);
+            }else if(checked == "no"){
+              $("#print-option").prop('hidden', true);
+              $("#print-option-title").prop('hidden', true);
+            }
+        }
+      }); // show / hide bill-option;
+    </script>
 </body>
 </html>
