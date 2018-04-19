@@ -640,9 +640,9 @@
           data.phrase = $("#type-" + j).val();
           return data;
         },
-
+        minCharNumber: 2,
         list: {
-          maxNumberOfElements: 3,
+          maxNumberOfElements: 100,
 
           showAnimation: {
             type: "slide",
@@ -653,6 +653,7 @@
             time: 100
           },
         },
+        requestDelay: 300,
         theme: "blue-light",
       };
 
@@ -674,9 +675,9 @@
           data.phrase = $("#unit-" + j).val();
           return data;
         },
-
+        minCharNumber: 2,
         list: {
-          maxNumberOfElements: 3,
+          maxNumberOfElements: 100,
 
           showAnimation: {
             type: "slide",
@@ -687,6 +688,7 @@
             time: 100
           },
         },
+        requestDelay: 300,
         theme: "blue-light",
       };
 
