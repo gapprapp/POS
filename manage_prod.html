@@ -21,7 +21,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
   <!-- Easy-autocomplete -->
-  <script src="js/jquery.easy-autocomplete.min.js"></script>
+  <script src="js/jquery.easy-autocomplete.js"></script>
   <link rel="stylesheet" href="css/easy-autocomplete.min.css">
   <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
 
@@ -95,8 +95,9 @@
           data.phrase = $("#input-cus").val();
           return data;
         },
+        minCharNumber: 2,
         list: {
-            maxNumberOfElements: 3,
+            maxNumberOfElements: 100,
             showAnimation: {
                 type: "slide",
                 time: 100
@@ -109,7 +110,8 @@
               cus_id = $("#input-cus").getSelectedItemData().customer_id;
             }
         },      
-
+        requestDelay: 300,
+        theme: "blue-light",
         };
         $("#input-cus").easyAutocomplete(options_cus);
         $('div.easy-autocomplete').removeAttr('style');
@@ -167,9 +169,9 @@
                     data.phrase = $("#type-" + i).val();
                     return data;
                   },
-
+                  minCharNumber: 2,
                   list: {
-                    maxNumberOfElements: 3,
+                    maxNumberOfElements: 100,
 
                     showAnimation: {
                       type: "slide",
@@ -180,6 +182,7 @@
                       time: 100
                     },
                   },
+                  requestDelay: 300,
                   theme: "blue-light",
                 };
 
@@ -201,9 +204,9 @@
                     data.phrase = $("#unit-" + i).val();
                     return data;
                   },
-
+                  minCharNumber: 2,
                   list: {
-                    maxNumberOfElements: 3,
+                    maxNumberOfElements: 100,
 
                     showAnimation: {
                       type: "slide",
@@ -214,6 +217,7 @@
                       time: 100
                     },
                   },
+                  requestDelay: 300,
                   theme: "blue-light",
                 };
 
@@ -499,9 +503,9 @@
                   data.phrase = $("#type-" + (start + i)).val();
                   return data;
                 },
-
+                minCharNumber: 2,
                 list: {
-                  maxNumberOfElements: 3,
+                  maxNumberOfElements: 100,
 
                   showAnimation: {
                     type: "slide",
@@ -512,6 +516,7 @@
                     time: 100
                   },
                 },
+                requestDelay: 300,
                 theme: "blue-light",
               };
 
@@ -533,9 +538,9 @@
                   data.phrase = $("#unit-" + (start + i)).val();
                   return data;
                 },
-
+                minCharNumber: 2,
                 list: {
-                  maxNumberOfElements: 3,
+                  maxNumberOfElements: 100,
 
                   showAnimation: {
                     type: "slide",
@@ -546,6 +551,7 @@
                     time: 100
                   },
                 },
+                requestDelay: 300,
                 theme: "blue-light",
               };
               text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
@@ -686,9 +692,9 @@
                     data.phrase = $("#type-" + (start + i)).val();
                     return data;
                   },
-
+                  minCharNumber: 2,
                   list: {
-                    maxNumberOfElements: 3,
+                    maxNumberOfElements: 100,
 
                     showAnimation: {
                       type: "slide",
@@ -699,6 +705,7 @@
                       time: 100
                     },
                   },
+                  requestDelay: 300,
                   theme: "blue-light",
                 };
 
@@ -720,9 +727,9 @@
                     data.phrase = $("#unit-" + (start + i)).val();
                     return data;
                   },
-
+                  minCharNumber: 2,
                   list: {
-                    maxNumberOfElements: 3,
+                    maxNumberOfElements: 100,
 
                     showAnimation: {
                       type: "slide",
@@ -733,6 +740,7 @@
                       time: 100
                     },
                   },
+                  requestDelay: 300,
                   theme: "blue-light",
                 };
                 text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
@@ -1597,9 +1605,9 @@
               //console.log(data.phrase);
               return data;
             },
-
+            minCharNumber: 2,
             list: {
-                maxNumberOfElements: 3,
+                maxNumberOfElements: 100,
 
                 showAnimation: {
                     type: "slide",
@@ -1615,7 +1623,8 @@
                   $("#span-cus-"+i).text($("#set-cus-"+i).getSelectedItemData().customer_id);
                 }
             },      
-
+            requestDelay: 300,
+            theme: "blue-light",
           };
          
           $("#set-cus-"+i).easyAutocomplete(option[i]);     

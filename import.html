@@ -27,7 +27,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
      <!-- Easy-autocomplete -->
-     <script src="js/jquery.easy-autocomplete.min.js"></script>
+     <script src="js/jquery.easy-autocomplete.js"></script>
      <link rel="stylesheet" href="css/easy-autocomplete.min.css">
      <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
 
@@ -110,9 +110,9 @@
             data.phrase = $("#name").val();
             return data;
           },
-
+          minCharNumber: 3,
           list: {
-              maxNumberOfElements: 5,
+              maxNumberOfElements: 1000,
 
               showAnimation: {
                   type: "slide",
@@ -206,6 +206,8 @@
                 });                       
               }
           },
+          requestDelay: 300,
+          theme: "blue-light",
         };
 
         $("#name").easyAutocomplete(options);
@@ -230,9 +232,9 @@
             data.phrase = $("#sup").val();
             return data;
           },
-
+          minCharNumber: 2,
           list: {
-              maxNumberOfElements: 5,
+              maxNumberOfElements: 100,
 
               showAnimation: {
                   type: "slide",
@@ -247,9 +249,8 @@
                 sup_id = $("#sup").getSelectedItemData().sup_id;
               }
           },
-
-          //requestDelay: 400,
-
+          requestDelay: 300,
+          theme: "blue-light",
         };
 
         $("#sup").easyAutocomplete(options_sup);      
@@ -274,9 +275,9 @@
             data.phrase = $("#input-cus").val();
             return data;
           },
-
+          minCharNumber: 2,
           list: {
-              maxNumberOfElements: 3,
+              maxNumberOfElements: 100,
 
               showAnimation: {
                   type: "slide",
@@ -291,7 +292,8 @@
                 //cus_id = $("#input-cus").getSelectedItemData().customer_id;
               }
           },      
-          
+          requestDelay: 300,
+          theme: "blue-light",
         };
 
         $("#input-cus").easyAutocomplete(options_cus);
@@ -594,9 +596,9 @@
             data.phrase = $("#set-cus-"+arg).val();
             return data;
           },
-
+          minCharNumber: 2,
           list: {
-              maxNumberOfElements: 3,
+              maxNumberOfElements: 100,
 
               showAnimation: {
                   type: "slide",
@@ -611,7 +613,8 @@
                 //cus_id = $("#set-cus-"+arg).getSelectedItemData().customer_id;
               }
           },      
-
+          requestDelay: 300,
+          theme: "blue-light",
           };
 
           $("#set-cus-"+arg).easyAutocomplete(options_cus);

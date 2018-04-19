@@ -21,7 +21,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
      <!-- Easy-autocomplete -->
-     <script src="js/jquery.easy-autocomplete.min.js"></script>
+     <script src="js/jquery.easy-autocomplete.js"></script>
      <link rel="stylesheet" href="css/easy-autocomplete.min.css">
      <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
 
@@ -62,7 +62,7 @@
         font-size: 26px;
         padding-top: 5px; 
         padding-bottom: 4px; 
-      }
+      }      
     </style>
 
     <script>
@@ -565,65 +565,58 @@
         setTimeout(function() {$("#cus").focus();}, 100);
 
         var options = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
+        },
+        getValue: function(element) {     
+          return element.prod_name;
+        },
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+        preparePostData: function(data) {   
+          if($("#cus").val() == ""){
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
+            });
+            $("#cus").focus();
+            $("#name").val("");
+            return 0;
+          }else{
+            data.phrase = $("#name").val();
+            return data;
+          }
+        },
+        minCharNumber: 3,
+        list: {         
+            maxNumberOfElements: 1000,
+            showAnimation: {
+                type: "slide",
+                time: 100
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 100
+            },
+            onChooseEvent: function() {
+              var barcode = $("#name").getSelectedItemData().barcode;
+              price = $("#name").getSelectedItemData().prod_price;
+              var unit_name = $("#name").getSelectedItemData().unit_name;
+              prod_id = $("#name").getSelectedItemData().prod_id;
+              img = $("#name").getSelectedItemData().img_string;
+              old_price = $("#name").getSelectedItemData()[7].old_price;                     
 
-          url: function(phrase) {
-            return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
-          },
-
-          getValue: function(element) {
-            //console.log(element);           
-            return element.prod_name;
-          },
-
-          ajaxSettings: {
-            method: "POST",
-            data: {}
-          },
-
-          preparePostData: function(data) {            
-            if($("#cus").val() == ""){
-              $.alert({
-                icon: 'fa fa-warning',
-                title: 'เตือน',
-                content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
-              });
-              $("#cus").focus();
-              $("#name").val("");
-              return 0;
-            }else{
-              data.phrase = $("#name").val();
-              return data;
+              $('#barcode').val(barcode);
+              $('#price').val(price);
+              $('#unit').val(unit_name);
+              $('#total').val(price);
             }
-           
-          },
-
-          list: {
-              maxNumberOfElements: 10,
-
-              showAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-              hideAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-
-              onChooseEvent: function() {
-                var barcode = $("#name").getSelectedItemData().barcode;
-                price = $("#name").getSelectedItemData().prod_price;
-                var unit_name = $("#name").getSelectedItemData().unit_name;
-                prod_id = $("#name").getSelectedItemData().prod_id;
-                img = $("#name").getSelectedItemData().img_string;
-                old_price = $("#name").getSelectedItemData()[7].old_price;                     
-
-                $('#barcode').val(barcode);
-                $('#price').val(price);
-                $('#unit').val(unit_name);
-                $('#total').val(price);
-              }
-          },
-          //requestDelay: 400,          
+        },     
+        requestDelay: 300,
+        theme: "blue-light",         
         };
 
         $("#name").easyAutocomplete(options);
@@ -648,9 +641,9 @@
             data.phrase = $("#cus").val();
             return data;
           },
-
+          minCharNumber: 2,
           list: {
-              maxNumberOfElements: 3,
+              maxNumberOfElements: 100,
 
               showAnimation: {
                   type: "slide",
@@ -711,7 +704,8 @@
                 }
               }
           },
-          //requestDelay: 400,          
+          requestDelay: 300,  
+          theme: "blue-light",          
         };
 
         $("#cus").easyAutocomplete(options_cus);
