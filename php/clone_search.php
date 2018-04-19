@@ -12,8 +12,8 @@
       while($row = mysqli_fetch_array($result)){ 
         $old = array('old_price' => $row['prod_price']);
         array_push($row,$old);
-        if(isset($_GET['cus_id'])){
-            $prod_id = $row['prod_id'];
+        $prod_id = $row['prod_id'];
+        if(isset($_GET['cus_id'])){          
             $cus_id = $_GET['cus_id'];
             $sql = "SELECT special_prod_price FROM detail_customer WHERE prod_id = '$prod_id' AND customer_id = '$cus_id'";
             $result1 = mysqli_query($conn, $sql);
@@ -22,12 +22,18 @@
                      $row['prod_price'] = $row1['special_prod_price'];                    
                 }		
             }
-        }       
+        }
+        $sql = "SELECT amt_threshold,prod_price FROM detail_customer WHERE prod_id = '$prod_id' AND customer_id = null";
+        $result2 = mysqli_query($conn, $sql);
+            if(mysqli_num_rows($result2) > 0){
+                while($row2 = mysqli_fetch_array($result2)){
+                    $output2[] = $row2;                         
+                }
+                array_push($row,$output2);              		
+            }       
         $output[] = $row;
       }   
-    }else{    
-      $output = array('prod_name' => 'Not Found');
-    }   
+    }
 
     if($result){
         echo json_encode($output);		   

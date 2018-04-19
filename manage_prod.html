@@ -1127,7 +1127,11 @@
             c_cus = 0;   
             c_unit = 0; 
             unit_get = [];
-            cus_get = [];             
+            cus_get = [];   
+            $(".file-upload").removeClass('active');
+            $("#noFile").text("วางไฟล์ที่นี่.. ..");
+            $("#img").attr('src', "");
+            $("#fileSelect").val("");               
             if(data != "null"){
               var obj = jQuery.parseJSON(data);
               //console.log(obj);                        
@@ -1137,7 +1141,7 @@
                   $("#img").attr('src', obj[i].img_string);
                   $('#fileSelect').data('img', obj[i].img_string);
                 }else{
-                  if(!field.prod_price){                    
+                  if(field.prod_price == 0){                    
                     c_cus++;
                     start_cus = c_cus;
                     start_cus++;
@@ -1303,6 +1307,7 @@
       }
       $("#input-unit-price").val("");
       $("#input-unit").removeAttr('disabled');
+      console.log(start_unit);
     }
 
     function edit_unit(){ 
@@ -1449,7 +1454,7 @@
     
     unit_add = [];    
     function save_unit(){
-      //console.log(start_unit);
+      console.log(start_unit);
       for(var u = 1; u < start_unit; u++){
         unit_get[u-1].unit = $("#show-unit-"+u).text();
         unit_get[u-1].unit_price = $("#show-unit-price-"+u).text();         
@@ -1493,7 +1498,7 @@
         success: function(data) {
           console.log(data);
           if(data == "success"){
-            show_info(prod_id);
+            show_info(prod_id,$('#info-prod_name').text());
           }
         }
       });
@@ -1789,7 +1794,7 @@
         success: function(data) {
           console.log(data);
           if(data == "success"){
-            show_info(prod_id);
+            show_info(prod_id,$('#info-prod_name').text());
           }
         }
       }); 
