@@ -80,8 +80,17 @@
               $("#print-title").text("ไม่พิมพ์ ");
               $("#print-title").append(text_html);
             } else if (checked == "print") {
-              $("#print-title").text("พิมพ์ ");
-              $("#print-title").append(text_html);
+              $('input[name=print-option]').each(function () {
+                if ($(this).is(":checked")) {
+                  check = $(this).val();
+                  if(check == "bill"){
+                    $("#print-title").text("ใบเสร็จ ");
+                  }else{
+                    $("#print-title").text("ใบรายการขาย ");
+                  }
+                  $("#print-title").append(text_html);
+                }
+              });
             }
           }
         });
@@ -89,19 +98,20 @@
 
       function set_pay_title() {
         text_html = "<span><i class='fa fa-money'></i></span>";
+        text_print = "<span><i class='fa fa-print'></i></span>";
           $('input[name=pay-radio]').each(function () {
             if ($(this).is(":checked")) {
               checked = $(this).val();
               if (checked == "เงินสด") {
                 $("#pay-title").text("เงินสด ");
-                $("#pay-title").append(text_html);
+                $("#print-title").text("ใบเสร็จ ");
               }else if (checked == "เงินโอน") {
                 $("#pay-title").text("เงินโอน ");
-                $("#pay-title").append(text_html);
+                $("#print-title").text("ใบเสร็จ ");
               }else if (checked == "ลูกหนี้") {
                 $("#pay-title").text("ลูกหนี้ ");
-                $("#pay-title").append(text_html);
-              }
+                $("#print-title").text("ใบรายการขาย ");
+              } $("#pay-title").append(text_html); $("#print-title").append(text_print); 
             }
           });
         }
@@ -257,7 +267,7 @@
           <div class="col-3 text-right" style="padding-top: 10px;">
             <div class="input-group">
               <button id="btn_checkbill" class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check_bill()">คิดเงิน</button>
-              <button id="print-title" class="btn btn-info" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">พิมพ์
+              <button id="print-title" class="btn btn-info" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
                 <span>
                   <i class="fa fa-print"></i>
                 </span>
@@ -364,7 +374,16 @@
                   <input type="radio" name="print-radio" value="print" checked>พิมพ์</label>
                 <label class="radio-inline" style="font-size: 120%;">
                   <input type="radio" name="print-radio" value="no">ไม่พิมพ์</label>
-              </div><br> <br>
+              </div>
+              <div id="print-option-title" class="col-12 text-center">
+                <h5 style="text-decoration: underline;">ตัวเลือก</h5>
+              </div>
+              <div id="print-option" class="col-12 text-center">
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="bill" type="radio" name="print-option" value="bill" checked>ใบเสร็จ</label>
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="a4" type="radio" name="print-option" value="a4">ใบรายการขาย(A4)</label>
+              </div><br>
               <!-- Modal footer -->
               <div class="col-12 text-center">
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_print_title();">บันทึก</button>
@@ -416,12 +435,17 @@
     <script>
       $('input:radio[name="pay-radio"]').change(
           function () {
+            text_html = "<span><i class='fa fa-print'></i></span>";
             if ($(this).is(':checked') && $(this).val() == "เงินโอน") {
               $('textarea').prop('disabled', false);
+              $("#bill").prop("checked", true);
             }else if ($(this).is(':checked') && $(this).val() == "ลูกหนี้") {
               $('textarea').prop('disabled', false);
+              $("#bill").prop("checked", false);
+              $("#a4").prop("checked", true);
             }else if ($(this).is(':checked') && $(this).val() == "เงินสด") {
               $('textarea').prop('disabled', true);
+              $("#bill").prop("checked", true);
               $('textarea').val("");
             }
       });
@@ -498,14 +522,14 @@
     var prod_id;
     var old_price,price;
     $(document).ready(function(){  
-      if(!localStorage.user_id){
+      /*if(!localStorage.user_id){
         $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
           content: "กรุณาเข้าสู่ระบบก่อน"
         });
         window.location = "login.html";
-      } 
+      }*/ 
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
@@ -1076,6 +1100,7 @@
         });
         var jsonString = JSON.stringify(json);
         var print = $('input[name=print-radio]:checked').val();
+        var print_type = $('input[name=print-option]:checked').val();
         var pay_type = $('input[name=pay-radio]:checked').val();
         var comment = $('textarea').val();
         var b_id = $('#branch option:selected').val();
@@ -1101,11 +1126,11 @@
             success: function(data){
                 //alert(data);
                 if(data != "fail"){
-                  if(print == "print"){
+                  if(print_type == "bill"){
                     var date = datetime.split(" ");
                     var time = date[1];
                     var date = date[0];
-                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm;  text-align: right;}</style>"+
+                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
 "<div style='width: 7.5cm;'>"+
   "<div class='txt-ct'>พรประสิทธิ์</div>"+
   "<div class='txt-ct'>PPS AUTO</div>"+
@@ -1137,7 +1162,43 @@
                     WinPrint.focus();
                     WinPrint.print();
                     WinPrint.close();   
-                  }                          
+                  }else if(print_type == "a4"){
+                    var date = datetime.split(" ");
+                    var time = date[1];
+                    var date = date[0];
+                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
+"<div style='width: 7.5cm;'>"+
+  "<div class='txt-ct'>A4A4A4A4A4A4A4A4A4</div>"+
+  "<div class='txt-ct'>PPS AUTO</div>"+
+  "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>"+
+  "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
+  "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
+  "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
+  "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
+  "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
+  "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
+  "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
+  
+  "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
+  ""+text+""+
+  "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
+  "<div class='txt-left'>ราคารวม : </div>"+
+  "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
+  "<div class='txt-left'>ส่วนลด : </div>"+
+  "<div class='txt-right'>"+discount+" บาท</div><br>"+
+  "<div class='txt-left'>สุทธิ : </div>"+
+  "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
+  "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
+  "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
+  "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
+  "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
+"</div>");
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+                    WinPrint.close();   
+                  }                           
                   /*$('#show_list_add').empty();
                   jsonObj = [];               
                   index = 0;
@@ -1172,6 +1233,20 @@
       localStorage.user_id = "";
       window.location = "login.html";
     }
+
+    $('input:radio[name="print-radio"]').change(
+        function(){
+          if ($(this).is(':checked')) {
+            checked = $(this).val();
+            if(checked == "print"){
+              $("#print-option").prop('hidden', false);
+              $("#print-option-title").prop('hidden', false);
+            }else if(checked == "no"){
+              $("#print-option").prop('hidden', true);
+              $("#print-option-title").prop('hidden', true);
+            }
+        }
+      }); // show / hide bill-option;
     </script>
 </body>
 </html>
