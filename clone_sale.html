@@ -2,73 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>jQuery UI Autocomplete - Multiple, remote</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Easy-autocomplete -->
+  <script src="js/jquery.easy-autocomplete.js"></script>
+  <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+  <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
   <style>
-  .ui-autocomplete-loading {
-    background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
-  }
-  </style>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    .easy-autocomplete-container { 
+      max-height: 200px; 
+      overflow-y: auto; 
+    }
+  </style>  
   <script>
-  $( function() {
-    function split( val ) {
-      return val.split( /,\s*/ );
-    }
-    function extractLast( term ) {
-      return split( term ).pop();
-    }
- 
-    $( "#birds" )
-      // don't navigate away from the field on tab when selecting an item
-      .on( "keydown", function( event ) {
-        if ( event.keyCode === $.ui.keyCode.TAB &&
-            $( this ).autocomplete( "instance" ).menu.active ) {
-          event.preventDefault();
+  $(function() {
+    var options = {url: function(phrase) {
+        return "http://150.95.26.163:8080/gitmew/php/search.php";
+      },
+      getValue: function(element) {     
+        return element.prod_name;
+      },
+      ajaxSettings: {
+        method: "POST",
+        data: {}
+      },
+      preparePostData: function(data) {   
+        if($("#cus").val() == ""){
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'เตือน',
+            content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
+          });
+          $("#cus").focus();
+          $("#name").val("");
+          return 0;
+        }else{
+          data.phrase = $("#name").val();
+          return data;
         }
-      })
-      .autocomplete({
-        source: function( request, response ) {
-          $.getJSON( "php/search.php", {
-            term: extractLast( request.term )
-          }, response );
-        },
-        search: function() {
-          // custom minLength
-          var term = extractLast( this.value );
-          if ( term.length < 2 ) {
-            return false;
+      },
+      minCharNumber: 3,
+      list: {         
+          maxNumberOfElements: 1000,
+          showAnimation: {
+              type: "slide",
+              time: 100
+          },
+          hideAnimation: {
+              type: "slide",
+              time: 100
+          },
+          onChooseEvent: function() {
+            var barcode = $("#name").getSelectedItemData().barcode;
+            price = $("#name").getSelectedItemData().prod_price;
+            var unit_name = $("#name").getSelectedItemData().unit_name;
+            prod_id = $("#name").getSelectedItemData().prod_id;
+            img = $("#name").getSelectedItemData().img_string;
+            old_price = $("#name").getSelectedItemData()[7].old_price;                     
+
+            $('#barcode').val(barcode);
+            $('#price').val(price);
+            $('#unit').val(unit_name);
+            $('#total').val(price);
           }
-        },
-        focus: function() {
-          // prevent value inserted on focus
-          return false;
-        },
-        select: function( event, ui ) {
-          var terms = split( this.value );
-          // remove the current input
-          terms.pop();
-          // add the selected item
-          terms.push( ui.item.value );
-          // add placeholder to get the comma-and-space at the end
-          terms.push( "" );
-          this.value = terms.join( ", " );
-          return false;
-        }
-      });
-  } );
+      },     
+      requestDelay: 300,          
+      };
+
+    $("#name").easyAutocomplete(options);
+  
+  });
   </script>
 </head>
 <body>
  
-<div class="ui-widget">
-  <label for="birds">Birds: </label>
-  <input id="birds" size="50">
-</div>
- 
+<div>
+  <input type="text" id="name"> 
  
 </body>
 </html>

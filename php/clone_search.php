@@ -1,6 +1,6 @@
 <?php
     $conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos"); 
-    $data = $_POST['term'];   
+    $data = $_GET['q'];   
       
     $query = "SELECT p.prod_id,p.prod_name,p.barcode,p.prod_price,u.unit_name,p.img_string,p.prod_cost 
         FROM product p INNER JOIN unit u ON p.unit_id = u.unit_id
@@ -20,6 +20,8 @@
     }else{
         echo "fail";
     }
+    /*$age = array("Peter"=>"$data", "Ben"=>"37", "Joe"=>"43");
+    echo  json_encode($age);*/
     mysqli_close($conn);
 
 ?>
