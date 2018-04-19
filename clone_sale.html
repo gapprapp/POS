@@ -516,6 +516,7 @@
     var img;
     var prod_id;
     var old_price,price;
+    array_amt = [];
     $(document).ready(function(){  
       /*if(!localStorage.user_id){
         $.alert({
@@ -569,7 +570,7 @@
           return "http://150.95.26.163:8080/gitmew/php/clone_search.php?cus_id="+cus_id;
         },
         getValue: function(element) {
-          console.log(element);                     
+          //console.log(element);                     
           return element.prod_name;               
         },
         ajaxSettings: {
@@ -608,7 +609,8 @@
               var unit_name = $("#name").getSelectedItemData().unit_name;
               prod_id = $("#name").getSelectedItemData().prod_id;
               img = $("#name").getSelectedItemData().img_string;
-              old_price = $("#name").getSelectedItemData()[7].old_price;                     
+              old_price = $("#name").getSelectedItemData()[7].old_price; 
+              array_amt = $("#name").getSelectedItemData()[8];   
 
               $('#barcode').val(barcode);
               $('#price').val(price);
@@ -737,7 +739,12 @@
     var check = 0;
     function chng_amt(){
       var amt = $('#amount').val();
-      $.ajax({
+      if(array_amt){
+        console.log("have amt");
+      }else{
+        console.log("nope");
+      }
+      /*$.ajax({
         type: "POST",
         url: "http://150.95.26.163:8080/gitmew/php/get_amt_price.php",
         data: {'prod_id' : prod_id,
@@ -758,7 +765,7 @@
             check = 0;
           }
         }
-      });
+      });*/
     }
 
     function chng_amt_edit(arg){
