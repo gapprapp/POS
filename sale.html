@@ -65,7 +65,7 @@
       }
 
       .easy-autocomplete-container { 
-        max-height: 200 px; 
+        max-height: 200px; 
         overflow-y: auto; 
       }
     </style>
@@ -547,7 +547,7 @@
 
         var options = {
         url: function(phrase) {
-          return "http://150.95.26.163:8080/gitmew/php/search.php";
+          return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
         },
         getValue: function(element) {     
           return element.prod_name;
@@ -596,7 +596,8 @@
               $('#total').val(price);
             }
         },     
-        requestDelay: 300,          
+        requestDelay: 300,
+        theme: "blue-light",         
         };
 
         $("#name").easyAutocomplete(options);
@@ -621,7 +622,7 @@
             data.phrase = $("#cus").val();
             return data;
           },
-
+          minCharNumber: 2,
           list: {
               maxNumberOfElements: 3,
 
@@ -684,7 +685,8 @@
                 }
               }
           },
-          //requestDelay: 400,          
+          requestDelay: 300,  
+          theme: "blue-light",          
         };
 
         $("#cus").easyAutocomplete(options_cus);
