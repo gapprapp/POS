@@ -273,3 +273,8 @@ img{
   transform: 1s;
   transform: rotate(-180deg);
 }
+
+.easy-autocomplete-container { 
+  max-height: 200px; 
+  overflow-y: auto; 
+}

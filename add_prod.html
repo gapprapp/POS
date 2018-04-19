@@ -21,7 +21,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
   <!-- Easy-autocomplete -->
-  <script src="js/jquery.easy-autocomplete.min.js"></script>
+  <script src="js/jquery.easy-autocomplete.js"></script>
   <link rel="stylesheet" href="css/easy-autocomplete.min.css">
   <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
 
@@ -84,9 +84,9 @@
           data.phrase = $("#type").val();
           return data;
         },
-
+        minCharNumber: 2,
         list: {
-          maxNumberOfElements: 3,
+          maxNumberOfElements: 100,
 
           showAnimation: {
             type: "slide",
@@ -97,6 +97,7 @@
             time: 100
           },
         },
+        requestDelay: 300,
         theme: "blue-light",
       };
 
@@ -118,9 +119,9 @@
           data.phrase = $("#unit").val();
           return data;
         },
-
+        minCharNumber: 2,
         list: {
-          maxNumberOfElements: 3,
+          maxNumberOfElements: 100,
 
           showAnimation: {
             type: "slide",
@@ -131,6 +132,7 @@
             time: 100
           },
         },
+        requestDelay: 300,
         theme: "blue-light",
       };
 
@@ -445,7 +447,9 @@
         <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
         <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
         <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
-        <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>              
+        <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+        <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+        <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                
         <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
       </ul>
     </div>
