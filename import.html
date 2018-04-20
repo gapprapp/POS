@@ -158,7 +158,7 @@
                         var obj = jQuery.parseJSON(data);
                         console.log(obj);                        
                         $.each(obj, function(i, field){
-                          if(!field.prod_price){
+                          if(field.prod_price == 0){
                             c_cus++;
                             start_cus = c_cus;
                             start_cus++;
