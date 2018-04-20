@@ -1561,8 +1561,7 @@
       }
     }
 
-    function edit_cus(){ 
-      option = [];   
+    function edit_cus(){      
       var all_cus = 0;
       for(var i = 1; i <= c_cus; i++){
         if($("#set-cus-"+i).is(':visible')){          
@@ -1577,7 +1576,7 @@
         }else if(all_cus == c_cus){         
           var text = $("#show-cus-"+i).text();
           $("#show-cus-"+i).text("");
-          var text_html = "<input id='set-cus-"+i+"' type='text' class='form-control text-center' value='"+text+"'>";
+          var text_html = "<input id='set-cus-"+i+"' type='text' onfocus='chng_cus("+i+")' class='form-control text-center' value='"+text+"'>";
           $("#show-cus-"+i).append(text_html);
       
           var text = $("#show-cus-price-"+i).text();
@@ -1586,55 +1585,51 @@
           $("#show-cus-price-"+i).append(text_html);
     
           $("#cus-del-"+i).prop('hidden', true);
-          $("#cus-check-"+i).prop('hidden', false);
-       
-          option[i] = {
-
-            url: function(phrase) {
-              return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
-            },
-
-            getValue: function(element) {
-              //console.log(element);
-              return element.customer_name;
-            },
-
-            ajaxSettings: {
-              method: "POST",
-              data: {}
-            },
-
-            preparePostData: function(data) {
-              console.log(i);
-              data.phrase = $("#set-cus-"+i).val();
-              //console.log(data.phrase);
-              return data;
-            },
-            minCharNumber: 2,
-            list: {
-                maxNumberOfElements: 100,
-
-                showAnimation: {
-                    type: "slide",
-                    time: 100
-                },
-                hideAnimation: {
-                    type: "slide",
-                    time: 100
-                },
-
-                onChooseEvent: function() {
-                  console.log(i);
-                  $("#span-cus-"+i).text($("#set-cus-"+i).getSelectedItemData().customer_id);
-                }
-            },      
-            requestDelay: 300,
-            theme: "blue-light",
-          };
-         
-          $("#set-cus-"+i).easyAutocomplete(option[i]);     
+          $("#cus-check-"+i).prop('hidden', false);             
         }      
       }
+    }
+
+    function chng_cus(arg){
+      console.log(arg);
+      option = {
+        url: function(phrase) {
+          return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
+        },
+        getValue: function(element) {          
+          return element.customer_name;
+        },
+        ajaxSettings: {
+          method: "POST",
+          data: {}
+        },
+        preparePostData: function(data) {
+          console.log(arg);
+          data.phrase = $("#set-cus-"+arg).val();       
+          return data;
+        },
+        minCharNumber: 2,
+        list: {
+            maxNumberOfElements: 100,
+
+            showAnimation: {
+                type: "slide",
+                time: 100
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 100
+            },
+            onChooseEvent: function() {
+              console.log(arg);
+              $("#span-cus-"+arg).text($("#set-cus-"+arg).getSelectedItemData().customer_id);
+            }
+        },      
+        requestDelay: 300,
+        theme: "blue-light",
+        };
+
+      $("#set-cus-"+arg).easyAutocomplete(option);  
     }
     
     function del_cus(){
