@@ -512,7 +512,7 @@
     var datetime;
     //var sum = 0;
     var sum_dis = 0;
-    var cus_id = 0;
+    var cus_id = -1;
     var img;
     var prod_id;
     var old_price,price;
@@ -570,7 +570,7 @@
           return "http://150.95.26.163:8080/gitmew/php/clone_search.php?cus_id="+cus_id;
         },
         getValue: function(element) {
-          //console.log(element);                     
+          console.log(element);                     
           return element.prod_name;               
         },
         ajaxSettings: {
@@ -740,7 +740,9 @@
     function chng_amt(){
       var amt = $('#amount').val();
       if(array_amt){
-        console.log("have amt");
+        if(jQuery.inArray(amt, array_amt) != -1){
+          console.log("ye");
+        }
       }else{
         console.log("nope");
       }
