@@ -24,7 +24,7 @@
             }
         }
         $output2 = [];
-        $sql = "SELECT amt_threshold,prod_price FROM detail_customer WHERE prod_id = '$prod_id' AND customer_id = 0";
+        $sql = "SELECT amt_threshold,prod_price FROM detail_customer WHERE prod_id = '$prod_id' AND customer_id = 0 ORDER BY amt_threshold ASC";
         $result2 = mysqli_query($conn, $sql);
             if(mysqli_num_rows($result2) > 0){
                 while($row2 = mysqli_fetch_array($result2)){
