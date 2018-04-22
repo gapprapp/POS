@@ -34,7 +34,9 @@
             }       
         $output[] = $row;
       }   
-    }
+    }else{    
+        $output = array('prod_name' => 'Not Found');
+      }   
 
     if($result){
         echo json_encode($output);		   
