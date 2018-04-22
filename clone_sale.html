@@ -124,13 +124,13 @@
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
               <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
-              <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-              <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                
-              <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                     
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
 
@@ -518,14 +518,19 @@
     var old_price,price;
     array_amt = [];
     $(document).ready(function(){  
-      /*if(!localStorage.user_id){
+      if(!localStorage.user_id){
         $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
           content: "กรุณาเข้าสู่ระบบก่อน"
         });
         window.location = "login.html";
-      }*/ 
+      }
+
+      if(localStorage.role == "user"){
+        $("#mb").remove();
+        $("#mp").remove();
+      }    
         //Scroll
         $("#show_list_add").scroll(function() {
           console.log("Scroll");
@@ -567,11 +572,10 @@
 
         var options = {
         url: function(phrase) {
-          return "http://150.95.26.163:8080/gitmew/php/clone_search.php?cus_id="+cus_id;
+          return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
         },
-        getValue: function(element) {
-          //console.log(element);                     
-          return element.prod_name;               
+        getValue: function(element) {     
+          return element.prod_name;
         },
         ajaxSettings: {
           method: "POST",
@@ -602,15 +606,15 @@
             hideAnimation: {
                 type: "slide",
                 time: 100
-            },           
+            },
             onChooseEvent: function() {
               var barcode = $("#name").getSelectedItemData().barcode;
               price = $("#name").getSelectedItemData().prod_price;
               var unit_name = $("#name").getSelectedItemData().unit_name;
               prod_id = $("#name").getSelectedItemData().prod_id;
               img = $("#name").getSelectedItemData().img_string;
-              old_price = $("#name").getSelectedItemData()[7].old_price; 
-              array_amt = $("#name").getSelectedItemData()[8];   
+              old_price = $("#name").getSelectedItemData()[7].old_price;   
+              array_amt = $("#name").getSelectedItemData()[8];                    
 
               $('#barcode').val(barcode);
               $('#price').val(price);
@@ -696,7 +700,7 @@
                           }                   
                         }
                       }); 
-                    sum_de += parseInt(jsonObj[c].total);
+                    sum_de += parseFloat(jsonObj[c].total);
                     }
                     $('#total-price').val(sum_de);
                     $('#total-net').val(sum_de-$('#total-discount').val());
@@ -733,7 +737,16 @@
             $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
           });
         }
-      });           
+      });    
+
+       /*$.ajax({
+          url:"http://150.95.26.163:8080/gitmew/php/test.php",
+          method:"GET",
+        success:function(data)
+        {    
+          document.getElementById("test").src = data;     
+        }
+      });*/    
     }
 
     var check = 0;
@@ -853,8 +866,8 @@
       jsonObj[arg-1].total =  $('#total-'+arg).val();
       jsonObj[arg-1].discount =  dis;
 
-      sum = sum-total_old+parseInt($('#total-'+arg).val());
-      sum_dis = sum_dis-dis_old+parseInt(dis);
+      sum = sum-total_old+parseFloat($('#total-'+arg).val());
+      sum_dis = sum_dis-dis_old+parseFloat(dis);
 
       $('#total-price').val(sum);
       $('#total-discount').val(sum_dis);
@@ -874,7 +887,7 @@
       }      
 
       $("#name").focus();
-      var sum = parseInt($('#total-price').val());
+      var sum = parseFloat($('#total-price').val());
       var barcode = $('#barcode').val();
           if(barcode != "" && $('#name').val() != ""){
             index++;
@@ -930,9 +943,9 @@
                 </"+"script>\
                 </div>\
             ");           
-            sum += parseInt($('#total').val());
+            sum += parseFloat($('#total').val());
             if($('#prod-discount').val() != ""){
-              sum_dis += parseInt($('#prod-discount').val());
+              sum_dis += parseFloat($('#prod-discount').val());
             }
 
             item = {}
@@ -1013,9 +1026,9 @@
         $('#box'+num).prop('checked', false);
         bonus(num);
       }
-      var sum = parseInt($('#total-price').val());
-      var h_total = parseInt($('#total-'+num).val());
-      var h_dis = parseInt($('#dis-'+num).val());
+      var sum = parseFloat($('#total-price').val());
+      var h_total = parseFloat($('#total-'+num).val());
+      var h_dis = parseFloat($('#dis-'+num).val());
       sum -= h_total;
       if(!isNaN(h_dis)){
         sum_dis -= h_dis;
@@ -1029,9 +1042,9 @@
     }
 
     function bonus(num){
-      var sum = parseInt($('#total-price').val());
-      var h_total = parseInt($('#total-'+num).val());
-      var h_dis = parseInt($('#dis-'+num).val());
+      var sum = parseFloat($('#total-price').val());
+      var h_total = parseFloat($('#total-'+num).val());
+      var h_dis = parseFloat($('#dis-'+num).val());
 
       if($('#box'+num).is(':checked') == true){
           sum -= h_total;
@@ -1103,7 +1116,7 @@
         + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
         
         if(print == "print"){
-          var WinPrint  = window.open('', '', 'left=0,top=0,width=1300,height=600,toolbar=0,scrollbars=0,status=0');
+          var WinPrint  = window.open();
         }
         $.ajax({
             type: "POST",
@@ -1149,42 +1162,94 @@
                     WinPrint.focus();
                     WinPrint.print();
                     WinPrint.close();   
+                    location.reload(true);
                   }else if(print_type == "a4"){
                     var date = datetime.split(" ");
                     var time = date[1];
                     var date = date[0];
-                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
-                      "<div style='width: 7.5cm;'>"+
-                        "<div class='txt-ct'>A4A4A4A4A4A4A4A4A4</div>"+
-                        "<div class='txt-ct'>PPS AUTO</div>"+
-                        "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>"+
-                        "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
-                        "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
-                        "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
-                        "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
-                        "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
-                        "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
-                        "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
+                    var link = "https://fonts.googleapis.com/css?family=Maitree";
+                    var logo = "http://150.95.26.163:8080/gitmew/img/pps.jpg";
+                    WinPrint.document.write("<!DOCTYPE html>"+
+                    "<html>"+
+                    "<head>"+
+                    "<meta charset='utf-8'>"+
+                      "<link href='https://fonts.googleapis.com/css?family=Maitree' rel='stylesheet'>"+
+                      "<style>@page {size: auto; margin: 0;} .fl{float: left; text-align: center; margin-left: 50mm; margin-right: 40mm;}.fr{float: right; text-align: left; margin-right: 25mm;}.fc{float: center; text-align: center;}.fs-200-bold{font-size: 200%; margin-bottom: -10px; font-weight: bold;}.fs-200{font-size: 200%; margin-bottom: -25px;}.fs-180{font-size: 180%; margin-bottom: -25px; letter-spacing: 2px;}.fs-150-title{font-size: 150%; margin-bottom: -25px; letter-spacing: 1px;}.fs-150{font-size: 150%; margin-bottom: -15px; letter-spacing: 1px;}.fs-120{font-size: 120%; letter-spacing: 1px;}.fl-spc{float: left; width: 5%;}.fl-10{float: left; width: 10%;}.fl-15{float: left; width: 15%;}.fl-20{float: left; width: 20%; text-align: center;}.fl-25{float: left; width: 25%; text-align: center;}.fl-30{float: left; width: 30%; text-align: center;}.fl-35{float: left; width: 30%; text-align: center;}.fl-40{float: left; width: 40%; text-align: center;}.fl-50{float: left; width: 50%; text-align: center;}.fl-55{float: left; width: 55%; text-align: center;}.fl-87{float: left; width: 87.5%; text-align: center;}.field{border-bottom: 1px dashed black;}.ctn{position: relative; width: 297mm; height: 210mm; padding: 10mm 15mm 15mm 10mm; font-family: 'Maitree';}.row{display: inline-block;}.tb-st{border: 1px solid black; text-align: center; padding: 3px;}.tb{border: 1px solid black; text-align: center; padding: 3px; border-left: none;}.no-bdt{border-top: none;}</style>"+
+                    "</head>"+
+                    "<body>"+
+                    "<div class='ctn'>"+
+                      "<div class='row'>"+
+                        "<div class='fl'>"+
+                          "<img style='width: 250px; height: 150px;' src="+logo+">"+
+                        "</div>"+ 
+                        "<div class='fr'>"+
+                          "<p class='fs-200'>พรประสิทธิ์ PPS Auto Shop</p>"+
+                          "<p class='fs-150-title'>5 หมู่ 7 ต.ชีน้ำร้าย จ.สิงห์บุรี 16110</p>"+
+                          "<p class='fs-150-title'>โทร 065-5028828, 097-0631169</p>"+
+                        "</div>"+
+                      "</div>"+
+
+                      "<div class='fc'><p class='fs-200-bold'>ใบรายการขาย</p></div>"+
+
+                      
+                      "<div class='fl-10'><p class='fs-150'>ชื่อลูกค้า</p></div>"+
+                      "<div class='fl-55'><p class='fs-150 field'>พีรกฤต สกลุสายทองคำ</p></div>"+
+                      "<div class='fl-spc'>&emsp;</div>"+
+                      "<div class='fl-10'><p class='fs-150'>ประเภท</p></div>"+
+                      "<div class='fl-20'><p class='fs-150 field'>เงินสด</p></div>"+
+
+                      "<div class='fl-10'><p class='fs-150'>ที่อยู่</p></div>"+
+                      "<div class='fl-55'><p class='fs-150 field'>99/85</p></div>"+
+                      "<div class='fl-spc'>&emsp;</div>"+
+                      "<div class='fl-10'><p class='fs-150'>เบอร์โทร</p></div>"+
+                      "<div class='fl-20'><p class='fs-150 field'>087-5659150</p></div>"+
+
+                      "<div class='fl-15'><p class='fs-150'>เลขที่ใบรายการ</p></div>"+
+                      "<div class='fl-35'><p class='fs-150 field'>S1826300</p></div>"+
+                      "<div class='fl-25'><p class='fs-150'>วันที่ เวลา ที่ทำรายการ</p></div>"+
+                      "<div class='fl-30' style='margin-bottom: 80px;'><p class='fs-150 field'>13-12-2017 10:07:29</p></div>"+
+
+                      "<div>"+
+                        "<div class='fl-spc fs-120 tb-st'>ลำดับ</div>"+
+                        "<div class='fl-50 fs-120 tb'>ชื่อสินค้า</div>"+
+                        "<div class='fl-10 fs-120 tb'>จำนวน</div>"+
+                        "<div class='fl-10 fs-120 tb'>หน่วย</div>"+
+                        "<div class='fl-10 fs-120 tb'>ราคา/หน่วย</div>"+
+                        "<div class='fl-10 fs-120 tb'>รวมเงิน</div>"+
+
+                        "<div class='fl-spc fs-120 tb-st no-bdt'>1</div>"+
+                        "<div class='fl-50 fs-120 tb no-bdt'>เอกภพ พิสูจณ์สิจ๊ะ</div>"+
+                        "<div class='fl-10 fs-120 tb no-bdt'>100</div>"+
+                        "<div class='fl-10 fs-120 tb no-bdt'>อนันต์</div>"+
+                        "<div class='fl-10 fs-120 tb no-bdt'>25</div>"+
+                        "<div class='fl-10 fs-120 tb no-bdt'>2500</div>"+
+
                         
-                        "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
-                        "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
-                        ""+text+""+
-                        "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
-                        "<div class='txt-left'>ราคารวม : </div>"+
-                        "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
-                        "<div class='txt-left'>ส่วนลด : </div>"+
-                        "<div class='txt-right'>"+discount+" บาท</div><br>"+
-                        "<div class='txt-left'>สุทธิ : </div>"+
-                        "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
-                        "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
-                        "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
-                        "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
-                        "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
-                      "</div>");
+                        "<div class='fl-87 fs-120 tb-st no-bdt'>ราคารวมทั้งสิ้น</div>"+
+                        "<div class='fl-10 fs-120 tb no-bdt'>2500</div>"+
+                      "</div>"+
+
+                      "<div style='margin-top: 60px; padding-top: 10px; padding-bottom: 20px;' class='fl-50 fs-120 tb-st'>"+
+                        "<div style='font-weight: bold; margin-bottom: 10px; text-decoration: underline;' class='fs-120'>ข้อมูลผู้รับสินค้า</div>"+
+                        "<div style='margin-bottom: 10px;' class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
+                        "<div style='margin-bottom: 10px;' class='fl-50 fs-120 field'>สมพร สว่างว้าบ</div>"+
+                        "<div class='fl-40 fs-120'>วันที่ส่งสินค้า</div>"+
+                        "<div class='fl-50 fs-120 field'>13/02/2011</div>"+
+                      "</div>"+
+
+                      "<div class='fl-spc'>&emsp;</div>"+
+
+                      "<div style='margin-top: 100px; padding-top: 10px; padding-bottom: 20px;' class='fl-40 fs-120 tb-st'>"+
+                        "<div class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
+                        "<div class='fl-50 fs-120 field'>สมพร สว่างว้าบ</div>"+
+                      "</div>"+
+                    "</div>"+
+                    "</body></html>");
                     WinPrint.document.close();
                     WinPrint.focus();
                     WinPrint.print();
-                    WinPrint.close();   
+                    WinPrint.close();
+                    location.reload(true);   
                   }                           
                   /*$('#show_list_add').empty();
                   jsonObj = [];               
@@ -1202,7 +1267,13 @@
                   $('#change-money').val("");
                   $('#cus').val("");                  
                   detail();*/
-                  location.reload();
+                  location.reload(true);
+                }else{
+                  $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: "ลองอีกครั้ง"
+                  });   
                 }
             }
         });

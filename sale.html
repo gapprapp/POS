@@ -700,7 +700,7 @@
                           }                   
                         }
                       }); 
-                    sum_de += parseInt(jsonObj[c].total);
+                    sum_de += parseFloat(jsonObj[c].total);
                     }
                     $('#total-price').val(sum_de);
                     $('#total-net').val(sum_de-$('#total-discount').val());
@@ -737,16 +737,7 @@
             $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
           });
         }
-      });    
-
-       /*$.ajax({
-          url:"http://150.95.26.163:8080/gitmew/php/test.php",
-          method:"GET",
-        success:function(data)
-        {    
-          document.getElementById("test").src = data;     
-        }
-      });*/    
+      });      
     }
 
     var check = 0;
@@ -866,8 +857,8 @@
       jsonObj[arg-1].total =  $('#total-'+arg).val();
       jsonObj[arg-1].discount =  dis;
 
-      sum = sum-total_old+parseInt($('#total-'+arg).val());
-      sum_dis = sum_dis-dis_old+parseInt(dis);
+      sum = sum-total_old+parseFloat($('#total-'+arg).val());
+      sum_dis = sum_dis-dis_old+parseFloat(dis);
 
       $('#total-price').val(sum);
       $('#total-discount').val(sum_dis);
@@ -887,7 +878,7 @@
       }      
 
       $("#name").focus();
-      var sum = parseInt($('#total-price').val());
+      var sum = parseFloat($('#total-price').val());
       var barcode = $('#barcode').val();
           if(barcode != "" && $('#name').val() != ""){
             index++;
@@ -943,9 +934,9 @@
                 </"+"script>\
                 </div>\
             ");           
-            sum += parseInt($('#total').val());
+            sum += parseFloat($('#total').val());
             if($('#prod-discount').val() != ""){
-              sum_dis += parseInt($('#prod-discount').val());
+              sum_dis += parseFloat($('#prod-discount').val());
             }
 
             item = {}
@@ -1026,9 +1017,9 @@
         $('#box'+num).prop('checked', false);
         bonus(num);
       }
-      var sum = parseInt($('#total-price').val());
-      var h_total = parseInt($('#total-'+num).val());
-      var h_dis = parseInt($('#dis-'+num).val());
+      var sum = parseFloat($('#total-price').val());
+      var h_total = parseFloat($('#total-'+num).val());
+      var h_dis = parseFloat($('#dis-'+num).val());
       sum -= h_total;
       if(!isNaN(h_dis)){
         sum_dis -= h_dis;
@@ -1042,9 +1033,9 @@
     }
 
     function bonus(num){
-      var sum = parseInt($('#total-price').val());
-      var h_total = parseInt($('#total-'+num).val());
-      var h_dis = parseInt($('#dis-'+num).val());
+      var sum = parseFloat($('#total-price').val());
+      var h_total = parseFloat($('#total-'+num).val());
+      var h_dis = parseFloat($('#dis-'+num).val());
 
       if($('#box'+num).is(':checked') == true){
           sum -= h_total;
