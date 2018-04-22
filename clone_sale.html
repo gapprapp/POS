@@ -1114,8 +1114,8 @@
         var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
         + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
-        
-        if(print == "print"){
+        console.log(dataString);
+        /*if(print == "print"){
           var WinPrint  = window.open();
         }
         $.ajax({
@@ -1267,7 +1267,7 @@
                   $('#change-money').val("");
                   $('#cus').val("");                  
                   detail();*/
-                  location.reload(true);
+                  /*location.reload(true);
                 }else{
                   $.alert({
                     icon: 'fa fa-warning',
@@ -1276,7 +1276,7 @@
                   });   
                 }
             }
-        });
+        });*/
 
       }else{
         $.alert({
