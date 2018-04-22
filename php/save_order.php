@@ -16,7 +16,7 @@
     $user_id = $_POST['user_id'];
 
     mysqli_autocommit($conn,FALSE); 
-    if($cus == 0){
+    if($cus == -1){
         $sql = "INSERT INTO customer (customer_name) VALUE ('$name_cus')"; 
         $result = mysqli_query($conn, $sql);
         $cus = mysqli_insert_id($conn);	
