@@ -18,14 +18,13 @@
 			FROM sale_order o INNER JOIN customer c ON o.customer_id = c.customer_id 
 			INNER JOIN user u ON o.user_id = u.user_id INNER JOIN branch b ON o.branch_id = b.branch_id
             WHERE o.order_number NOT LIKE '%$txt%' AND c.customer_name LIKE '%$cus_name%' AND o.branch_id = '$b_id' AND o.order_number LIKE '%$number%' 
-            AND u.user_name LIKE '%$user_name%' AND o.payment_type = '$pay' AND o.date_time LIKE '%$date%' 
-            LIMIT $start,100";
+            AND u.user_name LIKE '%$user_name%' AND o.payment_type = '$pay' AND o.date_time LIKE '%$date%'";
 		}else
 		{
 			$sql = "SELECT o.order_id,o.order_number,c.customer_name,u.user_name,b.branch_name,o.payment_type,o.total_price,o.date_time
 			FROM sale_order o INNER JOIN customer c ON o.customer_id = c.customer_id 
 			INNER JOIN user u ON o.user_id = u.user_id INNER JOIN branch b ON o.branch_id = b.branch_id
-            WHERE o.order_number NOT LIKE '%$txt%' LIMIT $start,100";			
+            WHERE o.order_number NOT LIKE '%$txt%'";			
 		}
 		
 	}else if($sort_by != "none" && $order != "none"){
@@ -36,26 +35,26 @@
                 INNER JOIN user u ON o.user_id = u.user_id INNER JOIN branch b ON o.branch_id = b.branch_id
                 WHERE o.order_number NOT LIKE '%$txt%' AND c.customer_name LIKE '%$cus_name%' AND o.branch_id = '$b_id' AND o.order_number LIKE '%$number%' 
                 AND u.user_name LIKE '%$user_name%' AND o.payment_type = '$pay' AND o.date_time LIKE '%$date%'
-                ORDER BY o.$sort_by ASC LIMIT $start,100";
+                ORDER BY o.$sort_by ASC";
 			}else if($order == "desc"){
                 $sql = "SELECT o.order_id,o.order_number,c.customer_name,u.user_name,b.branch_name,o.payment_type,o.total_price,o.date_time
                 FROM sale_order o INNER JOIN customer c ON o.customer_id = c.customer_id 
                 INNER JOIN user u ON o.user_id = u.user_id INNER JOIN branch b ON o.branch_id = b.branch_id
                 WHERE o.order_number NOT LIKE '%$txt%' AND c.customer_name LIKE '%$cus_name%' AND o.branch_id = '$b_id' AND o.order_number LIKE '%$number%' 
                 AND u.user_name LIKE '%$user_name%' AND o.payment_type = '$pay' AND o.date_time LIKE '%$date%'
-                ORDER BY o.$sort_by DESC LIMIT $start,100";
+                ORDER BY o.$sort_by DESC";
 			}
 		}else{
 			if($order == "asc"){
                 $sql = "SELECT o.order_id,o.order_number,c.customer_name,u.user_name,b.branch_name,o.payment_type,o.total_price,o.date_time
                 FROM sale_order o INNER JOIN customer c ON o.customer_id = c.customer_id 
                 INNER JOIN user u ON o.user_id = u.user_id INNER JOIN branch b ON o.branch_id = b.branch_id
-                WHERE o.order_number NOT LIKE '%$txt%' ORDER BY o.$sort_by ASC LIMIT $start,100";
+                WHERE o.order_number NOT LIKE '%$txt%' ORDER BY o.$sort_by ASC";
 			}else if($order == "desc"){
 				$sql = "SELECT o.order_id,o.order_number,c.customer_name,u.user_name,b.branch_name,o.payment_type,o.total_price,o.date_time
                 FROM sale_order o INNER JOIN customer c ON o.customer_id = c.customer_id 
                 INNER JOIN user u ON o.user_id = u.user_id INNER JOIN branch b ON o.branch_id = b.branch_id
-                WHERE o.order_number NOT LIKE '%$txt%' ORDER BY o.$sort_by DESC LIMIT $start,100";
+                WHERE o.order_number NOT LIKE '%$txt%' ORDER BY o.$sort_by DESC";
 			}
 		}
 	}
