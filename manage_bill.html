@@ -59,14 +59,14 @@
         var dt = "";
         var role;
         $(document).ready(function () {  
-            if(!localStorage.user_id){
+            /*if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }   
+            }*/   
 
             if(localStorage.role == "user"){
                 $.alert({
@@ -91,16 +91,16 @@
             // datepicker
             $('[data-toggle="datepicker"]').datepicker({
                 language: 'th-TH',
-                format: 'dd/mm/yyyy',
+                format: 'yyyy-mm-dd',
                 autoHide: true
             }).change(function (event) {
                 var date = $('#dpicker').val();
-                var split = date.split("/");// dd mm yyyy 
+                var split = date.split("-");// yyyy[0] mm[1] dd[2] 
                 var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
-                var d = new Date(split[2], split[1] - 1, split[0]);
+                var d = new Date(split[0], split[1] - 1, split[2]);
                 var first = days[d.getDay()];
                 $('#dpicker').val(first + " " + date);
-                dt = split[2] + "-" + split[1] + "-" + split[0];         
+                dt = split[0] + "-" + split[1] + "-" + split[2];         
             });
 
             // Get max
@@ -371,7 +371,7 @@
                                     "<div class='row' style='margin-left: 10px;'>"+
                                     "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
                                     "<div class='input-group-prepend'>" +
-                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (start + i + 1) + "</span>"+
                                     "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
                                     "</div>"+
                                     "</div>"+
@@ -406,7 +406,7 @@
                                     "</div>"+
                                     "</div>"+
                                     "<div class='col-1 text-center' style='margin-top: 3px;'>"+
-                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")'>"+
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")' style='margin-right: 5px'>"+
                                         "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
                                     "</button>"+
                                     "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>"+
@@ -480,7 +480,7 @@
                                     "<div class='row' style='margin-left: 10px;'>"+
                                     "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
                                     "<div class='input-group-prepend'>" +
-                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (start + i + 1) + "</span>"+
                                     "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
                                     "</div>"+
                                     "</div>"+
@@ -515,7 +515,7 @@
                                     "</div>"+
                                     "</div>"+
                                     "<div class='col-1 text-center' style='margin-top: 3px;'>"+
-                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")'>"+
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")' style='margin-right: 5px'>"+
                                         "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
                                     "</button>"+
                                     "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>"+
