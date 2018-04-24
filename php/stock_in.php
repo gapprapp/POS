@@ -81,11 +81,11 @@
         }  
         
         for($c = 0 ; $c < count($cus); $c++){
-            $cus_name = $cus[$c];
+            $cus_id = $cus[$c];
             $price = $cus_price[$c];
-            if($cus_name != "-"){
+            if($cus_id != "-"){
                 $sql = "INSERT INTO detail_customer (prod_id,customer_id,special_prod_price) 
-                VALUE ('$prod_id',(SELECT customer_id FROM customer WHERE customer_name = '$cus_name'),'$price')"; 
+                VALUE ('$prod_id','$cus_id','$price')"; 
                 $result = mysqli_query($conn, $sql);
             }
         }
