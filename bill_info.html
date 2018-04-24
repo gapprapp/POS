@@ -54,14 +54,14 @@
         var order_id,branch_id;
         var count;
         $(document).ready(function () {
-            if(!localStorage.user_id){
+            /*if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }   
+            }   */
             url = new URL(window.location.href);
             order_id = url.searchParams.get("order"); 
 
@@ -255,6 +255,136 @@
             localStorage.user_id = "";
             window.location = "login.html";
         }
+
+        function print(){
+            var WinPrint  = window.open("", "_blank");
+            $('input:radio[name="print-option"]').each(function(){
+                if($(this).is(':checked')){
+                    checked = $(this).val();
+                    if(checked == 'bill'){
+                                            WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
+                        "<div style='width: 7.5cm;'>"+
+                          "<div class='txt-ct'>พรประสิทธิ์</div>"+
+                          "<div class='txt-ct'>PPS AUTO</div>"+
+                          "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>"+
+                          "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
+                          "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
+                          "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
+                          "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
+                          "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
+                          "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
+                          "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
+                          
+                          "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+                          "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
+                          ""+text+""+
+                          "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
+                          "<div class='txt-left'>ราคารวม : </div>"+
+                          "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
+                          "<div class='txt-left'>ส่วนลด : </div>"+
+                          "<div class='txt-right'>"+discount+" บาท</div><br>"+
+                          "<div class='txt-left'>สุทธิ : </div>"+
+                          "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
+                          "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
+                          "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
+                          "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
+                          "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
+                        "</div>");
+                                            WinPrint.document.close();
+                                            WinPrint.focus();
+                                            WinPrint.print();
+                                            WinPrint.close();   
+                    }
+                    else if(checked == 'a4'){
+                        var link = "https://fonts.googleapis.com/css?family=Maitree";
+                        var logo = "http://150.95.26.163:8080/gitmew/img/pps.jpg";
+                        WinPrint.document.write("<html><head><title>Print it!</title><link rel='stylesheet' type='text/css' href='"+link+"'></head><body>");
+                        WinPrint.document.write("<style>@page {size: auto; margin: 0;} .fl{float: left; text-align: center; margin-left: 50mm; margin-right: 40mm;}.fr{float: right; text-align: left; margin-right: 25mm;}.fc{float: center; text-align: center;}.fs-200-bold{font-size: 200%; margin-bottom: -10px; font-weight: bold;}.fs-200{font-size: 200%; margin-bottom: -25px;}.fs-180{font-size: 180%; margin-bottom: -25px; letter-spacing: 2px;}.fs-150-title{font-size: 150%; margin-bottom: -25px; letter-spacing: 1px;}.fs-150{font-size: 150%; margin-bottom: -15px; letter-spacing: 1px;}.fs-120{font-size: 120%; letter-spacing: 1px;}.fl-spc{float: left; width: 5%;}.fl-10{float: left; width: 10%;}.fl-15{float: left; width: 15%;}.fl-20{float: left; width: 20%; text-align: center;}.fl-25{float: left; width: 25%; text-align: center;}.fl-30{float: left; width: 30%; text-align: center;}.fl-35{float: left; width: 30%; text-align: center;}.fl-40{float: left; width: 40%; text-align: center;}.fl-50{float: left; width: 50%; text-align: center;}.fl-55{float: left; width: 55%; text-align: center;}.fl-87{float: left; width: 87.5%; text-align: center;}.field{border-bottom: 1px dashed black;}.ctn{position: relative; width: 297mm; height: 210mm; padding: 10mm 15mm 15mm 10mm; font-family: 'Maitree';}.row{display: inline-block;}.tb-st{border: 1px solid black; text-align: center; padding: 3px;}.tb{border: 1px solid black; text-align: center; padding: 3px; border-left: none;}.no-bdt{border-top: none;}</style>"+
+
+                        "<div class='ctn'>"+
+                          "<div class='row'>"+
+                            "<div class='fl'>"+
+                              "<img style='width: 250px; height: 150px;' src="+logo+">"+
+                            "</div>"+ 
+                            "<div class='fr'>"+
+                              "<p class='fs-200'>พรประสิทธิ์ PPS Auto Shop</p>"+
+                              "<p class='fs-150-title'>5 หมู่ 7 ต.ชีน้ำร้าย จ.สิงห์บุรี 16110</p>"+
+                              "<p class='fs-150-title'>โทร 065-5028828, 097-0631169</p>"+
+                            "</div>"+
+                          "</div>"+
+
+                          "<div class='fc'><p class='fs-200-bold'>ใบรายการขาย</p></div>"+
+
+                          
+                          "<div class='fl-10'><p class='fs-150'>ชื่อลูกค้า</p></div>"+
+                          "<div class='fl-55'><p class='fs-150 field'>พีรกฤต สกลุสายทองคำ</p></div>"+
+                          "<div class='fl-spc'>&emsp;</div>"+
+                          "<div class='fl-10'><p class='fs-150'>ประเภท</p></div>"+
+                          "<div class='fl-20'><p class='fs-150 field'>เงินสด</p></div>"+
+
+                          "<div class='fl-10'><p class='fs-150'>ที่อยู่</p></div>"+
+                          "<div class='fl-55'><p class='fs-150 field'>99/85</p></div>"+
+                          "<div class='fl-spc'>&emsp;</div>"+
+                          "<div class='fl-10'><p class='fs-150'>เบอร์โทร</p></div>"+
+                          "<div class='fl-20'><p class='fs-150 field'>087-5659150</p></div>"+
+
+                          "<div class='fl-15'><p class='fs-150'>เลขที่ใบรายการ</p></div>"+
+                          "<div class='fl-35'><p class='fs-150 field'>S1826300</p></div>"+
+                          "<div class='fl-25'><p class='fs-150'>วันที่ เวลา ที่ทำรายการ</p></div>"+
+                          "<div class='fl-30' style='margin-bottom: 80px;'><p class='fs-150 field'>13-12-2017 10:07:29</p></div>"+
+
+                          "<div>"+
+                            "<div class='fl-spc fs-120 tb-st'>ลำดับ</div>"+
+                            "<div class='fl-50 fs-120 tb'>ชื่อสินค้า</div>"+
+                            "<div class='fl-10 fs-120 tb'>จำนวน</div>"+
+                            "<div class='fl-10 fs-120 tb'>หน่วย</div>"+
+                            "<div class='fl-10 fs-120 tb'>ราคา/หน่วย</div>"+
+                            "<div class='fl-10 fs-120 tb'>รวมเงิน</div>"+
+
+                            "<div class='fl-spc fs-120 tb-st no-bdt'>1</div>"+
+                            "<div class='fl-50 fs-120 tb no-bdt'>เอกภพ พิสูจณ์สิจ๊ะ</div>"+
+                            "<div class='fl-10 fs-120 tb no-bdt'>100</div>"+
+                            "<div class='fl-10 fs-120 tb no-bdt'>อนันต์</div>"+
+                            "<div class='fl-10 fs-120 tb no-bdt'>25</div>"+
+                            "<div class='fl-10 fs-120 tb no-bdt'>2500</div>"+
+
+                            
+                            "<div class='fl-87 fs-120 tb-st no-bdt'>ราคารวมทั้งสิ้น</div>"+
+                            "<div class='fl-10 fs-120 tb no-bdt'>2500</div>"+
+                          "</div>"+
+
+                          "<div style='margin-top: 60px; padding-top: 10px; padding-bottom: 20px;' class='fl-50 fs-120 tb-st'>"+
+                            "<div style='font-weight: bold; margin-bottom: 10px; text-decoration: underline;' class='fs-120'>ข้อมูลผู้รับสินค้า</div>"+
+                            "<div style='margin-bottom: 10px;' class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
+                            "<div style='margin-bottom: 10px;' class='fl-50 fs-120 field'>สมพร สว่างว้าบ</div>"+
+                            "<div class='fl-40 fs-120'>วันที่ส่งสินค้า</div>"+
+                            "<div class='fl-50 fs-120 field'>13/02/2011</div>"+
+                          "</div>"+
+
+                          "<div class='fl-spc'>&emsp;</div>"+
+
+                          "<div style='margin-top: 100px; padding-top: 10px; padding-bottom: 20px;' class='fl-40 fs-120 tb-st'>"+
+                            "<div class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
+                            "<div class='fl-50 fs-120 field'>สมพร สว่างว้าบ</div>"+
+                          "</div>"+
+                        "</div>");
+                        WinPrint.document.write('</body></html>');
+                        
+                        
+                        WinPrint.document.close();
+                        WinPrint.focus();
+                        WinPrint.print();
+                        WinPrint.close(); 
+                    }
+                }
+            });
+        }
+
+        function sleep(miliseconds) {
+                var currentTime = new Date().getTime();
+                while (currentTime + miliseconds >= new Date().getTime()) {
+                }
+            }
     </script>
 </head>
 
@@ -377,6 +507,11 @@
                                 ลบ
                                 <i class="fa fa-close"></i>
                             </button>
+                            <button id="print-title" class="btn btn-lg btn-warning" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
+                            <span>
+                                <i class="fa fa-print"></i>
+                            </span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -474,6 +609,33 @@
             </div>
         </div>
         <!-- End page content wrapper -->
+        <!-- Print Modal -->
+      <div class="modal fade" id="printModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">ตั้งค่าการพิมพ์</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div id="print-option" class="col-12 text-center">
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="bill" type="radio" name="print-option" value="bill" checked>ใบเสร็จ</label>
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="a4" type="radio" name="print-option" value="a4">ใบรายการขาย(A4)</label>
+              </div><br>
+              <!-- Modal footer -->
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="print();">พิมพ์</button>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- End Wrapper -->
 
@@ -507,6 +669,17 @@
             $('#input-total').text(sum - dis);
             $('#input-change').text($('#input-get').val() - $('#input-total').html());            
         });
+
+        $('input:radio[name="print-option"]').change(
+            function(){
+                checked = $(this).val();
+                text_html = "<span><i class='fa fa-print'></i></span>";
+                if(checked == 'bill'){
+                    $("#print-title").text('ใบเสร็จ ');
+                }else if(checked == 'a4'){
+                    $("#print-title").text('ใบรายการขาย ');
+                }$("#print-title").append(text_html);
+            });
     </script>
 </body>
 
