@@ -161,10 +161,12 @@
                   url: "http://150.95.26.163:8080/gitmew/php/get_detail_cus.php",
                   data: {'prod_id': prod_id},                                     
                   success: function(data){  
-                      c_cus = 0;
-                      start_cus = 0;   
-                      c_unit = 0; 
-                      start_unit = 0;                    
+                    $("#show-cus-container").empty();
+                    $("#show-amt-container").empty();
+                    c_cus = 0;
+                    start_cus = 0;   
+                    c_unit = 0; 
+                    start_unit = 0;                    
                       if(data != "null"){                
                         var obj = jQuery.parseJSON(data);
                         console.log(obj);                        
@@ -257,8 +259,8 @@
                   time: 100
               },
               onSelectItemEvent: function() {                
-                sup_id = $("#cus").getSelectedItemData().sup_id;
-                console.log(cus_id);
+                sup_id = $("#sup").getSelectedItemData().sup_id;
+                console.log(sup_id);
               },
               onChooseEvent: function() {
                 sup_id = $("#sup").getSelectedItemData().sup_id;
@@ -729,10 +731,21 @@
           }
         });
         if(prod_id == 0){
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'เตือน',
+            content: "กรุณากรอกชื่อสินค้าที่ถูกต้อง"
+          });           
+          $('#name').val("");
+          $('#barcode').val("");
+          $('#price').val("");
+          $('#fund').val("");     
+          $('#amount').val("1");
+          $("#name").focus();
           return 0;
         }
         if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#fund").val() == "")
-        {
+        {         
           return 0;
         }else if($("#input-unit").val() != "" || $("#input-unit-price").val() != "" || $("#input-cus").val() != "" || $("#input-cus-price").val() != "" || checked == true){
           $.alert({
