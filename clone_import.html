@@ -688,7 +688,7 @@
         var cus = $("#set-cus-"+arg).val();
         var price = $("#set-cus-price-"+arg).val();
 
-        if(cus == "" && price == ""){
+        if(cus == "" || price == ""){
             return 0;
         }
 
