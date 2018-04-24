@@ -76,7 +76,7 @@
 
     <script>
       var sup_id = 0;
-      var prod_id,img;
+      var prod_id = 0,img;
       var cus_id = -1;
       $(document).ready(function(){   
         if(!localStorage.user_id){
@@ -94,9 +94,8 @@
         }     
         detail();
 
-        setTimeout(function() {$("#sup").focus();}, 100);
-        
-        //check prod_id = 0 ham add
+        setTimeout(function() {$("#sup").focus();}, 100);        
+       
         var options = {
 
           url: function(phrase) {
@@ -113,7 +112,8 @@
             data: {}
           },
 
-          preparePostData: function(data) {          
+          preparePostData: function(data) {     
+            prod_id = 0;     
             data.phrase = $("#name").val();
             return data;
           },
@@ -160,7 +160,11 @@
                   type: "POST",
                   url: "http://150.95.26.163:8080/gitmew/php/get_detail_cus.php",
                   data: {'prod_id': prod_id},                                     
-                  success: function(data){                      
+                  success: function(data){  
+                      c_cus = 0;
+                      start_cus = 0;   
+                      c_unit = 0; 
+                      start_unit = 0;                    
                       if(data != "null"){                
                         var obj = jQuery.parseJSON(data);
                         console.log(obj);                        
@@ -218,8 +222,7 @@
         };
 
         $("#name").easyAutocomplete(options);
-
-        //add onselectitemevent duay
+       
         var options_sup = {
 
           url: function(phrase) {
@@ -237,6 +240,7 @@
           },
 
           preparePostData: function(data) {
+            sup_id = 0;
             data.phrase = $("#sup").val();
             return data;
           },
@@ -252,7 +256,10 @@
                   type: "slide",
                   time: 100
               },
-
+              onSelectItemEvent: function() {                
+                sup_id = $("#cus").getSelectedItemData().sup_id;
+                console.log(cus_id);
+              },
               onChooseEvent: function() {
                 sup_id = $("#sup").getSelectedItemData().sup_id;
               }
@@ -721,7 +728,9 @@
             checked = true;
           }
         });
-
+        if(prod_id == 0){
+          return 0;
+        }
         if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#fund").val() == "")
         {
           return 0;
