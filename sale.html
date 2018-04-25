@@ -552,7 +552,7 @@
                 $.alert({
                   icon: 'fa fa-warning',
                   title: 'เตือน',
-                  content: "กรุณากรอกชื่อสินค้าที่ถูกต้อง"
+                  content: "กรุณากรอกชื่อสินค้าที่ถูกต้องหรือเลือกสินค้าก่อนทำรายการ"
                 });   
                 reset();
                 i_enter = 1;             
@@ -1022,6 +1022,7 @@
         $("#name-"+i).prop('id', 'name-'+(i-1));
         $("#total-"+i).prop('id', 'total-'+(i-1));
         $("#amount-"+i).prop('id', 'amount-'+(i-1));
+        $("#amount-" +i).attr('oninput', "chng_amt_edit("+(i-1)+")");
         $("#dis-"+i).prop('id', 'dis-'+(i-1));
         $("#unit-"+i).prop('id', 'unit-'+(i-1));
         $("#added_no"+i).val(i-1);

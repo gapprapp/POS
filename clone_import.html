@@ -834,7 +834,7 @@
                   "<input disabled id='price-"+count+"' type='number' class='form-control text-center added no-spin'>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>" + 
-                  "<input disabled id='net-"+count+"' type='number' class='form-control text-center no-spin'>" + 
+                  "<input disabled id='net-"+count+"' type='number' class='form-control text-center added no-spin'>" + 
                 "</div>" +
                 "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
                 "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
@@ -980,7 +980,8 @@
                 $('#total-price').val(sum-net);
                 obj.splice(arg, 1);
                 $("#item-" + arg).remove();
-                for (i = arg + 1; i <= count; i++) {
+                for (i = arg+1; i <= count-1; i++) {
+                  console.log(i);
                   $("#no-"+ i).prop('id', 'no-'+ (i-1));
                   $("#no-" + (i-1)).val(i);
                   $("#li-" + i).attr('onclick', "added_collapse(" + (i - 1) + ")")
@@ -994,6 +995,7 @@
                   $("#price-" + i).prop('id', 'price-' + (i - 1));
                   $("#net-" + i).prop('id', 'net-' + (i - 1));
                   $("#item-" + i).prop('id', 'item-' + (i - 1));
+                  $("#amount-" + i).attr('oninput', "input_amt_edit(" + (i - 1) + ")");
                   $("#btn-delete-" + i).attr('onclick', "added_delete(" + (i - 1) + ")");
                   $("#btn-delete-" + i).prop('id', 'btn-delete-' + (i - 1));
                   $("#btn-edit-" + i).attr('onclick', "added_edit(" + (i - 1) + ")");
