@@ -155,6 +155,7 @@
                 $('#price').val(price);
                 $('#fund').val(cost);     
                 $('#amount').val("1");
+                $('#net').val(cost);
 
                 $.ajax({
                   type: "POST",
@@ -317,6 +318,18 @@
         $("#input-cus").easyAutocomplete(options_cus);
         $('div.easy-autocomplete').removeAttr('style');
       });
+
+      function input_amt(){
+        var price = $("#fund").val();
+        var amt = $("#amount").val();
+        $("#net").val(price*amt);
+      }
+
+      function input_amt_edit(arg){
+        var price = $("#fund-"+arg).val();
+        var amt = $("#amount-"+arg).val();
+        $("#net-"+arg).val(price*amt);
+      }
 
       var datetime;
       function detail(){
@@ -812,7 +825,7 @@
                   "<input id='name-"+count+"' type='text' class='form-control text-center added' rel='popover' data-img='"+img+"'  placeholder='พิมพ์ชื่อรายการสินค้าที่นี่' readonly>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>"+
-                  "<input disabled id='amount-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                  "<input disabled id='amount-"+count+"' oninput='input_amt_edit("+count+")' type='number' class='form-control text-center added no-spin'>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>"+
                   "<input disabled id='fund-"+count+"' type='number' class='form-control text-center added no-spin'>"+
@@ -888,6 +901,7 @@
         var amount = $("#amount").val();
         var retail = $("#fund").val();
         var wholesale = $("#price").val();
+        var net = $("#net").val();
 
         // Clear Val
         $("#barcode").val("");
@@ -934,18 +948,20 @@
                               "<div class='col-2'></div>"+
                             "</div>");
           }
-        }
-        var total_cost = retail*amount;
+        }     
 
         //Keep all val in OBJ
         // Obj will push at count's index
         // edit and delete will deal with this obj
-        obj.push({unit: unit,unit_price: unit_price,cus: cus,cus_price: cus_price,amount: amount,retail: retail,prod_id: prod_id,total: total_cost});
+        obj.push({unit: unit,unit_price: unit_price,cus: cus,cus_price: cus_price,amount: amount,retail: retail,prod_id: prod_id,total: net});
         //alert(JSON.stringify(obj)); // To json 
         console.log(obj);      
 
         count++;
         $("#no").val(count + 1);
+        var sum = parseFloat($("#total-price").val());
+        sum += parseFloat(net);
+        $("#total-price").val(sum);
       }
 
       function added_delete(arg) {
@@ -958,6 +974,9 @@
               btnClass: 'btn-danger',
               text: 'ลบ',
               action: function () {
+                var sum = parseFloat($('#total-price').val());
+                var net = parseFloat($('#net-'+arg).val());
+                $('#total-price').val(sum-net);
                 obj.splice(arg, 1);
                 $("#item-" + arg).remove();
                 for (i = arg + 1; i <= count; i++) {
@@ -991,6 +1010,7 @@
         });
       }
 
+      var total_old = 0;
       function added_edit(arg) {
         stop = false;
         for(i = 0; i <= count; i++){
@@ -1003,12 +1023,8 @@
         }else{
           if(!($("#li-"+arg+"-collapse").is(":visible"))){
             $("#li-" + arg).click();
-          }
-          //$("#barcode-" + arg).prop('disabled', false);
-          //$("#name-" + arg).prop('disabled', false);
-          $("#amount-" + arg).prop('disabled', false);
-          //$("#fund-" + arg).prop('disabled', false);
-          //$("#price-" + arg).prop('disabled', false);
+          }         
+          $("#amount-" + arg).prop('disabled', false);         
 
           //change btn-edit to save
           $("#btn-edit-" + arg).prop('hidden', true);
@@ -1016,6 +1032,7 @@
           $("#btn-delete-" + arg).prop('hidden', false);
 
           $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+          total_old = $("#net-" + arg).val();
         }
       }
 
@@ -1023,25 +1040,21 @@
         if($("#li-" + arg +"-collapse").is(":visible")){
           $("#li-" + arg).click();
         }
-        // Save input val to obj[arg]
-        //obj[arg].barcode = $("#barcode-"+arg).val();
-        //obj[arg].name = $("#name-"+arg).val();
-        console.log(obj[arg].amount);
+        var sum = $('#total-price').val();
+        sum = sum-total_old+parseFloat($('#net-'+arg).val());
+        $('#total-price').val(sum);
+        // Save input val to obj[arg]      
+        //console.log(obj[arg].amount);
         obj[arg].amount = $("#amount-"+arg).val();
         var total = $("#amount-"+arg).val()*obj[arg].retail;
-        obj[arg].total = total;
-        //obj[arg].retail = $("#fund-"+arg).val();
-        //obj[arg].wholesale = $("#price-"+arg).val();
+        obj[arg].total = total;     
 
         $("#btn-edit-" + arg).prop('hidden', false);
         $("#btn-save-" + arg).prop('hidden', true);
         $("#btn-delete-" + arg).prop('hidden', true);
 
-        //$("#barcode-"+arg).prop('disabled', true);
-        //$("#name-"+arg).prop('disabled', true);
-        $("#amount-"+arg).prop('disabled', true);
-        //$("#fund-"+arg).prop('disabled', true);
-        //$("#price-"+arg).prop('disabled', true);
+      
+        $("#amount-"+arg).prop('disabled', true);        
         $("#btn-edit-"+arg).attr('onclick', "added_edit("+arg+")");
       }
       
@@ -1205,7 +1218,7 @@
                 <input id="name" type="text" class="form-control text-center no-spin" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
               </div>
               <div class="col-1 text-center pdlr">
-                <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" data-index="3">
+                <input id="amount" oninput="input_amt()" type="number" min="1" value="1" class="form-control text-center no-spin" data-index="3">
               </div>
               <div class="col-1 text-center pdlr">
                 <input id="fund" type="number" class="form-control text-center no-spin" readonly>
