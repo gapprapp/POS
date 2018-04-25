@@ -747,7 +747,7 @@
           $.alert({
             icon: 'fa fa-warning',
             title: 'เตือน',
-            content: "กรุณากรอกชื่อสินค้าที่ถูกต้อง"
+            content: "กรุณากรอกชื่อสินค้าที่ถูกต้องหรือเลือกสินค้าก่อนทำรายการ"
           });           
           $('#name').val("");
           $('#barcode').val("");
@@ -990,12 +990,12 @@
                   $("#ctn-collapse-" + i).prop('id', 'ctn-collapse-' + (i - 1));
                   $("#barcode-" + i).prop('id', 'barcode-' + (i - 1));
                   $("#name-" + i).prop('id', 'name-' + (i - 1));
+                  $("#amount-" + i).attr('oninput', "input_amt_edit(" + (i - 1) + ")");
                   $("#amount-" + i).prop('id', 'amount-' + (i - 1));
                   $("#fund-" + i).prop('id', 'fund-' + (i - 1));
                   $("#price-" + i).prop('id', 'price-' + (i - 1));
                   $("#net-" + i).prop('id', 'net-' + (i - 1));
-                  $("#item-" + i).prop('id', 'item-' + (i - 1));
-                  $("#amount-" + i).attr('oninput', "input_amt_edit(" + (i - 1) + ")");
+                  $("#item-" + i).prop('id', 'item-' + (i - 1));                 
                   $("#btn-delete-" + i).attr('onclick', "added_delete(" + (i - 1) + ")");
                   $("#btn-delete-" + i).prop('id', 'btn-delete-' + (i - 1));
                   $("#btn-edit-" + i).attr('onclick', "added_edit(" + (i - 1) + ")");
