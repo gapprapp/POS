@@ -825,7 +825,7 @@
                   "<input id='name-"+count+"' type='text' class='form-control text-center added' rel='popover' data-img='"+img+"'  placeholder='พิมพ์ชื่อรายการสินค้าที่นี่' readonly>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>"+
-                  "<input disabled id='amount-"+count+"' oninput='input_amt_edit("+count+")' type='number' class='form-control text-center added no-spin'>"+
+                  "<input disabled id='amount-"+count+"' oninput='input_amt_edit("+count+")' min='1' type='number' class='form-control text-center added no-spin'>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>"+
                   "<input disabled id='fund-"+count+"' type='number' class='form-control text-center added no-spin'>"+
@@ -834,7 +834,7 @@
                   "<input disabled id='price-"+count+"' type='number' class='form-control text-center added no-spin'>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>" + 
-                "<input disabled id='net-"+count+"' type='number' class='form-control text-center no-spin'>" + 
+                  "<input disabled id='net-"+count+"' type='number' class='form-control text-center no-spin'>" + 
                 "</div>" +
                 "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
                 "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
@@ -909,7 +909,7 @@
         $("#amount").val("");
         $("#fund").val("");
         $("#price").val("");
-        
+        $("#net").val("");        
 
         // Set val(text)
         $("#barcode-"+count).val(barcode);
@@ -917,6 +917,7 @@
         $("#amount-"+count).val(amount);
         $("#fund-"+count).val(retail);
         $("#price-"+count).val(wholesale);
+        $("#net-"+count).val(net);  
 
         // Case no unit and cus
         if(loop == 0){
@@ -1367,6 +1368,7 @@
           $('#price').val("");
           $('#fund').val("");     
           $('#amount').val("1");
+          $("#net").val("");  
           $("#show-cus-container").empty();
           $("#show-amt-container").empty();
         }            
