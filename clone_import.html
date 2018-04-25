@@ -820,6 +820,9 @@
                 "<div class='col-1 text-center pdlr'>"+
                   "<input disabled id='price-"+count+"' type='number' class='form-control text-center added no-spin'>"+
                 "</div>"+
+                "<div class='col-1 text-center pdlr'>" + 
+                "<input disabled id='net-"+count+"' type='number' class='form-control text-center no-spin'>" + 
+                "</div>" +
                 "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
                 "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
                   "<i class='fa fa-angle-down'></i>" +
@@ -1315,13 +1318,13 @@
             <h4>ค่าขนส่ง</h4>
           </div>
           <div class="col-1 text-center conclu-price">
-            <input id="total-ship" type="text" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e;" readonly>
+            <input id="total-ship" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e;">
           </div>
           <div class="col-1 text-center conclu-txt">
             <h4>ส่งโดย</h4>
           </div>
           <div class="col-1 text-center conclu-price">
-            <input id="ship-by" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff;" readonly>
+            <input id="ship-by" type="text" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff;">
           </div>
           <div class="col-2 text-right" style="padding-top: 10px;">
             <button class="btn btn-primary"  onclick="save();">บันทึก</button>
