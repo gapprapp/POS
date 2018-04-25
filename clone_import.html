@@ -315,7 +315,7 @@
               }
           },
           requestDelay: 300,  
-          theme: "blue-light",          
+          theme: "dark",          
           };
 
         $("#ship-by").easyAutocomplete(options_trans);
@@ -1152,7 +1152,7 @@
           + "&sup_name=" + sup_name + "&user_id=" + localStorage.user_id + "&total=" + total 
           + "&total_ship=" + total_ship + "&ship=" + trans_id + "&trans_name=" + ship;
           console.log(dataString);
-          $.ajax({
+          /*$.ajax({
               type: "POST",
               url:"http://150.95.26.163:8080/gitmew/php/clone_stock_in.php",
               data: dataString,                                     
@@ -1166,7 +1166,7 @@
                     location.reload(true);
                   }
               }
-          });       
+          }); */      
           
         }else{          
           $.alert({
