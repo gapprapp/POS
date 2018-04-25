@@ -861,7 +861,7 @@
               m--;
             }
           }
-          var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 5%; padding-right: 0px; margin-bottom: 5px'>"+
+          var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 2%; padding-right: 0px; margin-bottom: 5px'>"+
                 "<div class='col-1 text-center'>"+
                   "<input id='no-"+count+"' type='text' class='form-control text-center' value='"+(count+1)+"' readonly>"+
                 "</div>"+
@@ -883,17 +883,17 @@
                 "<div class='col-1 text-center pdlr'>" + 
                   "<input disabled id='net-"+count+"' type='number' class='form-control text-center added no-spin'>" + 
                 "</div>" +
-                "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
-                "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
+                "<div class='col-1 pdlr' style='margin-top: 5px;'>"+
+                "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 2px;' onclick='added_collapse(" + count +");'>" +
                   "<i class='fa fa-angle-down'></i>" +
                 "</button>" +
-                  "<button id='btn-edit-" + count +"' class='btn btn-sm btn-primary' style='margin-right: 4px;' onclick='added_edit(" + count +")'>"+
+                  "<button id='btn-edit-" + count +"' class='btn btn-sm btn-primary' onclick='added_edit(" + count +")'>"+
                     "<i class='fa fa-edit'></i>"+
                   "</button>"+
-                  "<button id='btn-save-" + count +"' class='btn btn-sm btn-success' style='margin-right: 4px;' onclick='save_edit("+count+");' hidden>" +
+                  "<button id='btn-save-" + count +"' class='btn btn-sm btn-success' style='margin-right: 2px;' onclick='save_edit("+count+");' hidden>" +
                     "<i class='fa fa-check-square'></i>" +
                   "</button>" +
-                  "<button id='btn-delete-" + count +"' class='btn btn-sm btn-danger' style='margin-right: 4px;' onclick='added_delete(" + count +")' hidden>" +
+                  "<button id='btn-delete-" + count +"' class='btn btn-sm btn-danger' onclick='added_delete(" + count +")' hidden>" +
                     "<i class='fa fa-minus'></i>" +
                   "</button>" +
                 "</div>"+
@@ -1219,7 +1219,9 @@
           <div class="row">
             <div class="col-2"></div>
             <div id="date" class="col-2 text-left text-muted"></div>
-            <div class="col-4"></div>
+            <div class="col-1"></div>
+            <div class="col-3 text-muted" >ส่งโดย : <div id="sender" class="btn-group col-4 text-center text-muted">
+              someone123123123</div></div>
             <div class="col-3 text-left text-muted">ผู้ทำรายการ :
               <div id="user" class="btn-group col-4 text-center text-muted">
               </div>
@@ -1244,8 +1246,8 @@
           </div>
           <hr style="width: 70%;">
 
-          <div class="container-fullwidth justify-content-center">
-            <div class="row" style="padding-left: 5%; padding-right: 0px; margin-bottom: 10px;">
+          <div class="container-fullwidth">
+            <div class="row" style="padding-left: 2%; padding-right: 0px; margin-bottom: 10px;">
               <div class="col-1 text-center">ลำดับ</div>
               <div class="col-2 text-center" pdlr>บาร์โค้ด</div>
               <div class="col-4 text-center">ชื่อสินค้า</div>
@@ -1261,7 +1263,7 @@
             </div>
 
             <!-- Input -->
-            <div class="row" style="padding-left: 5%; padding-right: 0px;">
+            <div class="row" style="padding-left: 2%; padding-right: 0px;">
               <div class="col-1 text-center">
                 <input id="no" type="text" class="form-control text-center" value="1" readonly>
               </div>
@@ -1283,7 +1285,7 @@
               <div class="col-1 text-center pdlr">
                 <input id="net" type="number" class="form-control text-center no-spin" readonly>
               </div>
-              <div class="col-1" style="margin-top: 5px;" onclick="collapse();">
+              <div class="col-1 pdlr" style="margin-top: 5px;" onclick="collapse();">
                 <button class="btn btn-sm btn-info">
                   <i id='i-down' class="fa fa-angle-down"></i>
                 </button>
@@ -1381,19 +1383,13 @@
           <div class="col-1 text-center conclu-price">
             <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #5dbe5d;" readonly>
           </div>
-          <div class="col-1 text-center conclu-txt">
+          <div class="col-1 text-center conclu-txt" style="margin-left: 30px;">
             <h4>ค่าขนส่ง</h4>
           </div>
           <div class="col-1 text-center conclu-price">
             <input id="total-ship" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e;">
           </div>
-          <div class="col-1 text-center conclu-txt">
-            <h4>ส่งโดย</h4>
-          </div>
-          <div class="col-1 text-center conclu-price">
-            <input id="ship-by" type="text" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff;">
-          </div>
-          <div class="col-2 text-right" style="padding-top: 10px;">
+          <div class="col-3 text-right" style="padding-top: 10px;">
             <button class="btn btn-primary"  onclick="save();">บันทึก</button>
           </div>
         </div>
