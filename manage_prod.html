@@ -54,7 +54,7 @@
 
   <script>
     var max_page_no = 0;
-    var cus_id;
+    var cus_id = -1;
     $(document).ready(function() {
       $("#pg-st").addClass('disabled');
       $("#pg-nd").addClass('disabled');
@@ -92,6 +92,7 @@
           data: {}
         },
         preparePostData: function(data) {
+          cus_id = -1;
           data.phrase = $("#input-cus").val();
           return data;
         },
@@ -1124,8 +1125,10 @@
             //console.log(data);
             $("#show-amt-container").empty();     
             $("#show-cus-container").empty(); 
-            c_cus = 0;   
+            c_cus = 0;
+            start_cus = 0;   
             c_unit = 0; 
+            start_unit = 0;
             unit_get = [];
             cus_get = [];   
             $(".file-upload").removeClass('active');
@@ -1506,14 +1509,22 @@
     var c_cus = 0;
     var start_cus = 0;  
     function add_cus() {
-        if($("#input-cus").val() == "" || $("#input-cus-price").val() == ""){
+      if($("#input-cus").val() == "" || $("#input-cus-price").val() == ""){
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "กรุณากรอกข้อมูลให้ครบถ้วน",
+        });
+        return 0;
+      }
+      if(cus_id == -1){
           $.alert({
-            icon: 'fa fa-warning',
-            title: 'เตือน',
-            content: "กรุณากรอกข้อมูลให้ครบถ้วน",
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "กรุณากรอกชื่อที่ถูกต้อง",
           });
-          return 0;
-        }
+          return 0;  
+      }
 
       var exist = false;
       for (var i = 1; i <= c_cus; i++) {
@@ -1610,7 +1621,7 @@
                   data: {}
                 },
                 preparePostData: function(data) {
-                  //console.log(i);
+                  $("#span-cus-"+arg).text("-1");
                   data.phrase = $input.val();       
                   return data;
                 },
@@ -1731,6 +1742,19 @@
     function checkrow_cus(arg) {
       var cus = $("#set-cus-"+arg).val();
       var price = $("#set-cus-price-"+arg).val();
+
+      if(cus == "" || price == ""){
+          return 0;
+      }
+
+      if($("#span-cus-"+arg).text() == "-1"){
+          $.alert({
+              icon: 'fa fa-warning',
+              title: 'เตือน',
+              content: "กรุณากรอกชื่อที่ถูกต้อง",
+          });
+          return 0;  
+      }
 
       for(var i = 1; i <= c_cus; i++){
         if(i != arg && (cus == $("#show-cus-"+i).text() || cus == $("#set-cus-"+i).val())){

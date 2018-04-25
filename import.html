@@ -76,7 +76,8 @@
 
     <script>
       var sup_id = 0;
-      var prod_id,img;
+      var prod_id = 0,img;
+      var cus_id = -1;
       $(document).ready(function(){   
         if(!localStorage.user_id){
           $.alert({
@@ -93,9 +94,8 @@
         }     
         detail();
 
-        setTimeout(function() {$("#sup").focus();}, 100);
-        
-        //check prod_id = 0 ham add
+        setTimeout(function() {$("#sup").focus();}, 100);        
+       
         var options = {
 
           url: function(phrase) {
@@ -112,7 +112,8 @@
             data: {}
           },
 
-          preparePostData: function(data) {          
+          preparePostData: function(data) {     
+            prod_id = 0;     
             data.phrase = $("#name").val();
             return data;
           },
@@ -159,7 +160,13 @@
                   type: "POST",
                   url: "http://150.95.26.163:8080/gitmew/php/get_detail_cus.php",
                   data: {'prod_id': prod_id},                                     
-                  success: function(data){                      
+                  success: function(data){  
+                    $("#show-cus-container").empty();
+                    $("#show-amt-container").empty();
+                    c_cus = 0;
+                    start_cus = 0;   
+                    c_unit = 0; 
+                    start_unit = 0;                    
                       if(data != "null"){                
                         var obj = jQuery.parseJSON(data);
                         console.log(obj);                        
@@ -217,8 +224,7 @@
         };
 
         $("#name").easyAutocomplete(options);
-
-        //add onselectitemevent duay
+       
         var options_sup = {
 
           url: function(phrase) {
@@ -236,6 +242,7 @@
           },
 
           preparePostData: function(data) {
+            sup_id = 0;
             data.phrase = $("#sup").val();
             return data;
           },
@@ -251,7 +258,10 @@
                   type: "slide",
                   time: 100
               },
-
+              onSelectItemEvent: function() {                
+                sup_id = $("#sup").getSelectedItemData().sup_id;
+                console.log(sup_id);
+              },
               onChooseEvent: function() {
                 sup_id = $("#sup").getSelectedItemData().sup_id;
               }
@@ -260,8 +270,7 @@
           theme: "blue-light",
         };
 
-        $("#sup").easyAutocomplete(options_sup);   
-
+        $("#sup").easyAutocomplete(options_sup);
         
         var options_cus = {
 
@@ -280,6 +289,7 @@
           },
 
           preparePostData: function(data) {
+            cus_id = -1;
             data.phrase = $("#input-cus").val();
             return data;
           },
@@ -297,7 +307,7 @@
               },
 
               onChooseEvent: function() {
-                //cus_id = $("#input-cus").getSelectedItemData().customer_id;
+                cus_id = $("#input-cus").getSelectedItemData().customer_id;
               }
           },      
           requestDelay: 300,
@@ -496,6 +506,9 @@
       function checkrow_unit(arg) {
         var unit = $("#set-unit-"+arg).val();
         var price = $("#set-unit-price-"+arg).val();
+        if(unit == ""  && price == ""){
+            return 0;
+        }
 
         for(var i = 1; i <= c_unit; i++){
           if(unit == $("#show-unit-"+i).text()){
@@ -521,14 +534,22 @@
       var c_cus = 0;
       var start_cus = 0;  
       function add_cus() {
-          if($("#input-cus").val() == "" || $("#input-cus-price").val() == ""){
+        if($("#input-cus").val() == "" || $("#input-cus-price").val() == ""){
             $.alert({
-              icon: 'fa fa-warning',
-              title: 'เตือน',
-              content: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณากรอกข้อมูลให้ครบถ้วน",
             });
             return 0;
-          }
+        }
+        if(cus_id == -1){
+            $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณากรอกชื่อที่ถูกต้อง",
+            });
+            return 0;  
+        }
 
         var exist = false;
         for (var i = 1; i <= c_cus; i++) {
@@ -557,6 +578,7 @@
           }
 
           var text_html = "<div id='show-seted-cus-" + c_cus + "' class='row'>" +
+            "<span id='span-cus-"+c_cus+"' hidden>"+cus_id+"</span>" +
             "<div class='col-3'></div>" +
             "<div id='show-cus-" + c_cus + "' class='col-3 text-center' ondblclick='setCus(" + c_cus + ");'></div>" +
             "<div id='show-cus-price-" + c_cus + "' class='col-2 text-center' ondblclick='setCusPrice(" + c_cus + ");'></div>" +
@@ -601,6 +623,7 @@
           },
 
           preparePostData: function(data) {
+            $("#span-cus-"+arg).text("-1");
             data.phrase = $("#set-cus-"+arg).val();
             return data;
           },
@@ -618,7 +641,7 @@
               },
 
               onChooseEvent: function() {
-                //cus_id = $("#set-cus-"+arg).getSelectedItemData().customer_id;
+                $("#span-cus-"+arg).text($("#set-cus-"+arg).getSelectedItemData().customer_id);
               }
           },      
           requestDelay: 300,
@@ -661,9 +684,22 @@
         });
       }
 
-      function checkrow_cus(arg) {
+      function checkrow_cus(arg) {       
         var cus = $("#set-cus-"+arg).val();
         var price = $("#set-cus-price-"+arg).val();
+
+        if(cus == "" || price == ""){
+            return 0;
+        }
+
+        if($("#span-cus-"+arg).text() == "-1"){
+            $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณากรอกชื่อที่ถูกต้อง",
+            });
+            return 0;  
+        }
 
         for(var i = 1; i <= c_cus; i++){
           if(cus == $("#show-cus-"+i).text()){
@@ -694,9 +730,22 @@
             checked = true;
           }
         });
-
+        if(prod_id == 0){
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'เตือน',
+            content: "กรุณากรอกชื่อสินค้าที่ถูกต้อง"
+          });           
+          $('#name').val("");
+          $('#barcode').val("");
+          $('#price').val("");
+          $('#fund').val("");     
+          $('#amount').val("1");
+          $("#name").focus();
+          return 0;
+        }
         if($("#barcode").val() == "" || $("#name").val() == "" || $("#amount").val() == "" || $("#price").val() == "" || $("#fund").val() == "")
-        {
+        {         
           return 0;
         }else if($("#input-unit").val() != "" || $("#input-unit-price").val() != "" || $("#input-cus").val() != "" || $("#input-cus-price").val() != "" || checked == true){
           $.alert({
@@ -735,9 +784,11 @@
           /*********** Cus ************/         
           var cus = [];
           var cus_price = [];
+          var cus_name = [];
 
           for(var l = start_cus; l <= c_cus; l++){
-          cus.push($("#show-cus-"+l).text());
+          cus.push($("#span-cus-"+l).text());
+          cus_name.push($("#show-cus-"+l).text());
           cus_price.push($("#show-cus-price-"+l).text());         
           }
           $("#show-cus-container").empty();
@@ -813,6 +864,7 @@
           loop = unit.length;
           diff = unit.length - cus.length;
           for(i = 0; i < diff; i++){
+            cus_name.push("-");
             cus.push("-");
             cus_price.push("-");
           }
@@ -865,7 +917,7 @@
                               "<div class='col-2'></div>"+
                               "<div class='col-2'>"+unit[c]+"</div>"+
                               "<div class='col-2'>"+unit_price[c]+"</div>"+
-                              "<div class='col-2'>"+cus[c]+"</div>"+
+                              "<div class='col-2'>"+cus_name[c]+"</div>"+
                               "<div class='col-2'>"+cus_price[c]+"</div>"+
                               "<div class='col-2'></div>"+
                             "</div>");
@@ -874,7 +926,7 @@
                               "<div class='col-2'></div>"+
                               "<div class='col-2'>"+unit[c]+"</div>"+
                               "<div class='col-2'>"+unit_price[c]+"</div>"+
-                              "<div class='col-2'>"+cus[c]+"</div>"+
+                              "<div class='col-2'>"+cus_name[c]+"</div>"+
                               "<div class='col-2'>"+cus_price[c]+"</div>"+
                               "<div class='col-2'></div>"+
                             "</div>");
@@ -1028,30 +1080,19 @@
           var sup_name = $('#sup').val();  
           var dataString =  "JSON=" + data_str + "&b_id=" + b_id + "&date=" + datetime + "&sup_id=" + sup_id
           + "&sup_name=" + sup_name + "&user_id=" + localStorage.user_id;
-          //console.log(dataString);
+          console.log(dataString);
           $.ajax({
               type: "POST",
               url:"http://150.95.26.163:8080/gitmew/php/stock_in.php",
               data: dataString,                                     
-              success: function(data){
-                  $.alert({
-                  icon: 'fa fa-badge-check',
-                  title: 'สำเร็จ',
-                  content: "บันทึกสำเร็จ!",
-                });
-                  if(data == "success"){                
-                    /*$('#show_list_add').empty();
-                    obj = [];                
-                    count = 0
-                    c_cus = 0;
-                    c_unit = 0;
-                    start_cus = 0;
-                    start_unit = 0;
-                    sup_id = 0;                                                       
-                
-                    $('#sup').val("");
-                    detail();*/
-                    location.reload();
+              success: function(data){                 
+                  if(data == "success"){ 
+                    $.alert({
+                        icon: 'fa fa-badge-check',
+                        title: 'สำเร็จ',
+                        content: "บันทึกสำเร็จ!",
+                    });              
+                    location.reload(true);
                   }
               }
           });       
