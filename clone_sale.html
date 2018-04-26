@@ -711,13 +711,25 @@
               onSelectItemEvent: function() {                
                 cus_id = $("#cus").getSelectedItemData().customer_id;
                 cus_addr = $("#cus").getSelectedItemData().address;
+                if(cus_addr == ""){
+                  cus_addr = "-";
+                }
                 cus_tel = $("#cus").getSelectedItemData().tel;
+                if(cus_tel == ""){
+                  cus_tel = "-";
+                }
                 //console.log(cus_addr + cus_tel);
               },
               onChooseEvent: function() {
                 cus_id = $("#cus").getSelectedItemData().customer_id;
                 cus_addr = $("#cus").getSelectedItemData().address;
+                if(cus_addr == ""){
+                  cus_addr = "-";
+                }
                 cus_tel = $("#cus").getSelectedItemData().tel;
+                if(cus_tel == ""){
+                  cus_tel = "-";
+                }
                 if(jsonObj.length > 0 || $('#barcode').val != ""){
                   if(jsonObj.length > 0){
                     var sum_de = 0;
@@ -1233,9 +1245,9 @@
             "<div style='margin-top: 60px; padding-top: 10px; padding-bottom: 20px;' class='fl-50 fs-120 tb-st'>"+
               "<div style='font-weight: bold; margin-bottom: 10px; text-decoration: underline;' class='fs-120'>ข้อมูลผู้รับสินค้า</div>"+
               "<div style='margin-bottom: 10px;' class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
-              "<div style='margin-bottom: 10px;' class='fl-50 fs-120 field'>ดากหืดาหกหาด</div>"+
+              "<div style='margin-bottom: 10px;' class='fl-50 fs-120 field'></div>"+
               "<div class='fl-40 fs-120'>วันที่ส่งสินค้า</div>"+
-              "<div class='fl-50 fs-120 field'>12/4/2018</div>"+
+              "<div class='fl-50 fs-120 field'></div>"+
             "</div>"+
 
             "<div class='fl-spc'>&emsp;</div>"+
