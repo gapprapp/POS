@@ -548,14 +548,18 @@
               objEvent.preventDefault();           
               var $this = $(objEvent.target);
               var i_enter = parseFloat($this.attr('data-index'));         
-              if(i_enter == 2 && prod_id == 0){
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "กรุณากรอกชื่อสินค้าที่ถูกต้องหรือเลือกสินค้าก่อนทำรายการ"
-                });   
-                reset();
-                i_enter = 1;             
+              if(i_enter == 2 && prod_id == 0){              
+                if(!isNaN($("#name").val())){
+                  console.log("barcode");                 
+                }else{
+                  $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: "กรุณากรอกชื่อสินค้าที่มีอยู่ในรายการหรือเลือกสินค้าก่อนทำรายการ"
+                  });  
+                  reset();
+                  i_enter = 1;         
+                }                   
               }                    
               if(i_enter == 4){
                 add();
@@ -616,6 +620,25 @@
             hideAnimation: {
                 type: "slide",
                 time: 100
+            },
+            onLoadEvent: function(){
+              if(!isNaN($("#name").val())){
+                console.log("barcode2");
+                var name = $("#name").getItemData(0).prod_name;
+                var barcode = $("#name").getItemData(0).barcode; 
+                price = $("#name").getItemData(0).prod_price;
+                var unit_name = $("#name").getItemData(0).unit_name;
+                prod_id = $("#name").getItemData(0).prod_id;
+                img = $("#name").getItemData(0).img_string;
+                old_price = $("#name").getItemData(0)[7].old_price;   
+                array_amt = $("#name").getItemData(0)[8];                    
+
+                $('#name').val(name);
+                $('#barcode').val(barcode);
+                $('#price').val(price);
+                $('#unit').val(unit_name);
+                $('#total').val(price);         
+              }
             },
             onSelectItemEvent: function() {                
               var barcode = $("#name").getSelectedItemData().barcode;
