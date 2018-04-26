@@ -550,16 +550,16 @@
               var i_enter = parseFloat($this.attr('data-index'));         
               if(i_enter == 2 && prod_id == 0){              
                 if(!isNaN($("#name").val())){
-                  console.log("barcode");                 
+                  console.log("barcode");                  
                 }else{
                   $.alert({
                     icon: 'fa fa-warning',
                     title: 'เตือน',
                     content: "กรุณากรอกชื่อสินค้าที่มีอยู่ในรายการหรือเลือกสินค้าก่อนทำรายการ"
                   });  
-                  reset();
-                  i_enter = 1;         
-                }                   
+                  reset();         
+                }  
+                i_enter = 1;                     
               }                    
               if(i_enter == 4){
                 add();
@@ -567,7 +567,7 @@
                 $("#btn_save").click();        
               }else{
                 $('[data-index="' + (i_enter+1).toString() + '"]').focus();
-              }              
+              }             
           }
           if (objEvent.keyCode == 113) {  //f2 pressed
               add();
@@ -623,7 +623,7 @@
             },
             onLoadEvent: function(){
               if(!isNaN($("#name").val())){
-                console.log("barcode2");
+                $("#amount").focus();
                 var name = $("#name").getItemData(0).prod_name;
                 var barcode = $("#name").getItemData(0).barcode; 
                 price = $("#name").getItemData(0).prod_price;
@@ -767,7 +767,7 @@
         };
 
         $("#cus").easyAutocomplete(options_cus);
-    });
+    });  
 
     function detail(){
       $('#branch').empty();     
@@ -1034,6 +1034,7 @@
       $('#total').val("");
       $('#prod-discount').val("");
       $('#box').attr("checked",false);
+      prod_id = 0;
     }
 
     function arrange(arg){
