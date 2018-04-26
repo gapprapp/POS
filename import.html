@@ -78,6 +78,7 @@
       var sup_id = 0;
       var prod_id = 0,img;
       var cus_id = -1;
+      var trans_id = 0;
       $(document).ready(function(){   
         if(!localStorage.user_id){
           $.alert({
@@ -155,6 +156,7 @@
                 $('#price').val(price);
                 $('#fund').val(cost);     
                 $('#amount').val("1");
+                $('#net').val(cost);
 
                 $.ajax({
                   type: "POST",
@@ -271,6 +273,52 @@
         };
 
         $("#sup").easyAutocomplete(options_sup);
+
+        var options_trans = {
+
+          url: function(phrase) {
+            return "http://150.95.26.163:8080/gitmew/php/search_trans.php";
+          },
+
+          getValue: function(element) {           
+            return element.transport_name;
+          },
+
+          ajaxSettings: {
+            method: "POST",
+            data: {}
+          },
+
+          preparePostData: function(data) {
+            trans_id = 0;
+            data.phrase = $("#ship-by").val();
+            return data;
+          },
+          minCharNumber: 2,
+          list: {
+              maxNumberOfElements: 100,
+
+              showAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              hideAnimation: {
+                  type: "slide",
+                  time: 100
+              },
+              onSelectItemEvent: function() {                
+                trans_id = $("#ship-by").getSelectedItemData().transport_id;
+                console.log(trans_id);
+              },
+              onChooseEvent: function() {
+                trans_id = $("#ship-by").getSelectedItemData().transport_id;                
+              }
+          },
+          requestDelay: 300,  
+          theme: "blue-light",          
+          };
+
+        $("#ship-by").easyAutocomplete(options_trans);
         
         var options_cus = {
 
@@ -317,6 +365,18 @@
         $("#input-cus").easyAutocomplete(options_cus);
         $('div.easy-autocomplete').removeAttr('style');
       });
+
+      function input_amt(){
+        var price = $("#fund").val();
+        var amt = $("#amount").val();
+        $("#net").val(price*amt);
+      }
+
+      function input_amt_edit(arg){
+        var price = $("#fund-"+arg).val();
+        var amt = $("#amount-"+arg).val();
+        $("#net-"+arg).val(price*amt);
+      }
 
       var datetime;
       function detail(){
@@ -734,7 +794,7 @@
           $.alert({
             icon: 'fa fa-warning',
             title: 'เตือน',
-            content: "กรุณากรอกชื่อสินค้าที่ถูกต้อง"
+            content: "กรุณากรอกชื่อสินค้าที่ถูกต้องหรือเลือกสินค้าก่อนทำรายการ"
           });           
           $('#name').val("");
           $('#barcode').val("");
@@ -801,7 +861,7 @@
               m--;
             }
           }
-          var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 5%; padding-right: 0px; margin-bottom: 5px'>"+
+          var text_append = "<div id='item-" + count +"' class='row' style='padding-left: 2%; padding-right: 0px; margin-bottom: 5px'>"+
                 "<div class='col-1 text-center'>"+
                   "<input id='no-"+count+"' type='text' class='form-control text-center' value='"+(count+1)+"' readonly>"+
                 "</div>"+
@@ -812,7 +872,7 @@
                   "<input id='name-"+count+"' type='text' class='form-control text-center added' rel='popover' data-img='"+img+"'  placeholder='พิมพ์ชื่อรายการสินค้าที่นี่' readonly>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>"+
-                  "<input disabled id='amount-"+count+"' type='number' class='form-control text-center added no-spin'>"+
+                  "<input disabled id='amount-"+count+"' oninput='input_amt_edit("+count+")' min='1' type='number' class='form-control text-center added no-spin'>"+
                 "</div>"+
                 "<div class='col-1 text-center pdlr'>"+
                   "<input disabled id='fund-"+count+"' type='number' class='form-control text-center added no-spin'>"+
@@ -820,17 +880,20 @@
                 "<div class='col-1 text-center pdlr'>"+
                   "<input disabled id='price-"+count+"' type='number' class='form-control text-center added no-spin'>"+
                 "</div>"+
-                "<div class='col-2' style='margin-top: 5px;' style='padding-left: 0px; padding-right: 0px;'>"+
-                "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 4px;' onclick='added_collapse(" + count +");'>" +
+                "<div class='col-1 text-center pdlr'>" + 
+                  "<input disabled id='net-"+count+"' type='number' class='form-control text-center added no-spin'>" + 
+                "</div>" +
+                "<div class='col-1 pdlr' style='margin-top: 5px;'>"+
+                "<button id='li-"+count+"'  class='btn btn-sm btn-info' style='margin-right: 2px;' onclick='added_collapse(" + count +");'>" +
                   "<i class='fa fa-angle-down'></i>" +
                 "</button>" +
-                  "<button id='btn-edit-" + count +"' class='btn btn-sm btn-primary' style='margin-right: 4px;' onclick='added_edit(" + count +")'>"+
+                  "<button id='btn-edit-" + count +"' class='btn btn-sm btn-primary' onclick='added_edit(" + count +")'>"+
                     "<i class='fa fa-edit'></i>"+
                   "</button>"+
-                  "<button id='btn-save-" + count +"' class='btn btn-sm btn-success' style='margin-right: 4px;' onclick='save_edit("+count+");' hidden>" +
+                  "<button id='btn-save-" + count +"' class='btn btn-sm btn-success' style='margin-right: 2px;' onclick='save_edit("+count+");' hidden>" +
                     "<i class='fa fa-check-square'></i>" +
                   "</button>" +
-                  "<button id='btn-delete-" + count +"' class='btn btn-sm btn-danger' style='margin-right: 4px;' onclick='added_delete(" + count +")' hidden>" +
+                  "<button id='btn-delete-" + count +"' class='btn btn-sm btn-danger' onclick='added_delete(" + count +")' hidden>" +
                     "<i class='fa fa-minus'></i>" +
                   "</button>" +
                 "</div>"+
@@ -885,6 +948,7 @@
         var amount = $("#amount").val();
         var retail = $("#fund").val();
         var wholesale = $("#price").val();
+        var net = $("#net").val();
 
         // Clear Val
         $("#barcode").val("");
@@ -892,7 +956,7 @@
         $("#amount").val("");
         $("#fund").val("");
         $("#price").val("");
-        
+        $("#net").val("");        
 
         // Set val(text)
         $("#barcode-"+count).val(barcode);
@@ -900,6 +964,7 @@
         $("#amount-"+count).val(amount);
         $("#fund-"+count).val(retail);
         $("#price-"+count).val(wholesale);
+        $("#net-"+count).val(net);  
 
         // Case no unit and cus
         if(loop == 0){
@@ -931,18 +996,20 @@
                               "<div class='col-2'></div>"+
                             "</div>");
           }
-        }
-        var total_cost = retail*amount;
+        }     
 
         //Keep all val in OBJ
         // Obj will push at count's index
         // edit and delete will deal with this obj
-        obj.push({unit: unit,unit_price: unit_price,cus: cus,cus_price: cus_price,amount: amount,retail: retail,prod_id: prod_id,total: total_cost});
+        obj.push({unit: unit,unit_price: unit_price,cus: cus,cus_price: cus_price,amount: amount,retail: retail,prod_id: prod_id,total: net});
         //alert(JSON.stringify(obj)); // To json 
         console.log(obj);      
 
         count++;
         $("#no").val(count + 1);
+        var sum = parseFloat($("#total-price").val());
+        sum += parseFloat(net);
+        $("#total-price").val(sum);
       }
 
       function added_delete(arg) {
@@ -955,9 +1022,13 @@
               btnClass: 'btn-danger',
               text: 'ลบ',
               action: function () {
+                var sum = parseFloat($('#total-price').val());
+                var net = parseFloat($('#net-'+arg).val());
+                $('#total-price').val(sum-net);
                 obj.splice(arg, 1);
                 $("#item-" + arg).remove();
-                for (i = arg + 1; i <= count; i++) {
+                for (i = arg+1; i <= count-1; i++) {
+                  console.log(i);
                   $("#no-"+ i).prop('id', 'no-'+ (i-1));
                   $("#no-" + (i-1)).val(i);
                   $("#li-" + i).attr('onclick', "added_collapse(" + (i - 1) + ")")
@@ -966,10 +1037,12 @@
                   $("#ctn-collapse-" + i).prop('id', 'ctn-collapse-' + (i - 1));
                   $("#barcode-" + i).prop('id', 'barcode-' + (i - 1));
                   $("#name-" + i).prop('id', 'name-' + (i - 1));
+                  $("#amount-" + i).attr('oninput', "input_amt_edit(" + (i - 1) + ")");
                   $("#amount-" + i).prop('id', 'amount-' + (i - 1));
                   $("#fund-" + i).prop('id', 'fund-' + (i - 1));
                   $("#price-" + i).prop('id', 'price-' + (i - 1));
-                  $("#item-" + i).prop('id', 'item-' + (i - 1));
+                  $("#net-" + i).prop('id', 'net-' + (i - 1));
+                  $("#item-" + i).prop('id', 'item-' + (i - 1));                 
                   $("#btn-delete-" + i).attr('onclick', "added_delete(" + (i - 1) + ")");
                   $("#btn-delete-" + i).prop('id', 'btn-delete-' + (i - 1));
                   $("#btn-edit-" + i).attr('onclick', "added_edit(" + (i - 1) + ")");
@@ -988,6 +1061,7 @@
         });
       }
 
+      var total_old = 0;
       function added_edit(arg) {
         stop = false;
         for(i = 0; i <= count; i++){
@@ -1000,12 +1074,8 @@
         }else{
           if(!($("#li-"+arg+"-collapse").is(":visible"))){
             $("#li-" + arg).click();
-          }
-          //$("#barcode-" + arg).prop('disabled', false);
-          //$("#name-" + arg).prop('disabled', false);
-          $("#amount-" + arg).prop('disabled', false);
-          //$("#fund-" + arg).prop('disabled', false);
-          //$("#price-" + arg).prop('disabled', false);
+          }         
+          $("#amount-" + arg).prop('disabled', false);         
 
           //change btn-edit to save
           $("#btn-edit-" + arg).prop('hidden', true);
@@ -1013,6 +1083,7 @@
           $("#btn-delete-" + arg).prop('hidden', false);
 
           $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+          total_old = $("#net-" + arg).val();
         }
       }
 
@@ -1020,25 +1091,21 @@
         if($("#li-" + arg +"-collapse").is(":visible")){
           $("#li-" + arg).click();
         }
-        // Save input val to obj[arg]
-        //obj[arg].barcode = $("#barcode-"+arg).val();
-        //obj[arg].name = $("#name-"+arg).val();
-        console.log(obj[arg].amount);
+        var sum = $('#total-price').val();
+        sum = sum-total_old+parseFloat($('#net-'+arg).val());
+        $('#total-price').val(sum);
+        // Save input val to obj[arg]      
+        //console.log(obj[arg].amount);
         obj[arg].amount = $("#amount-"+arg).val();
         var total = $("#amount-"+arg).val()*obj[arg].retail;
-        obj[arg].total = total;
-        //obj[arg].retail = $("#fund-"+arg).val();
-        //obj[arg].wholesale = $("#price-"+arg).val();
+        obj[arg].total = total;     
 
         $("#btn-edit-" + arg).prop('hidden', false);
         $("#btn-save-" + arg).prop('hidden', true);
         $("#btn-delete-" + arg).prop('hidden', true);
 
-        //$("#barcode-"+arg).prop('disabled', true);
-        //$("#name-"+arg).prop('disabled', true);
-        $("#amount-"+arg).prop('disabled', true);
-        //$("#fund-"+arg).prop('disabled', true);
-        //$("#price-"+arg).prop('disabled', true);
+      
+        $("#amount-"+arg).prop('disabled', true);        
         $("#btn-edit-"+arg).attr('onclick', "added_edit("+arg+")");
       }
       
@@ -1073,17 +1140,21 @@
       }
 
       function save(){      
-        if(obj.length > 0 && $('#sup').val() != ""){
+        if(obj.length > 0 && $('#sup').val() != "" && $('#total-ship').val() != "" && $('#ship-by').val() != ""){
           //console.log(obj);
           var data_str = JSON.stringify(obj);         
           var b_id = $('#branch option:selected').val(); 
           var sup_name = $('#sup').val();  
+          var total_ship = $('#total-ship').val();
+          var ship = $('#ship-by').val();
+          var total = $('#total-price').val()
           var dataString =  "JSON=" + data_str + "&b_id=" + b_id + "&date=" + datetime + "&sup_id=" + sup_id
-          + "&sup_name=" + sup_name + "&user_id=" + localStorage.user_id;
+          + "&sup_name=" + sup_name + "&user_id=" + localStorage.user_id + "&total=" + total 
+          + "&total_ship=" + total_ship + "&ship=" + trans_id + "&trans_name=" + ship;
           console.log(dataString);
           $.ajax({
               type: "POST",
-              url:"http://150.95.26.163:8080/gitmew/php/stock_in.php",
+              url:"http://150.95.26.163:8080/gitmew/php/clone_stock_in.php",
               data: dataString,                                     
               success: function(data){                 
                   if(data == "success"){ 
@@ -1095,14 +1166,13 @@
                     location.reload(true);
                   }
               }
-          });       
+          });      
           
-        }else{
-          //alert("กรุณาเลือกผู้ผลิตก่อนบันทึก");
+        }else{          
           $.alert({
             icon: 'fa fa-warning',
             title: 'เตือน',
-            content: "กรุณาเลือกผู้ผลิตก่อนบันทึก!",
+            content: "กรุณาเลือกผู้ผลิตก่อนบันทึกหรือกรอกข้อมูลให้ครบถ้วน!",
           });      
         }
       }
@@ -1158,12 +1228,16 @@
           <br>
           <div class="row">
             <div class="col-2"></div>
-            <div class="col-5 text-left text-muted">จากผู้ผลิต :
-              <div class="btn-group col-4 text-center text-muted">
-                <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิตที่นี่" data-index="1">
+            <div class="col-3 text-left text-muted">จากผู้ผลิต :
+              <div class="btn-group col-6 text-center text-muted">
+                <input id="sup" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ผลิต" data-index="1">
               </div>
             </div>
-            <div class="col-1"></div>
+            <div class="col-3 text-left text-muted">ผู้ส่ง :
+              <div class="btn-group col-6 text-center text-muted">
+                <input id="ship-by" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อผู้ส่ง">
+              </div>
+            </div>
             <div class="col-4 text-left text-muted dropdown">นำของเข้า :
               <div class="btn-group">
                 <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1174,8 +1248,8 @@
           </div>
           <hr style="width: 70%;">
 
-          <div class="container-fullwidth justify-content-center">
-            <div class="row" style="padding-left: 5%; padding-right: 0px; margin-bottom: 10px;">
+          <div class="container-fullwidth">
+            <div class="row" style="padding-left: 2%; padding-right: 0px; margin-bottom: 10px;">
               <div class="col-1 text-center">ลำดับ</div>
               <div class="col-2 text-center" pdlr>บาร์โค้ด</div>
               <div class="col-4 text-center">ชื่อสินค้า</div>
@@ -1191,7 +1265,7 @@
             </div>
 
             <!-- Input -->
-            <div class="row" style="padding-left: 5%; padding-right: 0px;">
+            <div class="row" style="padding-left: 2%; padding-right: 0px;">
               <div class="col-1 text-center">
                 <input id="no" type="text" class="form-control text-center" value="1" readonly>
               </div>
@@ -1202,7 +1276,7 @@
                 <input id="name" type="text" class="form-control text-center no-spin" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
               </div>
               <div class="col-1 text-center pdlr">
-                <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" data-index="3">
+                <input id="amount" oninput="input_amt()" type="number" min="1" value="1" class="form-control text-center no-spin" data-index="3">
               </div>
               <div class="col-1 text-center pdlr">
                 <input id="fund" type="number" class="form-control text-center no-spin" readonly>
@@ -1213,7 +1287,7 @@
               <div class="col-1 text-center pdlr">
                 <input id="net" type="number" class="form-control text-center no-spin" readonly>
               </div>
-              <div class="col-1" style="margin-top: 5px;" onclick="collapse();">
+              <div class="col-1 pdlr" style="margin-top: 5px;" onclick="collapse();">
                 <button class="btn btn-sm btn-info">
                   <i id='i-down' class="fa fa-angle-down"></i>
                 </button>
@@ -1311,19 +1385,13 @@
           <div class="col-1 text-center conclu-price">
             <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #5dbe5d;" readonly>
           </div>
-          <div class="col-1 text-center conclu-txt">
+          <div class="col-1 text-center conclu-txt" style="margin-left: 30px;">
             <h4>ค่าขนส่ง</h4>
           </div>
           <div class="col-1 text-center conclu-price">
-            <input id="total-ship" type="text" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e;" readonly>
+            <input id="total-ship" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e;">
           </div>
-          <div class="col-1 text-center conclu-txt">
-            <h4>ส่งโดย</h4>
-          </div>
-          <div class="col-1 text-center conclu-price">
-            <input id="ship-by" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff;" readonly>
-          </div>
-          <div class="col-2 text-right" style="padding-top: 10px;">
+          <div class="col-3 text-right" style="padding-top: 10px;">
             <button class="btn btn-primary"  onclick="save();">บันทึก</button>
           </div>
         </div>
@@ -1351,6 +1419,7 @@
           $('#price').val("");
           $('#fund').val("");     
           $('#amount').val("1");
+          $("#net").val("");  
           $("#show-cus-container").empty();
           $("#show-amt-container").empty();
         }            

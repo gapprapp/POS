@@ -7,7 +7,10 @@
     $dt  = $_POST['date'];
     $user_id = $_POST['user_id'];
     $sup_name = $_POST['sup_name'];
-    $sum = 0;
+    $sum  = $_POST['total'];
+    $total_ship  = $_POST['total_ship'];
+    $trans_id  = $_POST['ship'];   
+    $trans_name  = $_POST['trans_name'];   
     $i = 0;   
 
     mysqli_autocommit($conn,FALSE); 
@@ -15,15 +18,14 @@
         $sql = "INSERT INTO supplier (sup_name) VALUE ('$sup_name')"; 
         $result = mysqli_query($conn, $sql);
         $sup = mysqli_insert_id($conn);	
-    }
-    foreach ($obj as $data)
-    {
-        $total = $data['total'];
-        $sum += $total;         
+    }  
+    if($trans_id == 0){
+        $sql = "INSERT INTO transport (transport_name) VALUE ('$trans_name')"; 
+        $result = mysqli_query($conn, $sql);
+        $trans_id = mysqli_insert_id($conn);	
     } 
     $sql = "SELECT stock_number,count FROM stock_in ORDER BY stock_id DESC LIMIT 1"; 
-    $result = mysqli_query($conn, $sql);    
-   
+    $result = mysqli_query($conn, $sql);   
     if(mysqli_num_rows($result) > 0){    
         while($row = mysqli_fetch_array($result)){  
             $number = $row['stock_number'];
@@ -33,15 +35,15 @@
                 $count = $row['count']+1;
                 $year = "I" . $year_cur . "-";
                 $stock_number = $year . str_pad($count, 5, "0",STR_PAD_LEFT);
-                $sql2 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,count) 
-                VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id','$count')"; 
+                $sql2 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,ship_price,ship_by,count) 
+                VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id','$total_ship','$trans_id','$count')"; 
                 $result2 = mysqli_query($conn, $sql2);
                 $last_id = mysqli_insert_id($conn);	
             }else{
                 $year = "I" . $year_cur . "-";
                 $stock_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
-                $sql3 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,count) 
-                VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id',1)"; 
+                $sql3 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,ship_price,ship_by,count) 
+                VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id','$total_ship','$trans_id',1)"; 
                 $result3 = mysqli_query($conn, $sql3);
                 $last_id = mysqli_insert_id($conn);	
             }           
@@ -49,8 +51,8 @@
     }else{
         $year = "I" . date("y") . "-";
         $stock_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
-        $sql1 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,count) 
-        VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id',1)"; 
+        $sql1 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,ship_price,ship_by,count) 
+        VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id','$total_ship','$trans_id',1)"; 
         $result1 = mysqli_query($conn, $sql1);
         $last_id = mysqli_insert_id($conn);	
     }   
