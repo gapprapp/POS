@@ -547,9 +547,10 @@
           if (objEvent.keyCode == 13) {  //enter pressed
               objEvent.preventDefault();           
               var $this = $(objEvent.target);
-              var i_enter = parseFloat($this.attr('data-index'));         
+              var i_enter = parseFloat($this.attr('data-index'));     
+              var name = $("#name").val();    
               if(i_enter == 2 && prod_id == 0){              
-                if(!isNaN($("#name").val())){                 
+                if($.isNumeric(name)){                 
                   console.log("barcode");                  
                 }else{                  
                   $.alert({
@@ -622,7 +623,8 @@
                 time: 100
             },
             onLoadEvent: function(){
-              if(!isNaN($("#name").val())){
+              var name = $("#name").val();
+              if($.isNumeric(name)){
                 $("#amount").focus();
                 var name = $("#name").getItemData(0).prod_name;
                 var barcode = $("#name").getItemData(0).barcode; 
