@@ -841,6 +841,11 @@
         function bill_detail(arg){
             var order_id = $('#span-'+arg).html();
             window.location = "bill_info.html?order="+order_id;
+        }
+
+        function shift(){
+            // load รายการขายภายในกะ
+            // info-btn กดแล้วไปที่หน้า shift_bill?bill=1 (1-> bill_id)
         }       
     </script>
 </head>
@@ -877,14 +882,14 @@
             <div class="container-fullwidth justify-content-center">
                 <!-- Search -->
                 <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-1" style='margin-left: 4%;'></div>
+                    <div class="col-1" style='margin-left: 2%;'></div>
                     <div class="col-1 text-center no-pd" style="margin-right: 10px;">
                         เลขที่รายการ
                     </div>
                     <div class="col-2 text-center no-pd" style="margin-right: 10px;">
                         ลูกค้า
                     </div>
-                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
                         ผู้บันทึก
                     </div>
                     <div class="col-1 text-center">
@@ -898,7 +903,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-1 text-right" style='margin-left: 4%;'>
+                    <div class="col-1 text-right" style='margin-left: 2%;'>
                         <p style="padding-top: 5px; font-size: 120%;">ค้นหา :
                             <p/>
                     </div>
@@ -908,9 +913,10 @@
                     <div class="col-2 text-center no-pd" style="margin-right: 10px;">
                         <input id="search-name" type="text" class="form-control text-center no-spin">
                     </div>
-                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
                         <input id="search-user" type="text" class="form-control text-center no-spin">
                     </div>
+
                     <div class="col-1 text-center no-pd">
                         <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">สิงห์บุรี</button>
                         <ul id="ul-branch" class="dropdown-menu drop-up text-center">                           
@@ -936,6 +942,9 @@
                     <!-- End Date Picker -->
                     <div class="col-1 text-center">
                         <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
+                    </div>
+                    <div class="col-1 text-center" style="padding-left: 0px;">
+                        <button id='btn-shift' class="btn btn-primary btn-md" onclick="shift()">รายการขายในกะ</button>
                     </div>
                 </div>
             </div>
