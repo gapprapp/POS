@@ -143,7 +143,7 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
-                <h3 id="nav-title">ขายสินค้า</h3>
+                <h3 id="nav-title">S18-00001(Order_number)</h3>
               </div>
             </nav>
             
@@ -162,16 +162,12 @@
               <div class="col-2"></div>
               <div class="col-5 text-left text-muted">ชื่อลูกค้า :
                 <div class="btn-group text-center text-muted">
-                  <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
+                  <div id="cus" class="btn-group col-12 text-center text-muted">pps สิงห์บุรี</div>
                 </div>
               </div>
               <div class="col-1"></div>
               <div class="col-4 text-left text-muted dropdown">ของออกจาก :
-                <div class="btn-group">
-                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              
-                  </select>
-                </div>
+                <div class="btn-group col-6 text-center text-muted">สิงห์บุรี</div>
               </div>
             </div>
             </div>
@@ -517,7 +513,9 @@
     var prod_id = 0;
     var old_price,price;
     array_amt = [];
-    $(document).ready(function(){  
+    $(document).ready(function(){
+    // loop get items in bill;
+    // same as add();  
       if(!localStorage.user_id){
         $.alert({
           icon: 'fa fa-warning',
@@ -1297,6 +1295,9 @@
           title: 'เตือน',
           content: "กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ"
         });     
+      }
+      if(a4 == true){
+
       }
     }
 
