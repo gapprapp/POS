@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 	$conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos");
 	$b_id = $_POST['b_id'];	
 
