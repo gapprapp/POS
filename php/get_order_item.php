@@ -4,8 +4,8 @@
   
 
   $sql = "SELECT b.branch_id,b.branch_name,o.order_number,o.date_time,u.user_name,c.customer_name,o.sum_price,o.total_discount
-  ,o.total_price,o.get_money,o.change_money,o.payment_type FROM sale_order o INNER JOIN branch b ON o.branch_id = b.branch_id 
-  INNER JOIN user u ON o.user_id = u.user_id INNER JOIN customer c ON o.customer_id = c.customer_id
+  ,o.total_price,o.get_money,o.change_money,o.payment_type,c.address,c.tel FROM sale_order o INNER JOIN branch b 
+  ON o.branch_id = b.branch_id INNER JOIN user u ON o.user_id = u.user_id INNER JOIN customer c ON o.customer_id = c.customer_id
   WHERE o.order_id = '$order_id'";
   $result = mysqli_query($conn, $sql);
 

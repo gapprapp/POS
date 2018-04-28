@@ -54,6 +54,9 @@
     <script>
         var order_id,branch_id;
         var count;
+        var cus_name,pay,order_num,sum,dis,final_sum,user,get,change,addr,tel,datetime;
+        var text = "";
+        var texta4 = "";
         $(document).ready(function () {
             if(!localStorage.user_id){
                 $.alert({
@@ -73,17 +76,35 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data); 
-                    branch_id = obj[0].branch_id;                  
+                    branch_id = obj[0].branch_id;
+                    cus_name = obj[0].customer_name; 
+                    pay = obj[0].payment_type;    
+                    order_num = obj[0].order_number;      
+                    sum = obj[0].sum_price;
+                    dis = obj[0].total_discount;
+                    final_sum = obj[0].total_price;
+                    user = obj[0].user_name;
+                    get = obj[0].get_money;
+                    change = obj[0].change_money;
+                    datetime = obj[0].date_time;
+                    addr = obj[0].address;
+                    if(addr == ""){
+                        addr = "-";
+                    }
+                    tel = obj[0].tel;
+                    if(tel == ""){
+                        tel = "-";
+                    }
                     $('#branch').text(obj[0].branch_name); 
-                    $('#date').text(obj[0].date_time); 
-                    $('#number').text(obj[0].order_number); 
-                    $('#user').text(obj[0].user_name);         
-                    $('#cus').text(obj[0].customer_name); 
-                    $('#sum').text(obj[0].sum_price);    
-                    $('#discount').text(obj[0].total_discount);           
-                    $('#total').text(obj[0].total_price);           
-                    $('#get').text(obj[0].get_money);    
-                    $('#change').text(obj[0].change_money);                      
+                    $('#date').text(datetime); 
+                    $('#number').text(order_num); 
+                    $('#user').text(user);         
+                    $('#cus').text(cus_name); 
+                    $('#sum').text(sum);    
+                    $('#discount').text(dis);           
+                    $('#total').text(final_sum);           
+                    $('#get').text(get);    
+                    $('#change').text(change);                      
                     $.each(obj, function(i, field){   
                         if(i > 0){
                             $('#show_prod').append("<div class='row' style='margin-bottom: 5px;'>" +
@@ -114,7 +135,16 @@
                             "</div>" +
                            " <div class='col-1'></div>" +
                             "</div>"); 
-                            count = i;                  
+                            count = i; 
+
+                            net = obj[i].prod_amount*obj[i].prod_price;
+                            text += "<div class='left'>"+obj[i].prod_name+"("+obj[i].prod_price+")</div>" + "<div class='mid'>"+obj[i].prod_amount+"</div>" + "<div class='right'>"+net+"</div>";
+                            texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+(i+1)+"</div>"+
+                                "<div class='fl-50 fs-120 tb no-bdt'>"+obj[i].prod_name+"</div>"+
+                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].prod_amount+"</div>"+
+                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].unit_name+"</div>"+
+                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].prod_price+"</div>"+
+                                "<div class='fl-10 fs-120 tb no-bdt'>"+net+"</div>";                 
                         }                       
                     });
                                   
@@ -257,12 +287,15 @@
             window.location = "login.html";
         }
 
-        function print(){
-            var WinPrint  = window.open();
+        function print(){   
+            var WinPrint  = window.open();         
             $('input:radio[name="print-option"]').each(function(){
                 if($(this).is(':checked')){
                     checked = $(this).val();
                     if(checked == 'bill'){
+                    var date = datetime.split(" ");
+                    var time = date[1];
+                    var date = date[0];                    
                     WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
                         "<div style='width: 7.5cm;'>"+
                           "<div class='txt-ct'>พรประสิทธิ์</div>"+
@@ -271,25 +304,25 @@
                           "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
                           "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
                           "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
-                          "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
-                          "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
+                          "<div class='txt-left-100'>ประเภท : "+pay+"</div>"+
+                          "<div class='txt-left-100'>เลขที่บิล :  "+order_num+" </div>"+
                           "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
                           "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
                           
                           "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
                           "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
-                          ""+text+""+
+                           text+
                           "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
                           "<div class='txt-left'>ราคารวม : </div>"+
-                          "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
+                          "<div class='txt-right'>"+sum+" บาท</div><br>"+
                           "<div class='txt-left'>ส่วนลด : </div>"+
-                          "<div class='txt-right'>"+discount+" บาท</div><br>"+
+                          "<div class='txt-right'>"+dis+" บาท</div><br>"+
                           "<div class='txt-left'>สุทธิ : </div>"+
-                          "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
+                          "<div class='txt-right'>"+final_sum+" บาท</div><br><br>"+
                           "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
-                          "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
-                          "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
-                          "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
+                          "<div class='txt-left-100'>พนักงานขาย : "+user+"</div>"+
+                          "<div class='txt-left'>รับเงิน : "+get+" บาท</div>"+
+                          "<div class='txt-right'>ทอน : "+change+" บาท</div>"+
                         "</div>");
                         WinPrint.document.close();
                         WinPrint.focus();
@@ -298,7 +331,7 @@
                     }
                     else if(checked == 'a4'){
                         var link = "https://fonts.googleapis.com/css?family=Maitree";
-                        var logo = "http://150.95.26.163:8080/gitmew/img/pps.jpg";
+                        var logo = "http://150.95.26.163:8080/gitmew/img/pps.jpg";                      
                         WinPrint.document.write("<html><head><link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Maitree'></head><body>");
                         WinPrint.document.write("<style>@page {size: auto; margin: 0;} .fl{float: left; text-align: center; margin-left: 50mm; margin-right: 40mm;}.fr{float: right; text-align: left; margin-right: 25mm;}.fc{float: center; text-align: center;}.fs-200-bold{font-size: 200%; margin-bottom: -10px; font-weight: bold;}.fs-200{font-size: 200%; margin-bottom: -25px;}.fs-180{font-size: 180%; margin-bottom: -25px; letter-spacing: 2px;}.fs-150-title{font-size: 150%; margin-bottom: -25px; letter-spacing: 1px;}.fs-150{font-size: 150%; margin-bottom: -15px; letter-spacing: 1px;}.fs-120{font-size: 120%; letter-spacing: 1px;}.fl-spc{float: left; width: 5%;}.fl-10{float: left; width: 10%;}.fl-15{float: left; width: 15%;}.fl-20{float: left; width: 20%; text-align: center;}.fl-25{float: left; width: 25%; text-align: center;}.fl-30{float: left; width: 30%; text-align: center;}.fl-35{float: left; width: 30%; text-align: center;}.fl-40{float: left; width: 40%; text-align: center;}.fl-50{float: left; width: 50%; text-align: center;}.fl-55{float: left; width: 55%; text-align: center;}.fl-87{float: left; width: 87.5%; text-align: center;}.field{border-bottom: 1px dashed black;}.ctn{position: relative; width: 297mm; height: 210mm; padding: 10mm 15mm 15mm 10mm; font-family: 'Maitree';}.r{display: inline-block;}.tb-st{border: 1px solid black; text-align: center; padding: 3px;}.tb{border: 1px solid black; text-align: center; padding: 3px; border-left: none;}.no-bdt{border-top: none;}</style>"+
 
@@ -314,63 +347,59 @@
                             "</div>"+
                           "</div>"+
 
-                          "<div class='fc'><p class='fs-200-bold'>ใบรายการขาย</p></div>"+
-
+                        "<div class='fc'><p class='fs-200-bold'>ใบรายการขาย</p></div>"+
                           
-                          "<div class='fl-10'><p class='fs-150'>ชื่อลูกค้า</p></div>"+
-                          "<div class='fl-55'><p class='fs-150 field'>พีรกฤต สกลุสายทองคำ</p></div>"+
-                          "<div class='fl-spc'>&emsp;</div>"+
-                          "<div class='fl-10'><p class='fs-150'>ประเภท</p></div>"+
-                          "<div class='fl-20'><p class='fs-150 field'>เงินสด</p></div>"+
+                        "<div class='fl-10'><p class='fs-150'>ชื่อลูกค้า</p></div>"+
+                        "<div class='fl-55'><p class='fs-150 field'>"+cus_name+"</p></div>"+
+                        "<div class='fl-spc'>&emsp;</div>"+
+                        "<div class='fl-10'><p class='fs-150'>ประเภท</p></div>"+
+                        "<div class='fl-20'><p class='fs-150 field'>"+pay+"</p></div>"+
 
-                          "<div class='fl-10'><p class='fs-150'>ที่อยู่</p></div>"+
-                          "<div class='fl-55'><p class='fs-150 field'>99/85</p></div>"+
-                          "<div class='fl-spc'>&emsp;</div>"+
-                          "<div class='fl-10'><p class='fs-150'>เบอร์โทร</p></div>"+
-                          "<div class='fl-20'><p class='fs-150 field'>087-5659150</p></div>"+
+                        "<div class='fl-10'><p class='fs-150'>ที่อยู่</p></div>"+
+                        "<div class='fl-55'><p class='fs-150 field'>"+addr+"</p></div>"+
+                        "<div class='fl-spc'>&emsp;</div>"+
+                        "<div class='fl-10'><p class='fs-150'>เบอร์โทร</p></div>"+
+                        "<div class='fl-20'><p class='fs-150 field'>"+tel+"</p></div>"+
 
-                          "<div class='fl-15'><p class='fs-150'>เลขที่ใบรายการ</p></div>"+
-                          "<div class='fl-35'><p class='fs-150 field'>S1826300</p></div>"+
-                          "<div class='fl-25'><p class='fs-150'>วันที่ เวลา ที่ทำรายการ</p></div>"+
-                          "<div class='fl-30' style='margin-bottom: 80px;'><p class='fs-150 field'>13-12-2017 10:07:29</p></div>"+
+                        "<div class='fl-15'><p class='fs-150'>เลขที่ใบรายการ</p></div>"+
+                        "<div class='fl-35'><p class='fs-150 field'>"+order_num+"</p></div>"+
+                        "<div class='fl-25'><p class='fs-150'>วันที่ เวลา ที่ทำรายการ</p></div>"+
+                        "<div class='fl-30' style='margin-bottom: 80px;'><p class='fs-150 field'>"+datetime+"</p></div>"+
 
-                          "<div>"+
+                        "<div>"+
                             "<div class='fl-spc fs-120 tb-st'>ลำดับ</div>"+
                             "<div class='fl-50 fs-120 tb'>ชื่อสินค้า</div>"+
                             "<div class='fl-10 fs-120 tb'>จำนวน</div>"+
                             "<div class='fl-10 fs-120 tb'>หน่วย</div>"+
                             "<div class='fl-10 fs-120 tb'>ราคา/หน่วย</div>"+
-                            "<div class='fl-10 fs-120 tb'>รวมเงิน</div>"+
+                            "<div class='fl-10 fs-120 tb'>รวมเงิน</div>"+ 
 
-                            "<div class='fl-spc fs-120 tb-st no-bdt'>1</div>"+
-                            "<div class='fl-50 fs-120 tb no-bdt'>เอกภพ พิสูจณ์สิจ๊ะ</div>"+
-                            "<div class='fl-10 fs-120 tb no-bdt'>100</div>"+
-                            "<div class='fl-10 fs-120 tb no-bdt'>อนันต์</div>"+
-                            "<div class='fl-10 fs-120 tb no-bdt'>25</div>"+
-                            "<div class='fl-10 fs-120 tb no-bdt'>2500</div>"+
+                            texta4 +
 
-                            
                             "<div class='fl-87 fs-120 tb-st no-bdt'>ราคารวมทั้งสิ้น</div>"+
-                            "<div class='fl-10 fs-120 tb no-bdt'>2500</div>"+
-                          "</div>"+
+                            "<div class='fl-10 fs-120 tb no-bdt'>"+sum+"</div>"+
+                        "</div>"+
 
-                          "<div style='margin-top: 60px; padding-top: 10px; padding-bottom: 20px;' class='fl-50 fs-120 tb-st'>"+
+                        "<div style='margin-top: 60px; padding-top: 10px; padding-bottom: 20px;' class='fl-50 fs-120 tb-st'>"+
                             "<div style='font-weight: bold; margin-bottom: 10px; text-decoration: underline;' class='fs-120'>ข้อมูลผู้รับสินค้า</div>"+
                             "<div style='margin-bottom: 10px;' class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
-                            "<div style='margin-bottom: 10px;' class='fl-50 fs-120 field'>สมพร สว่างว้าบ</div>"+
+                            "<div style='margin-bottom: 10px;' class='fl-50 fs-120 field'>&emsp;</div>"+
                             "<div class='fl-40 fs-120'>วันที่ส่งสินค้า</div>"+
-                            "<div class='fl-50 fs-120 field'>13/02/2011</div>"+
-                          "</div>"+
+                            "<div class='fl-50 fs-120 field'>&emsp;</div>"+
+                        "</div>"+
 
-                          "<div class='fl-spc'>&emsp;</div>"+
+                        "<div class='fl-spc'>&emsp;</div>"+
 
-                          "<div style='margin-top: 100px; padding-top: 10px; padding-bottom: 20px;' class='fl-40 fs-120 tb-st'>"+
-                            "<div class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
-                            "<div class='fl-50 fs-120 field'>สมพร สว่างว้าบ</div>"+
-                          "</div>"+
+                        "<div style='margin-top: 100px; padding-top: 10px; padding-bottom: 20px;' class='fl-40 fs-120 tb-st'>"+
+                            "<div class='fl-40 fs-120'>ผู้ทำรายการ</div>"+
+                            "<div class='fl-50 fs-120 field'>"+user+"</div>"+
+                        "</div>"+
                         "</div>");
                         WinPrint.document.write('</body></html>');
+                        WinPrint.document.close();
                         WinPrint.focus();
+                        WinPrint.print();
+                        WinPrint.close();   
                         //WinPrint.document.write("<script>window.print();</scr"+"ipt>")
                     }
                 }
