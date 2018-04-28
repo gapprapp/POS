@@ -822,10 +822,11 @@
 
             <!-- Pay body -->
             <div class="modal-body" style="margin-top: -15px;">
-              <style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 4cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 3cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>   
+              <style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 1cm; float: left; width: 3.5cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 3cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 1cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>   
               <div style='width: 10.5cm; margin-left: 1cm;'>
               <div class='left-title'>วันที่: 10/4/2561</div> <div class='mid-title'>เวลา 10:00</div> <div class='right-title'>ถึง 18:09</div>
-              <div class='txt-left-100'>พนักงาน : user</div><br><br>
+              <div class='txt-left'>พนักงาน : user</div>
+              <div class='txt-right'>สาขา : สิงห์บุรี</div><br><br>
               
               <hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>
               <div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>
@@ -851,10 +852,11 @@
               <hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> 
               <div class='txt-left'>พิมพ์ :  10/4/2561</div>
               <div class='txt-right'>เวลา : 23:59</div><br><br>
-              </div>
+              </div><br>
               <!-- Modal footer -->
               <div class="col-12 text-center">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button> 
+                <button type="button" class="btn btn-info" data-dismiss="modal" onclick="printfn();">พิมพ์<span><i class='fa fa-print'></i></span></button>
               </div>
               <br>
             </div>
@@ -901,6 +903,46 @@
         'maxTime': '00:00'
         });
         $('#timePair').datepair();
+
+        function printfn(){
+            var winprint = window.open();
+            winprint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 3cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 1.7cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>"+   
+            "<div style='width: 7.5cm;'>"+
+            "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
+            "<div class='left-title'>วันที่ : "+date+"</div> <div class='mid-title'>เวลา "+time+"</div> <div class='right-title'>ถึง "+time2+"</div>"+
+            "<div class='txt-left'>พนักงาน : "+localStorage.name+"</div>"+
+            "<div class='txt-right'>สาขา : สาขา</div>"+
+            
+            "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+            "<div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>"+
+            "<div class='txt-left'>เงินสด : </div>"+
+            "<div class='txt-right'>"+cash+" บาท</div><br>"+
+            "<div class='txt-left'>ลูกหนี้ : </div>"+
+            "<div class='txt-right'>"+debtor+" บาท</div><br>"+
+            "<div class='txt-left'>เงินโอน : </div>"+
+            "<div class='txt-right'>"+transfer+" บาท</div><br><br>"+
+            "<div class='txt-left'>รวมทั้งสิ้น : </div>"+
+            "<div class='txt-right'>"+total+" บาท</div><br><br>"+
+
+            "<div class='txt-ct' style='text-decoration: underline;'>สรุปตามยอดขายสินค้า</div>"+
+            "<div class='txt-left'>ยอดก่อนหักส่วนลด : </div>"+
+            "<div class='txt-right'>"+sum+" บาท</div><br>"+
+            "<div class='txt-left'>หักส่วนลด : </div>"+
+            "<div class='txt-right'>"+dis+" บาท</div><br>"+
+            "<div class='txt-left'>คงเหลือ : </div>"+
+            "<div class='txt-right'>"+total+" บาท</div><br><br>"+
+            "<div class='txt-left'>รวมเงินสด ส่งในกะนี้ : </div>"+
+            "<div class='txt-right'>"+cash+" บาท</div><br><br><br>"+
+
+            "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> "+ 
+            "<div class='txt-left'>พิมพ์ : "+$("#date").text()+"</div>"+
+            "<div class='txt-right'>เวลา : "+time2+"</div><br><br><br><br>"+
+            "</div>");
+            winprint.document.close();
+            winprint.focus();
+            winprint.print();
+            winprint.close();   
+        }
 
         //$("#timepicker1").val() && $("#timepicker2").val()
     </script>
