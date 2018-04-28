@@ -34,8 +34,6 @@
 
     <!-- Time Picker -->
     <script src="js/jquery.timepicker.js"></script>
-    <script src="js/datepair.js"></script>
-    <script type="text/javascript" src="jquery.datepair.js"></script>
     <link href="css/jquery.timepicker.css" rel="stylesheet">
 
     <!-- Sidbar -->
@@ -382,10 +380,11 @@
         }
 
         var is_sort = {
-            prod_name: '0',
-            prod_type_name: '0',
-            prod_cost: '0',
-            prod_price: '0'
+            user: '0',
+            time: '0',
+            date: '0',
+            branch: '0',
+            total: '0'
         };
         var sort_by = "none",
             order = "none";
@@ -728,11 +727,25 @@
                         </a>
                     </div>
                     <div class="col-2 text-center">
-                        เวลา
+                        <a href="#" style="color: black;" onclick="click_sort('time')">เวลา
+                            <i id="i-time" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
                     </div>
-                    <div class="col-2 text-center">วันที่</div>
-                    <div class="col-2 text-center">สาขา</div>
-                    <div class="col-3 text-center">จำนวนเงิน</div>
+                    <div class="col-2 text-center">
+                         <a href="#" style="color: black;" onclick="click_sort('date')">วันที่
+                            <i id="i-date" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-2 text-center">
+                        <a href="#" style="color: black;" onclick="click_sort('branch')">สาขา
+                            <i id="i-branch" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-3 text-center">
+                         <a href="#" style="color: black;" onclick="click_sort('total')">จำนวนเงิน
+                            <i id="i-total" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
                     <div class="col-1 text-center"></div>
                 </div>
                 <br>
@@ -760,7 +773,7 @@
                                 <input type="text" class="form-control text-center" value="จำนวนเงิน">
                             </div>
                             <div class="col-1 text-center" style="margin-top: 3px;">
-                                <button id='btn-edit-1' class='btn btn-sm btn-info' style='margin-right: 5px;' onclick='open_edit("1")'>
+                                <button id='btn-edit-1' class='btn btn-sm btn-info' style='margin-right: 5px;' onclick='open_edit("1")'  data-toggle="modal" data-target="#shiftModal">
                                     <i id='i-edit-1' class='fa fa-info-circle'></i>
                                 </button>
                             </div>
@@ -797,9 +810,62 @@
             </nav>
         </div>
         <!-- End page content wrapper -->
+        <!-- Shift Bill Info Modal -->
+      <div class="modal fade" id="shiftModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">สรุปการขาย</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Pay body -->
+            <div class="modal-body" style="margin-top: -15px;">
+              <style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 4cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 3cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>   
+              <div style='width: 10.5cm; margin-left: 1cm;'>
+              <div class='left-title'>วันที่: 10/4/2561</div> <div class='mid-title'>เวลา 10:00</div> <div class='right-title'>ถึง 18:09</div>
+              <div class='txt-left-100'>พนักงาน : user</div><br><br>
+              
+              <hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>
+              <div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>
+              <div class='txt-left'>เงินสด : </div>
+              <div class='txt-right'>1000 บาท</div><br>
+              <div class='txt-left'>ลูกหนี้ : </div>
+              <div class='txt-right'>1000 บาท</div><br>
+              <div class='txt-left'>เงินโอน : </div>
+              <div class='txt-right'>1000 บาท</div><br>
+              <div class='txt-left'>รวมทั้งสิ้น : </div>
+              <div class='txt-right'>1000 บาท</div><br>
+
+              <div class='txt-ct' style='text-decoration: underline;'>สรุปตามยอดขายสินค้า</div>
+              <div class='txt-left'>ยอดก่อนหักส่วนลด : </div>
+              <div class='txt-right'>1000 บาท</div><br>
+              <div class='txt-left'>หักส่วนลด : </div>
+              <div class='txt-right'>1000 บาท</div><br>
+              <div class='txt-left'>คงเหลือ : </div>
+              <div class='txt-right'>1000 บาท</div><br><br>
+              <div class='txt-left'>รวมเงินสด ส่งในกะนี้ : </div>
+              <div class='txt-right'>1000 บาท</div><br>
+
+              <hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> 
+              <div class='txt-left'>พิมพ์ :  10/4/2561</div>
+              <div class='txt-right'>เวลา : 23:59</div><br><br>
+              </div>
+              <!-- Modal footer -->
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">ปิด</button>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- End Wrapper -->
     <!-- Menu Toggle -->
+    <script type="text/javascript" src="js/datepair.js"></script>
+    <script type="text/javascript" src="js/jquery.datepair.js"></script>
     <script>
         // Menu Toggle
         $("#menu-toggle").click(function (e) {
@@ -827,12 +893,6 @@
             $('#dpicker').val(first + " " + date);
             dt = split[0] + "-" + split[1] + "-" + split[2];         
         });
-
-        /*//Time picker
-        $("#timepicker1").timepicker();
-        $("#timepicker2").timepicker();
-        $("#timepicker1").timepicker('option', {'appendTo': $(".col-2"), 'timeFormat': 'H:i น.', 'minTime': '8:00', 'maxTime': '00:00'});
-        $("#timepicker2").timepicker('option', {'appendTo': $(".col-2"), 'timeFormat': 'H:i น.', 'minTime': '8:00', 'maxTime': '00:00', 'showDuration': 'true'});*/
 
         $('#timePair .time').timepicker({
         'showDuration': true,
