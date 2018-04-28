@@ -139,7 +139,7 @@
 
                             net = obj[i].prod_amount*obj[i].prod_price;
                             text += "<div class='left'>"+obj[i].prod_name+"("+obj[i].prod_price+")</div>" + "<div class='mid'>"+obj[i].prod_amount+"</div>" + "<div class='right'>"+net+"</div>";
-                            texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+(i+1)+"</div>"+
+                            texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+i+"</div>"+
                                 "<div class='fl-50 fs-120 tb no-bdt'>"+obj[i].prod_name+"</div>"+
                                 "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].prod_amount+"</div>"+
                                 "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].unit_name+"</div>"+
@@ -395,11 +395,8 @@
                             "<div class='fl-50 fs-120 field'>"+user+"</div>"+
                         "</div>"+
                         "</div>");
-                        WinPrint.document.write('</body></html>');
-                        WinPrint.document.close();
-                        WinPrint.focus();
-                        WinPrint.print();
-                        WinPrint.close();   
+                        WinPrint.document.write('</body></html>');                      
+                        WinPrint.focus();                    
                         //WinPrint.document.write("<script>window.print();</scr"+"ipt>")
                     }
                 }
