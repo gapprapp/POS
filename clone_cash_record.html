@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <!-- Easy-autocomplete -->
+    <script src="js/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet">
+
+    <script>
+        var cash,transfer,debtor,sum,dis,total,before_dt,date;
+        var check = true;
+        $(document).ready(function () {
+            if(!localStorage.user_id){
+                $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณาเข้าสู่ระบบก่อน"
+                });
+                window.location = "login.html";
+            } 
+
+             if(localStorage.role == "user"){
+                $("#mb").remove();
+                $("#mp").remove();
+            }    
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
+                method:"GET",
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    $.each(obj, function(i, field){
+                        $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
+                    });
+                }
+            }); 
+           
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/clone_get_cash.php",
+                method:"POST",
+                data:{'b_id':"1"},
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    console.log(obj);                          
+                    if(obj[0] == "none"){
+                        $('#cash').text("0.00 บาท");
+                        cash = "0.00"; 
+                        check = false;                       
+                    }else{
+                        $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
+                        cash = parseFloat(obj[0].total_price).toFixed(2);
+                        before_dt = obj[0].udt;     
+                        date = obj[0].datetime;        
+                    }
+                    if(obj[1] == "none"){
+                        transfer = "0.00";                        
+                    }else{                      
+                        transfer = parseFloat(obj[1].total_price).toFixed(2);
+                    }
+                    if(obj[2] == "none"){
+                        debtor = "0.00";                        
+                    }else{                      
+                        debtor = parseFloat(obj[2].total_price).toFixed(2);
+                    }
+                    if(obj[3] == "none"){
+                        sum = "0.00";                        
+                    }else{                       
+                        sum = parseFloat(obj[3].sum_price).toFixed(2);
+                    }
+                    if(obj[4] == "none"){
+                        dis = "0.00";                        
+                    }else{                      
+                        dis = parseFloat(obj[4].discount).toFixed(2);
+                    }
+                    if(obj[5] == "none"){
+                        total = "0.00";                        
+                    }else{                      
+                        total = parseFloat(obj[5].total_price).toFixed(2);
+                    }                  
+                }
+            });
+
+            var d = new Date($.now());
+            $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
+            $('#user').text(localStorage.name);
+            $('#say_hi').text("สวัสดี, คุณ " +localStorage.name);
+        });
+
+        function get_cash(){
+            var b_id = $('#branch option:selected').val();
+           // alert(b_id);
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/clone_get_cash.php",
+                method:"POST",
+                data:{'b_id':b_id},
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    console.log(obj);
+                    if(obj == null){
+                        $('#cash').text("0.00 บาท");
+                    }else{
+                        $.each(obj, function(i, field){                      
+                            $('#cash').text(parseFloat(field.total_price).toFixed(2) + " บาท");
+                        });
+                    }                   
+                }
+            });    
+        }
+
+        function cash_rec(){
+            if(check){
+                var d = new Date($.now());
+                $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
+                var datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
+                var b_id = $('#branch option:selected').val();               
+            /* $.ajax({
+                    url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
+                    method:"POST",
+                    data:{'b_id':b_id,
+                        'user_id':localStorage.user_id,
+                        'date':datetime,
+                        'total':cash},
+                    success:function(data)
+                    {
+                        if(data == "success"){*/
+                        var d = before_dt.split(" ");
+                        var time = d[1];   
+                        var d2 = datetime.split(" ");
+                        var time2 = d2[1];                                              
+                        var winprint = window.open();
+                        winprint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 3cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 1.7cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>"+   
+                        "<div style='width: 7.5cm;'>"+
+                        "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
+                        "<div class='left-title'>วันที่ : "+date+"</div> <div class='mid-title'>เวลา "+time+"</div> <div class='right-title'>ถึง "+time2+"</div>"+
+                        "<div class='txt-left-100'>พนักงาน : "+localStorage.name+"</div>"+
+                        
+                        "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+                        "<div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>"+
+                        "<div class='txt-left'>เงินสด : </div>"+
+                        "<div class='txt-right'>"+cash+" บาท</div><br>"+
+                        "<div class='txt-left'>ลูกหนี้ : </div>"+
+                        "<div class='txt-right'>"+debtor+" บาท</div><br>"+
+                        "<div class='txt-left'>เงินโอน : </div>"+
+                        "<div class='txt-right'>"+transfer+" บาท</div><br><br>"+
+                        "<div class='txt-left'>รวมทั้งสิ้น : </div>"+
+                        "<div class='txt-right'>"+total+" บาท</div><br><br>"+
+
+                        "<div class='txt-ct' style='text-decoration: underline;'>สรุปตามยอดขายสินค้า</div>"+
+                        "<div class='txt-left'>ยอดก่อนหักส่วนลด : </div>"+
+                        "<div class='txt-right'>"+sum+" บาท</div><br>"+
+                        "<div class='txt-left'>หักส่วนลด : </div>"+
+                        "<div class='txt-right'>"+dis+" บาท</div><br>"+
+                        "<div class='txt-left'>คงเหลือ : </div>"+
+                        "<div class='txt-right'>"+total+" บาท</div><br><br>"+
+                        "<div class='txt-left'>รวมเงินสด ส่งในกะนี้ : </div>"+
+                        "<div class='txt-right'>"+cash+" บาท</div><br><br><br>"+
+
+                        "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> "+ 
+                        "<div class='txt-left'>พิมพ์ : "+$("#date").text()+"</div>"+
+                        "<div class='txt-right'>เวลา : "+time2+"</div><br><br><br><br>"+
+                        "</div>");
+                            winprint.document.close();
+                            winprint.focus();
+                            winprint.print();
+                            winprint.close();
+                            //window.location = "sale.html";
+                        /*}
+                    }
+                });*/
+            }
+        }
+
+        function logout(){
+            localStorage.user_id = "";
+            window.location = "login.html";
+        }
+
+        /*var b_id = 1;
+        function setbranch(arg){
+            b_id = arg;
+            var b = $('#li-branch-'+arg).text()
+            $("#branch").text(b);
+        }*/
+    </script>
+
+    <style>
+        h1,h3,h4{
+            color: #4c4c4c;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                     
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+        <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #e3b3a4;">
+                <div class="clearfix">
+                    <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+                </div>
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                    <h3 id="nav-title">ตัดกะ</h3>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+
+            <div class="container justify-content-center">
+                    <div class="jumbotron text-center" style="background: #fdfcfb;">
+                        <h1 id="say_hi" class="display-4"></h1>
+                        <h3 style="margin-top: 55px;">สรุปยอดเงินในกะ</h3>
+                        <hr style="width: 80%">
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>สาขา : </h4>
+                            </div>
+                            <div class="col-5 text-left">                                
+                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>วันที่บันทึก : </h4>
+                            </div>
+                            <div class="col-5 text-left">
+                                <h4 id='date' style="letter-spacing: 2px;"></h4>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>ผู้บันทึก : </h4>
+                            </div>
+                            <div class="col-5 text-left">
+                                <h4 id='user' style="letter-spacing: 2px;"></h4>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 25px;">
+                            <div class="col-6 text-right" style="padding-right: 50px;">
+                                <h4>จำนวนเงิน : </h4>
+                            </div>
+                            <div class="col-5 text-left">
+                                <h4 id='cash' style="letter-spacing: 2px;"></h4>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div class="col-12 text-center">
+                                <button class="btn btn-lg btn-danger" style="width: 20%;" onclick="cash_rec()">
+                                    ตัดกะ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <!-- End page content wrapper -->
+    </div>
+    <!-- End Wrapper -->
+
+    <!-- Menu Toggle -->
+    <script>
+        // Menu Toggle
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+
+            if ($("#menu-toggle").text() == "รายการ") {
+                $("#menu-toggle").text("กลับ");
+            } else if ($("#menu-toggle").text() == "กลับ") {
+                $("#menu-toggle").text("รายการ");
+            }
+        });
+    </script>
+</body>
+
+</html>
