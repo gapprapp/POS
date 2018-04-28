@@ -27,6 +27,17 @@
 
     <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
 
+    <!-- Date Picker -->
+    <link href="css/datepicker.css" rel="stylesheet">
+    <script src="js/datepicker.js"></script>
+    <script src="js/datepicker.th-TH.js"></script>
+
+    <!-- Time Picker -->
+    <script src="js/jquery.timepicker.js"></script>
+    <script src="js/datepair.js"></script>
+    <script type="text/javascript" src="jquery.datepair.js"></script>
+    <link href="css/jquery.timepicker.css" rel="stylesheet">
+
     <!-- Sidbar -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <!-- Font -->
@@ -37,6 +48,10 @@
         .list-group-item {
             padding: 6px 20px;
             margin-bottom: 6px;
+        }
+        .pdlr{
+            padding-right: 0px;
+            padding-left: 0px;
         }
     </style>
 
@@ -108,7 +123,7 @@
                                     "<div class='col-3' style='padding-right: 0;'>" +
                                     "<div class='input-group-prepend'>" +
                                     "<span class='input-group-text' style='margin-right: 8px;'>" + (i + 1) + "</span>" +
-                                    "<input id='name-" + i + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
+                                    "<input id='name-" + i + "' type='text' class='form-control text-center' value='" + field.user + "' disabled>" +
                                     "</div>" +
                                     "</div>" +
                                     "<div class='col-6'>" +
@@ -138,88 +153,6 @@
                 }
             });
         });
-
-        function open_edit(arg) {
-            $("#name-" + arg).prop('disabled', false);
-            $("#addr-" + arg).prop('disabled', false);
-            $("#tel-" + arg).prop('disabled', false);
-            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
-            $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
-            $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
-            $("#btn-del-" + arg).prop('hidden', false);
-        }
-
-        function del_row(arg) {
-            $.confirm({
-                icon: 'fa fa-warning',
-                title: 'แน่ใจหรือว่าต้องการลบ!',
-                content: 'ต้องการลบรายการสินค้าออกจากฐานข้อมูล!',
-                buttons: {
-                    danger: {
-                        btnClass: 'btn-danger',
-                        text: 'ลบ', // With spaces and symbols,
-                        action: function () {
-                            var cus_id = $("#span-" + arg).text();
-                            $.ajax({
-                                url: "http://150.95.26.163:8080/gitmew/php/delete_cus.php",
-                                type: "POST",
-                                data: {
-                                    'cus_id': cus_id
-                                },
-                                success: function (data) {
-                                    if (data == "success") {
-                                        $.alert({
-                                            icon: 'fa fa-warning',
-                                            title: 'เตือน',
-                                            content: 'รายการสินได้ถูกลบแล้ว',
-                                        });
-                                        $("#item-" + arg).remove();
-                                    } else {
-                                        $.alert({
-                                            icon: 'fa fa-warning',
-                                            title: 'เตือน',
-                                            content: 'โปรดลองอีกครั้ง',
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    },
-                    ยกเลิก: function () { },
-                }
-            });
-        }
-
-        function save_edit(arg) {
-            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
-            $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
-            $("#i-edit-" + arg).attr('class', 'fa fa-edit');
-            $("#btn-del-" + arg).prop('hidden', true);
-
-            $("#name-" + arg).prop('disabled', true);
-            $("#addr-" + arg).prop('disabled', true);
-            $("#tel-" + arg).prop('disabled', true);
-
-            //Ajax save prod.. ..
-            var cus_id = $("#span-" + arg).text();
-            var name = $("#name-" + arg).val();
-            var addr = $("#addr-" + arg).val();
-            var tel = $("#tel-" + arg).val();           
-
-            $.ajax({
-                url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
-                type: "POST",
-                data: {
-                    'cus_id': cus_id,
-                    'name': name,
-                    'address': addr,
-                    'tel': tel
-                },
-                success: function (data) {
-                    //alert(data);
-                }
-            });
-        }
 
         var searched_name;
         var searched_tel;
@@ -306,7 +239,7 @@
                                     "<div class='col-3' style='padding-right: 0;'>" +
                                     "<div class='input-group-prepend'>" +
                                     "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
-                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
+                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.user + "' disabled>" +
                                     "</div>" +
                                     "</div>" +
                                     "<div class='col-6'>" +
@@ -392,7 +325,7 @@
                                     "<div class='col-3' style='padding-right: 0;'>" +
                                     "<div class='input-group-prepend'>" +
                                     "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
-                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
+                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.user + "' disabled>" +
                                     "</div>" +
                                     "</div>" +
                                     "<div class='col-6'>" +
@@ -704,211 +637,6 @@
             }
         }
 
-        function showall() {
-            location.reload();
-        }
-
-        function add_new_cus(arg){
-            // add cus to db
-            // check 
-            if($("#add-name-"+arg).val() != "" && $("#add-addr-"+arg).val() != "" && $("#add-tel-"+arg).val() != ""){
-                var name = $('#add-name-'+arg).val();
-                var addr = $('#add-addr-'+arg).val();
-                var tel = $('#add-tel-'+arg).val();
-                $.ajax({
-                    url: "http://150.95.26.163:8080/gitmew/php/add_cus.php",
-                    type: "POST",
-                    data: {                     
-                        'name': name,
-                        'address': addr,
-                        'tel': tel
-                    },
-                    success: function (data) {
-                        if(data == "fail"){
-                            $.alert({
-                                icon: 'fa fa-warning',
-                                title: 'เตือน',
-                                content: "กรุณาลองอีกครั้ง"
-                            });
-                        }else{
-                            //$('#add-id-'+arg).text(data);
-                            $("#add-name-"+arg).prop('disabled', true);
-                            $("#add-addr-"+arg).prop('disabled', true);
-                            $("#add-tel-"+arg).prop('disabled', true);
-
-                            $("#btn-add-"+arg).prop('hidden', true);
-                            $("#btn-add-edit-"+arg).prop('hidden', false);
-                        }                        
-                    }
-                });
-            }else{
-                $.alert({
-                    icon: 'fa fa-warning',
-                    title: 'เตือน',
-                    content: "กรุณากรอกข้อมูลลูกค้าให้ครบถ้วน"
-                });
-            }
-            
-        }
-
-        function edit_new_cus(arg){
-            $("#add-name-"+arg).prop('disabled', false);
-            $("#add-addr-"+arg).prop('disabled', false);
-            $("#add-tel-"+arg).prop('disabled', false);
-
-            $("#btn-add-save-"+arg).prop('hidden', false);
-            $("#btn-add-edit-"+arg).prop('hidden', true);
-            $("#btn-add-del-"+arg).prop('hidden', false);
-        }
-
-        function save_new_cus(arg){
-            var cus_id = $("#add-id-" + arg).text();
-            var name = $("#add-name-" + arg).val();
-            var addr = $("#add-addr-" + arg).val();
-            var tel = $("#add-tel-" + arg).val();           
-
-            $.ajax({
-                url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
-                type: "POST",
-                data: {
-                    'cus_id': cus_id,
-                    'name': name,
-                    'address': addr,
-                    'tel': tel
-                },
-                success: function (data) {
-                    if(data == "success"){
-                        $("#add-name-"+arg).prop('disabled', true);
-                        $("#add-addr-"+arg).prop('disabled', true);
-                        $("#add-tel-"+arg).prop('disabled', true);
-
-                        $("#btn-add-save-"+arg).prop('hidden', true);
-                        $("#btn-add-edit-"+arg).prop('hidden', false);
-                        $("#btn-add-del-"+arg).prop('hidden', true);
-                    }else{
-                        $.alert({
-                            icon: 'fa fa-warning',
-                            title: 'เตือน',
-                            content: "กรุณาลองอีกครั้ง"
-                        });
-                    }
-                }
-            });    
-           
-        }
-
-        function del_new_cus(arg){
-            console.log(arg);
-            $.confirm({
-                icon: 'fa fa-warning',
-                title: 'แน่ใจหรือว่าต้องการลบ!',
-                content: 'ต้องการลบรายการสินค้า!',
-                buttons: {
-                    danger: {
-                        btnClass: 'btn-danger',
-                        text: 'ลบ', // With spaces and symbols,
-                        action: function () {
-                            var cus_id = $("#add-id-" + arg).text();
-                            $.ajax({
-                                url: "http://150.95.26.163:8080/gitmew/php/delete_cus.php",
-                                type: "POST",
-                                async:false,
-                                data: {
-                                    'cus_id': cus_id
-                                },
-                                success: function (data) {
-                                    if (data == "success") {
-                                        $.alert({
-                                            icon: 'fa fa-warning',
-                                            title: 'เตือน',
-                                            content: 'รายการสินได้ถูกลบแล้ว',
-                                        });
-                                        $("#add-"+arg).remove();
-                                        for(i = arg+1; i <= add_index; i++){
-                                            $("#add-"+i).prop('id', "add-"+(i-1));
-                                            str = $("#add-no-"+i).text()-1;
-                                            $("#add-no-"+i).text("+"+str+"");
-                                            $("#add-no-"+i).prop('id', "add-no-"+(i-1));
-                                            $("#add-name-"+i).prop('id', "add-name-"+(i-1));
-                                            $("#add-addr-"+i).prop('id', "add-addr-"+(i-1));
-                                            $("#add-tel-"+i).prop('id', "add-tel-"+(i-1));
-
-                                            $("#btn-add-"+i).attr('onclick', "add_new_cus(" + (i - 1) + ")");
-                                            $("#btn-add-save-"+i).attr('onclick', "save_new_cus(" + (i - 1) + ")");
-                                            $("#btn-add-edit-"+i).attr('onclick', "edit_new_cus(" + (i - 1) + ")");
-                                            $("#btn-add-del-"+i).attr('onclick', "del_new_cus(" + (i - 1) + ")");
-
-                                            $("#btn-add-"+i).prop('id', "btn-add-"+(i-1));
-                                            $("#btn-add-save-"+i).prop('id', "btn-add-save-"+(i-1));
-                                            $("#btn-add-edit-"+i).prop('id', "btn-add-edit-"+(i-1));
-                                            $("#btn-add-del-"+i).prop('id', "btn-add-del-"+(i-1));
-                                        }
-                                        add_index--;
-                                    } else {
-                                        $.alert({
-                                            icon: 'fa fa-warning',
-                                            title: 'เตือน',
-                                            content: 'โปรดลองอีกครั้ง',
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    },
-                    ยกเลิก: function () { },
-                }
-            });         
-        }
-
-        var add_index = 0;
-        function add_cus() {
-
-            // Check before is added
-            if(add_index > 0 && $("#btn-add-"+add_index).is(':visible')){
-                $(".add-group").prop('hidden', true);
-                add_index--;
-                return 0;
-            }             
-            add_index++;      
-            $("#add-"+add_index).remove();                            
-            $(".add-group").prop('hidden', false);
-
-            var text_html = "<li id='add-"+add_index+"' class='list-group-item text-center rounded'>"+
-                    "<span id='add-id-"+add_index+"' hidden></span>" +
-                    "<div class='row'>"+
-                        "<div class='col-3 text-center'>"+
-                            "<div class='input-group-prepend'>"+
-                                "<span id='add-no-"+add_index+"' class='input-group-text' style='margin-right: 8px;'>+"+add_index+"</span>"+
-                                "<input id='add-name-"+add_index+"' type='text' class='form-control text-center'>"+
-                           " </div>"+
-                        "</div>"+
-                        "<div class='col-6 text-center'>"+
-                            "<input id='add-addr-"+add_index+"' type='text' class='form-control text-center'>"+
-                        "</div>"+
-                        "<div class='col-2 text-center'>"+
-                            "<input id='add-tel-"+add_index+"' type='text' class='form-control text-center'>"+
-                        "</div>"+
-                        "<div class='col-1' text-center' style='margin-top: 3px;'>"+
-                            "<button id='btn-add-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_new_cus("+add_index+")'>"+
-                                "<i id='i-edit-1' class='fa fa-plus'></i>"+
-                            "</button>"+
-                            "<button id='btn-add-save-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='save_new_cus("+add_index+")' hidden>"+
-                                "<i id='i-edit-1' class='fa fa-check-square'></i>"+
-                            "</button>"+
-                            "<button id='btn-add-edit-"+add_index+"' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='edit_new_cus("+add_index+")' hidden>"+
-                                "<i id='i-edit-1' class='fa fa-edit'></i>"+
-                            "</button>"+
-                            "<button id='btn-add-del-"+add_index+"' class='btn btn-sm btn-danger' onclick='del_new_cus("+add_index+")' data-toggle='modal'data-target='#myModal' hidden>"+
-                                "<i id='i-del-' class='fa fa-minus'></i>"+
-                            "</button>"+
-                        "</div>"+
-                    "</div>"+
-                "</li>";
-
-            $('.add-group').append(text_html);
-            $("#add-name-"+add_index).focus();
-        }
-
         function logout(){
             localStorage.user_id = "";
             window.location = "login.html";
@@ -941,39 +669,51 @@
                     <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
                 </div>
                 <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
-                    <h3 id="nav-title">จัดการลูกค้า</h3>
+                    <h3 id="nav-title">รายการตัดกะ</h3>
                 </div>
             </nav>
             <!-- End Navbar -->
             <div class="container-fullwidth justify-content-center">
                 <!-- 3 Search -->
                 <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-4 text-center">
-                         ชื่อลูกค้า
-                    </div>
-                    <div class="col-2 text-center">
-                        เบอร์โทร
-                    </div>
-                    <div class="col-3 text-center"></div>
-                    <div class="col-1"></div>
+                    <div class="col-1" style="margin-left: 4%;"></div>
+                    <div class="col-2 text-center pdlr">ผู้บันทึก</div>
+                    <div class="col-2 text-center">เวลา</div>
+                    <div class="col-2 text-center">ถึง</div>
+                    <div class="col-1 text-center">สาขา</div>
+                    <div class="col-2 text-center" style="margin-left: 2%;">วันที่บันทึก</div>
                 </div>
                 <div class="row">
-                    <div class="col-1"></div>
-                    <div class="col-1 text-right">
-                        <p style="padding-top: 5px; font-size: 120%;">ค้นหา :
-                            <p/>
-                    </div>
-                    <div class="col-4 text-center">
-                        <input id="search-name" type="text" class="form-control text-center no-spin">
+                    <div class="col-1 text-right" style="margin-left: 4%;">
+                        <p style="padding-top: 5px; font-size: 120%;">ค้นหา :</p>
                     </div>
                     <div class="col-2 text-center">
-                        <input id="search-tel" type="number" class="form-control text-center">
+                        <input id="search-user" type="text" class="form-control text-center no-spin">
                     </div>
-                    <div class="col-3 text-center">
+                    <!-- Time Picker -->
+                    <div class="col-4 text-center">
+                        <div id="timePair" class="input-group-prepend">
+                            <input value="8:00" class="time start form-control text-center" type="text" style="margin-right: 15px;">
+                            <input value="" class="time end form-control text-center" type="text"> 
+                        </div>
+                        
+                    </div>
+                    <div class="col-1 text-center pdlr">
+                        <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <option class='dropdown-item text-center' style='color: #ffffff' value='สิงห์บุรี'>สิงห์บุรี</option>
+                        </select>
+                    </div>
+                    <!-- Date Picker -->
+                    <div class="col-2 text-center">
+                        <div class="input-group-prepend">
+                            <button data-toggle="datepicker" type="button" class="btn btn-default docs-datepicker-trigger" style="margin-right: 5px;" disabled>
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                            </button>
+                            <input id="dpicker" data-toggle="datepicker" type="text" class="form-control docs-date text-center" name="date" placeholder="วันที่ต้องการค้นหา" readonly>
+                        </div>
+                    </div>
+                    <div class="col-1 text-center">
                         <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
-                        <button class="btn btn-info btn-md" onclick="add_cus();">เพิ่มลูกค้า</button>
-                        <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด</button>
                     </div>
                     <div class="col-1"></div>
                 </div>
@@ -981,74 +721,51 @@
             <hr style="width: 90%;">
             <!-- Header -->
             <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px;">
-                <div class="row" style="padding-right: 40px; padding-left: 40px;">
-                    <div class="col-3 text-center">
-                        <a href="#" style="color: black;" onclick="click_sort('customer_name')">ชื่อลูกค้า
-                            <i id="i-customer_name" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                <div class="row" style="padding-left: 11%; padding-right: 11%;">
+                    <div class="col-2 text-center" style="padding-left: 40px;">
+                        <a href="#" style="color: black;" onclick="click_sort('user')">ผู้บันทึก
+                            <i id="i-user" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
                         </a>
                     </div>
-                    <div class="col-6 text-center">
-                        ที่อยู่
+                    <div class="col-2 text-center">
+                        เวลา
                     </div>
-                    <div class="col-2 text-center">เบอร์โทร</div>
+                    <div class="col-2 text-center">วันที่</div>
+                    <div class="col-2 text-center">สาขา</div>
+                    <div class="col-3 text-center">จำนวนเงิน</div>
                     <div class="col-1 text-center"></div>
                 </div>
                 <br>
 
-            <!-- Add -->
-            <ul class="add-group" style="padding-right: 20px; padding-left: 20px;" hidden>
-                <!-- Append text html 
-                <li id='add-1' class='list-group-item text-center rounded'>
-                    <div class="row">
-                        <div class="col-3 text-center">
-                            <div class="input-group-prepend">
-                                <span class='input-group-text' style='margin-right: 8px;'>+1</span>
-                                <input id="add-name-1" type="text" class="form-control text-center">
-                            </div>
-                        </div>
-                        <div class="col-6 text-center">
-                            <input id="add-addr-1" type="text" class="form-control text-center">
-                        </div>
-                        <div class="col-2 text-center">
-                            <input id="add-tel-1" type="text" class="form-control text-center">
-                        </div>
-                        <div class="col-1 text-center" style="margin-top: 3px;">
-                            <button id='btn-add-1' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_cus("1")'>
-                                <i id='i-edit-1' class='fa fa-plus'></i>
-                            </button>
-                            <button id='btn-del-1' class='btn btn-sm btn-danger' onclick='del_row("1")' data-toggle='modal'
-                                data-target='#myModal' hidden>
-                                <i id='i-del-' class='fa fa-minus'></i>
-                            </button>
-                        </div>
-                    </div>
-                </li>-->
-            </ul>    
-
-                <ul class="list-group" style="padding-right: 20px; padding-left: 20px;">
+                <ul class="list-group" style="padding-left: 9%; padding-right: 9%;">
                     <!-- Append text html -->
-                    <!--<li id='item-1' class='list-group-item text-center rounded'>
+                    <li id='item-1' class='list-group-item text-center rounded'>
                         <div class="row">
-                            <div class="col-3 text-center">
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="col-6 text-center">
-                                <input type="text" class="form-control">
+                            <div class="col-2 text-center">
+                                <div class="input-group-prepend">
+                                    <span class='input-group-text' style='margin-right: 8px;'>1</span>
+                                    <input type="text" class="form-control text-center" value="ชื่อผู้บันทึก">
+                                </div>
                             </div>
                             <div class="col-2 text-center">
-                                <input type="text" class="form-control">
+                                <input type="text" class="form-control text-center" value="เวลา">
+                            </div>
+                            <div class="col-2 text-center">
+                                <input type="text" class="form-control text-center" value="วันที่">
+                            </div>
+                            <div class="col-2 text-center">
+                                <input type="text" class="form-control text-center" value="สาขา">
+                            </div>
+                            <div class="col-3 text-center">
+                                <input type="text" class="form-control text-center" value="จำนวนเงิน">
                             </div>
                             <div class="col-1 text-center" style="margin-top: 3px;">
-                                <button id='btn-edit-1' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit("1")'>
-                                    <i id='i-edit-1' class='fa fa-edit'></i>
-                                </button>
-                                <button id='btn-del-1' class='btn btn-sm btn-danger' onclick='del_row("1")' data-toggle='modal'
-                                    data-target='#myModal' hidden>
-                                    <i id='i-del-' class='fa fa-minus'></i>
+                                <button id='btn-edit-1' class='btn btn-sm btn-info' style='margin-right: 5px;' onclick='open_edit("1")'>
+                                    <i id='i-edit-1' class='fa fa-info-circle'></i>
                                 </button>
                             </div>
                         </div>
-                    </li>-->
+                    </li>
                 </ul>
                 <br>
             </div>
@@ -1082,7 +799,6 @@
         <!-- End page content wrapper -->
     </div>
     <!-- End Wrapper -->
-
     <!-- Menu Toggle -->
     <script>
         // Menu Toggle
@@ -1096,6 +812,37 @@
                 $("#menu-toggle").text("รายการ");
             }
         });
+
+        // Datepicker
+        $('[data-toggle="datepicker"]').datepicker({
+            language: 'th-TH',
+            format: 'yyyy-mm-dd',
+            autoHide: true
+        }).change(function (event) {
+            var date = $('#dpicker').val();
+            var split = date.split("-");// yyyy[0] mm[1] dd[2] 
+            var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+            var d = new Date(split[0], split[1] - 1, split[2]);
+            var first = days[d.getDay()];
+            $('#dpicker').val(first + " " + date);
+            dt = split[0] + "-" + split[1] + "-" + split[2];         
+        });
+
+        /*//Time picker
+        $("#timepicker1").timepicker();
+        $("#timepicker2").timepicker();
+        $("#timepicker1").timepicker('option', {'appendTo': $(".col-2"), 'timeFormat': 'H:i น.', 'minTime': '8:00', 'maxTime': '00:00'});
+        $("#timepicker2").timepicker('option', {'appendTo': $(".col-2"), 'timeFormat': 'H:i น.', 'minTime': '8:00', 'maxTime': '00:00', 'showDuration': 'true'});*/
+
+        $('#timePair .time').timepicker({
+        'showDuration': true,
+        'timeFormat': 'H:i น.',
+        'minTime': '8:00', 
+        'maxTime': '00:00'
+        });
+        $('#timePair').datepair();
+
+        //$("#timepicker1").val() && $("#timepicker2").val()
     </script>
 </body>
 
