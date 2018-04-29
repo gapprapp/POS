@@ -35,7 +35,8 @@
     <link href="css/untitled.css" rel="stylesheet">
 
     <script>
-        var datetime;
+        var cash,transfer,debtor,sum,dis,total,before_dt;
+        var check = true;
         $(document).ready(function () {
             if(!localStorage.user_id){
                 $.alert({
@@ -69,19 +70,46 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
-                    if(obj == null){
+                    console.log(obj);                          
+                    if(obj[0] == "none"){
                         $('#cash').text("0.00 บาท");
+                        cash = "0.00"; 
+                        check = false;                       
                     }else{
-                        $.each(obj, function(i, field){                      
-                            $('#cash').text(parseFloat(field.total_price).toFixed(2) + " บาท");
-                        });
+                        $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
+                        cash = parseFloat(obj[0].total_price).toFixed(2);
+                        before_dt = obj[0].udt;                          
                     }
+                    if(obj[1] == "none"){
+                        transfer = "0.00";                        
+                    }else{                      
+                        transfer = parseFloat(obj[1].total_price).toFixed(2);
+                    }
+                    if(obj[2] == "none"){
+                        debtor = "0.00";                        
+                    }else{                      
+                        debtor = parseFloat(obj[2].total_price).toFixed(2);
+                    }
+                    if(obj[3] == "none"){
+                        sum = "0.00";                        
+                    }else{                       
+                        sum = parseFloat(obj[3].sum_price).toFixed(2);
+                    }
+                    if(obj[4] == "none"){
+                        dis = "0.00";                        
+                    }else{                      
+                        dis = parseFloat(obj[4].discount).toFixed(2);
+                    }
+                    if(obj[5] == "none"){
+                        total = "0.00";                        
+                    }else{                      
+                        total = parseFloat(obj[5].total_price).toFixed(2);
+                    }                  
                 }
-            });      
+            });
 
             var d = new Date($.now());
             $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
-            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
             $('#user').text(localStorage.name);
             $('#say_hi').text("สวัสดี, คุณ " +localStorage.name);
         });
@@ -96,84 +124,118 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
-                    if(obj == null){
+                    console.log(obj);
+                    if(obj[0] == "none"){
                         $('#cash').text("0.00 บาท");
+                        cash = "0.00"; 
+                        check = false;                       
                     }else{
-                        $.each(obj, function(i, field){                      
-                            $('#cash').text(parseFloat(field.total_price).toFixed(2) + " บาท");
-                        });
-                    }                   
+                        $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
+                        cash = parseFloat(obj[0].total_price).toFixed(2);
+                        before_dt = obj[0].udt; 
+                        check = true;                                 
+                    }
+                    if(obj[1] == "none"){
+                        transfer = "0.00";                        
+                    }else{                      
+                        transfer = parseFloat(obj[1].total_price).toFixed(2);
+                    }
+                    if(obj[2] == "none"){
+                        debtor = "0.00";                        
+                    }else{                      
+                        debtor = parseFloat(obj[2].total_price).toFixed(2);
+                    }
+                    if(obj[3] == "none"){
+                        sum = "0.00";                        
+                    }else{                       
+                        sum = parseFloat(obj[3].sum_price).toFixed(2);
+                    }
+                    if(obj[4] == "none"){
+                        dis = "0.00";                        
+                    }else{                      
+                        dis = parseFloat(obj[4].discount).toFixed(2);
+                    }
+                    if(obj[5] == "none"){
+                        total = "0.00";                        
+                    }else{                      
+                        total = parseFloat(obj[5].total_price).toFixed(2);
+                    }                         
                 }
             });    
         }
 
         function cash_rec(){
-            var b_id = $('#branch option:selected').val();
-            var arr = $('#cash').html().split(" ");
-            var total = arr[0];
-            $.ajax({
-                url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
-                method:"POST",
-                data:{'b_id':b_id,
-                      'user_id':localStorage.user_id,
-                      'date':datetime,
-                      'total':total},
-                success:function(data)
-                {
-                    if(data == "success"){
-                    var winprint = window.open();
-                    winprint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 3cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 1.7cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>"+   
-                    "<div style='width: 7.5cm;'>"+
-                      "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
-                      "<div class='left-title'>วันที่ : 10/4/2561</div> <div class='mid-title'>เวลา 10:00</div> <div class='right-title'>ถึง 18:09</div>"+
-                      "<div class='txt-left-100'>พนักงาน : localStorage.name</div>"+
-                      
-                      "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
-                      "<div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>"+
-                      "<div class='txt-left'>เงินสด : </div>"+
-                      "<div class='txt-right'>10,000 บาท</div><br>"+
-                      "<div class='txt-left'>ลูกหนี้ : </div>"+
-                      "<div class='txt-right'>7,000 บาท</div><br>"+
-                      "<div class='txt-left'>เงินโอน : </div>"+
-                      "<div class='txt-right'>3,000 บาท</div><br><br>"+
-                      "<div class='txt-left'>รวมทั้งสิ้น : </div>"+
-                      "<div class='txt-right'>20,000 บาท</div><br><br>"+
+            if(check){
+                var d = new Date($.now());
+                $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
+                var datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
+                var b_id = $('#branch option:selected').val();               
+                $.ajax({
+                    url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
+                    method:"POST",
+                    data:{'b_id':b_id,
+                        'user_id':localStorage.user_id,
+                        'date':datetime,
+                        'total':cash},
+                    success:function(data)
+                    {
+                        if(data == "success"){
+                        var d = before_dt.split(" ");
+                        var ds = d[0].split("-");
+                        var date = ds[2] + "/" + ds[1] + "/" + ds[0];
+                        var t = d[1].split(":");
+                        var time = t[0]+":"+t[1];
+                        var d2 = datetime.split(" ");
+                        var t2 = d2[1].split(":");
+                        var time2 = t2[0]+":"+t2[1];                                             
+                        var winprint = window.open();
+                        winprint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 3cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 1.7cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>"+   
+                        "<div style='width: 7.5cm;'>"+
+                        "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
+                        "<div class='left-title'>วันที่ : "+date+"</div> <div class='mid-title'>เวลา "+time+"</div> <div class='right-title'>ถึง "+time2+"</div>"+
+                        "<div class='txt-left'>พนักงาน : "+localStorage.name+"</div>"+
+                        "<div class='txt-right'>สาขา : "+$("#branch option:selected").text()+"</div>"+
+                        
+                        "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
+                        "<div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>"+
+                        "<div class='txt-left'>เงินสด : </div>"+
+                        "<div class='txt-right'>"+cash+" บาท</div><br>"+
+                        "<div class='txt-left'>ลูกหนี้ : </div>"+
+                        "<div class='txt-right'>"+debtor+" บาท</div><br>"+
+                        "<div class='txt-left'>เงินโอน : </div>"+
+                        "<div class='txt-right'>"+transfer+" บาท</div><br><br>"+
+                        "<div class='txt-left'>รวมทั้งสิ้น : </div>"+
+                        "<div class='txt-right'>"+total+" บาท</div><br><br>"+
 
-                      "<div class='txt-ct' style='text-decoration: underline;'>สรุปตามยอดขายสินค้า</div>"+
-                      "<div class='txt-left'>ยอดก่อนหักส่วนลด : </div>"+
-                      "<div class='txt-right'>21,000 บาท</div><br>"+
-                      "<div class='txt-left'>หักส่วนลด : </div>"+
-                      "<div class='txt-right'>1,000 บาท</div><br>"+
-                      "<div class='txt-left'>คงเหลือ : </div>"+
-                      "<div class='txt-right'>20,000 บาท</div><br><br>"+
-                      "<div class='txt-left'>รวมเงินสด ส่งในกะนี้ : </div>"+
-                      "<div class='txt-right'>10,000 บาท</div><br><br><br>"+
+                        "<div class='txt-ct' style='text-decoration: underline;'>สรุปตามยอดขายสินค้า</div>"+
+                        "<div class='txt-left'>ยอดก่อนหักส่วนลด : </div>"+
+                        "<div class='txt-right'>"+sum+" บาท</div><br>"+
+                        "<div class='txt-left'>หักส่วนลด : </div>"+
+                        "<div class='txt-right'>"+dis+" บาท</div><br>"+
+                        "<div class='txt-left'>คงเหลือ : </div>"+
+                        "<div class='txt-right'>"+total+" บาท</div><br><br>"+
+                        "<div class='txt-left'>รวมเงินสด ส่งในกะนี้ : </div>"+
+                        "<div class='txt-right'>"+cash+" บาท</div><br><br><br>"+
 
-                      "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> "+ 
-                      "<div class='txt-left'>พิพม์ : 10/4/2561</div>"+
-                      "<div class='txt-right'>เวลา : 23:59</div><br><br><br><br>"+
-                    "</div>");
-                        winprint.document.close();
-                        winprint.focus();
-                        winprint.print();
-                        winprint.close();
-                        window.location = "sale.html";
+                        "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> "+ 
+                        "<div class='txt-left'>พิมพ์ : "+$("#date").text()+"</div>"+
+                        "<div class='txt-right'>เวลา : "+time2+"</div><br><br><br><br>"+
+                        "</div>");
+                            winprint.document.close();
+                            winprint.focus();
+                            winprint.print();
+                            winprint.close();
+                            window.location = "sale.html";
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         function logout(){
             localStorage.user_id = "";
             window.location = "login.html";
-        }
-
-        /*var b_id = 1;
-        function setbranch(arg){
-            b_id = arg;
-            var b = $('#li-branch-'+arg).text()
-            $("#branch").text(b);
-        }*/
+        }       
     </script>
 
     <style>
@@ -249,7 +311,7 @@
                                 <h4>จำนวนเงิน : </h4>
                             </div>
                             <div class="col-5 text-left">
-                                <h4 id='cash' style="letter-spacing: 2px;">9000.25 บาท</h4>
+                                <h4 id='cash' style="letter-spacing: 2px;"></h4>
                             </div>
                         </div>
                         <div class="row" >

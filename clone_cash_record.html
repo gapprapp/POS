@@ -35,7 +35,7 @@
     <link href="css/untitled.css" rel="stylesheet">
 
     <script>
-        var cash,transfer,debtor,sum,dis,total,before_dt,date;
+        var cash,transfer,debtor,sum,dis,total,before_dt;
         var check = true;
         $(document).ready(function () {
             if(!localStorage.user_id){
@@ -78,8 +78,7 @@
                     }else{
                         $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
                         cash = parseFloat(obj[0].total_price).toFixed(2);
-                        before_dt = obj[0].udt;     
-                        date = obj[0].datetime;        
+                        before_dt = obj[0].udt;                          
                     }
                     if(obj[1] == "none"){
                         transfer = "0.00";                        
@@ -133,8 +132,8 @@
                     }else{
                         $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
                         cash = parseFloat(obj[0].total_price).toFixed(2);
-                        before_dt = obj[0].udt;     
-                        date = obj[0].datetime;        
+                        before_dt = obj[0].udt; 
+                        check = true;                                 
                     }
                     if(obj[1] == "none"){
                         transfer = "0.00";                        
@@ -171,7 +170,7 @@
                 $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
                 var datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
                 var b_id = $('#branch option:selected').val();               
-            /* $.ajax({
+                $.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
                     method:"POST",
                     data:{'b_id':b_id,
@@ -180,8 +179,10 @@
                         'total':cash},
                     success:function(data)
                     {
-                        if(data == "success"){*/
+                        if(data == "success"){
                         var d = before_dt.split(" ");
+                        var ds = d[0].split("-");
+                        var date = ds[2] + "/" + ds[1] + "/" + ds[0];
                         var t = d[1].split(":");
                         var time = t[0]+":"+t[1];
                         var d2 = datetime.split(" ");
@@ -193,7 +194,7 @@
                         "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
                         "<div class='left-title'>วันที่ : "+date+"</div> <div class='mid-title'>เวลา "+time+"</div> <div class='right-title'>ถึง "+time2+"</div>"+
                         "<div class='txt-left'>พนักงาน : "+localStorage.name+"</div>"+
-                        "<div class='txt-right'>สาขา : สาขา</div>"+
+                        "<div class='txt-right'>สาขา : "+$("#branch option:selected").text()+"</div>"+
                         
                         "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
                         "<div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>"+
@@ -224,10 +225,10 @@
                             winprint.focus();
                             winprint.print();
                             winprint.close();
-                            //window.location = "sale.html";
-                        /*}
+                            window.location = "sale.html";
+                        }
                     }
-                });*/
+                });
             }
         }
 
