@@ -170,7 +170,7 @@
                 $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
                 var datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
                 var b_id = $('#branch option:selected').val();               
-                $.ajax({
+                /*$.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
                     method:"POST",
                     data:{'b_id':b_id,
@@ -179,7 +179,7 @@
                         'total':cash},
                     success:function(data)
                     {
-                        if(data == "success"){
+                        if(data == "success"){*/
                         var d = before_dt.split(" ");
                         var ds = d[0].split("-");
                         var date = ds[2] + "/" + ds[1] + "/" + ds[0];
@@ -226,9 +226,9 @@
                             winprint.print();
                             winprint.close();
                             window.location = "sale.html";
-                        }
+                       /* }
                     }
-                });
+                });*/
             }
         }
 
