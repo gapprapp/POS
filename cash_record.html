@@ -35,7 +35,7 @@
     <link href="css/untitled.css" rel="stylesheet">
 
     <script>
-        var cash,transfer,debtor,sum,dis,total,before_dt;
+        var cash,transfer,debtor,sum,dis,total,before_dt,datetime;
         var check = true;
         $(document).ready(function () {
             if(!localStorage.user_id){
@@ -110,6 +110,7 @@
 
             var d = new Date($.now());
             $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
+            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
             $('#user').text(localStorage.name);
             $('#say_hi').text("สวัสดี, คุณ " +localStorage.name);
         });
@@ -165,10 +166,7 @@
         }
 
         function cash_rec(){
-            if(check){
-                var d = new Date($.now());
-                $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
-                var datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
+            if(check){             
                 var b_id = $('#branch option:selected').val();               
                 $.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
