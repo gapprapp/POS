@@ -9,33 +9,33 @@
     $sql;
 	if($sort_by == "none" && $order == "none"){
 		if($date || $user_name || $b_id){		
-			$sql = "SELECT u.user_name,b.branch_name,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
+			$sql = "SELECT u.user_name,b.branch_name,c.branch_id,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
             ON c.record_by = u.user_id INNER JOIN branch b ON c.branch_id = b.branch_id WHERE c.branch_id = '$b_id'             
 	        AND u.user_name LIKE '%$user_name%' AND c.date_time LIKE '%$date%' LIMIT $start,100";
 		}else
 		{
-			$sql = "SELECT u.user_name,b.branch_name,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
+			$sql = "SELECT u.user_name,b.branch_name,c.branch_id,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
             ON c.record_by = u.user_id INNER JOIN branch b ON c.branch_id = b.branch_id LIMIT $start,100";			
 		}
 		
 	}else if($sort_by != "none" && $order != "none"){
 		if($date || $user_name || $b_id){
 			if($order == "asc"){
-                $sql = "SELECT u.user_name,b.branch_name,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
+                $sql = "SELECT u.user_name,b.branch_name,c.branch_id,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
                 ON c.record_by = u.user_id INNER JOIN branch b ON c.branch_id = b.branch_id WHERE c.branch_id = '$b_id'             
                 AND u.user_name LIKE '%$user_name%' AND c.date_time LIKE '%$date%' ORDER BY c.$sort_by ASC LIMIT $start,100";
 			}else if($order == "desc"){
-                $sql = "SELECT u.user_name,b.branch_name,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
+                $sql = "SELECT u.user_name,b.branch_name,c.branch_id,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
                 ON c.record_by = u.user_id INNER JOIN branch b ON c.branch_id = b.branch_id WHERE c.branch_id = '$b_id'             
                 AND u.user_name LIKE '%$user_name%' AND c.date_time LIKE '%$date%' ORDER BY c.$sort_by DESC LIMIT $start,100";
 			}
 		}else{
 			if($order == "asc"){
-                $sql = "SELECT u.user_name,b.branch_name,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
+                $sql = "SELECT u.user_name,b.branch_name,c.branch_id,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
                 ON c.record_by = u.user_id INNER JOIN branch b ON c.branch_id = b.branch_id ORDER BY c.$sort_by 
                 ASC LIMIT $start,100";
 			}else if($order == "desc"){
-				$sql = "SELECT u.user_name,b.branch_name,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
+				$sql = "SELECT u.user_name,b.branch_name,c.branch_id,c.date_time,c.cash FROM cash_record c INNER JOIN user u 
                 ON c.record_by = u.user_id INNER JOIN branch b ON c.branch_id = b.branch_id ORDER BY c.$sort_by
                  DESC LIMIT $start,100";
 			}

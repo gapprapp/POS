@@ -140,6 +140,7 @@
                             "</div>" +
                             "<div class='col-2 text-center'>" +
                                 "<input type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
+                                "<span id='span-b-"+i+"' hidden>" + field.branch_id + "</span>"+
                             "</div>" +
                             "<div class='col-3 text-center'>" +
                                 "<input type='text' class='form-control text-center' value='"+field.cash+"' readonly>" +
@@ -254,6 +255,7 @@
                             "</div>" +
                             "<div class='col-2 text-center'>" +
                                 "<input type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
+                                "<span id='span-b-"+(start+i)+"' hidden>" + field.branch_id + "</span>"+
                             "</div>" +
                             "<div class='col-3 text-center'>" +
                                 "<input type='text' class='form-control text-center' value='"+field.cash+"' readonly>" +
@@ -341,6 +343,7 @@
                                 "</div>" +
                                 "<div class='col-2 text-center'>" +
                                     "<input type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
+                                    "<span id='span-b-"+(start+i)+"' hidden>" + field.branch_id + "</span>"+
                                 "</div>" +
                                 "<div class='col-3 text-center'>" +
                                     "<input type='text' class='form-control text-center' value='"+field.cash+"' readonly>" +
@@ -646,7 +649,21 @@
         }
 
         function show_info(arg){
-            //modal
+            var b = $("#span-b-"+arg).text();
+            var d = $("#date-"+arg).val();
+            console.log(b + d);
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/get_shift.php",
+                type:"POST",
+                data:{'b_id': b,
+                    'date': d
+                },
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    console.log(obj);
+                }
+            });   
         }
 
         function logout(){
