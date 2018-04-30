@@ -50,7 +50,14 @@
              if(localStorage.role == "user"){
                 $("#mb").remove();
                 $("#mp").remove();
-            }    
+            }   
+
+            var d = new Date($.now());
+            $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
+            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
+            $('#user').text(localStorage.name);
+            $('#say_hi').text("สวัสดี, คุณ " +localStorage.name);
+             
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
                 method:"GET",
@@ -66,7 +73,8 @@
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
                 method:"POST",
-                data:{'b_id':"1"},
+                data:{'b_id':"1",
+                'date':datetime},
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
@@ -78,7 +86,7 @@
                     }else{
                         $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
                         cash = parseFloat(obj[0].total_price).toFixed(2);
-                        before_dt = obj[0].udt;                          
+                        before_dt = obj[0][1];                          
                     }
                     if(obj[1] == "none"){
                         transfer = "0.00";                        
@@ -106,13 +114,7 @@
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }                  
                 }
-            });
-
-            var d = new Date($.now());
-            $('#date').text(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
-            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
-            $('#user').text(localStorage.name);
-            $('#say_hi').text("สวัสดี, คุณ " +localStorage.name);
+            });            
         });
 
         function get_cash(){
@@ -121,7 +123,8 @@
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
                 method:"POST",
-                data:{'b_id':b_id},
+                data:{'b_id':b_id,
+                'date':datetime},
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
@@ -133,7 +136,7 @@
                     }else{
                         $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
                         cash = parseFloat(obj[0].total_price).toFixed(2);
-                        before_dt = obj[0].udt; 
+                        before_dt = obj[0][1]; 
                         check = true;                                 
                     }
                     if(obj[1] == "none"){

@@ -1,25 +1,32 @@
 ﻿<?php
 	$conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos");
-	$b_id = $_POST['b_id'];	
+    $b_id = $_POST['b_id'];
+    $date = $_POST['date'];
+    $last_date;
 
-	$sql = "SELECT SUM(s.total_price) total_price, DATE_FORMAT(s.date_time,'%d/%c/%Y') datetime, t.udt 
-    FROM sale_order s, (SELECT c.date_time udt FROM cash_record c WHERE c.branch_id='$b_id'
-	ORDER BY c.date_time DESC LIMIT 1) t 
-    WHERE s.branch_id='$b_id' AND s.payment_type='เงินสด' AND s.order_number NOT LIKE '%can%' AND s.date_time >= udt GROUP BY datetime";
-	$result = mysqli_query($conn, $sql);
-
+    $sql = "SELECT date_time FROM cash_record WHERE date_time = (SELECT max(date_time) FROM cash_record 
+    WHERE date_time < '$date') AND branch_id = '$b_id'";
+    $result = mysqli_query($conn, $sql);
 	if(mysqli_num_rows($result) > 0){
 		while($row = mysqli_fetch_array($result)){
+            $last_date = $row['date_time'];			
+		}		
+	}
+    //เงินสด
+	$sql = "SELECT SUM(total_price) total_price FROM sale_order WHERE branch_id='$b_id' AND payment_type='เงินสด' 
+    AND order_number NOT LIKE '%can%' AND date_time BETWEEN '$last_date' AND '$date'";
+	$result = mysqli_query($conn, $sql);
+	if(mysqli_num_rows($result) > 0){
+		while($row = mysqli_fetch_array($result)){
+            array_push($row,$last_date);
 			$output[] = $row;
 		}		
 	}else{
         $output[] = "none";
     }
 	//เงินโอน 
-	$sql = "SELECT SUM(s.total_price) total_price, DATE_FORMAT(s.date_time,'%d/%c/%Y') datetime, t.udt 
-    FROM sale_order s, (SELECT c.date_time udt FROM cash_record c WHERE c.branch_id='$b_id'
-	ORDER BY c.date_time DESC LIMIT 1) t 
-    WHERE s.branch_id='$b_id' AND s.payment_type='เงินโอน' AND s.order_number NOT LIKE '%can%' AND s.date_time >= udt GROUP BY datetime";
+	$sql = "SELECT SUM(total_price) total_price FROM sale_order WHERE branch_id='$b_id' AND payment_type='เงินโอน' 
+    AND order_number NOT LIKE '%can%' AND date_time BETWEEN '$last_date' AND '$date'";
     $result = mysqli_query($conn, $sql);
     if(mysqli_num_rows($result) > 0){
 		while($row = mysqli_fetch_array($result)){
@@ -30,10 +37,8 @@
     }
 
 	//ลูกหนี้
-	$sql = "SELECT SUM(s.total_price) total_price, DATE_FORMAT(s.date_time,'%d/%c/%Y') datetime, t.udt 
-    FROM sale_order s, (SELECT c.date_time udt FROM cash_record c WHERE c.branch_id='$b_id'
-	ORDER BY c.date_time DESC LIMIT 1) t 
-    WHERE s.branch_id='$b_id' AND s.payment_type='ลูกหนี้' AND s.order_number NOT LIKE '%can%' AND s.date_time >= udt GROUP BY datetime";
+	$sql = "SELECT SUM(total_price) total_price FROM sale_order WHERE branch_id='$b_id' AND payment_type='ลูกหนี้' 
+    AND order_number NOT LIKE '%can%' AND date_time BETWEEN '$last_date' AND '$date'";
     $result = mysqli_query($conn, $sql);
     if(mysqli_num_rows($result) > 0){
 		while($row = mysqli_fetch_array($result)){
@@ -44,10 +49,8 @@
     }
 	
 	//ยอดก่อนหักส่วนลด
-	$sql = "SELECT SUM(s.sum_price) sum_price, DATE_FORMAT(s.date_time,'%d/%c/%Y') datetime, t.udt 
-    FROM sale_order s, (SELECT c.date_time udt FROM cash_record c WHERE c.branch_id='$b_id'
-	ORDER BY c.date_time DESC LIMIT 1) t 
-    WHERE s.branch_id='$b_id' AND s.order_number NOT LIKE '%can%' AND s.date_time >= udt GROUP BY datetime";
+	$sql = "SELECT SUM(sum_price) sum_price FROM sale_order WHERE branch_id='$b_id' AND order_number NOT LIKE '%can%' 
+    AND date_time BETWEEN '$last_date' AND '$date'";
     $result = mysqli_query($conn, $sql);
     if(mysqli_num_rows($result) > 0){
 		while($row = mysqli_fetch_array($result)){
@@ -58,10 +61,8 @@
     }
 
 	//หักส่วนลด
-	$sql = "SELECT SUM(s.total_discount) discount, DATE_FORMAT(s.date_time,'%d/%c/%Y') datetime, t.udt 
-    FROM sale_order s, (SELECT c.date_time udt FROM cash_record c WHERE c.branch_id='$b_id'
-	ORDER BY c.date_time DESC LIMIT 1) t 
-    WHERE s.branch_id='$b_id' AND s.order_number NOT LIKE '%can%' AND s.date_time >= udt GROUP BY datetime";
+	$sql = "SELECT SUM(total_discount) discount FROM sale_order WHERE branch_id='$b_id' AND order_number NOT LIKE '%can%' 
+    AND date_time BETWEEN '$last_date' AND '$date'";
     $result = mysqli_query($conn, $sql);
     if(mysqli_num_rows($result) > 0){
 		while($row = mysqli_fetch_array($result)){
@@ -72,10 +73,8 @@
     }
 
 	//คงเหลือ
-    $sql = "SELECT SUM(s.total_price) total_price, DATE_FORMAT(s.date_time,'%d/%c/%Y') datetime, t.udt 
-    FROM sale_order s, (SELECT c.date_time udt FROM cash_record c WHERE c.branch_id='$b_id'
-	ORDER BY c.date_time DESC LIMIT 1) t 
-    WHERE s.branch_id='$b_id' AND s.order_number NOT LIKE '%can%' AND s.date_time >= udt GROUP BY datetime";
+    $sql = "SELECT SUM(total_price) total_price FROM sale_order WHERE branch_id='$b_id' AND order_number NOT LIKE '%can%' 
+    AND date_time BETWEEN '$last_date' AND '$date'";
     $result = mysqli_query($conn, $sql);
     if(mysqli_num_rows($result) > 0){
 		while($row = mysqli_fetch_array($result)){
