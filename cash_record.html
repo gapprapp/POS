@@ -79,40 +79,41 @@
                 {
                     var obj = jQuery.parseJSON(data);
                     console.log(obj);                          
-                    if(obj[0] == "none"){
+                    if(obj[0] == "none" || obj[0].total_price == null){
                         $('#cash').text("0.00 บาท");
                         cash = "0.00"; 
                         check = false;                       
                     }else{
                         $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
                         cash = parseFloat(obj[0].total_price).toFixed(2);
-                        before_dt = obj[0][1];                          
+                        before_dt = obj[0][1]; 
+                        check = true;                                 
                     }
-                    if(obj[1] == "none"){
+                    if(obj[1] == "none" || obj[1].total_price == null){
                         transfer = "0.00";                        
                     }else{                      
                         transfer = parseFloat(obj[1].total_price).toFixed(2);
                     }
-                    if(obj[2] == "none"){
+                    if(obj[2] == "none" || obj[2].total_price == null){
                         debtor = "0.00";                        
                     }else{                      
                         debtor = parseFloat(obj[2].total_price).toFixed(2);
                     }
-                    if(obj[3] == "none"){
+                    if(obj[3] == "none" || obj[3].sum_price == null){
                         sum = "0.00";                        
                     }else{                       
                         sum = parseFloat(obj[3].sum_price).toFixed(2);
                     }
-                    if(obj[4] == "none"){
+                    if(obj[4] == "none" || obj[4].discount == null){
                         dis = "0.00";                        
                     }else{                      
                         dis = parseFloat(obj[4].discount).toFixed(2);
                     }
-                    if(obj[5] == "none"){
+                    if(obj[5] == "none" || obj[5].total_price == null){
                         total = "0.00";                        
                     }else{                      
                         total = parseFloat(obj[5].total_price).toFixed(2);
-                    }                  
+                    }  
                 }
             });            
         });
@@ -129,7 +130,7 @@
                 {
                     var obj = jQuery.parseJSON(data);
                     console.log(obj);
-                    if(obj[0] == "none"){
+                    if(obj[0] == "none" || obj[0].total_price == null){
                         $('#cash').text("0.00 บาท");
                         cash = "0.00"; 
                         check = false;                       
@@ -139,27 +140,27 @@
                         before_dt = obj[0][1]; 
                         check = true;                                 
                     }
-                    if(obj[1] == "none"){
+                    if(obj[1] == "none" || obj[1].total_price == null){
                         transfer = "0.00";                        
                     }else{                      
                         transfer = parseFloat(obj[1].total_price).toFixed(2);
                     }
-                    if(obj[2] == "none"){
+                    if(obj[2] == "none" || obj[2].total_price == null){
                         debtor = "0.00";                        
                     }else{                      
                         debtor = parseFloat(obj[2].total_price).toFixed(2);
                     }
-                    if(obj[3] == "none"){
+                    if(obj[3] == "none" || obj[3].sum_price == null){
                         sum = "0.00";                        
                     }else{                       
                         sum = parseFloat(obj[3].sum_price).toFixed(2);
                     }
-                    if(obj[4] == "none"){
+                    if(obj[4] == "none" || obj[4].discount == null){
                         dis = "0.00";                        
                     }else{                      
                         dis = parseFloat(obj[4].discount).toFixed(2);
                     }
-                    if(obj[5] == "none"){
+                    if(obj[5] == "none" || obj[5].total_price == null){
                         total = "0.00";                        
                     }else{                      
                         total = parseFloat(obj[5].total_price).toFixed(2);

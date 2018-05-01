@@ -139,7 +139,7 @@
                                 "<input id='date-"+i+"' type='text' class='form-control text-center' value='"+field.date_time+"' readonly>" +
                             "</div>" +
                             "<div class='col-2 text-center'>" +
-                                "<input type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
+                                "<input id='branch-"+i+"' type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
                                 "<span id='span-b-"+i+"' hidden>" + field.branch_id + "</span>"+
                             "</div>" +
                             "<div class='col-3 text-center'>" +
@@ -254,7 +254,7 @@
                                 "<input id='date-"+(start+i)+"' type='text' class='form-control text-center' value='"+field.date_time+"' readonly>" +
                             "</div>" +
                             "<div class='col-2 text-center'>" +
-                                "<input type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
+                                "<input id='branch-"+(start+i)+"' type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
                                 "<span id='span-b-"+(start+i)+"' hidden>" + field.branch_id + "</span>"+
                             "</div>" +
                             "<div class='col-3 text-center'>" +
@@ -342,7 +342,7 @@
                                     "<input id='date-"+(start+i)+"' type='text' class='form-control text-center' value='"+field.date_time+"' readonly>" +
                                 "</div>" +
                                 "<div class='col-2 text-center'>" +
-                                    "<input type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
+                                    "<input id='branch-"+(start+i)+"' type='text' class='form-control text-center' value='"+field.branch_name+"' readonly>" +
                                     "<span id='span-b-"+(start+i)+"' hidden>" + field.branch_id + "</span>"+
                                 "</div>" +
                                 "<div class='col-3 text-center'>" +
@@ -648,10 +648,12 @@
             }
         }
 
+        var cash,transfer,debtor,sum,dis,total,before_dt,datetime,date,time,date2,time2,branch;
         function show_info(arg){
+            var d = new Date($.now());        
+            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
             var b = $("#span-b-"+arg).text();
-            var d = $("#date-"+arg).val();
-            console.log(b + d);
+            var d = $("#date-"+arg).val();           
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
                 type:"POST",
@@ -662,8 +664,65 @@
                 {
                     var obj = jQuery.parseJSON(data);
                     console.log(obj);
+                    if(obj[0] == "none" || obj[0].total_price == null){                      
+                        cash = "0.00";                                          
+                    }else{                     
+                        cash = parseFloat(obj[0].total_price).toFixed(2);
+                        before_dt = obj[0][1];                          
+                    }
+                    if(obj[1] == "none" || obj[1].total_price == null){
+                        transfer = "0.00";                        
+                    }else{                      
+                        transfer = parseFloat(obj[1].total_price).toFixed(2);
+                    }
+                    if(obj[2] == "none" || obj[2].total_price == null){
+                        debtor = "0.00";                        
+                    }else{                      
+                        debtor = parseFloat(obj[2].total_price).toFixed(2);
+                    }
+                    if(obj[3] == "none" || obj[3].sum_price == null){
+                        sum = "0.00";                        
+                    }else{                       
+                        sum = parseFloat(obj[3].sum_price).toFixed(2);
+                    }
+                    if(obj[4] == "none" || obj[4].discount == null){
+                        dis = "0.00";                        
+                    }else{                      
+                        dis = parseFloat(obj[4].discount).toFixed(2);
+                    }
+                    if(obj[5] == "none" || obj[5].total_price == null){
+                        total = "0.00";                        
+                    }else{                      
+                        total = parseFloat(obj[5].total_price).toFixed(2);
+                    }
+                    var d = before_dt.split(" ");
+                    var ds = d[0].split("-");
+                    date = ds[2] + "/" + ds[1] + "/" + ds[0];
+                    var t = d[1].split(":");
+                    time = t[0]+":"+t[1];
+                    var d2 = datetime.split(" ");
+                    var dp = d2[0].split("-");
+                    date2 = dp[2] + "/" + dp[1] + "/" + dp[0];
+                    var t2 = d2[1].split(":");
+                    time2 = t2[0]+":"+t2[1];  
+                    branch = $("#branch-"+arg).val();   
+                    $("#before_dt").text("วันที่ : "+date);
+                    $("#time_begin").text("เวลา "+time);
+                    $("#time_end").text("ถึง "+time2);
+                    $("#user").text("พนักงาน : "+localStorage.name);
+                    $("#md_branch").text("สาขา : "+branch);
+                    $("#cash").text(cash+" บาท");
+                    $("#debtor").text(debtor+" บาท");
+                    $("#transfer").text(transfer+" บาท");
+                    $("#total").text(total+" บาท");
+                    $("#sum").text(sum+" บาท");
+                    $("#discount").text(dis+" บาท");
+                    $("#sutti").text(total+" บาท");
+                    $("#total_cash").text(cash+" บาท");
+                    $("#print_dt").text("พิมพ์ : "+date2);
+                    $("#time").text("เวลา : "+time2);                  
                 }
-            });   
+            });           
         }
 
         function logout(){
@@ -812,34 +871,34 @@
             <div class="modal-body" style="margin-top: -15px;">
               <style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 1cm; float: left; width: 3.5cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 3cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 1cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>   
               <div style='width: 10.5cm; margin-left: 1cm;'>
-              <div class='left-title'>วันที่: 10/4/2561</div> <div class='mid-title'>เวลา 10:00</div> <div class='right-title'>ถึง 18:09</div>
-              <div class='txt-left'>พนักงาน : user</div>
-              <div class='txt-right'>สาขา : สิงห์บุรี</div><br><br>
+              <div id="before_dt" class='left-title'></div> <div id="time_begin" class='mid-title'></div> <div id="time_end" class='right-title'></div>
+              <div id="user" class='txt-left'></div>
+              <div id="md_branch" class='txt-right'></div><br><br>
               
               <hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>
               <div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>
               <div class='txt-left'>เงินสด : </div>
-              <div class='txt-right'>1000 บาท</div><br>
+              <div id="cash" class='txt-right'></div><br>
               <div class='txt-left'>ลูกหนี้ : </div>
-              <div class='txt-right'>1000 บาท</div><br>
+              <div id="debtor" class='txt-right'></div><br>
               <div class='txt-left'>เงินโอน : </div>
-              <div class='txt-right'>1000 บาท</div><br>
+              <div id="transfer" class='txt-right'></div><br>
               <div class='txt-left'>รวมทั้งสิ้น : </div>
-              <div class='txt-right'>1000 บาท</div><br>
+              <div id="total" class='txt-right'></div><br>
 
               <div class='txt-ct' style='text-decoration: underline;'>สรุปตามยอดขายสินค้า</div>
               <div class='txt-left'>ยอดก่อนหักส่วนลด : </div>
-              <div class='txt-right'>1000 บาท</div><br>
+              <div id="sum" class='txt-right'></div><br>
               <div class='txt-left'>หักส่วนลด : </div>
-              <div class='txt-right'>1000 บาท</div><br>
+              <div id="discount" class='txt-right'></div><br>
               <div class='txt-left'>คงเหลือ : </div>
-              <div class='txt-right'>1000 บาท</div><br><br>
+              <div id="sutti" class='txt-right'></div><br><br>
               <div class='txt-left'>รวมเงินสด ส่งในกะนี้ : </div>
-              <div class='txt-right'>1000 บาท</div><br>
+              <div id="total_cash" class='txt-right'></div><br>
 
               <hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> 
-              <div class='txt-left'>พิมพ์ :  10/4/2561</div>
-              <div class='txt-right'>เวลา : 23:59</div><br><br>
+              <div id="print_dt" class='txt-left'></div>
+              <div id="time" class='txt-right'></div><br><br>
               </div><br>
               <!-- Modal footer -->
               <div class="col-12 text-center">
@@ -900,7 +959,7 @@
             "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
             "<div class='left-title'>วันที่ : "+date+"</div> <div class='mid-title'>เวลา "+time+"</div> <div class='right-title'>ถึง "+time2+"</div>"+
             "<div class='txt-left'>พนักงาน : "+localStorage.name+"</div>"+
-            "<div class='txt-right'>สาขา : สาขา</div>"+
+            "<div class='txt-right'>สาขา : "+branch+"</div>"+
             
             "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
             "<div class='txt-ct' style='text-decoration: underline;'>สรุปยอดแยกตามประเภท</div>"+
@@ -924,7 +983,7 @@
             "<div class='txt-right'>"+cash+" บาท</div><br><br><br>"+
 
             "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'> "+ 
-            "<div class='txt-left'>พิมพ์ : "+$("#date").text()+"</div>"+
+            "<div class='txt-left'>พิมพ์ : "+date2+"</div>"+
             "<div class='txt-right'>เวลา : "+time2+"</div><br><br><br><br>"+
             "</div>");
             winprint.document.close();
