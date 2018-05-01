@@ -154,10 +154,16 @@
                             "</li>"; // end text_html
                             $(".list-group").append(text_html);
                             });
-                            $("#pg-st").removeClass('disabled');
-                            $("#pg-nd").removeClass('disabled');
-                            $("#pg-rd").removeClass('disabled');
-                            $("#li-next").removeClass('disabled');
+                            if(max_page_no == 1){
+                                $("#pg-st").removeClass('disabled');
+                                $("#pg-nd a").text('#');
+                                $("#pg-rd a").text('#');
+                            }else{
+                                $("#pg-st").removeClass('disabled');
+                                $("#pg-nd").removeClass('disabled');
+                                $("#pg-rd").removeClass('disabled');
+                                $("#li-next").removeClass('disabled');
+                            }
                         }
                     });
                 }
