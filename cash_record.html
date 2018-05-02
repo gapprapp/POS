@@ -171,7 +171,8 @@
 
         function cash_rec(){
             if(check){             
-                var b_id = $('#branch option:selected').val();               
+                var b_id = $('#branch option:selected').val();      
+                var winprint = window.open();         
                 $.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
                     method:"POST",
@@ -189,8 +190,7 @@
                         var time = t[0]+":"+t[1];
                         var d2 = datetime.split(" ");
                         var t2 = d2[1].split(":");
-                        var time2 = t2[0]+":"+t2[1];                                             
-                        var winprint = window.open();
+                        var time2 = t2[0]+":"+t2[1];                       
                         winprint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 3cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 1.7cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>"+   
                         "<div style='width: 7.5cm;'>"+
                         "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+

@@ -143,7 +143,7 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
-                <h3 id="nav-title">ขายสินค้า</h3>
+                <h3 id="nav-title">รายละเอียดรายการในกะ</h3>
               </div>
             </nav>
             
@@ -168,7 +168,7 @@
               <div class="col-1"></div>
               <div class="col-4 text-left text-muted dropdown">ของออกจาก :
                 <div class="btn-group">
-                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
               
                   </select>
                 </div>
@@ -464,13 +464,6 @@
           }            
       });      
 
-      /*$('#amount').on("keyup input", function(){
-          var price = $('#price').val();
-          var amount = $('#amount').val();
-          var total = price*amount;
-          $('#total').val(total);
-      });*/
-
       $('#discount-money').on("keyup input", function(){
         var sum = $('#net-price').val();
         var dis = $('#discount-money').val();       
@@ -515,7 +508,8 @@
     var cus_id = -1;
     var img;
     var prod_id = 0;
-    var old_price,price,cus_addr,cus_tel;
+    var old_price,price,cus_addr,cus_tel,order_id;    
+    var branch_id,cus_name,pay,order_num,sum,dis,final_sum,user,get,change,addr,tel,datetime;
     array_amt = [];
     $(document).ready(function(){  
       if(!localStorage.user_id){
@@ -527,93 +521,214 @@
         window.location = "login.html";
       }
 
-      if(localStorage.role == "user"){
-        $("#mb").remove();
-        $("#mp").remove();
-      }    
+      url = new URL(window.location.href);
+      order_id = url.searchParams.get("order");   
         //Scroll
-        $("#show_list_add").scroll(function() {
-          console.log("Scroll");
-        });
+      $("#show_list_add").scroll(function() {
+        console.log("Scroll");
+      });
 
-        // Hide
-        $("#show_list_add").hide();
-        $("#show_list_add").show();
+      // Hide
+      $("#show_list_add").hide();
+      $("#show_list_add").show();
 
-        $(document).keydown(function(objEvent) {
-          if (objEvent.keyCode == 9) {  //tab pressed
-              objEvent.preventDefault(); // stops its action         
-          }
-          if (objEvent.keyCode == 13) {  //enter pressed
-              objEvent.preventDefault();           
-              var $this = $(objEvent.target);
-              var i_enter = parseFloat($this.attr('data-index'));     
-              var name = $("#name").val();    
-              if(i_enter == 2 && prod_id == 0){              
-                if($.isNumeric(name)){                 
-                  console.log("barcode");                  
-                }else{                  
-                  $.alert({
-                    icon: 'fa fa-warning',
-                    title: 'เตือน',
-                    content: "กรุณากรอกชื่อสินค้าที่มีอยู่ในรายการหรือเลือกสินค้าก่อนทำรายการ"
-                  });  
-                  reset();         
-                }  
-                i_enter = 1;                     
-              }                    
-              if(i_enter == 4){
-                add();
-              }else if(i_enter == 6 && modal){
-                $("#btn_save").click();        
-              }else{
-                $('[data-index="' + (i_enter+1).toString() + '"]').focus();
-              }             
-          }
-          if (objEvent.keyCode == 113) {  //f2 pressed
+      $(document).keydown(function(objEvent) {
+        if (objEvent.keyCode == 9) {  //tab pressed
+            objEvent.preventDefault(); // stops its action         
+        }
+        if (objEvent.keyCode == 13) {  //enter pressed
+            objEvent.preventDefault();           
+            var $this = $(objEvent.target);
+            var i_enter = parseFloat($this.attr('data-index'));     
+            var name = $("#name").val();    
+            if(i_enter == 2 && prod_id == 0){              
+              if($.isNumeric(name)){                 
+                console.log("barcode");                  
+              }else{                  
+                $.alert({
+                  icon: 'fa fa-warning',
+                  title: 'เตือน',
+                  content: "กรุณากรอกชื่อสินค้าที่มีอยู่ในรายการหรือเลือกสินค้าก่อนทำรายการ"
+                });  
+                reset();         
+              }  
+              i_enter = 1;                     
+            }                    
+            if(i_enter == 4){
               add();
-          }
-          if (objEvent.keyCode == 115) {  //f4 pressed
-              reset();
-          }
-          if (objEvent.keyCode == 118) {  //f7 pressed
-              $("#btn_checkbill").click();          
-          }
-        })
-        detail();
+            }else if(i_enter == 6 && modal){
+              $("#btn_save").click();        
+            }else{
+              $('[data-index="' + (i_enter+1).toString() + '"]').focus();
+            }             
+        }
+        if (objEvent.keyCode == 113) {  //f2 pressed
+            add();
+        }
+        if (objEvent.keyCode == 115) {  //f4 pressed
+            reset();
+        }
+        if (objEvent.keyCode == 118) {  //f7 pressed
+            $("#btn_checkbill").click();          
+        }
+      })
+      detail();
 
-        setTimeout(function() {$("#cus").focus();}, 100);
+      $.ajax({
+        url:"http://150.95.26.163:8080/gitmew/php/get_order_item.php",
+        method:"POST",
+        data:{'order_id':order_id},
+        success:function(data)
+        {
+            var obj = jQuery.parseJSON(data); 
+            branch_id = obj[0].branch_id;
+            cus_name = obj[0].customer_name; 
+            pay = obj[0].payment_type;    
+            order_num = obj[0].order_number;      
+            sum = obj[0].sum_price;
+            dis = obj[0].total_discount;
+            final_sum = obj[0].total_price;
+            user = obj[0].user_name;
+            get = obj[0].get_money;
+            change = obj[0].change_money;
+            datetime = obj[0].date_time;
+            var dt = obj[0].date_time.split(" ");
+            var d = dt[0].split("-");
+            var date = d[2] + "/" + d[1] + "/" + d[0];
+            addr = obj[0].address;
+            if(addr == ""){
+                addr = "-";
+            }
+            tel = obj[0].tel;
+            if(tel == ""){
+                tel = "-";
+            }
+            $('#branch option:selected').val(obj[0].branch_name); 
+            $('#date').text("วันที่ : " + date); 
+            //$('#number').text(order_num); 
+            $('#user').text(user);         
+            $('#cus').val(cus_name); 
+            $('#total-price').val(sum);    
+            $('#total-discount').val(dis);           
+            $('#total-net').val(final_sum);           
+            //$('#get').text(get);    
+            //$('#change').text(change);                      
+            $.each(obj, function(i, field){   
+                if(i > 0){
+                          
+                }                       
+            });
+                          
+        }
+      });    
 
-        var options = {
+
+      setTimeout(function() {$("#cus").focus();}, 100);
+
+      var options = {
+      url: function(phrase) {
+        return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
+      },
+      getValue: function(element) {     
+        return element.prod_name;
+      },
+      ajaxSettings: {
+        method: "POST",
+        data: {}
+      },
+      preparePostData: function(data) {   
+        if($("#cus").val() == ""){
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'เตือน',
+            content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
+          });
+          $("#cus").focus();
+          $("#name").val("");
+          return 0;
+        }else{
+          prod_id = 0;
+          data.phrase = $("#name").val();
+          return data;
+        }
+      },
+      minCharNumber: 3,
+      list: {         
+          maxNumberOfElements: 1000,
+          showAnimation: {
+              type: "slide",
+              time: 100
+          },
+          hideAnimation: {
+              type: "slide",
+              time: 100
+          },
+          onLoadEvent: function(){
+            var name = $("#name").val();
+            if($.isNumeric(name)){
+              $("#amount").focus();
+              var name = $("#name").getItemData(0).prod_name;
+              var barcode = $("#name").getItemData(0).barcode; 
+              price = $("#name").getItemData(0).prod_price;
+              var unit_name = $("#name").getItemData(0).unit_name;
+              prod_id = $("#name").getItemData(0).prod_id;
+              img = $("#name").getItemData(0).img_string;
+              old_price = $("#name").getItemData(0)[7].old_price;   
+              array_amt = $("#name").getItemData(0)[8];                    
+              
+              $('#name').val(name);
+              $('#barcode').val(barcode);
+              $('#price').val(price);
+              $('#unit').val(unit_name);
+              $('#total').val(price);         
+            }
+          },
+          onSelectItemEvent: function() {                
+            var barcode = $("#name").getSelectedItemData().barcode;
+            price = $("#name").getSelectedItemData().prod_price;
+            var unit_name = $("#name").getSelectedItemData().unit_name;
+            prod_id = $("#name").getSelectedItemData().prod_id;
+            img = $("#name").getSelectedItemData().img_string;
+            old_price = $("#name").getSelectedItemData()[7].old_price;   
+            array_amt = $("#name").getSelectedItemData()[8];                    
+
+            $('#barcode').val(barcode);
+            $('#price').val(price);
+            $('#unit').val(unit_name);
+            $('#total').val(price);
+          },            
+      },     
+      requestDelay: 300,
+      theme: "blue-light",         
+      };
+
+      $("#name").easyAutocomplete(options);
+
+      var options_cus = {
+
         url: function(phrase) {
-          return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
+          return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
         },
-        getValue: function(element) {     
-          return element.prod_name;
+
+        getValue: function(element) {
+          //console.log(element);
+          return element.customer_name;
         },
+
         ajaxSettings: {
           method: "POST",
           data: {}
         },
-        preparePostData: function(data) {   
-          if($("#cus").val() == ""){
-            $.alert({
-              icon: 'fa fa-warning',
-              title: 'เตือน',
-              content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
-            });
-            $("#cus").focus();
-            $("#name").val("");
-            return 0;
-          }else{
-            prod_id = 0;
-            data.phrase = $("#name").val();
-            return data;
-          }
+
+        preparePostData: function(data) {
+          cus_id = -1;
+          data.phrase = $("#cus").val();
+          return data;
         },
-        minCharNumber: 3,
-        list: {         
-            maxNumberOfElements: 1000,
+        minCharNumber: 2,
+        list: {
+            maxNumberOfElements: 100,
+
             showAnimation: {
                 type: "slide",
                 time: 100
@@ -622,165 +737,91 @@
                 type: "slide",
                 time: 100
             },
-            onLoadEvent: function(){
-              var name = $("#name").val();
-              if($.isNumeric(name)){
-                $("#amount").focus();
-                var name = $("#name").getItemData(0).prod_name;
-                var barcode = $("#name").getItemData(0).barcode; 
-                price = $("#name").getItemData(0).prod_price;
-                var unit_name = $("#name").getItemData(0).unit_name;
-                prod_id = $("#name").getItemData(0).prod_id;
-                img = $("#name").getItemData(0).img_string;
-                old_price = $("#name").getItemData(0)[7].old_price;   
-                array_amt = $("#name").getItemData(0)[8];                    
-               
-                $('#name').val(name);
-                $('#barcode').val(barcode);
-                $('#price').val(price);
-                $('#unit').val(unit_name);
-                $('#total').val(price);         
-              }
-            },
             onSelectItemEvent: function() {                
-              var barcode = $("#name").getSelectedItemData().barcode;
-              price = $("#name").getSelectedItemData().prod_price;
-              var unit_name = $("#name").getSelectedItemData().unit_name;
-              prod_id = $("#name").getSelectedItemData().prod_id;
-              img = $("#name").getSelectedItemData().img_string;
-              old_price = $("#name").getSelectedItemData()[7].old_price;   
-              array_amt = $("#name").getSelectedItemData()[8];                    
-
-              $('#barcode').val(barcode);
-              $('#price').val(price);
-              $('#unit').val(unit_name);
-              $('#total').val(price);
-            },            
-        },     
-        requestDelay: 300,
-        theme: "blue-light",         
-        };
-
-        $("#name").easyAutocomplete(options);
-
-        var options_cus = {
-
-          url: function(phrase) {
-            return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
-          },
-
-          getValue: function(element) {
-            //console.log(element);
-            return element.customer_name;
-          },
-
-          ajaxSettings: {
-            method: "POST",
-            data: {}
-          },
-
-          preparePostData: function(data) {
-            cus_id = -1;
-            data.phrase = $("#cus").val();
-            return data;
-          },
-          minCharNumber: 2,
-          list: {
-              maxNumberOfElements: 100,
-
-              showAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-              hideAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-              onSelectItemEvent: function() {                
-                cus_id = $("#cus").getSelectedItemData().customer_id;
-                cus_addr = $("#cus").getSelectedItemData().address;
-                if(cus_addr == ""){
-                  cus_addr = "-";
-                }
-                cus_tel = $("#cus").getSelectedItemData().tel;
-                if(cus_tel == ""){
-                  cus_tel = "-";
-                }
-                //console.log(cus_addr + cus_tel);
-              },
-              onChooseEvent: function() {
-                cus_id = $("#cus").getSelectedItemData().customer_id;
-                cus_addr = $("#cus").getSelectedItemData().address;
-                if(cus_addr == ""){
-                  cus_addr = "-";
-                }
-                cus_tel = $("#cus").getSelectedItemData().tel;
-                if(cus_tel == ""){
-                  cus_tel = "-";
-                }
-                if(jsonObj.length > 0 || $('#barcode').val != ""){
-                  if(jsonObj.length > 0){
-                    var sum_de = 0;
-                    for(var c = 0;c < jsonObj.length; c++){
-                      var arg = c+1;                     
-                      var amt = jsonObj[c].amount;
-                      var prod = jsonObj[c].prod_id;
-                      $.ajax({
-                        url:"http://150.95.26.163:8080/gitmew/php/check_detail_cus.php",
-                        method:"POST",
-                        data:{'cus_id': cus_id,'prod_id':prod},
-                        async:false,
-                        success:function(data)
-                        {
-                          if(data != "fail"){  
-                            console.log("have value");                         
-                            if(jsonObj[c].check_amt == 0){
-                              console.log("amt = 0");      
-                              $('#price-'+arg).val(data);
-                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                              jsonObj[c].price = data;
-                              jsonObj[c].total = $('#total-'+arg).val();                            
-                            }
-                            jsonObj[c].price_cus = data;                   
-                          }else{                      
-                            console.log("not have value");  
-                            if(jsonObj[c].check_amt == 0){
-                              console.log("amt = 0");      
-                              $('#price-'+arg).val(jsonObj[c].price_old);
-                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                              jsonObj[c].price = jsonObj[c].price_old;
-                              jsonObj[c].total = $('#total-'+arg).val();                            
-                            }                         
-                            jsonObj[c].price_cus = jsonObj[c].price_old;                        
-                          }                   
-                        }
-                      }); 
-                    sum_de += parseFloat(jsonObj[c].total);
-                    }
-                    $('#total-price').val(sum_de);
-                    $('#total-net').val(sum_de-$('#total-discount').val());
+              cus_id = $("#cus").getSelectedItemData().customer_id;
+              cus_addr = $("#cus").getSelectedItemData().address;
+              if(cus_addr == ""){
+                cus_addr = "-";
+              }
+              cus_tel = $("#cus").getSelectedItemData().tel;
+              if(cus_tel == ""){
+                cus_tel = "-";
+              }
+              //console.log(cus_addr + cus_tel);
+            },
+            onChooseEvent: function() {
+              cus_id = $("#cus").getSelectedItemData().customer_id;
+              cus_addr = $("#cus").getSelectedItemData().address;
+              if(cus_addr == ""){
+                cus_addr = "-";
+              }
+              cus_tel = $("#cus").getSelectedItemData().tel;
+              if(cus_tel == ""){
+                cus_tel = "-";
+              }
+              if(jsonObj.length > 0 || $('#barcode').val != ""){
+                if(jsonObj.length > 0){
+                  var sum_de = 0;
+                  for(var c = 0;c < jsonObj.length; c++){
+                    var arg = c+1;                     
+                    var amt = jsonObj[c].amount;
+                    var prod = jsonObj[c].prod_id;
+                    $.ajax({
+                      url:"http://150.95.26.163:8080/gitmew/php/check_detail_cus.php",
+                      method:"POST",
+                      data:{'cus_id': cus_id,'prod_id':prod},
+                      async:false,
+                      success:function(data)
+                      {
+                        if(data != "fail"){  
+                          console.log("have value");                         
+                          if(jsonObj[c].check_amt == 0){
+                            console.log("amt = 0");      
+                            $('#price-'+arg).val(data);
+                            $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                            jsonObj[c].price = data;
+                            jsonObj[c].total = $('#total-'+arg).val();                            
+                          }
+                          jsonObj[c].price_cus = data;                   
+                        }else{                      
+                          console.log("not have value");  
+                          if(jsonObj[c].check_amt == 0){
+                            console.log("amt = 0");      
+                            $('#price-'+arg).val(jsonObj[c].price_old);
+                            $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
+                            jsonObj[c].price = jsonObj[c].price_old;
+                            jsonObj[c].total = $('#total-'+arg).val();                            
+                          }                         
+                          jsonObj[c].price_cus = jsonObj[c].price_old;                        
+                        }                   
+                      }
+                    }); 
+                  sum_de += parseFloat(jsonObj[c].total);
                   }
-                  if($('#barcode').val() != ""){
-                    reset();  
-                  }
+                  $('#total-price').val(sum_de);
+                  $('#total-net').val(sum_de-$('#total-discount').val());
+                }
+                if($('#barcode').val() != ""){
+                  reset();  
                 }
               }
-          },
-          requestDelay: 300,  
-          theme: "blue-light",          
-        };
+            }
+        },
+        requestDelay: 300,  
+        theme: "blue-light",          
+      };
 
-        $("#cus").easyAutocomplete(options_cus);
+      $("#cus").easyAutocomplete(options_cus);
     });  
 
     function detail(){
       $('#branch').empty();     
       //Date
-      var d = new Date($.now());
+      /*var d = new Date($.now());
       $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
-      datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+      datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();*/
 
-      $('#user').text(localStorage.name);
+      //$('#user').text(localStorage.name);
 
       $.ajax({
           url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
