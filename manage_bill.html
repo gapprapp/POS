@@ -177,7 +177,7 @@
                                     "<button id='btn-edit-"+i+"' class='btn btn-sm btn-primary' onclick='open_edit(" + i +")' style='margin-right: 5px'>"+
                                         "<i id='i-edit-"+i+"' class='fa fa-edit'></i>"+
                                     "</button>"+
-                                    "<button id='btn-info-"+i+"' class='btn btn-sm btn-info' onclick='bill_detail("+i+")'>"+
+                                    "<button id='btn-info-"+i+"' class='btn btn-sm btn-info' onclick='bill_detail("+i+","+cash+")'>"+
                                         "<i id='i-info-"+i+"' class='fa fa-info-circle'></i>"+
                                     "</button>"+
                                     "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
@@ -332,7 +332,8 @@
                         'date': dt,
                         'number': number,
                         'user_name': user,
-                        'pay': pay
+                        'pay': pay,
+                        'shift' : cash
                     },
                     cache: false,
                     crossDomain: true,
@@ -349,7 +350,8 @@
                                 'date': dt,
                                 'number': number,
                                 'user_name': user,
-                                'pay': pay
+                                'pay': pay,
+                                'shift' : cash
                             }, function (data) {
                                 max_page_no = Math.ceil(data / 100);
                                 if (max_page_no == 1) {
@@ -382,7 +384,8 @@
                                     "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' disabled>"+
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
+                                    "<span id='span-branch-" + (start + i) + "' hidden></span>"+
                                     "<ul class='dropdown-menu drop-up text-center'>" +
                                         "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
                                         "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
@@ -390,7 +393,7 @@
                                     "</ul>" +
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' disabled>"+
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' data-toggle='dropdown' disabled>"+
                                     "<ul class='dropdown-menu drop-up text-center'>" +
                                         "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1," + (start + i) +");' style='padding-bottom: 5px;'>เงินสด</li>" +
                                         "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2," + (start + i) +");' style='padding-bottom: 5px;'>เงินโอน</li>" +
@@ -409,7 +412,7 @@
                                     "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")' style='margin-right: 5px'>"+
                                         "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
                                     "</button>"+
-                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>"+
+                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ","+cash+")'>"+
                                         "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>"+
                                     "</button>"+
                                     "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
@@ -421,6 +424,7 @@
                             $(".list-group").append(text_html);
                         });
                         $('#btn-search').prop('disabled', false);
+                        $('#btn-shift').prop('disabled', false);
                     }
                 });
             }
@@ -441,7 +445,8 @@
                             'date': dt,
                             'number': number,
                             'user_name': user,
-                            'pay': pay
+                            'pay': pay,
+                            'shift' : cash
                         },
                         cache: false,
                         crossDomain: true,
@@ -458,7 +463,8 @@
                                     'date': dt,
                                     'number': number,
                                     'user_name': user,
-                                    'pay': pay
+                                    'pay': pay,
+                                    'shift' : cash
                                 }, function (data) {
                                     max_page_no = Math.ceil(data / 100);
                                     if (max_page_no == 1) {
@@ -491,7 +497,8 @@
                                     "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' disabled>"+
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
+                                    "<span id='span-branch-" + (start + i) + "' hidden></span>"+
                                     "<ul class='dropdown-menu drop-up text-center'>" +
                                         "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
                                         "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
@@ -499,7 +506,7 @@
                                     "</ul>" +
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
-                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' disabled>"+
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' data-toggle='dropdown' disabled>"+
                                     "<ul class='dropdown-menu drop-up text-center'>" +
                                         "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1," + (start + i) +");' style='padding-bottom: 5px;'>เงินสด</li>" +
                                         "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2," + (start + i) +");' style='padding-bottom: 5px;'>เงินโอน</li>" +
@@ -518,7 +525,7 @@
                                     "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")' style='margin-right: 5px'>"+
                                         "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
                                     "</button>"+
-                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ")'>"+
+                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ","+cash+")'>"+
                                         "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>"+
                                     "</button>"+
                                     "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
@@ -530,6 +537,7 @@
                                 $(".list-group").append(text_html);
                             });
                             $('#btn-search').prop('disabled', false);
+                            $('#btn-shift').prop('disabled', false);
                         }
                     });
                 } else if (prev_page > arg) {
@@ -607,6 +615,7 @@
         }
 
         var page = 1;
+        var cash = "";
         function pagination(arg) {
             //console.log("pagination arg : " + arg + " max_page_no : " + max_page_no);
             //Check all list is save
@@ -635,7 +644,7 @@
                 return 0;
             }
 
-            if (arg == "sort" || arg == "search" || arg == "re") {
+            if (arg == "sort" || arg == "search" || arg == "shift") {
                 // pagination when sort.. ..
                 if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
                 if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
@@ -656,6 +665,25 @@
 
                         order = "none";
                         sort_by = "none";
+                        cash = "";
+                    }
+                }
+                if (arg == "shift") {
+                    // clear other clicked_sort
+                    for (var j = 0; j < 4; j++) {
+                        key = Object.keys(is_sort)[j];
+                        $("#i-" + key).prop('hidden', true);
+                        $("#i-" + key).attr('class', 'fa fa-sort-down');
+                        $("#i-" + key).css('vertical-align', 'top');
+
+                        searched_name = "";
+                        searched_user = "";
+                        searched_billno = "";      
+                        searched_pay = "";  
+                        dt = "";
+                        order = "none";
+                        sort_by = "none";
+                        cash = 1;
                     }
                 }
             } else if (arg == "st") {
@@ -796,9 +824,9 @@
                 $("#li-prev").prop('class', 'page-item');
             } else if (page == 1) {
                 $("#li-prev").prop('class', 'page-item disabled');
-            }
-
-            loadmore(page);
+            }            
+           
+            loadmore(page);            
         }
 
         function prev() {
@@ -838,24 +866,24 @@
             $('#span-branch-'+arg).text(id);
         }
 
-        function bill_detail(arg){
+        function bill_detail(arg,sft){
             var order_id = $('#span-'+arg).html();
-            window.location = "bill_info.html?order="+order_id;
+            if(sft == 1){
+                window.location = "shift_bill.html?order="+order_id;
+            }else{
+                window.location = "bill_info.html?order="+order_id;
+            }   
+            
         }
 
         function shift(){
             // load รายการขายภายในกะ
             // info-btn กดแล้วไปที่หน้า shift_bill?bill=1 (1-> bill_id)
-            $.ajax({
-                type: "POST",
-                url: "http://150.95.26.163:8080/gitmew/php/get_cash_order.php",                
-                cache: false,
-                crossDomain: true,
-                success: function (response) {                
-                    var obj = jQuery.parseJSON(response);
-                    console.log(obj);         
-                }
-            });
+            $('#btn-shift').prop('disabled', true);
+
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('shift');          
         }       
     </script>
 </head>
