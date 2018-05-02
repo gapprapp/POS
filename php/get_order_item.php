@@ -15,8 +15,9 @@
     }   
   } 
     
-  $sql = "SELECT i.item_id,i.prod_id,p.prod_name,i.prod_price,i.prod_amount,u.unit_name FROM sale_order_item i INNER JOIN product p 
-  ON i.prod_id = p.prod_id INNER JOIN unit u ON p.unit_id = u.unit_id WHERE i.order_id = '$order_id'";
+  $sql = "SELECT i.item_id,i.prod_id,p.prod_name,i.prod_price,i.prod_amount,u.unit_name,p.barcode,p.img_string,i.prod_discount
+  FROM sale_order_item i INNER JOIN product p ON i.prod_id = p.prod_id INNER JOIN unit u ON p.unit_id = u.unit_id 
+  WHERE i.order_id = '$order_id'";
   $result = mysqli_query($conn, $sql);
 
 	if(mysqli_num_rows($result) > 0){    

@@ -615,7 +615,79 @@
             //$('#change').text(change);                      
             $.each(obj, function(i, field){   
                 if(i > 0){
-                          
+                  var bottom = $(window).height() - $("#show_list_add").offset().top - $("#show_list_add").height();
+                  // Always scroll to the bottom
+                  if(bottom < 250){
+                    $("#show_list_add").css('max-height', $("#show_list_add").height());
+                    $("#show_list_add").animate({scrollTop: $('#show_list_add').prop('scrollHeight')});
+                  }      
+                  index++;
+                  $('#show_list_add').append("<div id='list_add"+index+"' class='row' style='margin-left: 50px; margin-bottom: 5px;'>\
+                      <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
+                        <div class='input-group'>\
+                          <span class='input-group-addon'>\
+                            <input id='box"+index+"' onclick='bonus("+index+")' type='checkbox' class='btn btn-default'>\
+                          </span>\
+                          <input id='added_no"+index+"' class='form-control text-center added' type='text' readonly value='"+index+"'>\
+                      </div>\
+                      </div>\
+                      <div class='col-2' style='padding-left: 5px; padding-right: 5px;'>\
+                        <input id='barcode-"+index+"' class='form-control text-center' value='"+ obj[i].barcode +"' disabled>\
+                      </div>\
+                      <div class='col-3' style='padding-left: 5px; padding-right: 5px;'>\
+                        <input id='name-"+ index +"' class='form-control text-center' rel='popover' data-img='"+obj[i].img_string+"' value='"+ obj[i].prod_name +"' readonly>\
+                      </div>\
+                      <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
+                        <input id='price-"+index+"' class='form-control text-center' value='"+ obj[i].prod_price +"' readonly>\
+                      </div>\
+                      <div class='col-1' style='padding-left: 10px; padding-right: 0px;'>\
+                        <input id='amount-"+index+"' type='number' oninput='chng_amt_edit("+index+")' class='form-control text-center no-spin' min='1' value='"+ obj[i].prod_amount +"' readonly>\
+                      </div>\
+                      <div class='col-1'>\
+                        <input id='unit-"+index+"' class='form-control text-center' value='"+ obj[i].unit_name +"' readonly>\
+                      </div>\
+                      <div class='col-1' style='padding-left: 0px; padding-right: 0px;'>\
+                        <input id='total-"+index+"' class='form-control text-center' value='"+ obj[i].prod_price*obj[i].prod_amount +"' readonly>\
+                      </div>\
+                      <div class='col-1' style='padding-right: 0px;'>\
+                        <input id='dis-"+index+"' class='form-control text-center' value='"+ obj[i].prod_discount +"' readonly>\
+                      </div>\
+                      <div class='col-1 text-center' style='padding-left: 0px; padding-right: 0px;'>\
+                        <button id='btn_edit"+ index + "' class='btn btn-sm btn-primary' style='margin-top: 4px;' onclick='edit(" + index + ")'>\
+                          <i class='fa fa-edit'></i>\
+                        </button>\
+                        <button id='btn_check"+ index + "' class='btn btn-sm btn-success' style='margin-top: 4px;' onclick='update(" + index + ")' hidden>\
+                          <i class='fa fa-check-square'></i>\
+                        </button>\
+                        <button id='btn_remove"+ index + "' class='btn btn-sm btn-danger' style='margin-top: 4px;' onclick='remove(" + index + ")' hidden>\
+                          <i class='fa fa-minus'></i>\
+                        </button>\
+                      </div>\
+                      <script>\
+                      $('#name-"+index+"[rel=popover]').popover({\
+                      html: true,\
+                      trigger: 'hover',\
+                      placement: 'left',\
+                      content: function(){\
+                      return '<img src='+$(this).data('img')+'>';}\
+                      });\
+                      </"+"script>\
+                      </div>\
+                  "); 
+                  item = {}
+                  item ["prod_id"] =  obj[i].prod_id;
+                  item ["name"] =  obj[i].prod_name;
+                  item ["price"] =  obj[i].prod_price;
+                  item ["amount"] =  obj[i].prod_amount;
+                  item ["unit"] =  obj[i].unit_name;
+                  item ["total"] =  $('#total-'+index).val();
+                  item ["price_old"] =  old_price;
+                  item["price_cus"] = price;
+                  item["arr"] = array_amt;
+                  item ["check_amt"] =  0;                  
+                  item ["discount"] =  obj[i].prod_discount;
+                
+                  jsonObj.push(item);            
                 }                       
             });
                           
@@ -951,6 +1023,7 @@
 
       jsonObj[arg-1].amount =  $('#amount-'+arg).val();
       jsonObj[arg-1].total =  $('#total-'+arg).val();
+      jsonObj[arg-1].price =  $('#price-'+arg).val();
       jsonObj[arg-1].discount =  dis;
 
       sum = sum-total_old+parseFloat($('#total-'+arg).val());
