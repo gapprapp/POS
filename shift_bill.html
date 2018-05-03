@@ -605,7 +605,7 @@
             if(cus_tel == ""){
               cus_tel = "-";
             }
-            $('#branch option:selected').val(obj[0].branch_name); 
+            $('#branch option:selected').text(obj[0].branch_name); 
             $('#date').text("วันที่ : " + date); 
             //$('#number').text(order_num); 
             $('#user').text(user);         
@@ -1286,7 +1286,7 @@
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
         + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id + "&order_id=" + order_id
         + "&b_id_old=" + branch_id;
-        
+        console.log(dataString);
         if(print == "print"){
           var WinPrint  = window.open();
         }        

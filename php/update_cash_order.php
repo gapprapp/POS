@@ -24,9 +24,9 @@
         $cus = mysqli_insert_id($conn);	
     }  
 
-    $sql = "UPDATE sale_order SET customer_id = '$cus',date_time = '$dt',sum_price = '$sum',total_price = '$final_price,
+    $sql = "UPDATE sale_order SET customer_id = '$cus',date_time = '$dt',sum_price = '$sum',total_price = '$final_price',
     payment_type = '$pay',note = '$comment',user_id = '$user_id',branch_id = '$b',total_discount = '$dis',
-    get_money = '$get_money',change_money = '$change_money' WHERE order_id = $order_id"; 
+    get_money = '$get_money',change_money = '$change_money' WHERE order_id = '$order_id'"; 
     $result = mysqli_query($conn, $sql);
     
     $query = "INSERT INTO order_record(order_id,customer_id,datetime,sum_price,total_price,payment_type,note,user_id,
