@@ -1126,6 +1126,9 @@
    
     function save(){
       if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != ""){
+        var d = new Date($.now());     
+        datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
         var no = 1;
         json = [];
         var text = "";

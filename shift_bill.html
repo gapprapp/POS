@@ -509,7 +509,7 @@
     var img;
     var prod_id = 0;
     var old_price,price,cus_addr,cus_tel,order_id;    
-    var branch_id,cus_name,pay,order_num,sum,dis,final_sum,user,get,change,addr,tel,datetime;
+    var branch_id,cus_name,pay,order_num,sum,dis,final_sum,user,get,change,datetime;
     array_amt = [];
     $(document).ready(function(){  
       if(!localStorage.user_id){
@@ -597,13 +597,13 @@
             var dt = obj[0].date_time.split(" ");
             var d = dt[0].split("-");
             var date = d[2] + "/" + d[1] + "/" + d[0];
-            addr = obj[0].address;
-            if(addr == ""){
-                addr = "-";
+            cus_addr = obj[0].address;
+            if(cus_addr == ""){
+              cus_addr = "-";
             }
-            tel = obj[0].tel;
-            if(tel == ""){
-                tel = "-";
+            cus_tel = obj[0].tel;
+            if(cus_tel == ""){
+              cus_tel = "-";
             }
             $('#branch option:selected').val(obj[0].branch_name); 
             $('#date').text("วันที่ : " + date); 
@@ -892,13 +892,7 @@
     });  
 
     function detail(){
-      $('#branch').empty();     
-      //Date
-      /*var d = new Date($.now());
-      $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
-      datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();*/
-
-      //$('#user').text(localStorage.name);
+      $('#branch').empty(); 
 
       $.ajax({
           url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
@@ -1244,6 +1238,9 @@
    
     function save(){
       if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != ""){
+        var d = new Date($.now());     
+        datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
         var no = 1;
         json = [];
         var text = "";
@@ -1287,14 +1284,15 @@
         var cus_name = $('#cus').val();
         var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
         + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
-        + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
+        + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id + "&order_id=" + order_id
+        + "&b_id_old=" + branch_id;
         
         if(print == "print"){
           var WinPrint  = window.open();
         }        
         $.ajax({
             type: "POST",
-            url:"http://150.95.26.163:8080/gitmew/php/save_order.php",
+            url:"http://150.95.26.163:8080/gitmew/php/update_cash_order.php",
             data: dataString,
             async: false,
             success: function(data){
@@ -1313,7 +1311,7 @@
                         "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
                         "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
                         "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
-                        "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
+                        "<div class='txt-left-100'>เลขที่บิล :  "+order_num+" </div>"+
                         "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
                         "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
                         
@@ -1374,7 +1372,7 @@
                       "<div class='fl-20'><p class='fs-150 field'>"+cus_tel+"</p></div>"+
 
                       "<div class='fl-15'><p class='fs-150'>เลขที่ใบรายการ</p></div>"+
-                      "<div class='fl-35'><p class='fs-150 field'>"+data+"</p></div>"+
+                      "<div class='fl-35'><p class='fs-150 field'>"+order_num+"</p></div>"+
                       "<div class='fl-25'><p class='fs-150'>วันที่ เวลา ที่ทำรายการ</p></div>"+
                       "<div class='fl-30' style='margin-bottom: 80px;'><p class='fs-150 field'>"+datetime+"</p></div>"+
 
