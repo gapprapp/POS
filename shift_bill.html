@@ -581,7 +581,9 @@
         success:function(data)
         {
             var obj = jQuery.parseJSON(data); 
+            console.log(obj);
             branch_id = obj[0].branch_id;
+            cus_id = obj[0].customer_id;
             cus_name = obj[0].customer_name; 
             pay = obj[0].payment_type;    
             order_num = obj[0].order_number;      
@@ -638,7 +640,7 @@
                         <input id='name-"+ index +"' class='form-control text-center' rel='popover' data-img='"+obj[i].img_string+"' value='"+ obj[i].prod_name +"' readonly>\
                       </div>\
                       <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
-                        <input id='price-"+index+"' class='form-control text-center' value='"+ obj[i].prod_price +"' readonly>\
+                        <input id='price-"+index+"' class='form-control text-center' value='"+ obj[i][3] +"' readonly>\
                       </div>\
                       <div class='col-1' style='padding-left: 10px; padding-right: 0px;'>\
                         <input id='amount-"+index+"' type='number' oninput='chng_amt_edit("+index+")' class='form-control text-center no-spin' min='1' value='"+ obj[i].prod_amount +"' readonly>\
@@ -647,7 +649,7 @@
                         <input id='unit-"+index+"' class='form-control text-center' value='"+ obj[i].unit_name +"' readonly>\
                       </div>\
                       <div class='col-1' style='padding-left: 0px; padding-right: 0px;'>\
-                        <input id='total-"+index+"' class='form-control text-center' value='"+ obj[i].prod_price*obj[i].prod_amount +"' readonly>\
+                        <input id='total-"+index+"' class='form-control text-center' value='"+ obj[i][3]*obj[i].prod_amount +"' readonly>\
                       </div>\
                       <div class='col-1' style='padding-right: 0px;'>\
                         <input id='dis-"+index+"' class='form-control text-center' value='"+ obj[i].prod_discount +"' readonly>\
@@ -677,14 +679,18 @@
                   item = {}
                   item ["prod_id"] =  obj[i].prod_id;
                   item ["name"] =  obj[i].prod_name;
-                  item ["price"] =  obj[i].prod_price;
+                  item ["price"] =  obj[i][3];
                   item ["amount"] =  obj[i].prod_amount;
                   item ["unit"] =  obj[i].unit_name;
                   item ["total"] =  $('#total-'+index).val();
-                  item ["price_old"] =  old_price;
-                  item["price_cus"] = price;
-                  item["arr"] = array_amt;
-                  item ["check_amt"] =  0;                  
+                  item ["price_old"] =  obj[i][10].old_price;
+                  item["price_cus"] = obj[i][9];
+                  item["arr"] = obj[i][11];
+                  if(obj[i][11]){
+                    item ["check_amt"] =  1; 
+                  }else{
+                    item ["check_amt"] =  0; 
+                  }                                   
                   item ["discount"] =  obj[i].prod_discount;
                 
                   jsonObj.push(item);            
@@ -694,14 +700,13 @@
         }
       });    
 
-
       setTimeout(function() {$("#cus").focus();}, 100);
 
       var options = {
       url: function(phrase) {
         return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
       },
-      getValue: function(element) {     
+      getValue: function(element) {        
         return element.prod_name;
       },
       ajaxSettings: {
@@ -762,7 +767,7 @@
             prod_id = $("#name").getSelectedItemData().prod_id;
             img = $("#name").getSelectedItemData().img_string;
             old_price = $("#name").getSelectedItemData()[7].old_price;   
-            array_amt = $("#name").getSelectedItemData()[8];                    
+            array_amt = $("#name").getSelectedItemData()[8];                            
 
             $('#barcode').val(barcode);
             $('#price').val(price);

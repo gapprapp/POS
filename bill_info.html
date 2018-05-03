@@ -76,6 +76,7 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data); 
+                    console.log(obj);
                     branch_id = obj[0].branch_id;
                     cus_name = obj[0].customer_name; 
                     pay = obj[0].payment_type;    
@@ -113,7 +114,7 @@
                                 "<h5 id='prod-1'>"+obj[i].prod_name+"</h5>" +
                             "</div>" +
                             "<div class='col-5 text-right'>" +
-                                "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+obj[i].prod_price+" x "+obj[i].prod_amount+"</h5>" +
+                                "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+obj[i][3]+" x "+obj[i].prod_amount+"</h5>" +
                             "</div>" +
                             "<div class='col-1'></div>" +
                             "</div>");
@@ -125,7 +126,7 @@
                                 "<h5 id='input-prod'>"+obj[i].prod_name+"</h5>" +
                             "</div>" +
                             "<div class='col-2 text-right' style='padding-top: 10px;'>" +
-                                "<h5 id='input-price-"+i+"'>"+obj[i].prod_price+"</h5>" +
+                                "<h5 id='input-price-"+i+"'>"+obj[i][3]+"</h5>" +
                             "</div>" +
                             "<div class='col-1 text-right' style='padding-top: 10px;'>" +
                                 "<h5>x</h5>" +
@@ -137,13 +138,13 @@
                             "</div>"); 
                             count = i; 
 
-                            net = obj[i].prod_amount*obj[i].prod_price;
-                            text += "<div class='left'>"+obj[i].prod_name+"("+obj[i].prod_price+")</div>" + "<div class='mid'>"+obj[i].prod_amount+"</div>" + "<div class='right'>"+net+"</div>";
+                            net = obj[i].prod_amount*obj[i][3];
+                            text += "<div class='left'>"+obj[i].prod_name+"("+obj[i][3]+")</div>" + "<div class='mid'>"+obj[i].prod_amount+"</div>" + "<div class='right'>"+net+"</div>";
                             texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+i+"</div>"+
                                 "<div class='fl-50 fs-120 tb no-bdt'>"+obj[i].prod_name+"</div>"+
                                 "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].prod_amount+"</div>"+
                                 "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].unit_name+"</div>"+
-                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].prod_price+"</div>"+
+                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i][3]+"</div>"+
                                 "<div class='fl-10 fs-120 tb no-bdt'>"+net+"</div>";                 
                         }                       
                     });
