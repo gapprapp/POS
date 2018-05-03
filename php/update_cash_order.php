@@ -55,12 +55,12 @@
         $bonus = $data['bonus'];          
       
         $sql1 = "INSERT INTO sale_order_item (order_id,item_id,prod_id,prod_price,prod_amount,prod_discount,bonus)
-         VALUE ('$last_id','$item','$prod_id','$price','$amt','$discount','$bonus')"; 
+         VALUE ('$order_id','$item','$prod_id','$price','$amt','$discount','$bonus')"; 
         $result1 = mysqli_query($conn, $sql1);    
         
-        /*$query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_amount) 
-        VALUES ('$order_id','$no','$prod_id','$amt')";  
-        $result = mysqli_query($conn, $query); */ 
+        $query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_price,prod_amount,prod_discount,bonus) 
+        VALUES ('$order_id','$item','$prod_id','$price','$amt','$discount','$bonus')";  
+        $result = mysqli_query($conn, $query); 
        
         $sql_up = "UPDATE product_branch SET amount = amount-'$amt' WHERE branch_id = '$b' AND prod_id = '$prod_id'"; 
         $result_up = mysqli_query($conn, $sql_up);     
