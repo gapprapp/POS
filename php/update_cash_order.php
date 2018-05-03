@@ -30,8 +30,8 @@
     $result = mysqli_query($conn, $sql);
     
     $query = "INSERT INTO order_record(order_id,customer_id,datetime,sum_price,total_price,payment_type,note,user_id,
-    branch_id,total_discount,get_money,change_money) VALUES ('$order_id','$cus','$dt','$sum','$total','$pay','$comment',
-    '$user_id','$b','$discount','$get','$change')";  
+    branch_id,total_discount,get_money,change_money) VALUES ('$order_id','$cus','$dt','$sum','$final_price','$pay','$comment',
+    '$user_id','$b','$dis','$get_money','$change_money')";  
     $result = mysqli_query($conn, $query); 
     
     $query = "SELECT prod_amount,prod_id FROM sale_order_item WHERE order_id = '$order_id'";  
@@ -40,10 +40,12 @@
         while($row = mysqli_fetch_array($result)){
             $amt = $row['prod_amount'];   
             $prod_id = $row['prod_id'];
-            $sql = "UPDATE product_branch SET amount=amount+'$amt' WHERE branch_id = '$$b_id_old' AND prod_id = '$prod_id'";  
-            $result = mysqli_query($conn, $sql);            
+            $sql = "UPDATE product_branch SET amount=amount+'$amt' WHERE branch_id = '$b_id_old' AND prod_id = '$prod_id'";  
+            $result1 = mysqli_query($conn, $sql);            
         }   
     } 
+    $query = "DELETE FROM sale_order_item WHERE order_id = '$order_id'";  
+    $result = mysqli_query($conn, $query);
             
     foreach ($obj as $data)
     {
@@ -63,11 +65,8 @@
         $result = mysqli_query($conn, $query); 
        
         $sql_up = "UPDATE product_branch SET amount = amount-'$amt' WHERE branch_id = '$b' AND prod_id = '$prod_id'"; 
-        $result_up = mysqli_query($conn, $sql_up);     
-    }
-
-    $query = "DELETE FROM sale_order_item WHERE order_id = '$order_id'";  
-    $result = mysqli_query($conn, $query);
+        $result = mysqli_query($conn, $sql_up);     
+    }  
 
     if($result){
         echo "success";
