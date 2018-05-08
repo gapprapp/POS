@@ -115,7 +115,10 @@
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }  
                 }
-            });            
+            }); 
+            setTimeout(function() {
+                location.reload(true);
+            }, 10000);           
         });
 
         function get_cash(){
@@ -171,9 +174,9 @@
 
         function cash_rec(){
             if(check){             
-                var b_id = $('#branch option:selected').val();      
+                //var b_id = $('#branch option:selected').val();      
                 var winprint = window.open();         
-                $.ajax({
+                /*$.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
                     method:"POST",
                     data:{'b_id':b_id,
@@ -182,7 +185,7 @@
                         'total':cash},
                     success:function(data)
                     {
-                        if(data == "success"){
+                        if(data == "success"){*/
                         var d = before_dt.split(" ");
                         var ds = d[0].split("-");
                         var date = ds[2] + "/" + ds[1] + "/" + ds[0];
@@ -228,10 +231,10 @@
                             winprint.print();
                             winprint.close();
                             location.reload(true);
-                        }
+                        /*}
                         location.reload(true);
                     }
-                });
+                });*/
             }
         }
 
