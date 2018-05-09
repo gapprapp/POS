@@ -20,6 +20,15 @@
         $sql = "INSERT INTO customer (customer_name) VALUE ('$name_cus')"; 
         $result = mysqli_query($conn, $sql);
         $cus = mysqli_insert_id($conn);	
+        if($cus == 0){
+            $sql = "SELECT customer_id FROM customer WHERE customer_name = '$name_cus'"; 
+            $result = mysqli_query($conn, $sql);
+            if(mysqli_num_rows($result) > 0){    
+                while($row = mysqli_fetch_array($result)){  
+                    $cus = $row['customer_id'];
+                }
+            }
+        }
     }   
    
     $sql = "SELECT order_number,count FROM sale_order ORDER BY order_id DESC LIMIT 1"; 

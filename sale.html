@@ -699,6 +699,7 @@
               },
               onSelectItemEvent: function() {                
                 cus_id = $("#cus").getSelectedItemData().customer_id;
+                console.log(cus_id);
                 cus_addr = $("#cus").getSelectedItemData().address;
                 if(cus_addr == ""){
                   cus_addr = "-";
@@ -709,8 +710,8 @@
                 }
                 //console.log(cus_addr + cus_tel);
               },
-              onChooseEvent: function() {
-                cus_id = $("#cus").getSelectedItemData().customer_id;
+              onChooseEvent: function() {                
+                cus_id = $("#cus").getSelectedItemData().customer_id;                
                 cus_addr = $("#cus").getSelectedItemData().address;
                 if(cus_addr == ""){
                   cus_addr = "-";

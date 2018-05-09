@@ -115,12 +115,17 @@
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }  
                 }
-            });            
+            }); 
+            setTimeout(function() {
+                get_cash();
+            }, 2000);  
         });
 
         function get_cash(){
+            var d = new Date($.now());            
+            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
             var b_id = $('#branch option:selected').val();
-           // alert(b_id);
+            //console.log(b_id);
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
                 method:"POST",
@@ -166,7 +171,10 @@
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }                         
                 }
-            });    
+            }); 
+            setTimeout(function() {
+                get_cash();
+            }, 1000);    
         }
 
         function cash_rec(){
@@ -289,7 +297,7 @@
                                 <h4>สาขา : </h4>
                             </div>
                             <div class="col-5 text-left">                                
-                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
               
                                 </select>
                             </div>

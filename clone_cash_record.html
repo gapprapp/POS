@@ -117,13 +117,15 @@
                 }
             }); 
             setTimeout(function() {
-                location.reload(true);
-            }, 10000);           
+                get_cash();
+            }, 2000);  
         });
 
         function get_cash(){
+            var d = new Date($.now());            
+            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
             var b_id = $('#branch option:selected').val();
-           // alert(b_id);
+            //console.log(b_id);
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
                 method:"POST",
@@ -169,14 +171,17 @@
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }                         
                 }
-            });    
+            }); 
+            setTimeout(function() {
+                get_cash();
+            }, 1000);    
         }
 
         function cash_rec(){
             if(check){             
-                //var b_id = $('#branch option:selected').val();      
+                var b_id = $('#branch option:selected').val();      
                 var winprint = window.open();         
-                /*$.ajax({
+                $.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
                     method:"POST",
                     data:{'b_id':b_id,
@@ -185,7 +190,7 @@
                         'total':cash},
                     success:function(data)
                     {
-                        if(data == "success"){*/
+                        if(data == "success"){
                         var d = before_dt.split(" ");
                         var ds = d[0].split("-");
                         var date = ds[2] + "/" + ds[1] + "/" + ds[0];
@@ -231,10 +236,10 @@
                             winprint.print();
                             winprint.close();
                             location.reload(true);
-                        /*}
+                        }
                         location.reload(true);
                     }
-                });*/
+                });
             }
         }
 
@@ -292,7 +297,7 @@
                                 <h4>สาขา : </h4>
                             </div>
                             <div class="col-5 text-left">                                
-                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
               
                                 </select>
                             </div>
