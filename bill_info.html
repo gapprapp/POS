@@ -237,6 +237,12 @@
 
                         $("#ctn-show").prop('hidden', false);
                         $("#ctn-edit").prop('hidden', true);    
+                    }else {
+                        $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'พบปัญหา',
+                            content: 'กรุณาลองอีกครั้ง',
+                        });
                     }                         
                 }
             });
@@ -261,11 +267,11 @@
                                 },
                                 success: function (data) {
                                     if (data == "success") {
-                                        $.alert({
+                                        /*$.alert({
                                             icon: 'fa fa-warning',
                                             title: 'เตือน',
                                             content: 'รายการสินค้าได้ถูกลบแล้ว',
-                                        }); 
+                                        }); */
                                         window.location = "manage_bill.html";                                       
                                     } else {
                                         $.alert({

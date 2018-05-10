@@ -1154,7 +1154,7 @@
           console.log(dataString);
           $.ajax({
               type: "POST",
-              url:"http://150.95.26.163:8080/gitmew/php/clone_stock_in.php",
+              url:"http://150.95.26.163:8080/gitmew/php/stock_in.php",
               data: dataString,                                     
               success: function(data){                 
                   if(data == "success"){ 
@@ -1164,6 +1164,12 @@
                         content: "บันทึกสำเร็จ!",
                     });              
                     location.reload(true);
+                  }else {
+                    $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'พบปัญหา',
+                    content: 'กรุณาลองอีกครั้ง',
+                    });
                   }
               }
           });      

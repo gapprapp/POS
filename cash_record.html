@@ -236,6 +236,12 @@
                             winprint.print();
                             winprint.close();
                             location.reload(true);
+                        }else {
+                            $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'พบปัญหา',
+                            content: 'กรุณาลองอีกครั้ง',
+                            });
                         }
                         location.reload(true);
                     }

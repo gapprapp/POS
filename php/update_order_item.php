@@ -10,14 +10,24 @@
     $change = $_POST['change'];
     $branch_id = $_POST['branch_id'];
 
-    mysqli_autocommit($conn,FALSE); 
+    mysqli_begin_transaction($conn);
     $query = "INSERT INTO order_record(order_id,sum_price,total_price,total_discount,get_money,change_money) 
     VALUES ('$order_id','$sum','$total','$discount','$get','$change')";  
-    $result = mysqli_query($conn, $query);        
+    $result = mysqli_query($conn, $query);  
+    if(!$result){
+        mysqli_rollback($conn);
+        echo "fail";
+        exit;
+    }      
     
     $query = "UPDATE sale_order SET sum_price='$sum',total_discount='$discount',total_price='$total'
     ,get_money='$get',change_money='$change' WHERE order_id = '$order_id'";  
     $result = mysqli_query($conn, $query);
+    if(!$result){
+        mysqli_rollback($conn);
+        echo "fail";
+        exit;
+    }
 
     foreach ($obj as $data)
     {
@@ -41,22 +51,30 @@
             $query = "UPDATE product_branch SET amount=amount-'$dif' WHERE branch_id = '$branch_id' AND prod_id = '$prod_id'";  
         }       
         $result = mysqli_query($conn, $query);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
 
         $query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_amount) 
         VALUES ('$order_id','$no','$prod_id','$amt')";  
-        $result = mysqli_query($conn, $query);   
+        $result = mysqli_query($conn, $query); 
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }  
 
         $query = "UPDATE sale_order_item SET prod_amount='$amt' WHERE order_id = '$order_id' AND item_id='$no'";  
         $result = mysqli_query($conn, $query);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
     }
-
-    if($result){
-        echo "success";
-        mysqli_commit($conn);          
-    }else{
-        echo "fail";
-        mysqli_rollback($conn);
-    }
-    
+    mysqli_commit($conn); 
+    echo "success";
     mysqli_close($conn);
 ?>

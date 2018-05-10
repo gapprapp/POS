@@ -6,7 +6,7 @@
     $obj_add = json_decode($input_add,true);    
     $prod_id = $_POST['prod_id'];  
 
-    mysqli_autocommit($conn,FALSE);  
+    mysqli_begin_transaction($conn);  
     foreach ($obj_get as $data)
     {        
         $old_unit = $data['old_unit'];
@@ -15,7 +15,12 @@
 
         $sql = "UPDATE detail_customer SET amt_threshold = '$unit',prod_price = '$unit_price' 
         WHERE amt_threshold = '$old_unit' AND prod_id = '$prod_id'"; 
-        $result = mysqli_query($conn, $sql);    
+        $result = mysqli_query($conn, $sql);  
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }  
     }
 
     foreach ($obj_add as $data)
@@ -25,16 +30,14 @@
     
         $sql = "INSERT INTO detail_customer (prod_id,amt_threshold,prod_price) 
         VALUE ('$prod_id','$unit','$unit_price')"; 
-        $result = mysqli_query($conn, $sql);      
+        $result = mysqli_query($conn, $sql); 
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }     
     }
-
-    if($result){
-        echo "success";
-        mysqli_commit($conn);          
-    }else{
-        echo "fail";
-        mysqli_rollback($conn);
-    }
-
+    mysqli_commit($conn); 
+    echo "success";
     mysqli_close($conn);
 ?>

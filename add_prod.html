@@ -216,6 +216,7 @@
 
       $("#barcode-" + arg).prop('disabled', true);
       $("#name-" + arg).addClass('disabled');
+        $("#name-" + arg).prop('readonly', true);
       $("#type-" + arg).prop('disabled', true);
       $("#amount-1-" + arg).prop('disabled', true);
       $("#amount-2-" + arg).prop('disabled', true);
@@ -388,11 +389,11 @@
           success: function(data) {
             console.log(data);
             if (data == "success") {
-              $.alert({
+              /*$.alert({
                 icon: 'fa fa-check',
                 title: 'บันทึกสำเร็จ',
                 content: 'เสร็จสิ้นการทำรายการ',
-              });
+              });*/
               
               if (mng == 1) {
                 // come from manage_prod.html

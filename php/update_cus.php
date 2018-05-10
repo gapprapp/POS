@@ -4,19 +4,15 @@
     $tel = $_POST['tel'];	
     $name = $_POST['name'];		
     $addr = $_POST['address'];
-
-    mysqli_autocommit($conn,FALSE); 
+    
     $sql = "UPDATE customer SET customer_name = '$name', address = '$addr', tel = '$tel'
     WHERE customer_id = '$cus_id'"; 
     $result = mysqli_query($conn, $sql);  
 
     if($result){
-        echo "success";
-        mysqli_commit($conn);          
+        echo "success";     
     }else{
-        echo "fail";
-        mysqli_rollback($conn);
+        echo "fail";      
     }
-
     mysqli_close($conn);	
 ?>

@@ -13,15 +13,25 @@
     $trans_name  = $_POST['trans_name'];   
     $i = 0;   
 
-    mysqli_autocommit($conn,FALSE); 
+    mysqli_begin_transaction($conn);
     if($sup == 0){
         $sql = "INSERT INTO supplier (sup_name) VALUE ('$sup_name')"; 
         $result = mysqli_query($conn, $sql);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $sup = mysqli_insert_id($conn);	
     }  
     if($trans_id == 0){
         $sql = "INSERT INTO transport (transport_name) VALUE ('$trans_name')"; 
         $result = mysqli_query($conn, $sql);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $trans_id = mysqli_insert_id($conn);	
     } 
     $sql = "SELECT stock_number,count FROM stock_in ORDER BY stock_id DESC LIMIT 1"; 
@@ -38,6 +48,11 @@
                 $sql2 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,ship_price,ship_by,count) 
                 VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id','$total_ship','$trans_id','$count')"; 
                 $result2 = mysqli_query($conn, $sql2);
+                if(!$result2){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
                 $last_id = mysqli_insert_id($conn);	
             }else{
                 $year = "I" . $year_cur . "-";
@@ -45,6 +60,11 @@
                 $sql3 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,ship_price,ship_by,count) 
                 VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id','$total_ship','$trans_id',1)"; 
                 $result3 = mysqli_query($conn, $sql3);
+                if(!$result3){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
                 $last_id = mysqli_insert_id($conn);	
             }           
         }
@@ -54,6 +74,11 @@
         $sql1 = "INSERT INTO stock_in (stock_number,branch_id,date_time,sup_id,cost,user_id,ship_price,ship_by,count) 
         VALUE ('$stock_number','$b_id','$dt','$sup','$sum','$user_id','$total_ship','$trans_id',1)"; 
         $result1 = mysqli_query($conn, $sql1);
+        if(!$result1){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $last_id = mysqli_insert_id($conn);	
     }   
     foreach ($obj as $data)
@@ -70,16 +95,31 @@
       
         $sql1 = "INSERT INTO stock_in_item (stock_id,item_id,prod_id,prod_cost,prod_amount)
         VALUE ('$last_id','$item','$prod_id','$cost','$amt')"; 
-        $result1 = mysqli_query($conn, $sql1);  
+        $result1 = mysqli_query($conn, $sql1); 
+        if(!$result1){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        } 
         
         $query = "SELECT prod_id FROM product_branch WHERE branch_id = '$b_id' AND prod_id = '$prod_id'";
         $result_q = mysqli_query($conn, $query);
         if(mysqli_num_rows($result_q) > 0){ 
             $sql_up = "UPDATE product_branch SET amount = amount+'$amt' WHERE branch_id = '$b_id' AND prod_id = '$prod_id'"; 
             $result_up = mysqli_query($conn, $sql_up);
+            if(!$result_up){
+                mysqli_rollback($conn);
+                echo "fail";
+                exit;
+            }
         }else{
             $sql_in = "INSERT INTO product_branch (branch_id,prod_id,amount) VALUE ('$b_id','$prod_id','$amt')"; 
             $result_in = mysqli_query($conn, $sql_in);
+            if(!$result_in){
+                mysqli_rollback($conn);
+                echo "fail";
+                exit;
+            }
         }  
         
         for($c = 0 ; $c < count($cus); $c++){
@@ -89,6 +129,11 @@
                 $sql = "INSERT INTO detail_customer (prod_id,customer_id,special_prod_price) 
                 VALUE ('$prod_id','$cus_id','$price')"; 
                 $result = mysqli_query($conn, $sql);
+                if(!$result){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
             }
         }
 
@@ -100,17 +145,15 @@
                 $sql = "INSERT INTO detail_customer (prod_id,/*item_id,*/amt_threshold,prod_price) 
                 VALUE ('$prod_id',/*'$item_id',*/'$unit_amt','$price')"; 
                 $result = mysqli_query($conn, $sql);
+                if(!$result){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
             }
         }
-    }
-
-    if($result){
-        echo "success";
-        mysqli_commit($conn);          
-    }else{
-        echo "fail";
-        mysqli_rollback($conn);
-    }
-
+    }  
+    mysqli_commit($conn); 
+    echo "success";
     mysqli_close($conn);
 ?>

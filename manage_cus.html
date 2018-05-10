@@ -216,7 +216,13 @@
                     'tel': tel
                 },
                 success: function (data) {
-                    //alert(data);
+                    if(data == "fail"){
+                        $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'พบปัญหา',
+                            content: 'กรุณาลองอีกครั้ง',
+                        });
+                    }    
                 }
             });
         }
