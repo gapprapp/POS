@@ -114,6 +114,6 @@
         }    
     }
     mysqli_commit($conn); 
-    echo "success";
+    echo $order_number;
     mysqli_close($conn);
 ?>
