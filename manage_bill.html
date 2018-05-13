@@ -296,7 +296,10 @@
             searched_name = $("#search-name").val();
             searched_user = $("#search-user").val();
             searched_billno = $("#search-billno").val();          
-            searched_pay = $("#pay").html();   
+            searched_pay = $("#pay").html(); 
+            if(searched_pay == "ทั้งหมด"){
+                searched_pay = "";
+            }  
             
             $('#btn-search').prop('disabled', true);
 
@@ -969,8 +972,9 @@
                         </ul>
                     </div>
                     <div class="col-1 text-center no-pd">
-                        <button id='pay' class="btn btn-info" data-toggle="dropdown">เงินสด</button>
+                        <button id='pay' class="btn btn-info" data-toggle="dropdown">ทั้งหมด</button>
                         <ul class="dropdown-menu drop-up text-center">
+                            <li id="li-pay" class="li-branch" onclick="setpay('ทั้งหมด');" style="padding-bottom: 5px;">ทั้งหมด</li>
                             <li id="li-pay" class="li-branch" onclick="setpay('เงินสด');" style="padding-bottom: 5px;">เงินสด</li>
                             <li id="li-pay" class="li-branch" onclick="setpay('เงินโอน');" style="padding-bottom: 5px;">เงินโอน</li>
                             <li id="li-pay" class="li-branch" onclick="setpay('ลูกหนี้');" style="padding-bottom: 5px;">ลูกหนี้</li>
