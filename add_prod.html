@@ -216,6 +216,7 @@
 
       $("#barcode-" + arg).prop('disabled', true);
       $("#name-" + arg).addClass('disabled');
+        $("#name-" + arg).prop('readonly', true);
       $("#type-" + arg).prop('disabled', true);
       $("#amount-1-" + arg).prop('disabled', true);
       $("#amount-2-" + arg).prop('disabled', true);
@@ -388,11 +389,11 @@
           success: function(data) {
             console.log(data);
             if (data == "success") {
-              $.alert({
+              /*$.alert({
                 icon: 'fa fa-check',
                 title: 'บันทึกสำเร็จ',
                 content: 'เสร็จสิ้นการทำรายการ',
-              });
+              });*/
               
               if (mng == 1) {
                 // come from manage_prod.html
@@ -449,7 +450,8 @@
         <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
         <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
         <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-        <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                
+        <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>    
+        <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>            
         <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
       </ul>
     </div>

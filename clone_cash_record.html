@@ -71,7 +71,7 @@
             }); 
            
             $.ajax({
-                url:"http://150.95.26.163:8080/gitmew/php/get_shift.php",
+                url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
                 method:"POST",
                 data:{'b_id':"1",
                 'date':datetime},
@@ -79,57 +79,7 @@
                 {
                     var obj = jQuery.parseJSON(data);
                     console.log(obj);                          
-                    if(obj[0] == "none"){
-                        $('#cash').text("0.00 บาท");
-                        cash = "0.00"; 
-                        check = false;                       
-                    }else{
-                        $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
-                        cash = parseFloat(obj[0].total_price).toFixed(2);
-                        before_dt = obj[0][1];                          
-                    }
-                    if(obj[1] == "none"){
-                        transfer = "0.00";                        
-                    }else{                      
-                        transfer = parseFloat(obj[1].total_price).toFixed(2);
-                    }
-                    if(obj[2] == "none"){
-                        debtor = "0.00";                        
-                    }else{                      
-                        debtor = parseFloat(obj[2].total_price).toFixed(2);
-                    }
-                    if(obj[3] == "none"){
-                        sum = "0.00";                        
-                    }else{                       
-                        sum = parseFloat(obj[3].sum_price).toFixed(2);
-                    }
-                    if(obj[4] == "none"){
-                        dis = "0.00";                        
-                    }else{                      
-                        dis = parseFloat(obj[4].discount).toFixed(2);
-                    }
-                    if(obj[5] == "none"){
-                        total = "0.00";                        
-                    }else{                      
-                        total = parseFloat(obj[5].total_price).toFixed(2);
-                    }                  
-                }
-            });            
-        });
-
-        function get_cash(){
-            var b_id = $('#branch option:selected').val();
-           // alert(b_id);
-            $.ajax({
-                url:"http://150.95.26.163:8080/gitmew/php/get_shift.php",
-                method:"POST",
-                data:{'b_id':b_id,
-                'date':datetime},
-                success:function(data)
-                {
-                    var obj = jQuery.parseJSON(data);
-                    console.log(obj);
-                    if(obj[0] == "none"){
+                    if(obj[0] == "none" || obj[0].total_price == null){
                         $('#cash').text("0.00 บาท");
                         cash = "0.00"; 
                         check = false;                       
@@ -139,39 +89,99 @@
                         before_dt = obj[0][1]; 
                         check = true;                                 
                     }
-                    if(obj[1] == "none"){
+                    if(obj[1] == "none" || obj[1].total_price == null){
                         transfer = "0.00";                        
                     }else{                      
                         transfer = parseFloat(obj[1].total_price).toFixed(2);
                     }
-                    if(obj[2] == "none"){
+                    if(obj[2] == "none" || obj[2].total_price == null){
                         debtor = "0.00";                        
                     }else{                      
                         debtor = parseFloat(obj[2].total_price).toFixed(2);
                     }
-                    if(obj[3] == "none"){
+                    if(obj[3] == "none" || obj[3].sum_price == null){
                         sum = "0.00";                        
                     }else{                       
                         sum = parseFloat(obj[3].sum_price).toFixed(2);
                     }
-                    if(obj[4] == "none"){
+                    if(obj[4] == "none" || obj[4].discount == null){
                         dis = "0.00";                        
                     }else{                      
                         dis = parseFloat(obj[4].discount).toFixed(2);
                     }
-                    if(obj[5] == "none"){
+                    if(obj[5] == "none" || obj[5].total_price == null){
+                        total = "0.00";                        
+                    }else{                      
+                        total = parseFloat(obj[5].total_price).toFixed(2);
+                    }  
+                }
+            }); 
+            setTimeout(function() {
+                get_cash();
+            }, 2000);  
+        });
+
+        function get_cash(){
+            var d = new Date($.now());            
+            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
+            var b_id = $('#branch option:selected').val();
+            //console.log(b_id);
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
+                method:"POST",
+                data:{'b_id':b_id,
+                'date':datetime},
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    console.log(obj);
+                    if(obj[0] == "none" || obj[0].total_price == null){
+                        $('#cash').text("0.00 บาท");
+                        cash = "0.00"; 
+                        check = false;                       
+                    }else{
+                        $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
+                        cash = parseFloat(obj[0].total_price).toFixed(2);
+                        before_dt = obj[0][1]; 
+                        check = true;                                 
+                    }
+                    if(obj[1] == "none" || obj[1].total_price == null){
+                        transfer = "0.00";                        
+                    }else{                      
+                        transfer = parseFloat(obj[1].total_price).toFixed(2);
+                    }
+                    if(obj[2] == "none" || obj[2].total_price == null){
+                        debtor = "0.00";                        
+                    }else{                      
+                        debtor = parseFloat(obj[2].total_price).toFixed(2);
+                    }
+                    if(obj[3] == "none" || obj[3].sum_price == null){
+                        sum = "0.00";                        
+                    }else{                       
+                        sum = parseFloat(obj[3].sum_price).toFixed(2);
+                    }
+                    if(obj[4] == "none" || obj[4].discount == null){
+                        dis = "0.00";                        
+                    }else{                      
+                        dis = parseFloat(obj[4].discount).toFixed(2);
+                    }
+                    if(obj[5] == "none" || obj[5].total_price == null){
                         total = "0.00";                        
                     }else{                      
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }                         
                 }
-            });    
+            }); 
+            setTimeout(function() {
+                get_cash();
+            }, 1000);    
         }
 
         function cash_rec(){
             if(check){             
-                var b_id = $('#branch option:selected').val();               
-                /*$.ajax({
+                var b_id = $('#branch option:selected').val();      
+                var winprint = window.open();         
+                $.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
                     method:"POST",
                     data:{'b_id':b_id,
@@ -180,7 +190,7 @@
                         'total':cash},
                     success:function(data)
                     {
-                        if(data == "success"){*/
+                        if(data == "success"){
                         var d = before_dt.split(" ");
                         var ds = d[0].split("-");
                         var date = ds[2] + "/" + ds[1] + "/" + ds[0];
@@ -188,8 +198,7 @@
                         var time = t[0]+":"+t[1];
                         var d2 = datetime.split(" ");
                         var t2 = d2[1].split(":");
-                        var time2 = t2[0]+":"+t2[1];                                             
-                        var winprint = window.open();
+                        var time2 = t2[0]+":"+t2[1];                       
                         winprint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 3cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 1.7cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>"+   
                         "<div style='width: 7.5cm;'>"+
                         "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
@@ -227,10 +236,10 @@
                             winprint.print();
                             winprint.close();
                             location.reload(true);
-                        //}
+                        }
                         location.reload(true);
-                    /*}
-                });*/
+                    }
+                });
             }
         }
 
@@ -258,7 +267,8 @@
                 <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
                 <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
                 <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                     
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>  
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                   
                 <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
@@ -287,7 +297,7 @@
                                 <h4>สาขา : </h4>
                             </div>
                             <div class="col-5 text-left">                                
-                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
               
                                 </select>
                             </div>

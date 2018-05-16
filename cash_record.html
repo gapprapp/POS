@@ -115,12 +115,17 @@
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }  
                 }
-            });            
+            }); 
+            setTimeout(function() {
+                get_cash();
+            }, 2000);  
         });
 
         function get_cash(){
+            var d = new Date($.now());            
+            datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();            
             var b_id = $('#branch option:selected').val();
-           // alert(b_id);
+            //console.log(b_id);
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_cash.php",
                 method:"POST",
@@ -166,12 +171,16 @@
                         total = parseFloat(obj[5].total_price).toFixed(2);
                     }                         
                 }
-            });    
+            }); 
+            setTimeout(function() {
+                get_cash();
+            }, 1000);    
         }
 
         function cash_rec(){
             if(check){             
-                var b_id = $('#branch option:selected').val();               
+                var b_id = $('#branch option:selected').val();      
+                var winprint = window.open();         
                 $.ajax({
                     url:"http://150.95.26.163:8080/gitmew/php/add_cash.php",
                     method:"POST",
@@ -189,8 +198,7 @@
                         var time = t[0]+":"+t[1];
                         var d2 = datetime.split(" ");
                         var t2 = d2[1].split(":");
-                        var time2 = t2[0]+":"+t2[1];                                             
-                        var winprint = window.open();
+                        var time2 = t2[0]+":"+t2[1];                       
                         winprint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 1cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 1cm; float: left; width: 40%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;} .left-title{margin-left: 0.5cm; float: left; width: 3cm; text-align: left; font-size: 0.9em;} .mid-title{float: left; width: 1.7cm; text-align: left; font-size: 0.9em;} .right-title{margin-right: 0.5cm; float: left; width: 1.8cm; text-align: right; font-size: 0.9em;}</style>"+   
                         "<div style='width: 7.5cm;'>"+
                         "<div class='txt-ct'>ใบสรุปการขายแต่ละกะ</div>"+
@@ -228,6 +236,12 @@
                             winprint.print();
                             winprint.close();
                             location.reload(true);
+                        }else {
+                            $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'พบปัญหา',
+                            content: 'กรุณาลองอีกครั้ง',
+                            });
                         }
                         location.reload(true);
                     }
@@ -259,7 +273,8 @@
                 <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
                 <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
                 <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                     
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>  
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                   
                 <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
@@ -288,7 +303,7 @@
                                 <h4>สาขา : </h4>
                             </div>
                             <div class="col-5 text-left">                                
-                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <select id="branch" onchange="get_cash()" type="button" style="letter-spacing: 2px;" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
               
                                 </select>
                             </div>

@@ -15,11 +15,25 @@
     $name_cus = $_POST['name_cus'];
     $user_id = $_POST['user_id'];
 
-    mysqli_autocommit($conn,FALSE); 
+    mysqli_begin_transaction($conn); 
     if($cus == -1){
         $sql = "INSERT INTO customer (customer_name) VALUE ('$name_cus')"; 
         $result = mysqli_query($conn, $sql);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $cus = mysqli_insert_id($conn);	
+        if($cus == 0){
+            $sql = "SELECT customer_id FROM customer WHERE customer_name = '$name_cus'"; 
+            $result = mysqli_query($conn, $sql);
+            if(mysqli_num_rows($result) > 0){    
+                while($row = mysqli_fetch_array($result)){  
+                    $cus = $row['customer_id'];
+                }
+            }
+        }
     }   
    
     $sql = "SELECT order_number,count FROM sale_order ORDER BY order_id DESC LIMIT 1"; 
@@ -38,6 +52,11 @@
                 payment_type,note,user_id,branch_id,total_discount,get_money,change_money,count) 
                 VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$user_id','$b','$dis','$get_money','$change_money','$count')"; 
                 $result2 = mysqli_query($conn, $sql2);
+                if(!$result2){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
                 $last_id = mysqli_insert_id($conn);	
             }else{
                 $year = "S" . $year_cur . "-";
@@ -46,6 +65,11 @@
                 payment_type,note,user_id,branch_id,total_discount,get_money,change_money,count) 
                 VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$user_id','$b','$dis','$get_money','$change_money',1)"; 
                 $result3 = mysqli_query($conn, $sql3);
+                if(!$result3){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
                 $last_id = mysqli_insert_id($conn);	
             }           
         }
@@ -56,6 +80,11 @@
         payment_type,note,user_id,branch_id,total_discount,get_money,change_money,count) 
         VALUE ('$order_number','$cus','$dt','$sum','$final_price','$pay','$comment','$user_id','$b','$dis','$get_money','$change_money',1)"; 
         $result1 = mysqli_query($conn, $sql1);
+        if(!$result1){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $last_id = mysqli_insert_id($conn);	
     }   
     foreach ($obj as $data)
@@ -69,19 +98,22 @@
       
         $sql1 = "INSERT INTO sale_order_item (order_id,item_id,prod_id,prod_price,prod_amount,prod_discount,bonus)
          VALUE ('$last_id','$item','$prod_id','$price','$amt','$discount','$bonus')"; 
-        $result1 = mysqli_query($conn, $sql1);       
+        $result1 = mysqli_query($conn, $sql1);  
+        if(!$result1){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }     
        
         $sql_up = "UPDATE product_branch SET amount = amount-'$amt' WHERE branch_id = '$b' AND prod_id = '$prod_id'"; 
-        $result_up = mysqli_query($conn, $sql_up);        
+        $result_up = mysqli_query($conn, $sql_up);    
+        if(!$result_up){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }    
     }
-
-    if($result){
-        echo $order_number;
-        mysqli_commit($conn);          
-    }else{
-        echo "fail";
-        mysqli_rollback($conn);
-    }
-
+    mysqli_commit($conn); 
+    echo $order_number;
     mysqli_close($conn);
 ?>

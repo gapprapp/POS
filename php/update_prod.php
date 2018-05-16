@@ -13,19 +13,39 @@
     $last_unit = "";   
 
     //--> update or insert amount to product branch
-    mysqli_autocommit($conn,FALSE); 
+    mysqli_begin_transaction($conn);
     $query = "SELECT amount FROM product_branch WHERE prod_id = '$prod_id'";
     $result_q = mysqli_query($conn, $query);
     if(mysqli_num_rows($result_q) > 0){ 
         $sql_up = "UPDATE product_branch SET amount = '$amt1' WHERE branch_id = 1 AND prod_id = '$prod_id'"; 
         $result_up = mysqli_query($conn, $sql_up);
+        if(!$result_up){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $sql_up = "UPDATE product_branch SET amount = '$amt2' WHERE branch_id = 2 AND prod_id = '$prod_id'"; 
         $result_up = mysqli_query($conn, $sql_up);
+        if(!$result_up){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
     }else{
         $sql2 = "INSERT INTO product_branch(prod_id,branch_id,amount) VALUES ('$prod_id',1,'$amt1')";
         $result = mysqli_query($conn, $sql2);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $sql3 = "INSERT INTO product_branch(prod_id,branch_id,amount) VALUES ('$prod_id',2,'$amt2')";
         $result = mysqli_query($conn, $sql3);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
     }//--> end
 
     //--> get id type and unit or insert new type and new unit
@@ -38,6 +58,11 @@
     }else{
         $sql = "INSERT INTO prod_type(prod_type_name) VALUE('$type')";
         $result = mysqli_query($conn, $sql);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $last_type = mysqli_insert_id($conn);	
     }
 
@@ -50,21 +75,24 @@
     }else{
         $sql = "INSERT INTO unit(unit_name) VALUE('$unit')";
         $result = mysqli_query($conn, $sql);
+        if(!$result){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
         $last_unit = mysqli_insert_id($conn);	
     }//--> end
    
     //--> update product
     $sql1 = "UPDATE product SET barcode = '$barcode', prod_name = '$name', prod_type = '$last_type',
     unit_id = '$last_unit', prod_cost = '$fund', prod_price = '$price' WHERE prod_id = '$prod_id'"; 
-    $result = mysqli_query($conn, $sql1);  
-
-    if($result){
-        echo "success";
-        mysqli_commit($conn);          
-    }else{
-        echo "fail";
+    $result = mysqli_query($conn, $sql1);
+    if(!$result){
         mysqli_rollback($conn);
-    }
-
+        echo "fail";
+        exit;
+    } 
+    mysqli_commit($conn); 
+    echo "success";
     mysqli_close($conn);	
 ?>

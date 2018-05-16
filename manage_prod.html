@@ -396,6 +396,12 @@
             $("#unit-" + arg).prop('disabled', true);
             $("#fund-" + arg).prop('disabled', true);
             $("#price-" + arg).prop('disabled', true);
+          }else {
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'พบปัญหา',
+              content: 'กรุณาลองอีกครั้ง',
+            });
           }
         }
       });
@@ -1397,6 +1403,12 @@
                         //c_unit = 0;
                       }
                       $("#unit-del-" + arg).closest('.row').remove();
+                    }else {
+                      $.alert({
+                        icon: 'fa fa-warning',
+                        title: 'พบปัญหา',
+                        content: 'กรุณาลองอีกครั้ง',
+                      });
                     }
                   }
                 });                
@@ -1502,6 +1514,12 @@
           console.log(data);
           if(data == "success"){
             show_info(prod_id,$('#info-prod_name').text());
+          }else {
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'พบปัญหา',
+              content: 'กรุณาลองอีกครั้ง',
+            });
           }
         }
       });
@@ -1707,6 +1725,12 @@
                         //c_cus--;
                       }
                       $("#cus-del-" + arg).closest('.row').remove();
+                    }else {
+                      $.alert({
+                        icon: 'fa fa-warning',
+                        title: 'พบปัญหา',
+                        content: 'กรุณาลองอีกครั้ง',
+                      });
                     }
                   }
                 });                
@@ -1823,6 +1847,12 @@
           console.log(data);
           if(data == "success"){
             show_info(prod_id,$('#info-prod_name').text());
+          }else {
+            $.alert({
+              icon: 'fa fa-warning',
+              title: 'พบปัญหา',
+              content: 'กรุณาลองอีกครั้ง',
+            });
           }
         }
       }); 
@@ -1889,7 +1919,8 @@
         <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
         <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>    
         <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-        <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                   
+        <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
+        <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                
         <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
       </ul>
     </div>

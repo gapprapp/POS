@@ -3,19 +3,15 @@
     $b_id  = $_POST['b_id'];
     $user_id  = $_POST['user_id'];
     $date  = $_POST['date'];
-    $total  = $_POST['total'];
-    
-    mysqli_autocommit($conn,FALSE); 
+    $total  = $_POST['total'];    
+   
     $sql = "INSERT INTO cash_record (branch_id, date_time, record_by, cash) VALUES('$b_id', '$date', '$user_id', '$total')";
     $result = mysqli_query($conn, $sql); 
 
     if($result){
-        echo "success";
-        mysqli_commit($conn);          
+        echo "success";      
     }else{
-        echo "fail";
-        mysqli_rollback($conn);
+        echo "fail";       
     }
-
     mysqli_close($conn);	
 ?>
