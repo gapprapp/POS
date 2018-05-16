@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+     <!-- Easy-autocomplete -->
+     <script src="js/jquery.easy-autocomplete.js"></script>
+     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet" >
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+              <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>                     
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #860b0b;">
+              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                <h3 id="nav-title">คืนสินค้า</h3>
+              </div>
+            </nav>
+            
+            <!-- 4 4 4 4 4 4 4 4 -->
+            <div class="row">
+              <div class="col-2"></div>
+              <div id="date" class="col-2 text-left text-muted"></div>
+              <div class="col-4"></div>
+              <div class="col-3 text-left text-muted">ผู้ทำรายการ :
+                <div id="user" class="btn-group col-4 text-center text-muted">
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-2"></div>
+              <div class="col-5 text-left text-muted">ชื่อลูกค้า :
+                <div id="cus" class="btn-group text-center text-muted">
+                  สมพร สายเขียว
+                </div>
+              </div>
+              <div class="col-1"></div>
+              <div class="col-4 text-left text-muted dropdown">ของออกจาก :
+                <div id="cus" class="btn-group text-center text-muted">
+                  สิงห์บุรี
+                </div>
+              </div>
+            </div>
+            </div>
+            <hr style="width: 90%; margin-top: 0;">
+
+            <div class="container-fullwidth justify-content-center">
+              <!-- Title -->
+              <div class="row" style="margin-left: 50px; margin-bottom: 10px;">
+                <div class="col-1 text-center">แถม</div>
+                <div class="col-2 text-center">บาร์โค้ด</div>
+                <div class="col-3 text-center">รายการสินค้า</div>
+                <div class="col-1 text-center">ราคา</div>
+                <div class="col-1 text-center">จำนวน</div>
+                <div class="col-1 text-center">หน่วย</div>
+                <div class="col-1 text-center">รวม</div>
+                <div class="col-1 text-center">ส่วนลด</div>
+                <div class="col-1"></div>
+              </div>
+              <!-- Show -->
+              <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
+                <!-- Append here!! -->
+              </div>
+              <!-- Input -->
+              <div class="row" style="margin-left: 50px;">
+                <div class="col-1" style="padding-left: 5px; padding-right: 5px;">
+                  <div class="input-group">
+                    <span class="input-group-addon">
+                      <input id="box" type="checkbox" class="btn btn-default">
+                    </span>
+                    <input id="no" type="text" class="form-control text-center" readonly>
+                  </div>
+                </div>
+                <div class="col-2" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="barcode" type="text" class="form-control text-center" readonly>
+                </div>
+                <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
+                </div>
+                <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="price" type="number" class="form-control text-center no-spin" readonly>
+                </div>
+                <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
+                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" oninput ="chng_amt()" data-index="3">
+                </div>
+                <div class="col-1">
+                  <input id="unit" type="text" class="form-control text-center" readonly>
+                </div>
+                <div class="col-1" style='padding-left: 0px; padding-right: 0px;'>
+                  <input id="total" type="text" class="form-control text-center" readonly>
+                </div>
+                <div class="col-1" style='padding-right: 0px;'>
+                  <input id="prod-discount" type="number" class="form-control text-center no-spin" data-index="4">
+                </div>
+                <div class="col-1"></div>              
+              </div> <br>
+
+              <!-- Two fuking btn-->
+              <div class="row" style="margin-right: 25px;">
+                <div class="col-9"></div>
+                <div class="col-3 text-center">
+                  <button class="btn btn-success" onclick="add()">เพิ่มรายการ</button>
+                  <button class="btn btn-danger" onclick="reset()">ค่าเริ่มต้น</button>
+                </div>
+              </div>
+            </div>
+        </div><!-- End page content wrapper -->
+      <!-- The Modal -->
+      <div class="modal fade" id="myModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">คิดเงิน</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="container">
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;">
+                    <h3>รวม : </h3>
+                  </div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="net-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #5dbe5d;"
+                      readonly>
+                  </div>
+                  <div class="col-2"></div>
+                </div><br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ลด : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="discount-money" onchange="chng_discount()"  data-index="5" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #fd8b5e;">
+                  </div>
+                  <div class="col-2"></div>
+                </div> <br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>สุทธิ : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="final-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #ffffff;"
+                    readonly>
+                  </div>
+                  <div class="col-2"></div>
+                </div>
+                <br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>รับ : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="get-money" type="number" data-index="6" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style=" background: #767676;  color: #DBBD5B;">
+                  </div>
+                  <div class="col-2"></div>
+                </div> <br>
+
+                <div class="row">
+                  <div class="col-2"></div>
+                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ทอน : </h3></div>
+                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
+                    <input id="change-money" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #A5FAE9"
+                    readonly>
+                  </div>
+                  <div class="col-2"></div>
+                </div> <br>
+            </div> <br>
+
+            <!-- Modal footer -->
+            <div class="col-12 text-center">
+              <button id="btn_save" type="button" class="btn btn-success" data-dismiss="modal" onclick="save()" style="margin-right: 15px;">บันทึก</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+            </div><br>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Print Modal -->
+      <div class="modal fade" id="printModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">ตั้งค่าการพิมพ์</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="col-12 text-center">
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input type="radio" name="print-radio" value="print" checked>พิมพ์</label>
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input type="radio" name="print-radio" value="no">ไม่พิมพ์</label>
+              </div>
+              <div id="print-option-title" class="col-12 text-center">
+                <h5 style="text-decoration: underline;">ตัวเลือก</h5>
+              </div>
+              <div id="print-option" class="col-12 text-center">
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="bill" type="radio" name="print-option" value="bill" checked>ใบเสร็จ</label>
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input id="a4" type="radio" name="print-option" value="a4">ใบรายการขาย(A4)</label>
+              </div><br>
+              <!-- Modal footer -->
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_print_title();">บันทึก</button>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pay Modal -->
+      <div class="modal fade" id="payModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">เงื่อนไขการชำระเงิน</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Pay body -->
+            <div class="modal-body">
+              <div class="col-12 text-center">
+                <label class="radio-inline">
+                  <input type="radio" name="pay-radio" value="เงินสด" checked>เงินสด</label>
+                <label class="radio-inline">
+                  <input type="radio" name="pay-radio" value="เงินโอน">เงินโอน</label>
+                <label class="radio-inline">
+                  <input type="radio" name="pay-radio" value="ลูกหนี้">ลูกหนี้</label>
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="comment">หมายเหตุ:</label>
+                  <textarea class="form-control" rows="5" id="comment" disabled></textarea>
+                </div>
+              </div>
+              <br>
+              <!-- Modal footer -->
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_pay_title();">บันทึก</button>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- End Wrapper -->
+    <script>
+      //Date
+      var d = new Date($.now());
+      $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
+    </script>
+</body>
+</html>
