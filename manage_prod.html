@@ -1469,6 +1469,16 @@
     
     unit_add = [];    
     function save_unit(){
+      for(var i = 1; i <= c_unit; i++){
+        if($("#set-unit-"+i).is(':visible')){  
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'พบปัญหา',
+            content: 'กรุณาแก้ไขให้เรียบร้อยก่อนบันทึก',
+          });        
+          return 0;  
+        }   
+      }     
       console.log(start_unit);
       for(var u = 1; u < start_unit; u++){
         unit_get[u-1].unit = $("#show-unit-"+u).text();
@@ -1513,6 +1523,11 @@
         success: function(data) {
           console.log(data);
           if(data == "success"){
+            $.alert({
+              icon: 'fa fa-check-circle',
+              title: 'สำเร็จ',
+              content: 'บันทึกเสร็จสิ้น',
+            });
             show_info(prod_id,$('#info-prod_name').text());
           }else {
             $.alert({
@@ -1803,6 +1818,16 @@
    
     cus_add = [];  
     function save_cus(){     
+      for(var i = 1; i <= c_cus; i++){
+        if($("#set-cus-"+i).is(':visible')){          
+          $.alert({
+            icon: 'fa fa-warning',
+            title: 'พบปัญหา',
+            content: 'กรุณาแก้ไขให้เรียบร้อยก่อนบันทึก',
+          });        
+          return 0;   
+        }    
+      }      
       for(var c = 1; c < start_cus; c++){
         cus_get[c-1].cus_id = $("#span-cus-"+c).text();
         cus_get[c-1].cus_price = $("#show-cus-price-"+c).text();      
@@ -1846,6 +1871,11 @@
         success: function(data) {
           console.log(data);
           if(data == "success"){
+            $.alert({
+              icon: 'fa fa-check-circle',
+              title: 'สำเร็จ',
+              content: 'บันทึกเสร็จสิ้น',
+            });
             show_info(prod_id,$('#info-prod_name').text());
           }else {
             $.alert({
