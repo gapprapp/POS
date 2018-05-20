@@ -605,7 +605,8 @@
             if(cus_tel == ""){
               cus_tel = "-";
             }
-            $('#branch option:selected').text(obj[0].branch_name); 
+            setTimeout(function() { $('#branch').val(branch_id);}, 1000);
+            
             $('#date').text("วันที่ : " + date); 
             //$('#number').text(order_num); 
             $('#user').text(user);         
@@ -1409,7 +1410,12 @@
                     WinPrint.focus();
                     //WinPrint.document.write("<script>window.print();</scr"+"ipt>");   
                     location.reload(true);
-                  }             
+                  } 
+                  $.alert({
+                    icon: 'fa fa-check-circle',
+                    title: 'สำเร็จ',
+                    content: 'บันทึกเสร็จสิ้น',
+                  });            
                   location.reload(true);
                 }else{
                   $.alert({

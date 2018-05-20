@@ -22,7 +22,7 @@
                 while($row = mysqli_fetch_array($result)){
                     $amt = $row['prod_amount'];    
                     $prod_id = $row['prod_id'];      
-                    $query = "UPDATE product_branch SET amount=amount-'$amt' WHERE branch_id = '$old_b' AND prod_id = '$prod_id'";  
+                    $query = "UPDATE product_branch SET amount=amount+'$amt' WHERE branch_id = '$old_b' AND prod_id = '$prod_id'";  
                     $result1 = mysqli_query($conn, $query);
                     if(!$result1){
                         mysqli_rollback($conn);
@@ -30,7 +30,7 @@
                         exit;
                     }
 
-                    $query = "UPDATE product_branch SET amount=amount+'$amt' WHERE branch_id = '$b_id' AND prod_id = '$prod_id'";  
+                    $query = "UPDATE product_branch SET amount=amount-'$amt' WHERE branch_id = '$b_id' AND prod_id = '$prod_id'";  
                     $result1 = mysqli_query($conn, $query);
                     if(!$result1){
                         mysqli_rollback($conn);
