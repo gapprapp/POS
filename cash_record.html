@@ -84,8 +84,8 @@
                         cash = "0.00"; 
                         check = false;                       
                     }else{
-                        $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
                         cash = parseFloat(obj[0].total_price).toFixed(2);
+                        $('#cash').text(cash.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " บาท");
                         before_dt = obj[0][1]; 
                         check = true;                                 
                     }
@@ -139,9 +139,9 @@
                         $('#cash').text("0.00 บาท");
                         cash = "0.00"; 
                         check = false;                       
-                    }else{
-                        $('#cash').text(parseFloat(obj[0].total_price).toFixed(2) + " บาท");
+                    }else{                       
                         cash = parseFloat(obj[0].total_price).toFixed(2);
+                        $('#cash').text(cash.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " บาท");
                         before_dt = obj[0][1]; 
                         check = true;                                 
                     }

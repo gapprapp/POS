@@ -16,7 +16,7 @@
   
   $sql;
 	if($sort_by == "none" && $order == "none"){
-		if($date || $cus_name || $number || $user_name || $pay){		
+		if($date || $cus_name || $number || $user_name || $pay || $b_id){		
 			$sql = "SELECT o.order_id,o.order_number,c.customer_name,u.user_name,b.branch_name,o.payment_type,o.total_price,o.date_time
 			FROM sale_order o INNER JOIN customer c ON o.customer_id = c.customer_id 
 			INNER JOIN user u ON o.user_id = u.user_id INNER JOIN branch b ON o.branch_id = b.branch_id
@@ -38,7 +38,7 @@
 		}
 		
 	}else if($sort_by != "none" && $order != "none"){
-		if($date || $cus_name || $number || $user_name || $pay){
+		if($date || $cus_name || $number || $user_name || $pay || $b_id){
 			if($order == "asc"){
         $sql = "SELECT o.order_id,o.order_number,c.customer_name,u.user_name,b.branch_name,o.payment_type,o.total_price,o.date_time
         FROM sale_order o INNER JOIN customer c ON o.customer_id = c.customer_id 
