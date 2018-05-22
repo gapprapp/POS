@@ -79,6 +79,26 @@
           });
           window.history.back();
       }   
+      
+      $("#search-barcode").focus();
+      $(document).keydown(function(objEvent) {               
+          if (objEvent.keyCode == 13) {  //enter pressed
+              objEvent.preventDefault();           
+              if($("#search-type").is(":focus") || $("#search-name").is(":focus") || $("#search-barcode").is(":focus")){
+                  search();
+              }      
+          }
+          if (objEvent.keyCode == 113) {  //f2 pressed
+              search();
+          }
+          if (objEvent.keyCode == 115) {  //f4 pressed
+              add_prod();
+          }
+          if (objEvent.keyCode == 118) {  //f7 pressed
+              showall();          
+          }
+      })         
+
       var options_cus = {
         url: function(phrase) {
           return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
@@ -412,6 +432,7 @@
     var searched_barcode;
 
     function search() {
+      $("#search-barcode").focus();
       searched_name = $("#search-name").val();
       searched_type = $("#search-type").val();
       searched_barcode = $("#search-barcode").val();
@@ -1978,10 +1999,10 @@
           <div class="col-3 text-center">
             ชื่อสินค้า
           </div>
-          <div class="col-2 text-center">
+          <div class="col-1 text-center">
             ประเภท
           </div>
-          <div class="col-3 text-center"></div>
+          <div class="col-4 text-center"></div>
         </div>
         <div class="row">
           <div class="col-1"></div>
@@ -1995,13 +2016,13 @@
           <div class="col-3 text-center">
             <input id="search-name" type="text" class="form-control text-center">
           </div>
-          <div class="col-2 text-center">
+          <div class="col-1 text-center">
             <input id="search-type" type="text" class="form-control text-center">
           </div>
-          <div class="col-3 text-left">
-            <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
-            <button class="btn btn-info btn-md" onclick="add_prod();">เพิ่มสินค้า</button>
-            <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด</button>
+          <div class="col-4 text-left">
+            <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา [F2]</button>
+            <button class="btn btn-info btn-md" onclick="add_prod();">เพิ่มสินค้า [F4]</button>
+            <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด [F7]</button>
           </div>
         </div>
       </div>

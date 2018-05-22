@@ -75,7 +75,22 @@
                     content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
                 });
                 window.history.back();
-            }          
+            } 
+            $("#search-billno").focus();
+            $(document).keydown(function(objEvent) {               
+                if (objEvent.keyCode == 13) {  //enter pressed
+                    objEvent.preventDefault();           
+                    if($("#search-billno").is(":focus") || $("#search-name").is(":focus") || $("#search-user").is(":focus") ){
+                        search();
+                    }      
+                }
+                if (objEvent.keyCode == 113) {  //f2 pressed
+                    search();
+                }
+                if (objEvent.keyCode == 115) {  //f4 pressed
+                    shift();
+                }              
+            })         
 
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
@@ -293,6 +308,7 @@
         var searched_billno = "";      
         var searched_pay = "";       
         function search() {
+            $("#search-billno").focus();
             searched_name = $("#search-name").val();
             searched_user = $("#search-user").val();
             searched_billno = $("#search-billno").val();          
@@ -889,6 +905,7 @@
         function shift(){
             // load รายการขายภายในกะ
             // info-btn กดแล้วไปที่หน้า shift_bill?bill=1 (1-> bill_id)
+            $("#search-billno").focus();
             $('#btn-shift').prop('disabled', true);
 
             $(".list-group-item").remove();
@@ -991,10 +1008,10 @@
                     </div>
                     <!-- End Date Picker -->
                     <div class="col-1 text-center">
-                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
+                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา [F2]</button>
                     </div>
                     <div class="col-1 text-center" style="padding-left: 0px;">
-                        <button id='btn-shift' class="btn btn-primary btn-md" onclick="shift()">รายการขายในกะ</button>
+                        <button id='btn-shift' class="btn btn-primary btn-md" onclick="shift()">รายการขายในกะ [F4]</button>
                     </div>
                 </div>
             </div>

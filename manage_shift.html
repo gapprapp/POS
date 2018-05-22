@@ -75,6 +75,20 @@
                 $("#mb").remove();
                 $("#mp").remove();
             }   
+
+            $("#search-user").focus();
+                $(document).keydown(function(objEvent) {               
+                    if (objEvent.keyCode == 13) {  //enter pressed
+                        objEvent.preventDefault();           
+                        if($("#search-user").is(":focus")){
+                            search();
+                        }      
+                    }
+                    if (objEvent.keyCode == 113) {  //f2 pressed
+                        search();
+                    }                   
+            })         
+
             $.ajax({
                 url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
                 type:"GET",
@@ -172,6 +186,7 @@
 
         var searched_user = "";       
         function search() {
+            $("#search-user").focus();
             searched_user = $("#search-user").val();            
 
             $('#btn-search').prop('disabled', true);
@@ -798,7 +813,7 @@
                         </div>
                     </div>
                     <div class="col-1 text-center">
-                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
+                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา [F2]</button>
                     </div>
                     <div class="col-1"></div>
                 </div>

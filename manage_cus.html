@@ -62,6 +62,25 @@
                 $("#mb").remove();
                 $("#mp").remove();
             }   
+
+            $("#search-name").focus();
+            $(document).keydown(function(objEvent) {               
+                if (objEvent.keyCode == 13) {  //enter pressed
+                    objEvent.preventDefault();           
+                    if($("#search-tel").is(":focus") || $("#search-name").is(":focus")){
+                        search();
+                    }      
+                }
+                if (objEvent.keyCode == 113) {  //f2 pressed
+                    search();
+                }
+                if (objEvent.keyCode == 115) {  //f4 pressed
+                    add_cus();
+                }
+                if (objEvent.keyCode == 118) {  //f7 pressed
+                    showall();          
+                }
+            })         
             // Get max
             var path = "http://150.95.26.163:8080/gitmew/php/get_max_cus.php";
             $.post(path, {
@@ -230,6 +249,7 @@
         var searched_name;
         var searched_tel;
         function search() {
+            $("#search-name").focus();
             searched_name = $("#search-name").val();
             searched_tel = $("#search-tel").val();
 
@@ -962,7 +982,7 @@
                     <div class="col-2 text-center">
                         เบอร์โทร
                     </div>
-                    <div class="col-3 text-center"></div>
+                    <div class="col-4 text-center"></div>
                     <div class="col-1"></div>
                 </div>
                 <div class="row">
@@ -977,10 +997,10 @@
                     <div class="col-2 text-center">
                         <input id="search-tel" type="number" class="form-control text-center">
                     </div>
-                    <div class="col-3 text-center">
-                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา</button>
-                        <button class="btn btn-info btn-md" onclick="add_cus();">เพิ่มลูกค้า</button>
-                        <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด</button>
+                    <div class="col-4 text-center">
+                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา [F2]</button>
+                        <button class="btn btn-info btn-md" onclick="add_cus();">เพิ่มลูกค้า [F4]</button>
+                        <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด [F7]</button>
                     </div>
                     <div class="col-1"></div>
                 </div>
