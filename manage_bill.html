@@ -98,9 +98,11 @@
                 success:function(data)
                 {
                     var obj = jQuery.parseJSON(data);
-                    $.each(obj, function(i, field){
+                    $('#ul-branch').append("<li id='li-branch-0' class='li-branch' onclick='setbranch(0);' style='padding-bottom: 5px;'>ทั้งหมด</li>");
+                    $.each(obj, function(i, field){                        
                         $('#ul-branch').append("<li id='li-branch-"+field.branch_id+"' class='li-branch' onclick='setbranch("+field.branch_id+");' style='padding-bottom: 5px;'>"+field.branch_name+"</li>");
                     });
+                    $('#branch').text("ทั้งหมด");
                 }
             });             
             // datepicker
@@ -209,6 +211,24 @@
             });            
         });
 
+        window.addEventListener('popstate', function(event) { /* เมื่อ event popstate ทำงาน จะสั่งให้ทำอะไร? */
+            var state = event.state; /* ดึง data ของ history entry นั้นๆ */
+            if (state !== null) { /* ถ้า history entry นี้ มี data... */
+                if(state.title == "search"){
+                    $("#search-name").val(state.name);
+                    $("#search-user").val(state.user);
+                    $("#search-billno").val(state.bill);          
+                    $("#dpicker").val(state.dt);
+                    dt = state.dt;
+                    setbranch(state.b_id);
+                    setpay(state.pay);
+                    search();
+                }else if(state.title == "shift"){
+                    shift();
+                }
+            }
+        });
+
         function open_edit(arg) {
             if(localStorage.role == "manager"){
                 $.alert({
@@ -307,15 +327,23 @@
         var searched_user = "";
         var searched_billno = "";      
         var searched_pay = "";       
-        function search() {
+        function search() {            
             $("#search-billno").focus();
             searched_name = $("#search-name").val();
             searched_user = $("#search-user").val();
             searched_billno = $("#search-billno").val();          
             searched_pay = $("#pay").html(); 
+            var data = {title:'search',
+                        name: searched_name,
+                        user: searched_user,
+                        bill: searched_billno,
+                        pay: searched_pay,
+                        b_id: b_id,
+                        dt: dt};
             if(searched_pay == "ทั้งหมด"){
                 searched_pay = "";
-            }  
+            }             
+            history.pushState(data, "search", "");
             
             $('#btn-search').prop('disabled', true);
 
@@ -634,7 +662,7 @@
                 order = "none";
                 sort_by = "none";
             }
-
+          
             $(".list-group-item").remove();
             max_page = page = prev_page = 1;
             pagination('sort');
@@ -736,7 +764,7 @@
 
                 //console.log("nd");
                 if (page == 1) page++;
-                else if (page == max_page_no) page--;
+                else if (page == max_pap-ge_no) page--;
                 if ($("#pg-nd").hasClass('active')) return 0;
                 else $("#pg-nd").attr('class', 'active');
                 if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
@@ -844,6 +872,7 @@
                     rd = $("#pg-rd a").text(parseInt(max_page_no));
                 }
             }
+        
 
             // Un-Disabled li-prev
             if (page > 1) {
@@ -872,9 +901,13 @@
             window.location = "login.html";
         }
 
-        var b_id = 1;
+        var b_id = "";
         function setbranch(arg){
-            b_id = arg;
+            if(arg == 0){
+                b_id = "";
+            }else{
+                b_id = arg;
+            }            
             var b = $('#li-branch-'+arg).text()
             $("#branch").text(b);
         }
@@ -895,9 +928,9 @@
         function bill_detail(arg,sft){
             var order_id = $('#span-'+arg).html();
             if(sft == 1){
-                window.location = "shift_bill.html?order="+order_id;
+                window.open("shift_bill.html?order="+order_id, '_blank');               
             }else{
-                window.location = "bill_info.html?order="+order_id;
+                window.open("bill_info.html?order="+order_id, '_blank');              
             }   
             
         }
@@ -905,6 +938,8 @@
         function shift(){
             // load รายการขายภายในกะ
             // info-btn กดแล้วไปที่หน้า shift_bill?bill=1 (1-> bill_id)
+            var data = {title:'shift'};
+            history.pushState(data, "shift", "");
             $("#search-billno").focus();
             $('#btn-shift').prop('disabled', true);
 
@@ -985,7 +1020,7 @@
 
                     <div class="col-1 text-center no-pd">
                         <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">สิงห์บุรี</button>
-                        <ul id="ul-branch" class="dropdown-menu drop-up text-center">                           
+                        <ul id="ul-branch" class="dropdown-menu drop-up text-center">                                               
                         </ul>
                     </div>
                     <div class="col-1 text-center no-pd">
