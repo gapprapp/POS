@@ -138,12 +138,12 @@
         <!-- Page Content -->
         <div id="page-content-wrapper">
             <div id="offline" class="alert alert-danger alert-dismissible" hidden>
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
+              <button type="button" class="close" onclick="dismiss()">&times;</button>
+              <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
             </div>
             <div id="online" class="alert alert-success alert-dismissible" hidden>
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
+              <button type="button" class="close" onclick="dismiss()">&times;</button>
+              <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
             </div>
             <!-- Navbar -->
             <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #860b0b;">
@@ -789,6 +789,10 @@
     window.addEventListener("offline", function() {
         check_status()
     })
+    function dismiss(){     
+      $("#online").prop("hidden",true);
+      $("#offline").prop("hidden",true);
+    }
 
     function check_status(){
         if (navigator.onLine) {
