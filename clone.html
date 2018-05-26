@@ -10,111 +10,962 @@
     <title>PPS Auto Group</title>
 
     <!-- Bootstrap Import -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+    <!-- Date Picker -->
+    <link href="css/datepicker.css" rel="stylesheet">
+    <script src="js/datepicker.js"></script>
+    <script src="js/datepicker.th-TH.js"></script>
+
     <!-- Super cool dialog-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
-     <!-- Easy-autocomplete -->
-     <script src="js/jquery.easy-autocomplete.js"></script>
-     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
-     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+    <!-- Easy-autocomplete -->
+    <script src="js/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+    <link rel="stylesheet" href="css/easy-loading.css">
+    <script src="js/easy-loading.js"></script>
 
     <!-- Sidbar -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
     <!-- Main -->
-    <link href="css/untitled.css" rel="stylesheet" >
-
+    <link href="css/untitled.css" rel="stylesheet">
     <style>
-      .conclu-txt{
-        border: solid #767676;
-        margin-left: 5px;
-        padding-top: 5px;
-      }
+        .list-group-item {
+            padding: 6px 20px;
+            margin-bottom: 6px;
+        }
 
-      .conclu-price{
-        border: solid #767676;
-        background: #767676;
-        padding-left: 0px;
-        padding-right: 0px;
-      }
+        .no-pd{
+            padding-left: 0;
+            padding-right: 0;
+        }
 
-      .conclu-price-input{
-        font-weight: bold; 
-        font-size: 22px;
-        padding-top: 4px; 
-        padding-bottom: 4px; 
-        padding-left: 0px; 
-        padding-right: 0px;
-      }
-
-      .check-bill-input{
-        font-weight: bold; 
-        background: #767676; 
-        color: black; 
-        font-size: 26px;
-        padding-top: 5px; 
-        padding-bottom: 4px; 
-      }      
+        .li-branch{
+            cursor: pointer;
+        }
     </style>
 
     <script>
-      function set_print_title(){
-        text_html = "<span><i class='fa fa-print'></i></span>";
-        $('input[name=print-radio]').each(function () {
-          if ($(this).is(":checked")) {
-            checked = $(this).val();
-            if (checked == "no") {
-              $("#print-title").text("ไม่พิมพ์ ");
-              $("#print-title").append(text_html);
-            } else if (checked == "print") {
-              $('input[name=print-option]').each(function () {
-                if ($(this).is(":checked")) {
-                  check = $(this).val();
-                  if(check == "bill"){
-                    $("#print-title").text("ใบเสร็จ ");
-                  }else{
-                    $("#print-title").text("ใบรายการขาย ");
-                  }
-                  $("#print-title").append(text_html);
+        var max_page_no = 0;
+        var dt = "";
+        var role;
+        $(document).ready(function () {  
+            if(!localStorage.user_id){
+                $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณาเข้าสู่ระบบก่อน"
+                });
+                window.location = "login.html";
+            }  
+
+            if(localStorage.role == "user"){
+                $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
+                });
+                window.history.back();
+            } 
+            $("#search-billno").focus();
+            $(document).keydown(function(objEvent) {               
+                if (objEvent.keyCode == 13) {  //enter pressed
+                    objEvent.preventDefault();           
+                    if($("#search-billno").is(":focus") || $("#search-name").is(":focus") || $("#search-user").is(":focus") ){
+                        search();
+                    }      
                 }
-              });
-            }
-          }
+                if (objEvent.keyCode == 113) {  //f2 pressed
+                    search();
+                }
+                if (objEvent.keyCode == 115) {  //f4 pressed
+                    shift();
+                }              
+            })         
+
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
+                type:"GET",
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    $('#ul-branch').append("<li id='li-branch-0' class='li-branch' onclick='setbranch(0);' style='padding-bottom: 5px;'>ทั้งหมด</li>");
+                    $.each(obj, function(i, field){                        
+                        $('#ul-branch').append("<li id='li-branch-"+field.branch_id+"' class='li-branch' onclick='setbranch("+field.branch_id+");' style='padding-bottom: 5px;'>"+field.branch_name+"</li>");
+                    });
+                    $('#branch').text("ทั้งหมด");
+                }
+            });             
+            // datepicker
+            $('[data-toggle="datepicker"]').datepicker({
+                language: 'th-TH',
+                format: 'yyyy-mm-dd',
+                autoHide: true
+            }).change(function (event) {
+                var date = $('#dpicker').val();
+                var split = date.split("-");// yyyy[0] mm[1] dd[2] 
+                var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+                var d = new Date(split[0], split[1] - 1, split[2]);
+                var first = days[d.getDay()];
+                $('#dpicker').val(first + " " + date);
+                dt = split[0] + "-" + split[1] + "-" + split[2];         
+            });
+
+            // Get max
+            var path = "http://150.95.26.163:8080/gitmew/php/get_max_order.php";
+            $.post(path, {
+                'start': 0,
+                "sort_by": sort_by,
+                "order": order,
+            }, function (data) {
+                url = new URL(window.location.href);
+                sl = url.searchParams.get("sl");
+                max_page_no = Math.ceil(data / 100);
+                if (sl == 1) {
+                    // Go last page
+                    pagination('last');
+                } else {
+                    // Get First 100
+                    $.ajax({
+                        type: "POST",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allorder.php",
+                        data: {
+                            'start': 0,
+                            'sort_by': sort_by,
+                            'order': order
+                        },
+                        cache: false,
+                        crossDomain: true,
+                        beforeSend: function(){
+                          EasyLoading.show({                           
+                            text: "กำลังโหลด"                            
+                          });
+                        },
+                        success: function (response) {
+                            EasyLoading.hide();
+                            var obj = jQuery.parseJSON(response);
+                            $.each(obj, function (i, field) {
+
+                            text_html = "<li id='item-"+i+"' class='list-group-item text-center rounded'>"+
+                                    "<span id='span-" + i + "' hidden>" + field.order_id + "</span>"+
+                                    "<div class='row' style='margin-left: 10px;'>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<div class='input-group-prepend'>" +
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
+                                    "<input id=bill_no-"+i+"'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='cus-"+i+"' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='user-"+i+"' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='branch-"+i+"' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
+                                    "<span id='span-branch-" + i + "' hidden></span>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1,"+i+");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
+                                        "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2,"+i+");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
+                                        "<li id='li-branch-3' class='li-branch' onclick='setbranchinput(3,"+i+");' style='padding-bottom: 5px;'>อ่างทอง</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='pay-"+i+"' type='text' class='form-control text-center' value='"+field.payment_type+"' data-toggle='dropdown' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1,"+i+");' style='padding-bottom: 5px;'>เงินสด</li>" +
+                                        "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2,"+i+");' style='padding-bottom: 5px;'>เงินโอน</li>" +
+                                        "<li id='li-pay-3' class='li-branch' onclick='setpayinput(3,"+i+");' style='padding-bottom: 5px;'>ลูกหนี้</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='total-"+i+"' type='text' class='form-control text-center' value='"+field.total_price+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-right no-pd'>"+
+                                    "<div class='input-group-prepend no-pd'>"+
+                                    "<input id='date-"+i+"' type='text' class='form-control text-center' value='"+field.date_time+"' disabled style='margin-right: 5px;'>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>"+
+                                    "<button id='btn-edit-"+i+"' class='btn btn-sm btn-primary' onclick='open_edit(" + i +")' style='margin-right: 5px'>"+
+                                        "<i id='i-edit-"+i+"' class='fa fa-edit'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-info-"+i+"' class='btn btn-sm btn-info' onclick='bill_detail("+i+","+cash+")'>"+
+                                        "<i id='i-info-"+i+"' class='fa fa-info-circle'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
+                                        "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
+                                        "</button>" +
+                                    "</div>"+
+                                "</div>"+
+                            "</li>";
+                            $(".list-group").append(text_html);
+                            });
+                        }
+                    });
+                }
+            });            
         });
-      }
 
-      function set_pay_title() {
-        text_html = "<span><i class='fa fa-money'></i></span>";
-        text_print = "<span><i class='fa fa-print'></i></span>";
-          $('input[name=pay-radio]').each(function () {
-            if ($(this).is(":checked")) {
-              checked = $(this).val();
-              if (checked == "เงินสด") {
-                $("#pay-title").text("เงินสด ");
-                $("#print-title").text("ใบเสร็จ ");
-              }else if (checked == "เงินโอน") {
-                $("#pay-title").text("เงินโอน ");
-                $("#print-title").text("ใบเสร็จ ");
-              }else if (checked == "ลูกหนี้") {
-                $("#pay-title").text("ลูกหนี้ ");
-                $("#print-title").text("ใบรายการขาย ");
-              } $("#pay-title").append(text_html); $("#print-title").append(text_print); 
+        window.addEventListener('popstate', function(event) { /* เมื่อ event popstate ทำงาน จะสั่งให้ทำอะไร? */
+            var state = event.state; /* ดึง data ของ history entry นั้นๆ */
+            if (state !== null) { /* ถ้า history entry นี้ มี data... */
+                if(state.title == "search"){
+                    $("#search-name").val(state.name);
+                    $("#search-user").val(state.user);
+                    $("#search-billno").val(state.bill);          
+                    $("#dpicker").val(state.dt);
+                    dt = state.dt;
+                    setbranch(state.b_id);
+                    setpay(state.pay);
+                    search();
+                }else if(state.title == "shift"){
+                    shift();
+                }
             }
-          });
+        });
+
+        function open_edit(arg) {
+            if(localStorage.role == "manager"){
+                $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: 'อนุญาติสำหรับแอดมินเท่านั้น',
+                });
+                return 0;
+            }
+            $("#btn-info-" + arg).prop('hidden', true);      
+            $("#branch-" + arg).prop('disabled', false);
+            $("#pay-" + arg).prop('disabled', false);
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
+            $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
+            $("#btn-del-" + arg).prop('hidden', false);
         }
 
-        function logout(){
-          localStorage.user_id = "";
-          window.location = "login.html";
+        function del_row(arg) {
+            $.confirm({
+                icon: 'fa fa-warning',
+                title: 'แน่ใจหรือว่าต้องการลบ!',
+                content: 'ต้องการลบรายการสินค้าออกจากฐานข้อมูล!',
+                buttons: {
+                    danger: {
+                        btnClass: 'btn-danger',
+                        text: 'ลบ', // With spaces and symbols,
+                        action: function () {
+                            var order_id = $("#span-" + arg).html();                           
+                            $.ajax({
+                                url: "http://150.95.26.163:8080/gitmew/php/delete_order.php",
+                                type: "POST",
+                                data: {
+                                    'order_id': order_id
+                                },
+                                success: function (data) {
+                                    if (data == "success") {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'รายการสินค้าได้ถูกลบแล้ว',
+                                        });
+                                        $("#item-" + arg).remove();
+                                    } else {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'โปรดลองอีกครั้ง',
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    ยกเลิก: function () { },
+                }
+            });
         }
+
+        function save_edit(arg) {
+            $("#btn-info-"+arg).prop('hidden', false);
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
+            $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-edit');
+            $("#btn-del-" + arg).prop('hidden', true);
+
+            $("#branch-" + arg).prop('disabled', true);
+            $("#pay-" + arg).prop('disabled', true);
+
+            //Ajax save prod.. ..
+            var branch_id = $("#span-branch-" + arg).html();
+            var pay = $("#pay-" + arg).val();
+            var order_id = $("#span-" + arg).html();                    
+
+            $.ajax({
+                url: "http://150.95.26.163:8080/gitmew/php/update_order.php",
+                type: "POST",
+                data: {
+                    'order_id': order_id,
+                    'branch_id': branch_id,
+                    'pay': pay                        
+                },
+                success: function (data) { 
+                    if(data == "fail"){
+                        $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'พบปัญหา',
+                            content: 'กรุณาลองอีกครั้ง',
+                        });
+                    }               
+                }
+            });
+        }
+
+        var searched_name = "";
+        var searched_user = "";
+        var searched_billno = "";      
+        var searched_pay = "";       
+        function search() {            
+            $("#search-billno").focus();
+            searched_name = $("#search-name").val();
+            searched_user = $("#search-user").val();
+            searched_billno = $("#search-billno").val();          
+            searched_pay = $("#pay").html(); 
+            var data = {title:'search',
+                        name: searched_name,
+                        user: searched_user,
+                        bill: searched_billno,
+                        pay: searched_pay,
+                        b_id: b_id,
+                        dt: dt};
+            if(searched_pay == "ทั้งหมด"){
+                searched_pay = "";
+            }             
+            history.pushState(data, "search", "");
+            
+            $('#btn-search').prop('disabled', true);
+
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('search');
+        }
+
+        var max_page = 1,
+            prev_page = 1;
+        function loadmore(arg) {
+            var prev_page_start = (100 * (prev_page - 1));
+            for (i = prev_page_start; i < (prev_page_start + 100); i++) {
+                $("#item-" + i).prop('hidden', true);
+            }
+
+            //console.log("loadmore.. .. max_page : " + max_page + " arg : " + arg + " prev_page : " + prev_page);
+            var start = (100 * (arg - 1));
+            var end = arg * 100;
+
+            var name = searched_name;              
+            var number = searched_billno;
+            var user = searched_user;
+            var pay = searched_pay;           
+
+            // new page
+            if (max_page < arg) {
+                //console.log("max_page < arg");
+                max_page = arg;
+                prev_page = arg;
+                $.ajax({
+                    type: "POST",
+                    url: "http://150.95.26.163:8080/gitmew/php/get_allorder.php",
+                    data: {
+                        'start': start,
+                        "sort_by": sort_by,
+                        "order": order,
+                        'cus_name': name,
+                        'b_id': b_id,
+                        'date': dt,
+                        'number': number,
+                        'user_name': user,
+                        'pay': pay,
+                        'shift' : cash
+                    },
+                    cache: false,
+                    crossDomain: true,
+                    beforeSend: function(){
+                      EasyLoading.show({                           
+                        text: "กำลังโหลด"                            
+                      });
+                    },
+                    success: function (response) {
+                      EasyLoading.hide();
+                        if (start == 0) {
+                            //find max_item
+                            var path = "http://150.95.26.163:8080/gitmew/php/get_max_order.php";
+                            $.post(path, {
+                                'start': start,
+                                "sort_by": sort_by,
+                                "order": order,
+                                'cus_name': name,
+                                'b_id': b_id,
+                                'date': dt,
+                                'number': number,
+                                'user_name': user,
+                                'pay': pay,
+                                'shift' : cash
+                            }, function (data) {
+                                max_page_no = Math.ceil(data / 100);
+                                if (max_page_no == 1) {
+                                    $("#nav-pagination").prop('hidden', true);
+                                } else if (max_page_no == 2) {
+                                    $("#pg-rd a").text("#");
+                                    $("#pg-rd").attr('class', 'page-item disabled');
+                                } else {
+                                    $("#nav-pagination").prop('hidden', false);
+                                    $("#pg-rd a").text("3");
+                                    $("#pg-rd").attr('class', 'page-item');
+                                }
+                            });
+                        }
+                        var obj = jQuery.parseJSON(response);
+                        $.each(obj, function (i, field) {
+                            text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>"+
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.order_id + "</span>"+
+                                    "<div class='row' style='margin-left: 10px;'>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<div class='input-group-prepend'>" +
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (start + i + 1) + "</span>"+
+                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
+                                    "<span id='span-branch-" + (start + i) + "' hidden></span>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
+                                        "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
+                                        "<li id='li-branch-3' class='li-branch' onclick='setbranchinput(3," + (start + i) +");' style='padding-bottom: 5px;'>อ่างทอง</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' data-toggle='dropdown' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1," + (start + i) +");' style='padding-bottom: 5px;'>เงินสด</li>" +
+                                        "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2," + (start + i) +");' style='padding-bottom: 5px;'>เงินโอน</li>" +
+                                        "<li id='li-pay-3' class='li-branch' onclick='setpayinput(3," + (start + i) +");' style='padding-bottom: 5px;'>ลูกหนี้</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.total_price+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-right no-pd'>"+
+                                    "<div class='input-group-prepend no-pd'>"+
+                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.date_time+"' disabled style='margin-right: 5px;'>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>"+
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")' style='margin-right: 5px'>"+
+                                        "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ","+cash+")'>"+
+                                        "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
+                                        "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                        "</button>" +
+                                    "</div>"+
+                                    "</div>"+
+                                "</li>";
+                            $(".list-group").append(text_html);
+                        });
+                        $('#btn-search').prop('disabled', false);
+                        $('#btn-shift').prop('disabled', false);
+                    }
+                });
+            }
+            // old page
+            else if (max_page >= arg) {
+                //console.log("max_page >= arg");
+                if ($("#item-" + start).length == 0) {
+                    //console.log("no item");
+                    $.ajax({
+                        type: "POST",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allorder.php",
+                        data: {
+                            'start': start,
+                            "sort_by": sort_by,
+                            "order": order,
+                            'cus_name': name,
+                            'b_id': b_id,
+                            'date': dt,
+                            'number': number,
+                            'user_name': user,
+                            'pay': pay,
+                            'shift' : cash
+                        },
+                        cache: false,
+                        crossDomain: true,
+                        beforeSend: function(){
+                          EasyLoading.show({                           
+                            text: "กำลังโหลด"                            
+                          });
+                        },
+                        success: function (response) {
+                            EasyLoading.hide();
+                            if (start == 0) {
+                                //find max_item
+                                var path = "http://150.95.26.163:8080/gitmew/php/get_max_order.php";
+                                $.post(path, {
+                                    'start': start,
+                                    "sort_by": sort_by,
+                                    "order": order,
+                                    'cus_name': name,
+                                    'b_id': b_id,
+                                    'date': dt,
+                                    'number': number,
+                                    'user_name': user,
+                                    'pay': pay,
+                                    'shift' : cash
+                                }, function (data) {
+                                    max_page_no = Math.ceil(data / 100);
+                                    if (max_page_no == 1) {
+                                        $("#nav-pagination").prop('hidden', true);
+                                    } else if (max_page_no == 2) {
+                                        $("#pg-rd a").text("#");
+                                        $("#pg-rd").attr('class', 'page-item disabled');
+                                    } else {
+                                        $("#nav-pagination").prop('hidden', false);
+                                        $("#pg-rd a").text("3");
+                                        $("#pg-rd").attr('class', 'page-item');
+                                    }
+                                });
+                            }
+                            var obj = jQuery.parseJSON(response);
+                            $.each(obj, function (i, field) {
+                                text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>"+
+                                    "<span id='span-" + (start + i) + "' hidden>" + field.order_id + "</span>"+
+                                    "<div class='row' style='margin-left: 10px;'>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<div class='input-group-prepend'>" +
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (start + i + 1) + "</span>"+
+                                    "<input id=bill_no-" + (start + i) + "'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='cus-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='user-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
+                                    "<span id='span-branch-" + (start + i) + "' hidden></span>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
+                                        "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
+                                        "<li id='li-branch-3' class='li-branch' onclick='setbranchinput(3," + (start + i) +");' style='padding-bottom: 5px;'>อ่างทอง</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='pay-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.payment_type+"' data-toggle='dropdown' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1," + (start + i) +");' style='padding-bottom: 5px;'>เงินสด</li>" +
+                                        "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2," + (start + i) +");' style='padding-bottom: 5px;'>เงินโอน</li>" +
+                                        "<li id='li-pay-3' class='li-branch' onclick='setpayinput(3," + (start + i) +");' style='padding-bottom: 5px;'>ลูกหนี้</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='total-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.total_price+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-right no-pd'>"+
+                                    "<div class='input-group-prepend no-pd'>"+
+                                    "<input id='date-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.date_time+"' disabled style='margin-right: 5px;'>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>"+
+                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' onclick='open_edit(" + (start + i) + ")' style='margin-right: 5px'>"+
+                                        "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-info-" + (start + i) + "' class='btn btn-sm btn-info' onclick='bill_detail(" + (start + i) + ","+cash+")'>"+
+                                        "<i id='i-info-" + (start + i) + "' class='fa fa-info-circle'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
+                                        "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                        "</button>" +
+                                    "</div>"+
+                                    "</div>"+
+                                "</li>";
+                                $(".list-group").append(text_html);
+                            });
+                            $('#btn-search').prop('disabled', false);
+                            $('#btn-shift').prop('disabled', false);
+                        }
+                    });
+                } else if (prev_page > arg) {
+                    //console.log("prev_page > arg");
+                    var max = max_page * 100;
+                    // show page
+                    for (i = start; i < end; i++) {
+                        $("#item-" + i).prop('hidden', false); //show
+                    }
+
+                    // hidden all > arg
+                    for (i = end; i < max; i++) {
+                        $("#item-" + i).prop('hidden', true);
+                    }
+                } else if (prev_page <= arg) {
+                    //console.log("prev_page <= arg");
+                    // show page
+                    for (i = start; i < end; i++) {
+                        $("#item-" + i).prop('hidden', false); //show
+                    }
+                    // hidden old
+                    for (i = 0; i < start; i++) {
+                        $("#item-" + i).prop('hidden', true);
+                    }
+                }
+                prev_page = arg;
+            }
+        }
+
+        var is_sort = {
+            order_number: '0',
+            date_time: '0',
+            customer_id: '0'
+        };
+        var sort_by = "none",
+            order = "none";
+
+        function click_sort(arg) {
+            // clear other clicked_sort
+            for (var i = 0; i < 3; i++) {
+                //check
+                key = Object.keys(is_sort)[i];
+                if (key == arg) {
+                    is_sort.key = 1;
+                } else {
+                    $("#i-" + key).prop('hidden', true);
+                    $("#i-" + key).attr('class', 'fa fa-sort-down');
+                    $("#i-" + key).css('vertical-align', 'top');
+
+                    order = "none";
+                    sort_by = "none";
+                }
+            }
+
+            if ($("#i-" + arg).is(':hidden')) {
+                $("#i-" + arg).prop('hidden', false);
+                sort_by = arg;
+                order = "asc";
+            } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-down')) {
+                $("#i-" + arg).attr('class', 'fa fa-sort-up');
+                $("#i-" + arg).css('vertical-align', 'middle');
+                sort_by = arg;
+                order = "desc";
+            } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-up')) {
+                $("#i-" + arg).prop('hidden', true);
+                $("#i-" + arg).attr('class', 'fa fa-sort-down');
+                $("#i-" + arg).css('vertical-align', 'top');
+                order = "none";
+                sort_by = "none";
+            }
+          
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('sort');
+        }
+
+        var page = 1;
+        var cash = "";
+        function pagination(arg) {
+            //console.log("pagination arg : " + arg + " max_page_no : " + max_page_no);
+            //Check all list is save
+            var max = page * 100;
+            var start = max - 100;
+            var stop = 0;
+            for (var i = start; i <= max; i++) {
+                if ($("#i-edit-" + i).hasClass('fa fa-check-square')) {
+                    $.alert({
+                        icon: 'fa fa-warning',
+                        title: 'เตือน',
+                        content: 'กรุณาบันทึกสินค้าก่อนเปลี่ยนหน้า',
+                    });
+                    $("#pg-" + arg + " a").attr('href', "#item-" + i);
+                    var go_to = $(this).attr('href').offset();
+                    $('ul').stop().animate({
+                        scrollTop: go_to.top
+                    });
+
+                    stop = 1;
+                    break;
+                }
+            }
+            if (stop == 1) {
+                $("#pg-" + arg + " a").attr('href', "#");
+                return 0;
+            }
+
+            if (arg == "sort" || arg == "search" || arg == "shift") {
+                // pagination when sort.. ..
+                if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+                if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+                if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                page = 1;
+                st = $("#pg-st a").text("1"); // 1 -> 2
+                nd = $("#pg-nd a").text("2");
+                rd = $("#pg-rd a").text("3");
+
+                if (arg == "search") {
+                    // clear other clicked_sort
+                    for (var j = 0; j < 4; j++) {
+                        key = Object.keys(is_sort)[j];
+                        $("#i-" + key).prop('hidden', true);
+                        $("#i-" + key).attr('class', 'fa fa-sort-down');
+                        $("#i-" + key).css('vertical-align', 'top');
+
+                        order = "none";
+                        sort_by = "none";
+                        cash = "";
+                    }
+                }
+                if (arg == "shift") {
+                    // clear other clicked_sort
+                    for (var j = 0; j < 4; j++) {
+                        key = Object.keys(is_sort)[j];
+                        $("#i-" + key).prop('hidden', true);
+                        $("#i-" + key).attr('class', 'fa fa-sort-down');
+                        $("#i-" + key).css('vertical-align', 'top');
+
+                        searched_name = "";
+                        searched_user = "";
+                        searched_billno = "";      
+                        searched_pay = "";  
+                        dt = "";
+                        order = "none";
+                        sort_by = "none";
+                        cash = 1;
+                    }
+                }
+            } else if (arg == "st") {
+                //console.log("st");
+                if (page != 2) {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page -= 1;
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 1); // 1 -> 2
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 1);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 1);
+                } else if (page == 2) {
+                    if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page = 1;
+
+                } else {
+                    return 0;
+                }
+            } else if (arg == "nd") {
+
+                //console.log("nd");
+                if (page == 1) page++;
+                else if (page == max_pap-ge_no) page--;
+                if ($("#pg-nd").hasClass('active')) return 0;
+                else $("#pg-nd").attr('class', 'active');
+                if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+            } else if (arg == "rd") {
+                if (page + 1 == max_page_no) {
+                    if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+                    page = max_page_no;
+                    st = $("#pg-st a").text(parseInt(max_page_no - 2));
+                    nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+                    rd = $("#pg-rd a").text(parseInt(max_page_no));
+                } else {
+                    //console.log("rd");
+                    if (page == max_page_no) return 0;
+
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    if (page == 1) page += 2; // page = 3
+                    else page += 1;
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 1); // 1 -> 2
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 1);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 1);
+                }
+            } else if (arg == "prev") {
+                //console.log("prev");
+                if (page <= 11) {
+                    if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page = 1;
+                    st = $("#pg-st a").text("1");
+                    nd = $("#pg-nd a").text("2");
+                    rd = $("#pg-rd a").text("3");
+                } else {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                    page = page - 10;
+
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 10);
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 10);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 10);
+                }
+            } else if (arg == "next") {
+                //console.log("next");
+                if ($("#pg-st").hasClass('active')) {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+                    page = page + 10;
+
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 9);
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 9);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 9);
+                } else {
+                    if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+                    page = page + 10;
+
+                    st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 10);
+                    nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 10);
+                    rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 10);
+                }
+
+            } else if (arg == "last") {
+                //console.log("last");
+                if (max_page_no <= 3) {
+                    if (max_page_no == 2) {
+                        //console.log("2");
+                        if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+                        if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                        if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+                        page = 2;
+                        st = $("#pg-st a").text("1");
+                        nd = $("#pg-nd a").text("2");
+                        rd = $("#pg-rd a").text("3");
+                    } else if (max_page_no == 3) {
+                        //console.log("3");
+                        if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+                        if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                        if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+                        page = 3;
+                        st = $("#pg-st a").text("1");
+                        nd = $("#pg-nd a").text("2");
+                        rd = $("#pg-rd a").text("3");
+                    }
+                } else {
+                    if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+                    if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+                    if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+                    page = max_page_no;
+                    st = $("#pg-st a").text(parseInt(max_page_no - 2));
+                    nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+                    rd = $("#pg-rd a").text(parseInt(max_page_no));
+                }
+            }
+        
+
+            // Un-Disabled li-prev
+            if (page > 1) {
+                $("#li-prev").prop('class', 'page-item');
+            } else if (page == 1) {
+                $("#li-prev").prop('class', 'page-item disabled');
+            }            
+           
+            loadmore(page);            
+        }
+
+        function prev() {
+            pagination('prev');
+        }
+
+        function next() {
+            if (page + 10 < max_page_no) {
+                pagination('next');
+            } else if (page + 10 >= max_page_no) {
+                pagination('last');
+            }
+        }       
+
+        function logout() {
+            localStorage.user_id = "";
+            window.location = "login.html";
+        }
+
+        var b_id = "";
+        function setbranch(arg){
+            if(arg == 0){
+                b_id = "";
+            }else{
+                b_id = arg;
+            }            
+            var b = $('#li-branch-'+arg).text()
+            $("#branch").text(b);
+        }
+
+        function setpay(arg){
+            $("#pay").text(arg);
+        }
+
+        function setpayinput(id,arg){
+            $("#pay-"+arg).val($("#li-pay-"+id).html());
+        }
+
+        function setbranchinput(id,arg){
+            $("#branch-"+arg).val($("#li-branch-"+id).html());
+            $('#span-branch-'+arg).text(id);
+        }
+
+        function bill_detail(arg,sft){
+            var order_id = $('#span-'+arg).html();
+            if(sft == 1){
+                window.open("shift_bill.html?order="+order_id, '_blank');               
+            }else{
+                window.open("bill_info.html?order="+order_id, '_blank');              
+            }   
+            
+        }
+
+        function shift(){
+            // load รายการขายภายในกะ
+            // info-btn กดแล้วไปที่หน้า shift_bill?bill=1 (1-> bill_id)
+            var data = {title:'shift'};
+            history.pushState(data, "shift", "");
+            $("#search-billno").focus();
+            $('#btn-shift').prop('disabled', true);
+
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('shift');          
+        }       
     </script>
 </head>
 
@@ -123,1248 +974,181 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav" style="margin-top: 20px">
-              <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
                 <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
-                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
                 <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
                 <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
-                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
-                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                  
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                    
                 <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
+        <!-- End sidebar -->
 
         <!-- Page Content -->
         <div id="page-content-wrapper">
-            <div id="offline" class="alert alert-danger alert-dismissible" hidden>
-                <button type="button" class="close" onclick="dismiss()">&times;</button>
-                <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
-            </div>
-            <div id="online" class="alert alert-success alert-dismissible" hidden>
-                <button type="button" class="close" onclick="dismiss()">&times;</button>
-                <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
-            </div>
             <!-- Navbar -->
-            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #860b0b;">
-              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
-                <h3 id="nav-title">ขายสินค้า</h3>
-              </div>
-            </nav>         
-            
-            <!-- 4 4 4 4 4 4 4 4 -->
-            <div class="row">
-              <div class="col-2"></div>
-              <div id="date" class="col-2 text-left text-muted"></div>
-              <div class="col-4"></div>
-              <div class="col-3 text-left text-muted">ผู้ทำรายการ :
-                <div id="user" class="btn-group col-4 text-center text-muted">
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #87ceeb;">
+                <div class="clearfix">
+                    <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
                 </div>
-              </div>
-            </div>
-            <br>
-            <div class="row">
-              <div class="col-2"></div>
-              <div class="col-5 text-left text-muted">ชื่อลูกค้า :
-                <div class="btn-group text-center text-muted">
-                  <input id="cus" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อลูกค้าที่นี่" data-index="1">
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                    <h3 id="nav-title">จัดการใบเสร็จ</h3>
                 </div>
-              </div>
-              <div class="col-1"></div>
-              <div class="col-4 text-left text-muted dropdown">ของออกจาก :
-                <div class="btn-group">
-                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
-              
-                  </select>
-                </div>
-              </div>
-            </div>
-            </div>
-            <hr style="width: 90%; margin-top: 0;">
-
+            </nav>
+            <!-- End Navbar -->
             <div class="container-fullwidth justify-content-center">
-              <!-- Title -->
-              <div class="row" style="margin-left: 50px; margin-bottom: 10px;">
-                <div class="col-1 text-center">แถม</div>
-                <div class="col-2 text-center">บาร์โค้ด</div>
-                <div class="col-3 text-center">รายการสินค้า</div>
-                <div class="col-1 text-center">ราคา</div>
-                <div class="col-1 text-center">จำนวน</div>
-                <div class="col-1 text-center">หน่วย</div>
-                <div class="col-1 text-center">รวม</div>
-                <div class="col-1 text-center">ส่วนลด</div>
-                <div class="col-1"></div>
-              </div>
-              <!-- Show -->
-              <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
-                <!-- Append here!! -->
-              </div>
-              <!-- Input -->
-              <div class="row" style="margin-left: 50px;">
-                <div class="col-1" style="padding-left: 5px; padding-right: 5px;">
-                  <div class="input-group">
-                    <span class="input-group-addon">
-                      <input id="box" type="checkbox" class="btn btn-default">
-                    </span>
-                    <input id="no" type="text" class="form-control text-center" readonly>
-                  </div>
+                <!-- Search -->
+                <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-1" style='margin-left: 2%;'></div>
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
+                        เลขที่รายการ
+                    </div>
+                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                        ลูกค้า
+                    </div>
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
+                        ผู้บันทึก
+                    </div>
+                    <div class="col-1 text-center">
+                        สาขา
+                    </div>
+                    <div class="col-1 text-center">
+                        การชำระ
+                    </div>
+                    <div class="col-2 text-center" style="margin-left: 2%;">
+                        วันที่บันทึก
+                    </div>
                 </div>
-                <div class="col-2" style='padding-left: 5px; padding-right: 5px;'>
-                  <input id="barcode" type="text" class="form-control text-center" readonly>
-                </div>
-                <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
-                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
-                </div>
-                <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
-                  <input id="price" type="number" class="form-control text-center no-spin" readonly>
-                </div>
-                <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
-                  <input id="amount" type="number" min="1" value="1" class="form-control text-center no-spin" oninput ="chng_amt()" data-index="3">
-                </div>
-                <div class="col-1">
-                  <input id="unit" type="text" class="form-control text-center" readonly>
-                </div>
-                <div class="col-1" style='padding-left: 0px; padding-right: 0px;'>
-                  <input id="total" type="text" class="form-control text-center" readonly>
-                </div>
-                <div class="col-1" style='padding-right: 0px;'>
-                  <input id="prod-discount" type="number" class="form-control text-center no-spin" data-index="4">
-                </div>
-                <div class="col-1"></div>              
-              </div> <br>
-
-              <!-- Two fuking btn-->
-              <div class="row" style="margin-right: 25px;">
-                <div class="col-9"></div>
-                <div class="col-3 text-center">
-                  <button class="btn btn-success" onclick="add()">เพิ่มรายการ [F2]</button>
-                  <button class="btn btn-danger" onclick="reset()">ค่าเริ่มต้น [F4]</button>
-                </div>
-              </div>
-            </div>
-        </div><!-- End page content wrapper -->
-      <div id="ctn-bttm" class="container-fluid fixed-bottom" style="margin-bottom: 15px; z-index: 0;">
-        <div class="row" style="margin-left: 70px;">
-          <div class="col-1 text-center conclu-txt">
-            <h4>รวม : </h4>
-          </div>
-          <div class="col-1 text-center conclu-price">
-            <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #5dbe5d" readonly>
-          </div>
-          <div class="col-1 text-center conclu-txt">
-            <h4>ลด : </h4>
-          </div>
-          <div class="col-1 text-center conclu-price">
-            <input id="total-discount" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #fd8b5e" readonly>
-          </div>
-          <div class="col-1 text-center conclu-txt">
-            <h4>สุทธิ : </h4>
-          </div>
-          <div class="col-1 text-center conclu-price">
-            <input id="total-net" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #ffffff" readonly>
-          </div>
-          <div class="col-1"></div>
-          <div class="col-3 text-right" style="padding-top: 10px;">
-            <div class="input-group">
-              <button id="btn_checkbill" class="btn btn-danger" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="check_bill()">คิดเงิน [F7]</button>
-              <button id="print-title" class="btn btn-info" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
-                <span>
-                  <i class="fa fa-print"></i>
-                </span>
-              </button>
-              <button id='pay-title' class="btn btn-warning" style="text-align: center;" data-toggle="modal" data-target="#payModal">เงินสด
-                <span>
-                  <i class="fa fa-money"></i>
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- The Modal -->
-      <div class="modal fade" id="myModal" tabindex='-1'>
-        <div class="modal-dialog modal-md modal-dialog-centered">
-          <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="col-12 text-center" style="margin-top: 15px;">
-              <h4 class="modal-title">คิดเงิน</h4>
-              <hr style="width: 70%;">
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-              <div class="container">
                 <div class="row">
-                  <div class="col-2"></div>
-                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;">
-                    <h3>รวม : </h3>
-                  </div>
-                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="net-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #5dbe5d;"
-                      readonly>
-                  </div>
-                  <div class="col-2"></div>
-                </div><br>
+                    <div class="col-1 text-right" style='margin-left: 2%;'>
+                        <p style="padding-top: 5px; font-size: 120%;">ค้นหา :
+                            <p/>
+                    </div>
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
+                        <input id="search-billno" type="text" class="form-control text-center">
+                    </div>
+                    <div class="col-2 text-center no-pd" style="margin-right: 10px;">
+                        <input id="search-name" type="text" class="form-control text-center no-spin">
+                    </div>
+                    <div class="col-1 text-center no-pd" style="margin-right: 10px;">
+                        <input id="search-user" type="text" class="form-control text-center no-spin">
+                    </div>
 
+                    <div class="col-1 text-center no-pd">
+                        <button id='branch' class="btn" style="background: #858E96; color: #fff;" data-toggle="dropdown">สิงห์บุรี</button>
+                        <ul id="ul-branch" class="dropdown-menu drop-up text-center">                                               
+                        </ul>
+                    </div>
+                    <div class="col-1 text-center no-pd">
+                        <button id='pay' class="btn btn-info" data-toggle="dropdown">ทั้งหมด</button>
+                        <ul class="dropdown-menu drop-up text-center">
+                            <li id="li-pay" class="li-branch" onclick="setpay('ทั้งหมด');" style="padding-bottom: 5px;">ทั้งหมด</li>
+                            <li id="li-pay" class="li-branch" onclick="setpay('เงินสด');" style="padding-bottom: 5px;">เงินสด</li>
+                            <li id="li-pay" class="li-branch" onclick="setpay('เงินโอน');" style="padding-bottom: 5px;">เงินโอน</li>
+                            <li id="li-pay" class="li-branch" onclick="setpay('ลูกหนี้');" style="padding-bottom: 5px;">ลูกหนี้</li>
+                        </ul>
+                    </div>
+                    <!-- Date Picker -->
+                    <div class="col-2 text-center">
+                        <div class="input-group-prepend">
+                            <button data-toggle="datepicker" type="button" class="btn btn-default docs-datepicker-trigger" style="margin-right: 5px;" disabled>
+                                <i class="fa fa-calendar" aria-hidden="true"></i>
+                            </button>
+                            <input id="dpicker" data-toggle="datepicker" type="text" class="form-control docs-date text-center" name="date" placeholder="วันที่ต้องการค้นหา" readonly>
+                        </div>
+                    </div>
+                    <!-- End Date Picker -->
+                    <div class="col-1 text-center">
+                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา [F2]</button>
+                    </div>
+                    <div class="col-1 text-center" style="padding-left: 0px;">
+                        <button id='btn-shift' class="btn btn-primary btn-md" onclick="shift()">รายการขายในกะ [F4]</button>
+                    </div>
+                </div>
+            </div>
+            <hr style="width: 90%;">
+            <!-- Header -->
+            <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px; margin-left: 2%; margin-right: 2%;">
                 <div class="row">
-                  <div class="col-2"></div>
-                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ลด : </h3></div>
-                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="discount-money" onchange="chng_discount()"  data-index="5" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #fd8b5e;">
-                  </div>
-                  <div class="col-2"></div>
-                </div> <br>
-
-                <div class="row">
-                  <div class="col-2"></div>
-                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>สุทธิ : </h3></div>
-                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="final-price" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #ffffff;"
-                    readonly>
-                  </div>
-                  <div class="col-2"></div>
+                    <div class="col-2 no-pd text-right">
+                        <a href="#" style="color: black;" onclick="click_sort('order_number')">เลขที่รายการ
+                            <i id="i-order_number" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-2 text-center" style="padding-left: 9%;">
+                        <a href="#" style="color: black;" onclick="click_sort('customer_id')">ลูกค้า
+                            <i id="i-customer_id" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-1 text-center" style="margin-left: 4%;">
+                        ผู้บันทึก
+                    </div>
+                    <div class="col-1 text-center" style="margin-left: 1%;">สาขา</div>
+                    <div class="col-1 text-center" style="margin-left: 1%;">การชำระ</div>
+                    <div class="col-1 text-center no-pd" style="margin-left: 2px;">สุทธิ</div> 
+                    <div class="col-2 text-center">
+                        <a href="#" style="color: black;" onclick="click_sort('date_time')">วันที่
+                            <i id="i-date_time" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>  
+                    <div class="col-1"></div>               
                 </div>
                 <br>
 
-                <div class="row">
-                  <div class="col-2"></div>
-                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>รับ : </h3></div>
-                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="get-money" type="number" data-index="6" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style=" background: #767676;  color: #DBBD5B;">
-                  </div>
-                  <div class="col-2"></div>
-                </div> <br>
+                <ul class="list-group">
+                    <!--Append text html -->
+                   
+                </ul>
+                <br>
+            </div>
 
-                <div class="row">
-                  <div class="col-2"></div>
-                  <div class="col-3 text-center" style="border: solid #767676; padding-top: 5px;"><h3>ทอน : </h3></div>
-                  <div class="col-5 text-center" style="border: solid #767676; background: #767676;">
-                    <input id="change-money" type="number" class="form-control form-control-lg text-center no-spin no-border check-bill-input" style="background: #767676; color: #A5FAE9"
-                    readonly>
-                  </div>
-                  <div class="col-2"></div>
-                </div> <br>
-            </div> <br>
-
-            <!-- Modal footer -->
-            <div class="col-12 text-center">
-              <button id="btn_save" type="button" class="btn btn-success" data-dismiss="modal" onclick="save()" style="margin-right: 15px;">บันทึก</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
-            </div><br>
-          </div>
+            <nav id="nav-pagination">
+                <ul class="pagination justify-content-center">
+                    <li id="li-prev" class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous" onclick="prev();">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li id="pg-st" class="page-item active">
+                        <a class="page-link scroll_to" href="#" onclick="pagination('st')">1</a>
+                    </li>
+                    <li id="pg-nd" class="page-item">
+                        <a class="page-link scroll_to" href="#" onclick="pagination('nd')">2</a>
+                    </li>
+                    <li id="pg-rd" class="page-item">
+                        <a class="page-link scroll_to" href="#" onclick="pagination('rd')">3</a>
+                    </li>
+                    <li id="li-next" class="page-item">
+                        <a class="page-link" href="#" aria-label="Next" onclick="next();">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-      </div>
-      </div>
+        <!-- End page content wrapper -->
+    </div>
+    <!-- End Wrapper -->
 
-      <!-- Print Modal -->
-      <div class="modal fade" id="printModal" tabindex='-1'>
-        <div class="modal-dialog modal-md modal-dialog-centered">
-          <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="col-12 text-center" style="margin-top: 15px;">
-              <h4 class="modal-title">ตั้งค่าการพิมพ์</h4>
-              <hr style="width: 70%;">
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-              <div class="col-12 text-center">
-                <label class="radio-inline" style="font-size: 120%;">
-                  <input type="radio" name="print-radio" value="print" checked>พิมพ์</label>
-                <label class="radio-inline" style="font-size: 120%;">
-                  <input type="radio" name="print-radio" value="no">ไม่พิมพ์</label>
-              </div>
-              <div id="print-option-title" class="col-12 text-center">
-                <h5 style="text-decoration: underline;">ตัวเลือก</h5>
-              </div>
-              <div id="print-option" class="col-12 text-center">
-                <label class="radio-inline" style="font-size: 120%;">
-                  <input id="bill" type="radio" name="print-option" value="bill" checked>ใบเสร็จ</label>
-                <label class="radio-inline" style="font-size: 120%;">
-                  <input id="a4" type="radio" name="print-option" value="a4">ใบรายการขาย(A4)</label>
-              </div><br>
-              <!-- Modal footer -->
-              <div class="col-12 text-center">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_print_title();">บันทึก</button>
-              </div>
-              <br>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pay Modal -->
-      <div class="modal fade" id="payModal" tabindex='-1'>
-        <div class="modal-dialog modal-md modal-dialog-centered">
-          <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="col-12 text-center" style="margin-top: 15px;">
-              <h4 class="modal-title">เงื่อนไขการชำระเงิน</h4>
-              <hr style="width: 70%;">
-            </div>
-
-            <!-- Pay body -->
-            <div class="modal-body">
-              <div class="col-12 text-center">
-                <label class="radio-inline">
-                  <input type="radio" name="pay-radio" value="เงินสด" checked>เงินสด</label>
-                <label class="radio-inline">
-                  <input type="radio" name="pay-radio" value="เงินโอน">เงินโอน</label>
-                <label class="radio-inline">
-                  <input type="radio" name="pay-radio" value="ลูกหนี้">ลูกหนี้</label>
-              </div>
-              <div class="col-12">
-                <div class="form-group">
-                  <label for="comment">หมายเหตุ:</label>
-                  <textarea class="form-control" rows="5" id="comment" disabled></textarea>
-                </div>
-              </div>
-              <br>
-              <!-- Modal footer -->
-              <div class="col-12 text-center">
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_pay_title();">บันทึก</button>
-              </div>
-              <br>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> <!-- End Wrapper -->
-
+    <!-- Menu Toggle -->
     <script>
-      $('input:radio[name="pay-radio"]').change(
-          function () {
-            text_html = "<span><i class='fa fa-print'></i></span>";
-            if ($(this).is(':checked') && $(this).val() == "เงินโอน") {
-              $('textarea').prop('disabled', false);
-              $("#bill").prop("checked", true);
-            }else if ($(this).is(':checked') && $(this).val() == "ลูกหนี้") {
-              $('textarea').prop('disabled', false);
-              $("#bill").prop("checked", false);
-              $("#a4").prop("checked", true);
-            }else if ($(this).is(':checked') && $(this).val() == "เงินสด") {
-              $('textarea').prop('disabled', true);
-              $("#bill").prop("checked", true);
-              $('textarea').val("");
+        // Menu Toggle
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+
+            if ($("#menu-toggle").text() == "รายการ") {
+                $("#menu-toggle").text("กลับ");
+            } else if ($("#menu-toggle").text() == "กลับ") {
+                $("#menu-toggle").text("รายการ");
             }
-      });
-
-      $("#menu-toggle").click(function(e) {
-          e.preventDefault();
-          $("#wrapper").toggleClass("toggled");
-
-          if($("#menu-toggle").text() == "รายการ"){
-            $("#menu-toggle").text("กลับ");
-          }else if($("#menu-toggle").text() == "กลับ"){
-            $("#menu-toggle").text("รายการ");
-          }
-
-      });
-
-      $('#name').on('keyup input', function() {
-          var name = $('#name').val();           
-          if(name == ""){
-              reset();
-          }            
-      });      
-
-      /*$('#amount').on("keyup input", function(){
-          var price = $('#price').val();
-          var amount = $('#amount').val();
-          var total = price*amount;
-          $('#total').val(total);
-      });*/
-
-      $('#discount-money').on("keyup input", function(){
-        var sum = $('#net-price').val();
-        var dis = $('#discount-money').val();       
-        $('#final-price').val(sum - dis);
-        var money = $('#get-money').val();  
-        var net = $('#final-price').val();  
-        if(money - net < 0){
-          $('#change-money').val("");
-        }else{
-          $('#change-money').val(money - net);
-        }    
-      });
-
-      $('#get-money').on("keyup input", function(){
-        var money = $('#get-money').val();
-        var net = $('#final-price').val();
-        if(money - net < 0){
-          $('#change-money').val("");
-        }else{
-          $('#change-money').val(money - net);
-        }
-      });     
-
-      var modal = false;
-      $('#myModal').on('shown.bs.modal', function() {
-        $('#discount-money').focus();
-        modal = true;
-      })
-
-      $('#printModal').on('shown.bs.modal', function() {        
-        modal = false;
-      })
-
-      $('#payModal').on('shown.bs.modal', function() {      
-        modal = false;
-      })
-
-    jsonObj = [];   
-    var datetime;
-    //var sum = 0;
-    var sum_dis = 0;
-    var cus_id = -1;
-    var img;
-    var prod_id = 0;
-    var old_price,price,cus_addr,cus_tel;
-    array_amt = [];
-    $(document).ready(function(){  
-      if(!localStorage.user_id){
-        $.alert({
-          icon: 'fa fa-warning',
-          title: 'เตือน',
-          content: "กรุณาเข้าสู่ระบบก่อน"
-        });
-        window.location = "login.html";
-      }
-
-      if(localStorage.role == "user"){
-        $("#mb").remove();
-        $("#mp").remove();
-      }    
-        //Scroll
-        $("#show_list_add").scroll(function() {
-          console.log("Scroll");
-        });
-
-        // Hide
-        $("#show_list_add").hide();
-        $("#show_list_add").show();      
-
-        $(document).keydown(function(objEvent) {
-          if (objEvent.keyCode == 9) {  //tab pressed
-              objEvent.preventDefault(); // stops its action         
-          }
-          if (objEvent.keyCode == 13) {  //enter pressed
-              objEvent.preventDefault();           
-              var $this = $(objEvent.target);
-              var i_enter = parseFloat($this.attr('data-index'));     
-              var name = $("#name").val();    
-              if(i_enter == 2 && prod_id == 0){              
-                if($.isNumeric(name)){                 
-                  console.log("barcode");                  
-                }else{                  
-                  $.alert({
-                    icon: 'fa fa-warning',
-                    title: 'เตือน',
-                    content: "กรุณากรอกชื่อสินค้าที่มีอยู่ในรายการหรือเลือกสินค้าก่อนทำรายการ"
-                  });  
-                  reset();         
-                }  
-                i_enter = 1;                     
-              }                    
-              if(i_enter == 4){
-                add();
-              }else if(i_enter == 6 && modal){
-                $("#btn_save").click();        
-              }else{
-                $('[data-index="' + (i_enter+1).toString() + '"]').focus();
-              }             
-          }
-          if (objEvent.keyCode == 113) {  //f2 pressed
-              add();
-          }
-          if (objEvent.keyCode == 115) {  //f4 pressed
-              reset();
-          }
-          if (objEvent.keyCode == 118) {  //f7 pressed
-              $("#btn_checkbill").click();          
-          }
-        })
-        detail();
-
-        setTimeout(function() {$("#cus").focus();}, 100);
-
-        var options = {
-        url: function(phrase) {
-          return "http://150.95.26.163:8080/gitmew/php/search.php?cus_id="+cus_id;
-        },
-        getValue: function(element) {     
-          return element.prod_name;
-        },
-        ajaxSettings: {
-          method: "POST",
-          data: {}
-        },
-        preparePostData: function(data) {   
-          if($("#cus").val() == ""){
-            $.alert({
-              icon: 'fa fa-warning',
-              title: 'เตือน',
-              content: "กรุณาใส่ชื่อลูกค้าก่อนทำรายการ"
-            });
-            $("#cus").focus();
-            $("#name").val("");
-            return 0;
-          }else{
-            prod_id = 0;
-            data.phrase = $("#name").val();
-            return data;
-          }
-        },
-        minCharNumber: 3,
-        list: {         
-            maxNumberOfElements: 1000,
-            showAnimation: {
-                type: "slide",
-                time: 100
-            },
-            hideAnimation: {
-                type: "slide",
-                time: 100
-            },
-            onLoadEvent: function(){
-              var name = $("#name").val();
-              if($.isNumeric(name)){
-                $("#amount").focus();
-                var name = $("#name").getItemData(0).prod_name;
-                var barcode = $("#name").getItemData(0).barcode; 
-                price = $("#name").getItemData(0).prod_price;
-                var unit_name = $("#name").getItemData(0).unit_name;
-                prod_id = $("#name").getItemData(0).prod_id;
-                img = $("#name").getItemData(0).img_string;
-                old_price = $("#name").getItemData(0)[7].old_price;   
-                array_amt = $("#name").getItemData(0)[8];                    
-               
-                $('#name').val(name);
-                $('#barcode').val(barcode);
-                $('#price').val(price);
-                $('#unit').val(unit_name);
-                $('#total').val(price);         
-              }
-            },
-            onSelectItemEvent: function() {                
-              var barcode = $("#name").getSelectedItemData().barcode;
-              price = $("#name").getSelectedItemData().prod_price;
-              var unit_name = $("#name").getSelectedItemData().unit_name;
-              prod_id = $("#name").getSelectedItemData().prod_id;
-              img = $("#name").getSelectedItemData().img_string;
-              old_price = $("#name").getSelectedItemData()[7].old_price;   
-              array_amt = $("#name").getSelectedItemData()[8];                    
-
-              $('#barcode').val(barcode);
-              $('#price').val(price);
-              $('#unit').val(unit_name);
-              $('#total').val(price);
-            },            
-        },     
-        requestDelay: 300,
-        theme: "blue-light",         
-        };
-
-        $("#name").easyAutocomplete(options);
-
-        var options_cus = {
-
-          url: function(phrase) {
-            return "http://150.95.26.163:8080/gitmew/php/search_cus.php";
-          },
-
-          getValue: function(element) {
-            //console.log(element);
-            return element.customer_name;
-          },
-
-          ajaxSettings: {
-            method: "POST",
-            data: {}
-          },
-
-          preparePostData: function(data) {
-            cus_id = -1;
-            data.phrase = $("#cus").val();
-            return data;
-          },
-          minCharNumber: 2,
-          list: {
-              maxNumberOfElements: 100,
-
-              showAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-              hideAnimation: {
-                  type: "slide",
-                  time: 100
-              },
-              onSelectItemEvent: function() {                
-                cus_id = $("#cus").getSelectedItemData().customer_id;
-                console.log(cus_id);
-                cus_addr = $("#cus").getSelectedItemData().address;
-                if(cus_addr == ""){
-                  cus_addr = "-";
-                }
-                cus_tel = $("#cus").getSelectedItemData().tel;
-                if(cus_tel == ""){
-                  cus_tel = "-";
-                }
-                //console.log(cus_addr + cus_tel);
-              },
-              onChooseEvent: function() {                
-                cus_id = $("#cus").getSelectedItemData().customer_id;                
-                cus_addr = $("#cus").getSelectedItemData().address;
-                if(cus_addr == ""){
-                  cus_addr = "-";
-                }
-                cus_tel = $("#cus").getSelectedItemData().tel;
-                if(cus_tel == ""){
-                  cus_tel = "-";
-                }
-                if(jsonObj.length > 0 || $('#barcode').val != ""){
-                  if(jsonObj.length > 0){
-                    var sum_de = 0;
-                    for(var c = 0;c < jsonObj.length; c++){
-                      var arg = c+1;                     
-                      var amt = jsonObj[c].amount;
-                      var prod = jsonObj[c].prod_id;
-                      $.ajax({
-                        url:"http://150.95.26.163:8080/gitmew/php/check_detail_cus.php",
-                        method:"POST",
-                        data:{'cus_id': cus_id,'prod_id':prod},
-                        async:false,
-                        success:function(data)
-                        {
-                          if(data != "fail"){  
-                            console.log("have value");                         
-                            if(jsonObj[c].check_amt == 0){
-                              console.log("amt = 0");      
-                              $('#price-'+arg).val(data);
-                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                              jsonObj[c].price = data;
-                              jsonObj[c].total = $('#total-'+arg).val();                            
-                            }
-                            jsonObj[c].price_cus = data;                   
-                          }else{                      
-                            console.log("not have value");  
-                            if(jsonObj[c].check_amt == 0){
-                              console.log("amt = 0");      
-                              $('#price-'+arg).val(jsonObj[c].price_old);
-                              $('#total-'+arg).val( $('#price-'+arg).val()*amt);                                
-                              jsonObj[c].price = jsonObj[c].price_old;
-                              jsonObj[c].total = $('#total-'+arg).val();                            
-                            }                         
-                            jsonObj[c].price_cus = jsonObj[c].price_old;                        
-                          }                   
-                        }
-                      }); 
-                    sum_de += parseFloat(jsonObj[c].total);
-                    }
-                    $('#total-price').val(sum_de);
-                    $('#total-net').val(sum_de-$('#total-discount').val());
-                  }
-                  if($('#barcode').val() != ""){
-                    reset();  
-                  }
-                }
-              }
-          },
-          requestDelay: 300,  
-          theme: "blue-light",          
-        };
-
-        $("#cus").easyAutocomplete(options_cus);
-    });  
-
-    window.addEventListener("online", function() {
-        check_status()
-    })
-    window.addEventListener("offline", function() {
-        check_status()
-    })
-    function dismiss(){     
-      $("#online").prop("hidden",true);
-      $("#offline").prop("hidden",true);
-    }
-
-    function check_status(){
-        if (navigator.onLine) {
-            $("#online").prop("hidden",false);
-            $("#offline").prop("hidden",true);
-        } else {
-            $("#online").prop("hidden",true);
-            $("#offline").prop("hidden",false);
-        }
-    }
-
-    function detail(){
-      $('#branch').empty();     
-      //Date
-      var d = new Date($.now());
-      $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
-      datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-
-      $('#user').text(localStorage.name);
-
-      $.ajax({
-          url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
-          method:"GET",
-        success:function(data)
-        {
-          var obj = jQuery.parseJSON(data);
-          $.each(obj, function(i, field){
-            $('#branch').append("<option class='dropdown-item text-center' style='color: #ffffff' value='"+field.branch_id+"'>"+field.branch_name+"</option>");
-          });
-        }
-      });      
-    }
-
-    var check = 0;
-    function chng_amt(){
-      var amt = $('#amount').val();
-      var price_thre = -1;
-      if(array_amt){       
-        for(var i = 0;i < array_amt.length;i++){          
-          if(amt >= parseInt(array_amt[i].amt_threshold)){           
-            price_thre = array_amt[i].prod_price;         
-          }
-        }
-      }
-      if(price_thre != -1){
-        $('#price').val(price_thre);
-        $('#total').val($('#price').val()*amt);
-        check = 1;
-      }else{
-        if(old_price != price){
-          $('#price').val(price);
-        }else{
-          $('#price').val(old_price);
-        }          
-        $('#total').val($('#price').val()*amt);
-        check = 0;
-      }     
-    }
-
-    function chng_amt_edit(arg){
-      var amt = $('#amount-'+arg).val();
-      var price_thre = -1;
-      if(jsonObj[arg-1].arr){       
-        for(var i = 0;i < jsonObj[arg-1].arr.length;i++){          
-          if(amt >= parseInt(jsonObj[arg-1].arr[i].amt_threshold)){           
-            price_thre = jsonObj[arg-1].arr[i].prod_price;         
-          }
-        }
-      }
-      if(price_thre != -1){
-        $('#price-'+arg).val(price_thre);
-        $('#total-'+arg).val($('#price-'+arg).val()*amt);
-        jsonObj[arg-1].check_amt = 1;      
-      }else{
-        if(jsonObj[arg-1].price_old != jsonObj[arg-1].price_cus){
-          $('#price-'+arg).val(jsonObj[arg-1].price_cus);
-        }else{
-          $('#price-'+arg).val(jsonObj[arg-1].price_old);
-        }          
-        $('#total-'+arg).val($('#price-'+arg).val()*amt);
-        jsonObj[arg-1].check_amt = 0; 
-      }     
-    }
-
-    function chng_discount(){   
-      var dis_old = $('#total-discount').val();  
-      var dis = $('#discount-money').val();      
-      if(dis_old > dis){
-        $.alert({
-          icon: 'fa fa-warning',
-          title: 'เตือน',
-          content: "กรุณากรอกลดราคาเท่ากับหรือมากกว่า " + dis_old
-        });  
-        $('#discount-money').val(dis_old);    
-        $('#discount-money').focus();
-      }
-    }
-    
-    var total_old,dis_old;
-    function edit(arg){
-      var stop = false;
-      for(var e = 1; e <= jsonObj.length; e++){
-        if($("#btn_check" + e).is(":visible")){
-          stop = true;
-        }
-      }
-      if(stop){
-        return 0;
-      }else{
-        $("#btn_edit"+arg).prop('hidden', true);
-        $("#btn_check" + arg).prop('hidden', false);
-        $("#btn_remove"+arg).prop('hidden', false);
-        $("#amount-" + arg).prop('readonly', false);
-        $("#dis-" + arg).prop('readonly', false);
-        //var price = $('#price-'+arg).val();
-        //var amt = $("#amount-" + arg).val();
-        var dis = $("#dis-" + arg).val();
-        total_old = $("#total-" + arg).val();
-        if(dis == ""){
-          dis_old = 0;
-        }else{
-          dis_old = dis;
-        }
-
-        /*$('#amount-'+arg).on("keyup input", function(){
-            var price = $('#price-'+arg).val();
-            var amt = $("#amount-" + arg).val();
-            var total = price*amt;
-            $('#total-'+arg).val(total);
-        });*/
-      }    
-    }
-
-    function update(arg){
-      $("#btn_edit" + arg).prop('hidden', false);
-      $("#btn_check" + arg).prop('hidden', true);
-      $("#btn_remove" + arg).prop('hidden', true);
-      $("#amount-" + arg).prop('readonly', true);
-      $("#dis-" + arg).prop('readonly', true);
-
-      var sum = $('#total-price').val();
-      var dis = $("#dis-" + arg).val();
-      if(dis == ""){
-        dis = 0;
-      }
-
-      jsonObj[arg-1].amount =  $('#amount-'+arg).val();
-      jsonObj[arg-1].total =  $('#total-'+arg).val();
-      jsonObj[arg-1].price =  $('#price-'+arg).val();
-      jsonObj[arg-1].discount =  dis;
-
-      sum = sum-total_old+parseFloat($('#total-'+arg).val());
-      sum_dis = sum_dis-dis_old+parseFloat(dis);
-
-      $('#total-price').val(sum);
-      $('#total-discount').val(sum_dis);
-      $('#total-net').val(sum - sum_dis);
-
-    }
-    //var offset = $(window).height() - $("#ctn-bttm").offset().top;
-    var index = 0;   
-    function add(){
-      // Added JS
-      // BY The Kit
-      var bottom = $(window).height() - $("#show_list_add").offset().top - $("#show_list_add").height();
-      // Always scroll to the bottom
-      if(bottom < 250){
-        $("#show_list_add").css('max-height', $("#show_list_add").height());
-        $("#show_list_add").animate({scrollTop: $('#show_list_add').prop('scrollHeight')});
-      }      
-
-      $("#name").focus();
-      var sum = parseFloat($('#total-price').val());
-      var barcode = $('#barcode').val();
-          if(barcode != "" && $('#name').val() != ""){
-            index++;
-            $('#show_list_add').append("<div id='list_add"+index+"' class='row' style='margin-left: 50px; margin-bottom: 5px;'>\
-                <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
-                  <div class='input-group'>\
-                    <span class='input-group-addon'>\
-                      <input id='box"+index+"' onclick='bonus("+index+")' type='checkbox' class='btn btn-default'>\
-                    </span>\
-                    <input id='added_no"+index+"' class='form-control text-center added' type='text' readonly value='"+index+"'>\
-                </div>\
-                </div>\
-                <div class='col-2' style='padding-left: 5px; padding-right: 5px;'>\
-                  <input id='barcode-"+index+"' class='form-control text-center' value='"+ barcode +"' disabled>\
-                </div>\
-                <div class='col-3' style='padding-left: 5px; padding-right: 5px;'>\
-                  <input id='name-"+ index +"' class='form-control text-center' rel='popover' data-img='"+img+"' value='"+ $('#name').val() +"' readonly>\
-                </div>\
-                <div class='col-1' style='padding-left: 5px; padding-right: 5px;'>\
-                  <input id='price-"+index+"' class='form-control text-center' value='"+ $('#price').val() +"' readonly>\
-                </div>\
-                <div class='col-1' style='padding-left: 10px; padding-right: 0px;'>\
-                  <input id='amount-"+index+"' type='number' oninput='chng_amt_edit("+index+")' class='form-control text-center no-spin' min='1' value='"+ $('#amount').val() +"' readonly>\
-                </div>\
-                <div class='col-1'>\
-                  <input id='unit-"+index+"' class='form-control text-center' value='"+ $('#unit').val() +"' readonly>\
-                </div>\
-                <div class='col-1' style='padding-left: 0px; padding-right: 0px;'>\
-                  <input id='total-"+index+"' class='form-control text-center' value='"+ $('#total').val() +"' readonly>\
-                </div>\
-                <div class='col-1' style='padding-right: 0px;'>\
-                  <input id='dis-"+index+"' class='form-control text-center' value='"+ $('#prod-discount').val() +"' readonly>\
-                </div>\
-                <div class='col-1 text-center' style='padding-left: 0px; padding-right: 0px;'>\
-                  <button id='btn_edit"+ index + "' class='btn btn-sm btn-primary' style='margin-top: 4px;' onclick='edit(" + index + ")'>\
-                    <i class='fa fa-edit'></i>\
-                  </button>\
-                  <button id='btn_check"+ index + "' class='btn btn-sm btn-success' style='margin-top: 4px;' onclick='update(" + index + ")' hidden>\
-                    <i class='fa fa-check-square'></i>\
-                  </button>\
-                  <button id='btn_remove"+ index + "' class='btn btn-sm btn-danger' style='margin-top: 4px;' onclick='remove(" + index + ")' hidden>\
-                    <i class='fa fa-minus'></i>\
-                  </button>\
-                </div>\
-                <script>\
-                $('#name-"+index+"[rel=popover]').popover({\
-                html: true,\
-                trigger: 'hover',\
-                placement: 'left',\
-                content: function(){\
-                return '<img src='+$(this).data('img')+'>';}\
-                });\
-                </"+"script>\
-                </div>\
-            ");           
-            sum += parseFloat($('#total').val());
-            if($('#prod-discount').val() != ""){
-              sum_dis += parseFloat($('#prod-discount').val());
-            }
-
-            item = {}
-            item ["prod_id"] =  prod_id;
-            item ["name"] =  $('#name').val();
-            item ["price"] =  $('#price').val();
-            item ["amount"] =  $('#amount').val();
-            item ["unit"] =  $('#unit').val();
-            item ["total"] =  $('#total').val();
-            item ["price_old"] =  old_price;
-            item["price_cus"] = price;
-            item["arr"] = array_amt;
-            item ["check_amt"] =  check;
-            if($('#prod-discount').val() != ""){
-              item ["discount"] =  $('#prod-discount').val();
-            }else{
-              item ["discount"] =  0;
-            }
-            jsonObj.push(item);
-
-            $('#barcode').val("");
-            $('#name').val("");
-            $('#price').val("");
-            $('#amount').val("1");
-            $('#unit').val("");
-            $('#total').val("");
-            $('#prod-discount').val("");
-
-            $('#total-price').val(sum);
-            $('#total-discount').val(sum_dis);
-            $('#total-net').val(sum - sum_dis);
-
-            //$('#span_no').text("(" + index_arr + ")");
-          }
-    }
-
-    function reset(){
-      //console.log("clear");
-      $("#name").focus();
-      $('#barcode').val("");
-      $('#name').val("");
-      $('#price').val("");
-      $('#amount').val("1");
-      $('#unit').val("");
-      $('#total').val("");
-      $('#prod-discount').val("");
-      $('#box').attr("checked",false);
-      prod_id = 0;
-    }
-
-    function arrange(arg){
-      jsonObj.splice(arg-1,1);
-      for(i = arg+1; i <= index; i++){
-        console.log(i);
-        $("#list_add"+i).prop('id', 'list_add'+(i-1));
-        $("#barcode-"+i).prop('id', 'barcode-'+(i-1));
-        $("#name-"+i).prop('id', 'name-'+(i-1));
-        $("#total-"+i).prop('id', 'total-'+(i-1));
-        $("#amount-" +i).attr('oninput', "chng_amt_edit("+(i-1)+")");
-        $("#amount-"+i).prop('id', 'amount-'+(i-1));
-        $("#dis-"+i).prop('id', 'dis-'+(i-1));
-        $("#unit-"+i).prop('id', 'unit-'+(i-1));
-        $("#added_no"+i).val(i-1);
-        $("#added_no"+i).prop('id', 'added_no'+(i-1));
-        $("#price-"+i).prop('id', 'price-'+(i-1));
-        $("#box"+i).attr('onclick', "bonus("+(i-1)+")");
-        $("#box"+i).prop('id', 'box'+(i-1));
-        $("#btn_edit"+i).attr('onclick', "edit("+(i-1)+")");
-        $("#btn_edit"+i).prop('id', 'btn_edit'+(i-1));
-        $("#btn_check"+i).attr('onclick', "update("+(i-1)+")");
-        $("#btn_check"+i).prop('id', 'btn_check'+(i-1));
-        $("#btn_remove"+i).attr('onclick', "remove("+(i-1)+")");
-        $("#btn_remove"+i).prop('id', 'btn_remove'+(i-1));
-      }
-      index--;
-      //$("#span-no").text(j+1);
-    }
-
-    function remove(num){
-      if($('#box'+num).is(':checked') == true){
-        $('#box'+num).prop('checked', false);
-        bonus(num);
-      }
-      var sum = parseFloat($('#total-price').val());
-      var h_total = parseFloat($('#total-'+num).val());
-      var h_dis = parseFloat($('#dis-'+num).val());
-      sum -= h_total;
-      if(!isNaN(h_dis)){
-        sum_dis -= h_dis;
-      }
-      $('#total-price').val(sum);
-      $('#total-discount').val(sum_dis);
-      $('#total-net').val(sum - sum_dis);
-
-      $('#list_add'+num).remove();
-      arrange(num);      
-    }
-
-    function bonus(num){
-      var sum = parseFloat($('#total-price').val());
-      var h_total = parseFloat($('#total-'+num).val());
-      var h_dis = parseFloat($('#dis-'+num).val());
-
-      if($('#box'+num).is(':checked') == true){
-          sum -= h_total;
-          if(!isNaN(h_dis)){
-            sum_dis -= h_dis;
-          }
-      }else{
-          sum += h_total;
-          if(!isNaN(h_dis)){
-            sum_dis += h_dis;
-          }
-      }
-      $('#total-price').val(sum);
-      $('#total-discount').val(sum_dis);
-      $('#total-net').val(sum - sum_dis);
-    }
-
-    function check_bill(){     
-      var total = $('#total-price').val();
-      var dis = $('#total-discount').val();
-      var net = $('#total-net').val();
-
-      $('#net-price').val(total);
-      $('#discount-money').val(dis);
-      $('#final-price').val(net); 
-      $('#get-money').val(""); 
-      $('#change-money').val("");    
-    }   
-   
-    function save(){
-      if(jsonObj.length > 0 && $('#get-money').val() != "" && $('#cus').val() != "" && $('#change-money').val() != ""){
-        var d = new Date($.now());     
-        datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-
-        var no = 1;
-        json = [];
-        var text = "";
-        var texta4 = "";
-        $.each(jsonObj, function(i, field){
-          item = {}
-          item ["item_id"] =  no;
-          item ["name"] =  jsonObj[i].name;
-          item ["price"] =  jsonObj[i].price;
-          item ["amount"] =  jsonObj[i].amount;
-          item ["prod_id"] =  jsonObj[i].prod_id;
-          item ["discount"] =  jsonObj[i].discount;
-          if($('#box'+(i+1)).is(':checked') == true){
-            item ["bonus"] =  1;
-          }else{
-            item ["bonus"] =  0;
-          }
-          json.push(item);
-          no++;
-       
-        text = text + "<div class='left'>"+jsonObj[i].name+"("+jsonObj[i].price+")</div>" + "<div class='mid'>"+jsonObj[i].amount+"</div>" + "<div class='right'>"+jsonObj[i].total+"</div>";
-        texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+(i+1)+"</div>"+
-              "<div class='fl-50 fs-120 tb no-bdt'>"+jsonObj[i].name+"</div>"+
-              "<div class='fl-10 fs-120 tb no-bdt'>"+jsonObj[i].amount+"</div>"+
-              "<div class='fl-10 fs-120 tb no-bdt'>"+jsonObj[i].unit+"</div>"+
-              "<div class='fl-10 fs-120 tb no-bdt'>"+jsonObj[i].price+"</div>"+
-              "<div class='fl-10 fs-120 tb no-bdt'>"+jsonObj[i].total+"</div>";
-        });
-        var jsonString = JSON.stringify(json);
-        var print = $('input[name=print-radio]:checked').val();
-        var print_type = $('input[name=print-option]:checked').val();
-        var pay_type = $('input[name=pay-radio]:checked').val();
-        var comment = $('textarea').val();
-        var b_id = $('#branch option:selected').val();
-        var b_name = $('#branch option:selected').html();
-        var sum_price = $('#net-price').val();
-        var discount = $('#discount-money').val();
-        var final_price = $('#final-price').val();
-        var get_money = $('#get-money').val();
-        var change_money = $('#change-money').val();
-        var cus_name = $('#cus').val();
-        var dataString =  "JSON=" + jsonString + "&cus_id=" + cus_id + "&b_id=" + b_id + "&date=" + datetime + "&sum=" + sum_price
-        + "&pay=" + pay_type + "&dis=" + discount + "&get_money=" + get_money + "&change_money=" + change_money + "&final_price=" 
-        + final_price + "&comment=" + comment + "&name_cus=" + cus_name + "&user_id=" + localStorage.user_id;
-        
-        if(print == "print"){
-          var WinPrint  = window.open();
-        }        
-        $.ajax({
-            type: "POST",
-            url:"http://150.95.26.163:8080/gitmew/php/save_order.php",
-            data: dataString,
-            async: false,
-            success: function(data){
-                //alert(data);
-                if(data != "fail"){
-                  if(print_type == "bill"){
-                    var date = datetime.split(" ");
-                    var time = date[1];
-                    var date = date[0];
-                    WinPrint.document.write("<style>@page {size: auto; margin: 0mm;} .txt-right{ margin-right: 0.5cm; font-size: 1em; text-align:right; float: right; } .txt-left{ font-size: 1em; margin-left: 0.5cm; float: left; width: 50%; }.txt-left-100{ font-size: 1em; margin-left: 0.5cm; float: left; width: 100%; } .txt-ct{ float: center; font-size: 1em; text-align: center; margin-bottom: 0.2em} .left{margin-left: 0.5cm; float: left; width: 3.5cm; text-align: left;} .mid{float: left; width: 0.5cm; text-align: right;} .right{margin-right: 0.5cm; float: left; width: 2.5cm; text-align: right;}</style>"+
-                      "<div style='width: 7.5cm;'>"+
-                        "<div class='txt-ct'>พรประสิทธิ์</div>"+
-                        "<div class='txt-ct'>PPS AUTO</div>"+
-                        "<div class='txt-ct'>5 ม.7 ต.ชีน้ำร้าย อ.อินทร์บุรี สิงห์บุรี</div>"+
-                        "<div class='txt-ct'>โทร. 065-5028828 , 097-0631169</div>"+
-                        "<div class='txt-ct' style='font-weight: bold; margin-top: 1em;'>ใบเสร็จรับเงิน</div>"+
-                        "<div class='txt-left-100'>ลูกค้า : "+cus_name+"</div>"+
-                        "<div class='txt-left-100'>ประเภท : "+pay_type+"</div>"+
-                        "<div class='txt-left-100'>เลขที่บิล :  "+data+" </div>"+
-                        "<div class='txt-left' style='letter-spacing: -0.5px;'>วันที่ขาย : "+date+"</div>"+
-                        "<div class='txt-right' style='margin-bottom: 5px;'>เวลา : "+time+"</div>"+
-                        
-                        "<hr style='width: 90%; border-top: 1px dashed; border-bottom: none;'>"+
-                        "<div class='left'>รายการ</div> <div class='mid'>จำนวน</div> <div class='right'>ราคา</div>"+
-                        ""+text+""+
-                        "<hr style='width: 90%; border-top: 5px; border-top: 1px dashed; border-bottom: none;'>"+
-                        "<div class='txt-left'>ราคารวม : </div>"+
-                        "<div class='txt-right'>"+sum_price+" บาท</div><br>"+
-                        "<div class='txt-left'>ส่วนลด : </div>"+
-                        "<div class='txt-right'>"+discount+" บาท</div><br>"+
-                        "<div class='txt-left'>สุทธิ : </div>"+
-                        "<div class='txt-right'>"+final_price+" บาท</div><br><br>"+
-                        "<div class='txt-ct' style='margin-bottom: 0.5em;'>ขอบคุณที่ใช้บริการ</div>"+
-                        "<div class='txt-left-100'>พนักงานขาย : "+localStorage.name+"</div>"+
-                        "<div class='txt-left'>รับเงิน : "+get_money+" บาท</div>"+
-                        "<div class='txt-right'>ทอน : "+change_money+" บาท</div>"+
-                      "</div>");
-                    WinPrint.document.close();
-                    WinPrint.focus();
-                    WinPrint.print();
-                    WinPrint.close();   
-                    location.reload(true);
-                  }else if(print_type == "a4"){
-                    var date = datetime.split(" ");
-                    var time = date[1];
-                    var date = date[0];
-                    var link = "https://fonts.googleapis.com/css?family=Maitree";
-                    var logo = "http://150.95.26.163:8080/gitmew/img/pps.jpg";
-                    WinPrint.document.write("<html><head><link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Maitree'></head><body>");
-                    WinPrint.document.write("<style>@page {size: auto; margin: 0;} .fl{float: left; text-align: center; margin-left: 50mm; margin-right: 40mm;}.fr{float: right; text-align: left; margin-right: 25mm;}.fc{float: center; text-align: center;}.fs-200-bold{font-size: 200%; margin-bottom: -10px; font-weight: bold;}.fs-200{font-size: 200%; margin-bottom: -25px;}.fs-180{font-size: 180%; margin-bottom: -25px; letter-spacing: 2px;}.fs-150-title{font-size: 150%; margin-bottom: -25px; letter-spacing: 1px;}.fs-150{font-size: 150%; margin-bottom: -15px; letter-spacing: 1px;}.fs-120{font-size: 120%; letter-spacing: 1px;}.fl-spc{float: left; width: 5%;}.fl-10{float: left; width: 10%;}.fl-15{float: left; width: 15%;}.fl-20{float: left; width: 20%; text-align: center;}.fl-25{float: left; width: 25%; text-align: center;}.fl-30{float: left; width: 30%; text-align: center;}.fl-35{float: left; width: 30%; text-align: center;}.fl-40{float: left; width: 40%; text-align: center;}.fl-50{float: left; width: 50%; text-align: center;}.fl-55{float: left; width: 55%; text-align: center;}.fl-87{float: left; width: 87.5%; text-align: center;}.field{border-bottom: 1px dashed black;}.ctn{position: relative; width: 297mm; height: 210mm; padding: 10mm 15mm 15mm 10mm; font-family: 'Maitree';}.r{display: inline-block;}.tb-st{border: 1px solid black; text-align: center; padding: 3px;}.tb{border: 1px solid black; text-align: center; padding: 3px; border-left: none;}.no-bdt{border-top: none;}</style>"+
-
-                    "<div class='ctn'>"+
-                      "<div class='r'>"+
-                        "<div class='fl'>"+
-                          "<img id='img-logo' style='width: 250px; height: 150px;' src='"+logo+"'>"+
-                        "</div>"+ 
-                        "<div class='fr'>"+
-                          "<p class='fs-200'>พรประสิทธิ์ PPS Auto Shop</p>"+
-                          "<p class='fs-150-title'>5 หมู่ 7 ต.ชีน้ำร้าย จ.สิงห์บุรี 16110</p>"+
-                          "<p class='fs-150-title'>โทร 065-5028828, 097-0631169</p>"+
-                        "</div>"+
-                      "</div>"+
-
-                      "<div class='fc'><p class='fs-200-bold'>ใบรายการขาย</p></div>"+
-
-                      
-                      "<div class='fl-10'><p class='fs-150'>ชื่อลูกค้า</p></div>"+
-                      "<div class='fl-55'><p class='fs-150 field'>"+cus_name+"</p></div>"+
-                      "<div class='fl-spc'>&emsp;</div>"+
-                      "<div class='fl-10'><p class='fs-150'>ประเภท</p></div>"+
-                      "<div class='fl-20'><p class='fs-150 field'>"+pay_type+"</p></div>"+
-
-                      "<div class='fl-10'><p class='fs-150'>ที่อยู่</p></div>"+
-                      "<div class='fl-55'><p class='fs-150 field'>"+cus_addr+"</p></div>"+
-                      "<div class='fl-spc'>&emsp;</div>"+
-                      "<div class='fl-10'><p class='fs-150'>เบอร์โทร</p></div>"+
-                      "<div class='fl-20'><p class='fs-150 field'>"+cus_tel+"</p></div>"+
-
-                      "<div class='fl-15'><p class='fs-150'>เลขที่ใบรายการ</p></div>"+
-                      "<div class='fl-35'><p class='fs-150 field'>"+data+"</p></div>"+
-                      "<div class='fl-25'><p class='fs-150'>วันที่ เวลา ที่ทำรายการ</p></div>"+
-                      "<div class='fl-30' style='margin-bottom: 80px;'><p class='fs-150 field'>"+datetime+"</p></div>"+
-
-                      "<div>"+
-                        "<div class='fl-spc fs-120 tb-st'>ลำดับ</div>"+
-                        "<div class='fl-50 fs-120 tb'>ชื่อสินค้า</div>"+
-                        "<div class='fl-10 fs-120 tb'>จำนวน</div>"+
-                        "<div class='fl-10 fs-120 tb'>หน่วย</div>"+
-                        "<div class='fl-10 fs-120 tb'>ราคา/หน่วย</div>"+
-                        "<div class='fl-10 fs-120 tb'>รวมเงิน</div>"+ 
-
-                        texta4 +
-
-                        "<div class='fl-87 fs-120 tb-st no-bdt'>ราคารวมทั้งสิ้น</div>"+
-                        "<div class='fl-10 fs-120 tb no-bdt'>"+sum_price+"</div>"+
-                      "</div>"+
-
-                      "<div style='margin-top: 60px; padding-top: 10px; padding-bottom: 20px;' class='fl-50 fs-120 tb-st'>"+
-                        "<div style='font-weight: bold; margin-bottom: 10px; text-decoration: underline;' class='fs-120'>ข้อมูลผู้รับสินค้า</div>"+
-                        "<div style='margin-bottom: 10px;' class='fl-40 fs-120'>ผู้รับสินค้า</div>"+
-                        "<div style='margin-bottom: 10px;' class='fl-50 fs-120 field'>&emsp;</div>"+
-                        "<div class='fl-40 fs-120'>วันที่ส่งสินค้า</div>"+
-                        "<div class='fl-50 fs-120 field'>&emsp;</div>"+
-                      "</div>"+
-
-                      "<div class='fl-spc'>&emsp;</div>"+
-
-                      "<div style='margin-top: 100px; padding-top: 10px; padding-bottom: 20px;' class='fl-40 fs-120 tb-st'>"+
-                        "<div class='fl-40 fs-120'>ผู้ทำรายการ</div>"+
-                        "<div class='fl-50 fs-120 field'>"+localStorage.name+"</div>"+
-                      "</div>"+
-                    "</div>");
-                    WinPrint.document.write('</body></html>');
-                    WinPrint.focus();
-                    //WinPrint.document.write("<script>window.print();</scr"+"ipt>");   
-                    location.reload(true);
-                  }             
-                  location.reload(true);
-                }else{
-                  $.alert({
-                    icon: 'fa fa-warning',
-                    title: 'เตือน',
-                    content: "ลองอีกครั้ง"
-                  });   
-                }
-            }
-        });
-      }else{
-        $.alert({
-          icon: 'fa fa-warning',
-          title: 'เตือน',
-          content: "กรุณากรอกข้อมูลให้ครบถ้วนก่อนทำรายการ"
-        });     
-      }
-    }
-
-    function logout(){
-      localStorage.user_id = "";
-      window.location = "login.html";
-    }
-
-    $('input:radio[name="print-radio"]').change(
-        function(){
-          if ($(this).is(':checked')) {
-            checked = $(this).val();
-            if(checked == "print"){
-              $("#print-option").prop('hidden', false);
-              $("#print-option-title").prop('hidden', false);
-            }else if(checked == "no"){
-              $("#print-option").prop('hidden', true);
-              $("#print-option-title").prop('hidden', true);
-            }
-        }
-      }); // show / hide bill-option;
+        });        
     </script>
 </body>
+
 </html>

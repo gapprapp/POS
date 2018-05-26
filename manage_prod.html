@@ -26,6 +26,8 @@
   <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
 
   <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+  <link rel="stylesheet" href="css/easy-loading.css">
+  <script src="js/easy-loading.js"></script>
 
   <!-- Sidbar -->
   <link href="css/simple-sidebar.css" rel="stylesheet">
@@ -163,6 +165,9 @@
             cache: false,
             crossDomain: true,
             beforeSend: function() {
+              EasyLoading.show({                           
+                text: "กำลังโหลด"                            
+              });
                 $("#pg-st").addClass('disabled');
                 $("#pg-nd").addClass('disabled');
                 $("#pg-rd").addClass('disabled');
@@ -170,6 +175,7 @@
                 $("#li-prev").addClass('disabled');
             },
             success: function(response) {
+              EasyLoading.hide();
               var obj = jQuery.parseJSON(response);
               $.each(obj, function(i, field) {
                 var options_type = {
@@ -480,13 +486,17 @@
           cache: false,
           crossDomain: true,
           beforeSend: function() {
-              $("#pg-st").addClass('disabled');
-              $("#pg-nd").addClass('disabled');
-              $("#pg-rd").addClass('disabled');
-              $("#li-next").addClass('disabled');
-              $("#li-prev").addClass('disabled');
-            },
+            EasyLoading.show({                           
+              text: "กำลังโหลด"                            
+            });
+            $("#pg-st").addClass('disabled');
+            $("#pg-nd").addClass('disabled');
+            $("#pg-rd").addClass('disabled');
+            $("#li-next").addClass('disabled');
+            $("#li-prev").addClass('disabled');
+          },
           success: function(response) {
+            EasyLoading.hide();
             if (start == 0) {
               //find max_item
               var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
@@ -669,6 +679,9 @@
             cache: false,
             crossDomain: true,
             beforeSend: function() {
+              EasyLoading.show({                           
+                text: "กำลังโหลด"                            
+              });
               $("#pg-st").addClass('disabled');
               $("#pg-nd").addClass('disabled');
               $("#pg-rd").addClass('disabled');
@@ -676,6 +689,7 @@
               $("#li-prev").addClass('disabled');
             },
             success: function(response) {
+              EasyLoading.hide();
               if (start == 0) {
                 //find max_item
                 var path = "http://150.95.26.163:8080/gitmew/php/get_max.php";
