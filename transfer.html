@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+     <!-- Easy-autocomplete -->
+     <script src="js/jquery.easy-autocomplete.js"></script>
+     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet" >
+
+    <style>
+      .conclu-txt{
+        border: solid #767676;
+        margin-left: 5px;
+        padding-top: 5px;
+      }
+
+      .conclu-price{
+        border: solid #767676;
+        background: #767676;
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+
+      .conclu-price-input{
+        font-weight: bold; 
+        font-size: 22px;
+        padding-top: 4px; 
+        padding-bottom: 4px; 
+        padding-left: 0px; 
+        padding-right: 0px;
+      }
+
+      .fa-save{
+        color: #428bca;
+      } 
+    </style>
+
+    <script>
+      $(document).ready(function() {
+        var d = new Date($.now());
+        $('#date').text("วันที่ : " + d.getDate() + "/" + (d.getMonth()+1) + "/" + d.getFullYear());
+      });
+
+      function reset(){
+        $("#barcode").val("");
+        $("#name").val("");
+        $("#remain-1").val("");
+        $("#remain-2").val("");
+        $("#amount").val("");
+      }
+
+      var index = 0;
+      function add(){
+        var bottom = $(window).height() - $("#show_list_add").offset().top - $("#show_list_add").height();
+        // Always scroll to the bottom
+        if(bottom < 220){
+          $("#show_list_add").css('max-height', $("#show_list_add").height());
+          $("#show_list_add").animate({scrollTop: $('#show_list_add').prop('scrollHeight')});
+        } 
+        index++;
+        text_html = '<div id="list_add'+index+'" class="row" style="margin-left: 50px; margin-bottom: 5px;">'+
+                  '<div class="col-2"></div>'+
+                  '<div class="col-2 text-center" style="padding-left: 5px; padding-right: 5px;">'+
+                    '<div class="input-group text-center">'+
+                      '<span id="no-'+index+'" class="input-group-addon text-center" style="width: 15%;">'+index+'</span>'+
+                      '<input id="barcode" type="text" class="form-control text-center" readonly>'+
+                    '</div>'+
+                  '</div>'+
+                  '<div class="col-3 text-center" style="padding-left: 5px; padding-right: 5px;">'+
+                    '<input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
+                  '</div>'+
+                  '<div class="col-1" style="padding-left: 5px; padding-right: 5px;">'+
+                    '<input id="remain-1" type="number" class="form-control text-center no-spin" readonly>'+
+                  '</div>'+
+                  '<div class="col-1" style="padding-left: 10px; padding-right: 0px;">'+
+                    '<input id="remain-2" type="number" class="form-control text-center no-spin" data-index="3" readonly>'+
+                  '</div>'+
+                  '<div class="col-1">'+
+                    '<input id="amount" type="text" class="form-control text-center" readonly>'+
+                  '</div>'+
+                  '<div class="col-1">'+
+                  '<button id="btn_edit'+ index + '" class="btn btn-sm btn-primary" style="margin-top: 4px;" onclick="edit(' + index + ')">'+
+                    '<i class="fa fa-edit"></i>'+
+                  '</button>'+
+                  '<button id="btn_check'+ index + '" class="btn btn-sm btn-success" style="margin-top: 4px; margin-right: 4%;" onclick="update(' + index + ')" hidden>'+
+                    '<i class="fa fa-check-square"></i>'+
+                  '</button>'+
+                  '<button id="btn_remove'+ index + '" class="btn btn-sm btn-danger" style="margin-top: 4px; margin-right: 4%;" onclick="remove(' + index + ')" hidden>'+
+                    '<i class="fa fa-minus"></i>'+
+                  '</button>'+
+                '</div>'+      
+                '</div>';
+        $('#show_list_add').append(text_html);
+      }
+
+      function edit(arg){
+        $("#btn_edit"+arg).prop('hidden', true);
+        $("#btn_check" + arg).prop('hidden', false);
+        $("#btn_remove"+arg).prop('hidden', false);
+      }
+
+      function update(arg){
+        $("#btn_edit" + arg).prop('hidden', false);
+        $("#btn_check" + arg).prop('hidden', true);
+        $("#btn_remove" + arg).prop('hidden', true);
+      }
+
+      function remove(arg){
+        $("#list_add"+arg).remove();
+        runno(arg);
+      }
+
+      function runno(arg){
+        for(i = arg+1; i<=index; i++){
+          $("#list_add"+i).prop('id', 'list_add'+(i-1))
+          $("#no-"+i).text(i-1);
+          $("#no-"+i).prop('id', 'no-'+(i-1));
+          $("btn_edit-"+i).attr('onclick', 'edit('+(i-1)+')');
+          $("btn_check-"+i).attr('onclick', 'update('+(i-1)+')');
+          $("btn_remove-"+i).attr('onclick', 'remove('+(i-1)+')');
+          $("btn_edit-"+i).prop('id', 'no-'+(i-1));
+          $("btn_check-"+i).prop('id', 'no-'+(i-1));
+          $("btn_remove-"+i).prop('id', 'no-'+(i-1));
+        }index--;
+      }
+
+      function save(){
+        $.alert({
+            icon: 'fas fa-save',
+            title: 'บันทึกเสร็จสิ้น',
+            content: 'บันทึกการโอนสินค้าเสร็จสิ้น',
+        });
+      }
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+              <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                  
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div id="offline" class="alert alert-danger alert-dismissible" hidden>
+              <button type="button" class="close" onclick="dismiss()" >&times;</button>
+              <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
+            </div>
+            <div id="online" class="alert alert-success alert-dismissible" hidden>
+              <button type="button" class="close" onclick="dismiss()">&times;</button>
+              <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
+            </div>
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #228b22;">
+              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                <h3 id="nav-title">โอนสินค้า</h3>
+              </div>
+            </nav>         
+            
+            <!-- 4 4 4 4 4 4 4 4 -->
+            <div class="row">
+              <div class="col-2"></div>
+              <div id="date" class="col-2 text-left text-muted"></div>
+              <div class="col-4"></div>
+              <div class="col-3 text-left text-muted">ผู้ทำรายการ :
+                <div id="user" class="btn-group col-4 text-center text-muted">
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-2"></div>
+              <div class="col-5 text-left text-muted dropdown">ของออกจาก :
+                <div class="btn-group ">
+                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+              
+                  </select>
+                </div>
+              </div>
+              <div class="col-1"></div>
+              <div class="col-4 text-left text-muted dropdown">ไปที่สาขา :
+                <div class="btn-group">
+                  <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+              
+                  </select>
+                </div>
+              </div>
+            </div>
+            </div>
+            <hr style="width: 80%; margin-top: 0;">
+
+            <div class="container-fullwidth justify-content-center">
+              <!-- Title -->
+              <div class="row" style="margin-left: 50px; margin-bottom: 10px;">
+                <div class="col-2 text-center"></div>
+                <div class="col-2 text-center">บาร์โค้ด</div>
+                <div class="col-3 text-center">รายการสินค้า</div>
+                <div class="col-1 text-center">คงเหลือ(1)</div>
+                <div class="col-1 text-center">คงเหลือ(2)</div>
+                <div class="col-1 text-center">จำนวน</div>
+                <div class="col-2"></div>
+              </div>
+              <!-- Show -->
+              <div id="show_list_add" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
+                <!-- Append here!! -->
+              </div>
+              <!-- Input -->
+              <div class="row" style="margin-left: 50px;">
+                <div class="col-2"></div>
+                <div class="col-2" style="padding-left: 5px; padding-right: 5px;">
+                  <div class="input-group">
+                    <span id='no' class="input-group-addon" style="width: 15%;">&nbsp</span>
+                    <input id="barcode" type="text" class="form-control text-center" readonly>
+                  </div>
+                </div>
+                <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
+                </div>
+                <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
+                  <input id="remain-1" type="number" class="form-control text-center no-spin" readonly>
+                </div>
+                <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
+                  <input id="remain-2" type="number" class="form-control text-center no-spin" data-index="3" readonly>
+                </div>
+                <div class="col-1">
+                  <input id="amount" type="text" class="form-control text-center" readonly>
+                </div>              
+              </div> <br>
+
+              <!-- Two btn-->
+              <div class="row" style="margin-right: 25px;">
+                <div class="col-8"></div>
+                <div class="col-4 text-left">
+                  <button class="btn btn-success" onclick="add()">เพิ่มรายการ [F2]</button>
+                  <button class="btn btn-danger" onclick="reset()">ค่าเริ่มต้น [F4]</button>
+                </div>
+              </div>
+            </div>
+        </div><!-- End page content wrapper -->
+      <div id="ctn-bttm" class="container-fluid fixed-bottom" style="margin-bottom: 15px; z-index: 0;">
+        <div class="row" style="margin-left: 10%;">
+          <div class="col-1"></div>
+          <div class="col-2 text-center conclu-txt">
+            <h4>จำนวนรวม : </h4>
+          </div>
+          <div class="col-1 text-center conclu-price">
+            <input id="total-price" type="number" value="0" class="form-control form-control-lg text-center no-spin no-border conclu-price-input" style="background: #767676; color: #5dbe5d" readonly>
+          </div>
+          <div class="col-1"></div>
+          <div class="col-3 text-right" style="padding-top: 10px;">
+            <div class="input-group">
+              <button id="btn_checkbill" class="btn btn-primary" style="text-align: center; margin-right: 50%;" data-toggle="modal" data-target="#myModal" onclick="save()">บันทึก [F7]</button>
+              <button id="print-title" class="btn btn-warning" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">ใบรายงาน(A4)
+                <span>
+                  <i class="fa fa-print"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print Modal -->
+      <div class="modal fade" id="printModal" tabindex='-1'>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="col-12 text-center" style="margin-top: 15px;">
+              <h4 class="modal-title">ตั้งค่าการพิมพ์</h4>
+              <hr style="width: 70%;">
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="col-12 text-center">
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input type="radio" name="print-radio" value="print" checked>พิมพ์</label>
+                <label class="radio-inline" style="font-size: 120%;">
+                  <input type="radio" name="print-radio" value="no">ไม่พิมพ์</label>
+              </div>
+              <!-- Modal footer -->
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="set_print_title();">บันทึก</button>
+              </div>
+              <br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- End Wrapper -->
+    <script>
+      function set_print_title(){
+        text_html = "<span><i class='fa fa-print'></i></span>";
+        $('input[name=print-radio]').each(function () {
+          if ($(this).is(":checked")) {
+            checked = $(this).val();
+            if (checked == "no") {
+              $("#print-title").text("ไม่พิมพ์ ");
+              $("#print-title").append(text_html);
+            }else if(checked == "print"){
+              $("#print-title").text("ใบรายงาน(A4)");
+              $("#print-title").append(text_html);
+            }
+          }
+        });
+      }
+    </script>
+</body>
+</html>
