@@ -759,10 +759,11 @@
         function add_new_cus(arg){
             // add cus to db
             // check 
-            if($("#add-name-"+arg).val() != "" && $("#add-addr-"+arg).val() != "" && $("#add-tel-"+arg).val() != ""){
+            if($("#add-name-"+arg).val() != "" && $("#add-addr-"+arg).val() != "" && $("#add-tel-"+arg).val() != "" && $("#add-type-"+arg).val() != ""){
                 var name = $('#add-name-'+arg).val();
                 var addr = $('#add-addr-'+arg).val();
                 var tel = $('#add-tel-'+arg).val();
+                
                 $.ajax({
                     url: "http://150.95.26.163:8080/gitmew/php/add_cus.php",
                     type: "POST",
@@ -929,11 +930,14 @@
                                     "<input id='add-name-"+add_index+"' type='text' class='form-control text-center'>"+
                                " </div>"+
                             "</div>"+
-                            "<div class='col-6 text-center'>"+
+                            "<div class='col-4 text-center'>"+
                                 "<input id='add-addr-"+add_index+"' type='text' class='form-control text-center'>"+
                             "</div>"+
                             "<div class='col-2 text-center'>"+
                                 "<input id='add-tel-"+add_index+"' type='text' class='form-control text-center'>"+
+                            "</div>"+
+                            "<div class='col-2 text-center'>"+
+                                "<input id='add-type-"+add_index+"' type='text' class='form-control text-center'>"+
                             "</div>"+
                             "<div class='col-1' text-center' style='margin-top: 3px;'>"+
                                 "<button id='btn-add-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_new_cus("+add_index+")'>"+
@@ -953,7 +957,7 @@
                     "</li>";
 
                 $('.add-group').append(text_html);
-                $("#add-name-"+add_index).focus();
+                //$("#add-name-"+add_index).focus();
             }             
         }
 
