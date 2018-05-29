@@ -40,6 +40,11 @@
             padding: 6px 20px;
             margin-bottom: 6px;
         }
+
+        .no-pd{
+            padding-left: 0;
+            padding-right: 0;
+        }
     </style>
 
     <script>
@@ -51,14 +56,14 @@
             $("#li-next").addClass('disabled');
             $("#li-prev").addClass('disabled');
 
-            if(!localStorage.user_id){
+            /*if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }   
+            } */  
 
             if(localStorage.role == "user"){
                 $("#mb").remove();
@@ -172,6 +177,7 @@
             $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
             $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
             $("#btn-del-" + arg).prop('hidden', false);
+            $("#btn-info-" + arg).prop('hidden', true);
         }
 
         function del_row(arg) {
@@ -220,6 +226,7 @@
             $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
             $("#i-edit-" + arg).attr('class', 'fa fa-edit');
             $("#btn-del-" + arg).prop('hidden', true);
+            $("#btn-info-" + arg).prop('hidden', false);
 
             $("#name-" + arg).prop('disabled', true);
             $("#addr-" + arg).prop('disabled', true);
@@ -906,48 +913,48 @@
 
             // Check before is added
             if(add_index > 0 && $("#btn-add-"+add_index).is(':visible')){
-                $(".add-group").prop('hidden', true);
+                $("#add-"+add_index).remove();
                 add_index--;
                 return 0;
+            }else{
+                add_index++;                               
+                $(".add-group").prop('hidden', false);
+
+                var text_html = "<li id='add-"+add_index+"' class='list-group-item text-center rounded'>"+
+                        "<span id='add-id-"+add_index+"' hidden></span>" +
+                        "<div class='row'>"+
+                            "<div class='col-3 text-center'>"+
+                                "<div class='input-group-prepend'>"+
+                                    "<span id='add-no-"+add_index+"' class='input-group-text' style='margin-right: 8px;'>+"+add_index+"</span>"+
+                                    "<input id='add-name-"+add_index+"' type='text' class='form-control text-center'>"+
+                               " </div>"+
+                            "</div>"+
+                            "<div class='col-6 text-center'>"+
+                                "<input id='add-addr-"+add_index+"' type='text' class='form-control text-center'>"+
+                            "</div>"+
+                            "<div class='col-2 text-center'>"+
+                                "<input id='add-tel-"+add_index+"' type='text' class='form-control text-center'>"+
+                            "</div>"+
+                            "<div class='col-1' text-center' style='margin-top: 3px;'>"+
+                                "<button id='btn-add-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_new_cus("+add_index+")'>"+
+                                    "<i id='i-edit-1' class='fa fa-plus'></i>"+
+                                "</button>"+
+                                "<button id='btn-add-save-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='save_new_cus("+add_index+")' hidden>"+
+                                    "<i id='i-edit-1' class='fa fa-check-square'></i>"+
+                                "</button>"+
+                                "<button id='btn-add-edit-"+add_index+"' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='edit_new_cus("+add_index+")' hidden>"+
+                                    "<i id='i-edit-1' class='fa fa-edit'></i>"+
+                                "</button>"+
+                                "<button id='btn-add-del-"+add_index+"' class='btn btn-sm btn-danger' onclick='del_new_cus("+add_index+")' data-toggle='modal'data-target='#myModal' hidden>"+
+                                    "<i id='i-del-' class='fa fa-minus'></i>"+
+                                "</button>"+
+                            "</div>"+
+                        "</div>"+
+                    "</li>";
+
+                $('.add-group').append(text_html);
+                $("#add-name-"+add_index).focus();
             }             
-            add_index++;      
-            $("#add-"+add_index).remove();                            
-            $(".add-group").prop('hidden', false);
-
-            var text_html = "<li id='add-"+add_index+"' class='list-group-item text-center rounded'>"+
-                    "<span id='add-id-"+add_index+"' hidden></span>" +
-                    "<div class='row'>"+
-                        "<div class='col-3 text-center'>"+
-                            "<div class='input-group-prepend'>"+
-                                "<span id='add-no-"+add_index+"' class='input-group-text' style='margin-right: 8px;'>+"+add_index+"</span>"+
-                                "<input id='add-name-"+add_index+"' type='text' class='form-control text-center'>"+
-                           " </div>"+
-                        "</div>"+
-                        "<div class='col-6 text-center'>"+
-                            "<input id='add-addr-"+add_index+"' type='text' class='form-control text-center'>"+
-                        "</div>"+
-                        "<div class='col-2 text-center'>"+
-                            "<input id='add-tel-"+add_index+"' type='text' class='form-control text-center'>"+
-                        "</div>"+
-                        "<div class='col-1' text-center' style='margin-top: 3px;'>"+
-                            "<button id='btn-add-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_new_cus("+add_index+")'>"+
-                                "<i id='i-edit-1' class='fa fa-plus'></i>"+
-                            "</button>"+
-                            "<button id='btn-add-save-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='save_new_cus("+add_index+")' hidden>"+
-                                "<i id='i-edit-1' class='fa fa-check-square'></i>"+
-                            "</button>"+
-                            "<button id='btn-add-edit-"+add_index+"' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='edit_new_cus("+add_index+")' hidden>"+
-                                "<i id='i-edit-1' class='fa fa-edit'></i>"+
-                            "</button>"+
-                            "<button id='btn-add-del-"+add_index+"' class='btn btn-sm btn-danger' onclick='del_new_cus("+add_index+")' data-toggle='modal'data-target='#myModal' hidden>"+
-                                "<i id='i-del-' class='fa fa-minus'></i>"+
-                            "</button>"+
-                        "</div>"+
-                    "</div>"+
-                "</li>";
-
-            $('.add-group').append(text_html);
-            $("#add-name-"+add_index).focus();
         }
 
         function logout(){
@@ -989,35 +996,44 @@
             <!-- End Navbar -->
             <div class="container-fullwidth justify-content-center">
                 <!-- 3 Search -->
-                <div class="row">
+                <div class="row" style="margin-right: 7%;">
                     <div class="col-2"></div>
-                    <div class="col-4 text-center">
+                    <div class="col-3 text-center">
                          ชื่อลูกค้า
                     </div>
                     <div class="col-2 text-center">
                         เบอร์โทร
                     </div>
+                    <div class="col-1 text-center no-pd">ประเภท</div>
                     <div class="col-4 text-center"></div>
                     <div class="col-1"></div>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-right: 7%;">
                     <div class="col-1"></div>
                     <div class="col-1 text-right">
                         <p style="padding-top: 5px; font-size: 120%;">ค้นหา :
                             <p/>
                     </div>
-                    <div class="col-4 text-center">
+                    <div class="col-3 text-center">
                         <input id="search-name" type="text" class="form-control text-center no-spin">
                     </div>
                     <div class="col-2 text-center">
                         <input id="search-tel" type="number" class="form-control text-center">
+                    </div>
+                    <div class="col-1 text-center no-pd">
+                        <div class="btn-group ">
+                            <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                                <option class='dropdown-item text-center' style='color: #ffffff' value=''>ขายส่ง</option>
+                                <option class='dropdown-item text-center' style='color: #ffffff' value=''>ขายปลีก</option>
+                                <option class='dropdown-item text-center' style='color: #ffffff' value=''>ทั่วไป</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-4 text-center">
                         <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา [F2]</button>
                         <button class="btn btn-info btn-md" onclick="add_cus();">เพิ่มลูกค้า [F4]</button>
                         <button class="btn btn-primary btn-md" onclick="showall()">แสดงทั้งหมด [F7]</button>
                     </div>
-                    <div class="col-1"></div>
                 </div>
             </div>
             <hr style="width: 90%;">
@@ -1029,10 +1045,15 @@
                             <i id="i-customer_name" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
                         </a>
                     </div>
-                    <div class="col-6 text-center">
+                    <div class="col-4 text-center">
                         ที่อยู่
                     </div>
                     <div class="col-2 text-center">เบอร์โทร</div>
+                    <div class="col-2 text-center">
+                        <a href="#" style="color: black;" onclick="click_sort('type')">ประเภท
+                            <i id="i-type" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
                     <div class="col-1 text-center"></div>
                 </div>
                 <br>
@@ -1069,28 +1090,34 @@
 
                 <ul class="list-group" style="padding-right: 20px; padding-left: 20px;">
                     <!-- Append text html -->
-                    <!--<li id='item-1' class='list-group-item text-center rounded'>
+                    <li id='item-1' class='list-group-item text-center rounded'>
                         <div class="row">
                             <div class="col-3 text-center">
                                 <input type="text" class="form-control">
                             </div>
-                            <div class="col-6 text-center">
+                            <div class="col-4 text-center">
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-2 text-center">
                                 <input type="text" class="form-control">
                             </div>
                             <div class="col-2 text-center">
                                 <input type="text" class="form-control">
                             </div>
                             <div class="col-1 text-center" style="margin-top: 3px;">
-                                <button id='btn-edit-1' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit("1")'>
+                                <button id='btn-edit-1' class='btn btn-sm btn-primary' style='margin-right: 3px;' onclick='open_edit("1")'>
                                     <i id='i-edit-1' class='fa fa-edit'></i>
+                                </button>
+                                <button id='btn-info-1' class='btn btn-sm btn-info' onclick='window.location = "pricebook.html?cid=1"'>
+                                    <i id='i-info-1' class='fa fa-info-circle'></i>
                                 </button>
                                 <button id='btn-del-1' class='btn btn-sm btn-danger' onclick='del_row("1")' data-toggle='modal'
                                     data-target='#myModal' hidden>
-                                    <i id='i-del-' class='fa fa-minus'></i>
+                                    <i id='i-del-1' class='fa fa-minus'></i>
                                 </button>
                             </div>
                         </div>
-                    </li>-->
+                    </li>
                 </ul>
                 <br>
             </div>

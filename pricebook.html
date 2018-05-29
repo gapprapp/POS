@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <!-- Easy-autocomplete -->
+    <script src="js/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+    <link rel="stylesheet" href="css/easy-loading.css">
+    <script src="js/easy-loading.js"></script>
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet">
+    <style>
+        .list-group-item {
+            padding: 6px 20px;
+            margin-bottom: 6px;
+        }
+
+        .no-pd{
+            padding-left: 0;
+            padding-right: 0;
+        }
+    </style>
+
+    <script>
+        var add_index = 0;
+        function add_prod(){
+
+            if(add_index > 0 && $("#btn-add-"+add_index).is(':visible')){
+                $("#add-"+add_index).remove();
+                add_index--;
+                return 0;
+            } // Already click
+            else{
+                add_index++;                   
+                $(".add-group").prop('hidden', false);
+                var text_html = '<li id="add-'+add_index+'" class="list-group-item text-center rounded">'+
+                        '<div class="row">'+
+                            '<div class="col-3" style="margin-left: 3%;">'+
+                                '<div class="input-group">'+
+                                '<input id="no" type="text" class="form-control text-center" style="width: 15%;" readonly value="+'+add_index+'">'+
+                                '<input id="add_barcode" type="text" class="form-control text-center" style="width: 85%;" readonly>'+
+                              '</div>'+
+                            '</div>'+
+                            '<div class="col-3 text-center">'+
+                                '<input id="add_name" type="text" class="form-control text-center">'+
+                            '</div>'+
+                            '<div class="col-1 text-center">'+
+                                '<input id="add_unit" type="text" class="form-control text-center" readonly>'+
+                            '</div>'+
+                            '<div class="col-1 text-center no-pd" style="margin-left: 1%; margin-right: 1%;">'+
+                                '<input id="add_price" type="text" class="form-control text-center" readonly>'+
+                            '</div>'+
+                            '<div class="col-1 text-center no-pd">'+
+                                '<input id="add_sprice" type="text" class="form-control text-center">'+
+                            '</div>'+
+                            '<div class="col-1 text-center no-pd" style="margin-left: 1%;">'+
+                                '<input id="add_diff" type="text" class="form-control text-center" readonly>'+
+                            '</div>'+
+                            '<div class="col-1 text-center" style="margin-top: 3px;">'+
+                                '<button id="btn-add-edit-'+add_index+'" class="btn btn-sm btn-primary" style="margin-right: 3px;"+ onclick="edit_new_prod('+add_index+')" hidden>'+
+                                    '<i id="i-add-'+add_index+'" class="fa fa-edit"></i>'+
+                                '</button>'+
+                                '<button id="btn-add-update-'+add_index+'" class="btn btn-sm btn-success" style="margin-right: 3px;"+ onclick="update_new_prod('+add_index+')" hidden>'+
+                                    '<i id="i-add-'+add_index+'" class="fa fa-check-square"></i>'+
+                                '</button>'+
+                                '<button id="btn-add-del-'+add_index+'" class="btn btn-sm btn-danger" style="margin-right: 3px;"+ onclick="del_new_prod('+add_index+')" hidden>'+
+                                    '<i id="i-add-'+add_index+'" class="fa fa-minus"></i>'+
+                                '</button>'+
+                                '<button id="btn-add-'+add_index+'" class="btn btn-sm btn-success" style="margin-right: 3px;"+ onclick="add_new_prod('+add_index+')">'+
+                                    '<i id="i-add-'+add_index+'" class="fa fa-plus"></i>'+
+                                '</button>'+
+                            '</div>'+
+                        '</div>'+
+                    '</li>';
+                $(".add-group").append(text_html);  
+            }
+        }
+
+        function add_new_prod(arg){ 
+            if($("#add_barcode").val() != "" && $("#add_name").val() != "" && $("#add_unit").val() != "" && $("#add_price").val() != "" && $("#add_sprice").val() != "" &&  $("#add_diff").val() != ""){
+                $("#btn-add-"+arg).prop('hidden', true);
+                $("#btn-add-edit-"+arg).prop('hidden', false);
+            }else{
+                $("#btn-add-"+arg).prop('hidden', true);
+                $("#btn-add-edit-"+arg).prop('hidden', false);
+               /*$.alert({
+                   icon: 'fa fa-warning',
+                   title: 'เตือน',
+                   content: "กรุณาลองอีกครั้ง"
+               });*/
+            }
+        }
+
+        function edit_new_prod(arg){
+            $("#btn-add-edit-"+arg).prop('hidden', true);
+            $("#btn-add-update-"+arg).prop('hidden', false);
+            $("#btn-add-del-"+arg).prop('hidden', false);
+        }
+
+        function update_new_prod(arg){
+            $("#btn-add-edit-"+arg).prop('hidden', false);
+            $("#btn-add-update-"+arg).prop('hidden', true);
+            $("#btn-add-del-"+arg).prop('hidden', true);
+        }
+
+        function open_edit(arg){
+            $("#btn-edit-"+arg).prop('hidden', true);
+            $("#btn-save-"+arg).prop('hidden', false);
+            $("#btn-del-"+arg).prop('hidden', false);
+        }
+
+        function open_edit(arg){
+            $("#btn-edit-"+arg).prop('hidden', false);
+            $("#btn-save-"+arg).prop('hidden', true);
+            $("#btn-del-"+arg).prop('hidden', true);
+        }
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                    
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+        <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #facb56;">
+                <div class="clearfix">
+                    <a href="#menu-toggle" class="navbar-brand " id="menu-toggle" style="color: #666;">รายการ</a>
+                </div>
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                    <h3 id="nav-title" style="color: #666;">สมุดราคา</h3>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <div class="container-fullwidth justify-content-center">
+                <!-- 3 Search -->
+                <div class="row" style="margin-right: 7%;">
+                    <div class="col-3"></div>
+                    <div class="col-3 text-center">
+                         ชื่อลูกค้า
+                    </div>
+                    <div class="col-2 text-center">
+                        เบอร์โทร
+                    </div>
+                    <div class="col-2 text-center"></div>
+                </div>
+                <div class="row" style="margin-right: 7%; padding-left: 0;">
+                    <div class="col-2"></div>
+                    <div class="col-1 text-right">
+                        <p style="padding-top: 5px; font-size: 120%;">ค้นหา :
+                            <p/>
+                    </div>
+                    <div class="col-3 text-center">
+                        <input id="search-name" type="text" class="form-control text-center no-spin">
+                    </div>
+                    <div class="col-2 text-center">
+                        <input id="search-tel" type="number" class="form-control text-center">
+                    </div>
+                    <div class="col-3 text-center">
+                        <button id='btn-search' class="btn btn-success btn-md" onclick="search()">ค้นหา [F2]</button>
+                        <button class="btn btn-info btn-md" onclick="add_prod();">เพิ่มสินค้า [F4]</button>
+                    </div>
+                </div>
+            </div>
+            <hr style="width: 90%;">
+            <!-- Customer -->
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-4 text-center" style="border: solid 1px #999; background: white; border-radius: 5px;">
+                    <h3 id="show_cus_name">นาย พงศกร กรรมการ</h3>
+                    <h5 id="show_cus_">(087-934-7421)</h5>
+                </div>
+                <div class="col-4"></div>
+            </div>
+                <!-- Header -->
+                <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px;">
+                    <div class="row" style="padding-right: 5%; padding-left: 5%; margin-top: 25px; margin-bottom: 10px;">
+                    <div class="col-3 text-center" style="margin-left: 3%;">บาร์โค้ด</div>
+                    <div class="col-3 text-center">รายการสินค้า</div>
+                    <div class="col-1 text-center">หน่วย</div>
+                    <div class="col-1 text-center no-pd" style="margin-left: 1%; margin-right: 1%;">ราคา</div>
+                    <div class="col-1 text-center no-pd">ราคาพิเศษ</div>
+                    <div class="col-1 text-center no-pd" style="margin-left: 1%;">ลดไป</div>
+                    <div class="col-1"></div>
+                  </div>
+
+                <!-- Add -->
+                <ul class="add-group" style="padding-right: 3.5%; padding-left: 3.5%;" hidden>
+                    <!-- Append text html 
+                    <li id='add-1' class='list-group-item text-center rounded'>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="input-group">
+                                <input id="no" type="text" class="form-control" style="width: 15%;" readonly>
+                                <input id="barcode" type="text" class="form-control text-center" style="width: 85%;" readonly>
+                              </div>
+                            </div>
+                            <div class="col-3 text-center">
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-1 text-center">
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-1 text-center">
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-1 text-center">
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-1 text-center">
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="col-1 text-center">
+                                <input type="text" class="form-control" readonly>
+                            </div>
+                            <div class="col-1 text-center" style="margin-top: 3px;">
+                                <button id='btn-add-1' class='btn btn-sm btn-success' style='margin-right: 3px;' onclick='add_new_prod("1")'>
+                                    <i id='i-add-1' class='fa fa-plus'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </li>-->
+                </ul>
+
+                <ul class="list-group" style="padding-right: 3.5%; padding-left: 3.5%;">
+                    <!-- Append text html -->
+                    <li id='item-1' class='list-group-item text-center rounded'>
+                        <div class="row">
+                            <div class="col-3" style="margin-left: 3%;">
+                                <div class="input-group">
+                                <input id="no" type="text" class="form-control text-center" style="width: 15%;" readonly>
+                                <input id="barcode" type="text" class="form-control text-center" style="width: 85%;" readonly>
+                              </div>
+                            </div>
+                            <div class="col-3 text-center">
+                                <input id="name" type="text" class="form-control text-center">
+                            </div>
+                            <div class="col-1 text-center">
+                                <input id="unit" type="text" class="form-control text-center" readonly>
+                            </div>
+                            <div class="col-1 text-center no-pd" style="margin-left: 1%; margin-right: 1%;">
+                                <input id="price" type="text" class="form-control text-center" readonly>
+                            </div>
+                            <div class="col-1 text-center no-pd">
+                                <input id="sprice" type="text" class="form-control text-center">
+                            </div>
+                            <div class="col-1 text-center no-pd" style="margin-left: 1%;">
+                                <input id="diff" type="text" class="form-control text-center" readonly>
+                            </div>
+                            <div class="col-1 text-center" style="margin-top: 3px;">
+                                <button id='btn-edit-1' class='btn btn-sm btn-primary' style='margin-right: 1%;' onclick='open_edit(1)'>
+                                    <i id='i-edit-1' class='fa fa-edit'></i>
+                                </button>
+                                <button id='btn-save-1' class='btn btn-sm btn-success' style='margin-right: 1%;' onclick='save_edit(1)' hidden>
+                                    <i id='i-edit-1' class='fa fa-check-square'></i>
+                                </button>
+                                <button id='btn-del-1' class='btn btn-sm btn-danger' onclick='del_row(1)' hidden>
+                                    <i id='i-del-1' class='fa fa-minus'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <br>
+            </div>
+        </div>
+        <!-- End page content wrapper -->
+    </div>
+    <!-- End Wrapper -->
+
+    <!-- Menu Toggle -->
+    <script>
+        // Menu Toggle
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+
+            if ($("#menu-toggle").text() == "รายการ") {
+                $("#menu-toggle").text("กลับ");
+            } else if ($("#menu-toggle").text() == "กลับ") {
+                $("#menu-toggle").text("รายการ");
+            }
+        });
+    </script>
+</body>
+
+</html>
