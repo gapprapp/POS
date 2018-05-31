@@ -71,14 +71,14 @@
         var text = "";
         var texta4 = "";
         $(document).ready(function () {
-            /*if(!localStorage.user_id){
+            if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }*/
+            }
             url = new URL(window.location.href);
             order_id = url.searchParams.get("order"); 
 
