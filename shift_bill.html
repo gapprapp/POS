@@ -25,6 +25,9 @@
      <link rel="stylesheet" href="css/easy-autocomplete.min.css">
      <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
 
+    <link rel="stylesheet" href="css/easy-loading.css">
+    <script src="js/easy-loading.js"></script>
+
     <!-- Sidbar -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <!-- Font -->
@@ -578,8 +581,14 @@
         url:"http://150.95.26.163:8080/gitmew/php/get_order_item.php",
         method:"POST",
         data:{'order_id':order_id},
+        beforeSend: function(){
+          EasyLoading.show({                           
+            text: "กำลังโหลด"                            
+          });
+        },
         success:function(data)
         {
+            EasyLoading.hide();
             var obj = jQuery.parseJSON(data); 
             console.log(obj);
             branch_id = obj[0].branch_id;
