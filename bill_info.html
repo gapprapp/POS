@@ -14,7 +14,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
 
     <!-- Super cool dialog-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
@@ -51,6 +51,17 @@
         input[type="text"] {
             font-size: 20px;
         }
+
+        p{
+            font-size: 115%;
+        }
+
+        .net-old{
+            border: solid 1px red; background: red; color: white; border-radius: 5px; padding-top: 5px; padding-bottom: 5px;
+        }
+        .net-new{
+            border: solid 1px green; background: green; color: white; border-radius: 5px; padding-top: 5px; padding-bottom: 5px;
+        }
     </style>
 
     <script>
@@ -60,14 +71,14 @@
         var text = "";
         var texta4 = "";
         $(document).ready(function () {
-            if(!localStorage.user_id){
+            /*if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }
+            }*/
             url = new URL(window.location.href);
             order_id = url.searchParams.get("order"); 
 
@@ -206,7 +217,7 @@
         function save(){
             json = [];
             for(var j = 1 ; j <= count ; j++){
-                item = {}
+                item = {};
                 item ["item_id"] =  j;
                 item ["amt"] = $('#input-amt-' + j).val();  
                 item ["prod_id"] = $('#span-'+j).html();           
@@ -230,13 +241,27 @@
             'branch_id':branch_id};
             //console.log(datastr);
 
-            $.ajax({
+            $.confirm({
+                title: 'แก้ไขรายการเสร็จสิ้น',
+                content: '<div class="form-group"><label for="txt-area">หมายเหตุ</label><textarea class="form-control" id="txt-area" rows="5"></textarea></div>',
+                backgroundDismiss: true,
+                buttons: {
+                  formSubmit: {
+                    text: 'ตกลง',
+                    btnClass: 'btn-success',
+                    action: function () {
+                      //console.log($("#txt-area").val());
+                    }
+                  },ยกเลิก: function () {}
+                }
+              }); 
+
+            /*$.ajax({
                 url: "http://150.95.26.163:8080/gitmew/php/update_order_item.php",
                 type: "POST",
                 data: datastr,
                 success: function (data) {
                     if(data == "success"){                 
-                      
                         $('#sum').text($('#input-sum').html());    
                         $('#discount').text($('#input-discount').val());           
                         $('#total').text($('#input-total').html());           
@@ -244,7 +269,7 @@
                         $('#change').text($('#input-change').html()); 
 
                         $("#ctn-show").prop('hidden', false);
-                        $("#ctn-edit").prop('hidden', true);    
+                        $("#ctn-edit").prop('hidden', true);  
                     }else {
                         $.alert({
                             icon: 'fa fa-warning',
@@ -253,12 +278,12 @@
                         });
                     }                         
                 }
-            });
+            });*/
           
         }
 
         function remove() {
-            $.confirm({
+            /*$.confirm({
                 icon: 'fa fa-warning',
                 title: 'แน่ใจหรือว่าต้องการลบ!',
                 content: 'ต้องการลบรายการขายสินค้า!',
@@ -279,7 +304,7 @@
                                             icon: 'fa fa-warning',
                                             title: 'เตือน',
                                             content: 'รายการสินค้าได้ถูกลบแล้ว',
-                                        }); */
+                                        }); 
                                         window.location = "manage_bill.html";                                       
                                     } else {
                                         $.alert({
@@ -294,7 +319,19 @@
                     },
                     ยกเลิก: function () { },
                 }
-            });
+            })*/
+            $('.fa-check-square').prop('hidden', false); 
+            if($("#refund_confirm").is(":visible")){
+                $('#refund_confirm').prop('hidden', true); 
+                $('#refund').prop('hidden', false); 
+            }
+            $('#del_confirm').prop('hidden', false); 
+            $('#delete').prop('hidden', true);
+            clear_selected();
+        }
+
+        function clear_selected(){
+            $(".fa-check-square").css('color', '#666666');
         }
 
         function logout(){
@@ -482,7 +519,30 @@
                     <hr style="width: 80%">
                     
                     <div id="show_prod">
-                        
+                        <div class='row' style='margin-bottom: 5px;'>
+                            <div class='col-1' onclick="select_prod('1');">
+                                <i id='i-1' class="fas fa-check-square" style="color: #666666; padding-top: 10%; font-size: 120%;" hidden value=''></i>
+                            </div>
+                            <div class='col-6 text-left' style='padding-right: 0px;'>
+                                <h5 id='prod-1'>ชื่อสินค้า</h5>
+                            </div>
+                            <div class='col-4 text-right'>
+                                <h5 id='price-"+i+"' style='letter-spacing: 1px;'>1500 x2</h5>
+                            </div>
+                            <div class='col-1'></div>
+                        </div>
+                        <div class='row' style='margin-bottom: 5px;'>
+                            <div class='col-1' onclick="select_prod('2');">
+                                <i id='i-2' class="fas fa-check-square" style="color: #666666; padding-top: 10%; font-size: 120%;" hidden value=''></i>
+                            </div>
+                            <div class='col-6 text-left' style='padding-right: 0px;'>
+                                <h5 id='prod-1'>ชื่อสินค้า</h5>
+                            </div>
+                            <div class='col-4 text-right'>
+                                <h5 id='price-"+i+"' style='letter-spacing: 1px;'>1500 x2</h5>
+                            </div>
+                            <div class='col-1'></div>
+                        </div>
                     </div>                 
                     <hr style="width: 80%">
 
@@ -536,11 +596,29 @@
                             <button class="btn btn-lg btn-primary" style="width: 20%;" onclick="edit();">
                                 แก้ไข <i class="fa fa-edit"></i>
                             </button>
-                            <button class="btn btn-lg btn-danger" style="width: 20%;" onclick="remove();">
+                            <button id="delete" class="btn btn-lg btn-danger" style="width: 20%;" onclick="remove();">
                                 ลบ
-                                <i class="fa fa-close"></i>
+                                <i class="fa fa-trash-alt"></i>
                             </button>
-                            <button id="print-title" class="btn btn-lg btn-warning" style="text-align: center; margin-right: 5%;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
+                            <button id="del_confirm" class="btn btn-lg btn-danger" style="text-align: center;" 
+                            onclick="confirm_delete();" hidden>ยืนยัน
+                            <span>
+                                <i class="fa fa-trash-alt" style="color: white !important;"></i>
+                            </span>
+                            </button>
+                            <button id="refund" class="btn btn-lg btn-success" style="text-align: center;" 
+                            onclick="refund();">คืนสินค้า
+                            <span>
+                                <i class="fas fa-redo-alt"></i>
+                            </span>
+                            </button>
+                            <button id="refund_confirm" class="btn btn-lg btn-success" style="text-align: center;" 
+                            onclick="confirm_refund();" hidden>ยืนยัน
+                            <span>
+                                <i class="fas fa-redo-alt" style="color: white !important;"></i>
+                            </span>
+                            </button>
+                            <button id="print-title" class="btn btn-lg btn-warning" style="text-align: center;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
                             <span>
                                 <i class="fa fa-print"></i>
                             </span>
@@ -640,6 +718,186 @@
                     </div>
                 </div>
             </div>
+            <div id="ctn-show" class="container justify-content-center" style="width: 70%">
+                <div class="jumbotron" style="background: #fdfcfb; padding: 20px; ">
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>ประวัติการทำรายการ</h4><hr style="margin-top: 1%;">
+                        </div>
+                    </div>
+                    <!-- Log Del -->
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="input-group">
+                                <i class="fa fa-trash-alt" style="font-size: 120%; margin-right: 5%; color: #ff9999;"></i>
+                                <h5>23/05/2018 15:30:55</h5>
+                            </div>
+                           
+                        </div>
+                        <div class="col-8">
+                            <h5 style="text-decoration: underline; letter-spacing: 1px;">ลบรายการสินค้า</h5>
+                            <div style="margin-top: 3%;">
+                                <div class="row"><div class="col-7"><p>- มิชลินไขว่ห้าง14นิ้ว สีขาว</p></div><div class="col-2 text-right"><p>15 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                                
+                                <div class="row"><div class="col-7"><p>- มิชลิน14นิ้วจับอก สีขาว</p></div><div class="col-2 text-right"><p>150 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                                
+                                <div class="row"><div class="col-7"><p>- หมวกมิชลินคาวบอยหนังใหญ่ 14นิ้ว</p></div><div class="col-2 text-right"><p>15 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                                
+                                <div class="row"><div class="col-7"><p>- ขามิชลินใหญ่</p></div><div class="col-2 text-right"><p>1 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <h5 class="net-old">ยอดเดิม</h5>
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group-prepend" style="padding-top: 1%;">
+                                <p style="margin-right: 5%;">รวม : <span style="color: red;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ลด : <span style="color: red;"> 15000</span></p>
+                                <p style="margin-right: 5%;">สุทธิ : <span style="color: red;"> 15000</span></p>
+                                <p style="margin-right: 5%;">รับ : <span style="color: red;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ทอน : <span style="color: red;"> 1000</span></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <h5 class="net-new">ยอดใหม่</h5>
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group-prepend" style="padding-top: 1%;">
+                                <p style="margin-right: 5%;">รวม : <span style="color: green;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ลด : <span style="color: green;"> 15000</span></p>
+                                <p style="margin-right: 5%;">สุทธิ : <span style="color: green;"> 15000</span></p>
+                                <p style="margin-right: 5%;">รับ : <span style="color: green;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ทอน : <span style="color: green;"> 1000</span></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <br><div class="row">
+                        <!-- Hidden if no หมายเหตุ-->
+                        <div class="col-2 text-center"><h5 style="text-decoration: underline;">หมายเหตุ : </h5></div>
+                        <div class="col-10">
+                            <p>การแก้ไขต่างๆนาๆนึกไปเขียนไปการแก้ไขต่างๆนาๆนึกไปเขียนไปการแก้ไขต่างๆนาๆนึกไปเขียนไปการแก้ไขต่างๆนาๆนึกไปเขียนไปการแก้ไขต่างๆนาๆนึกไปเขียนไปการแก้ไขต่างๆนาๆนึกไปเขียนไปการแก้ไขต่างๆนาๆนึกไปเขียนไปการแก้ไขต่างๆนาๆนึกไปเขียนไป</p>
+                        </div>
+                    </div><hr style="margin-top: 1%;">
+
+                    <!-- Log Edit -->
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="input-group">
+                                <i class="fa fa-edit" style="font-size: 120%; margin-right: 5%; color: #b2b2ff;"></i>
+                                <h5>23/05/2018 15:30:55</h5>
+                            </div>
+                           
+                        </div>
+                        <div class="col-8">
+                            <h5 style="text-decoration: underline; letter-spacing: 1px;">แก้ไขรายการสินค้า</h5>
+                            <div style="margin-top: 3%;">
+                                <div class="row"><div class="col-7"><p>- มิชลินไขว่ห้าง14นิ้ว สีขาว</p></div><div class="col-2 text-right" style="color: red;"><p>15 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                                
+                                <div class="row"><div class="col-7"><p>- มิชลิน14นิ้วจับอก สีขาว</p></div><div class="col-2 text-right" style="color: red;"><p>150 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <h5 class="net-old">ยอดเดิม</h5>
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group-prepend" style="padding-top: 1%;">
+                                <p style="margin-right: 5%;">รวม : <span style="color: red;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ลด : <span style="color: red;"> 15000</span></p>
+                                <p style="margin-right: 5%;">สุทธิ : <span style="color: red;"> 15000</span></p>
+                                <p style="margin-right: 5%;">รับ : <span style="color: red;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ทอน : <span style="color: red;"> 1000</span></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <h5 class="net-new">ยอดใหม่</h5>
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group-prepend" style="padding-top: 1%;">
+                                <p style="margin-right: 5%;">รวม : <span style="color: green;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ลด : <span style="color: green;"> 15000</span></p>
+                                <p style="margin-right: 5%;">สุทธิ : <span style="color: green;"> 15000</span></p>
+                                <p style="margin-right: 5%;">รับ : <span style="color: green;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ทอน : <span style="color: green;"> 1000</span></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <br><div class="row">
+                        <!-- Hidden if no หมายเหตุ-->
+                        <div class="col-2 text-center"><h5 style="text-decoration: underline;">หมายเหตุ : </h5></div>
+                        <div class="col-10">
+                            <p>เงื่อนไขเป็น ตามข้อกำหนด การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาและแน่ใจก่อนทำการลงทุน เงื่อนไขเป็น ตามข้อกำหนด การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาและแน่ใจก่อนทำการลงทุน เงื่อนไขเป็น ตามข้อกำหนด การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาและแน่ใจก่อนทำการลงทุน</p>
+                        </div>
+                    </div><hr style="margin-top: 1%;">
+
+                    <!-- Refund Edit -->
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="input-group">
+                                <i class="fas fa-redo" style="font-size: 120%; margin-right: 5%; color: #acd1a9;"></i>
+                                <h5>23/05/2018 15:30:55</h5>
+                            </div>
+                           
+                        </div>
+                        <div class="col-8">
+                            <h5 style="text-decoration: underline; letter-spacing: 1px;">ทำคืนรายการสินค้า</h5>
+                            <div style="margin-top: 3%;">
+                                <div class="row"><div class="col-7"><p>- มิชลินไขว่ห้าง14นิ้ว สีขาว</p></div><div class="col-2 text-right" style="color: red;"><p>15 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                                
+                                <div class="row"><div class="col-7"><p>- มิชลิน14นิ้วจับอก สีขาว</p></div><div class="col-2 text-right" style="color: red;"><p>150 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <h5 class="net-old">ยอดเดิม</h5>
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group-prepend" style="padding-top: 1%;">
+                                <p style="margin-right: 5%;">รวม : <span style="color: red;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ลด : <span style="color: red;"> 15000</span></p>
+                                <p style="margin-right: 5%;">สุทธิ : <span style="color: red;"> 15000</span></p>
+                                <p style="margin-right: 5%;">รับ : <span style="color: red;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ทอน : <span style="color: red;"> 1000</span></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <h5 class="net-new">ยอดใหม่</h5>
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group-prepend" style="padding-top: 1%;">
+                                <p style="margin-right: 5%;">รวม : <span style="color: green;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ลด : <span style="color: green;"> 15000</span></p>
+                                <p style="margin-right: 5%;">สุทธิ : <span style="color: green;"> 15000</span></p>
+                                <p style="margin-right: 5%;">รับ : <span style="color: green;"> 150000</span></p>
+                                <p style="margin-right: 5%;">ทอน : <span style="color: green;"> 1000</span></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <br><div class="row">
+                        <!-- Hidden if no หมายเหตุ-->
+                        <div class="col-2 text-center"><h5 style="text-decoration: underline;">หมายเหตุ : </h5></div>
+                        <div class="col-10">
+                            <p>เงื่อนไขเป็น ตามข้อกำหนด การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาและแน่ใจก่อนทำการลงทุน เงื่อนไขเป็น ตามข้อกำหนด การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาและแน่ใจก่อนทำการลงทุน เงื่อนไขเป็น ตามข้อกำหนด การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาและแน่ใจก่อนทำการลงทุน</p>
+                        </div>
+                    </div><hr style="margin-top: 1%;">
+                </div>
+            </div>
         </div>
         <!-- End page content wrapper -->
         <!-- Print Modal -->
@@ -713,6 +971,69 @@
                     $("#print-title").text('ใบรายการขาย ');
                 }$("#print-title").append(text_html);
             });
+
+        function refund(){
+            $('.fa-check-square').prop('hidden', false);
+            if($("#del_confirm").is(":visible")){
+                $('#del_confirm').prop('hidden', true); 
+                $('#delete').prop('hidden', false); 
+            }
+            $('#refund_confirm').prop('hidden', false); 
+            $('#refund').prop('hidden', true);
+
+            clear_selected();
+        }
+
+        function select_prod(arg){
+            if($("#i-"+arg).css('color') == "rgb(0, 128, 0)"){
+                // Disselect
+                $("#i-"+arg).css('color', '#666666');
+            }else{
+                // Select
+                $("#i-"+arg).css('color', 'green');
+            }
+        }
+
+        function confirm_refund(){
+            $.confirm({
+                title: 'คืนสินค้าในรายการเสร็จสิ้น',
+                content: '<div class="form-group"><label for="txt-area">หมายเหตุ</label><textarea class="form-control" id="txt-area" rows="5"></textarea></div>',
+                backgroundDismiss: true,
+                buttons: {
+                  formSubmit: {
+                    text: 'ตกลง',
+                    btnClass: 'btn-success',
+                    action: function () {
+                      //console.log($("#txt-area").val());
+                      $('.fa-check-square').prop('hidden', true); 
+                      $('#refund_confirm').prop('hidden', true); 
+                      $('#refund').prop('hidden', false);
+                    }
+                  },ยกเลิก: function () {}
+                }
+              }); 
+            
+        } 
+
+        function confirm_delete(){
+            $.confirm({
+                title: 'ลบสินค้าในรายการเสร็จสิ้น',
+                content: '<div class="form-group"><label for="txt-area">หมายเหตุ</label><textarea class="form-control" id="txt-area" rows="5"></textarea></div>',
+                backgroundDismiss: true,
+                buttons: {
+                  formSubmit: {
+                    text: 'ตกลง',
+                    btnClass: 'btn-success',
+                    action: function () {
+                      //console.log($("#txt-area").val());
+                      $('.fa-check-square').prop('hidden', true); 
+                      $('#del_confirm').prop('hidden', true); 
+                      $('#delete').prop('hidden', false);
+                    }
+                  },ยกเลิก: function () {}
+                }
+              }); 
+        }
     </script>
 </body>
 
