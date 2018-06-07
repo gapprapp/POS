@@ -57,6 +57,7 @@
         echo "fail";
         exit;
     }
+    $record_id = mysqli_insert_id($conn);	  
     
     $query = "SELECT prod_amount,prod_id FROM sale_order_item WHERE order_id = '$order_id'";  
     $result = mysqli_query($conn, $query);
@@ -100,7 +101,7 @@
         } 
         
         $query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_price,prod_amount,prod_discount,bonus) 
-        VALUES ('$order_id','$item','$prod_id','$price','$amt','$discount','$bonus')";  
+        VALUES ('$record_id','$item','$prod_id','$price','$amt','$discount','$bonus')";  
         $result = mysqli_query($conn, $query); 
         if(!$result){
             mysqli_rollback($conn);

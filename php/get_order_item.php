@@ -17,20 +17,20 @@
   } 
     
   $sql = "SELECT i.item_id,i.prod_id,p.prod_name,i.prod_price,i.prod_amount,u.unit_name,p.barcode,p.img_string,i.prod_discount
-  ,p.prod_price FROM sale_order_item i INNER JOIN product p ON i.prod_id = p.prod_id INNER JOIN unit u ON p.unit_id = u.unit_id 
-  WHERE i.order_id = '$order_id'";
+  FROM sale_order_item i INNER JOIN product p ON i.prod_id = p.prod_id INNER JOIN unit u ON p.unit_id = u.unit_id 
+  WHERE i.order_id = '$order_id' AND i.order_id NOT LIKE '%refund%'";
   $result = mysqli_query($conn, $sql);
 
 	if(mysqli_num_rows($result) > 0){    
       while($row = mysqli_fetch_array($result)){
-        $old = array('old_price' => $row[9]);
+        $old = array('old_price' => $row['prod_price']);
         array_push($row,$old);
         $prod_id = $row['prod_id'];       
         $sql = "SELECT special_prod_price FROM detail_customer WHERE prod_id = '$prod_id' AND customer_id = '$cus_id'";
         $result1 = mysqli_query($conn, $sql);
         if(mysqli_num_rows($result1) > 0){
             while($row1 = mysqli_fetch_array($result1)){
-              $row[9] = $row1['special_prod_price'];                    
+              $row['prod_price'] = $row1['special_prod_price'];                    
             }		
         }
         $output2 = [];

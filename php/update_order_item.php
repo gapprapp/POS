@@ -9,17 +9,20 @@
     $get = $_POST['get'];
     $change = $_POST['change'];
     $branch_id = $_POST['branch_id'];
+    $comment = $_POST['comment'];
+    $dt = $_POST['dt'];
 
     mysqli_begin_transaction($conn);
-    $query = "INSERT INTO order_record(order_id,sum_price,total_price,total_discount,get_money,change_money) 
-    VALUES ('$order_id','$sum','$total','$discount','$get','$change')";  
+    $query = "INSERT INTO order_record(order_id,datetime,sum_price,total_price,note,total_discount,get_money,change_money) 
+    VALUES ('$order_id','$dt','$sum','$total','$comment','$discount','$get','$change')";  
     $result = mysqli_query($conn, $query);  
     if(!$result){
         mysqli_rollback($conn);
         echo "fail";
         exit;
     }      
-    
+    $record_id = mysqli_insert_id($conn);	  
+
     $query = "UPDATE sale_order SET sum_price='$sum',total_discount='$discount',total_price='$total'
     ,get_money='$get',change_money='$change' WHERE order_id = '$order_id'";  
     $result = mysqli_query($conn, $query);
@@ -33,6 +36,7 @@
     {
         $no = $data['item_id'];
         $amt = $data['amt'];  
+        $price = $data['price'];  
         $prod_id = $data['prod_id'];  
 
         $query = "SELECT prod_amount FROM sale_order_item WHERE order_id = '$order_id' AND item_id='$no'";  
@@ -57,8 +61,8 @@
             exit;
         }
 
-        $query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_amount) 
-        VALUES ('$order_id','$no','$prod_id','$amt')";  
+        $query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_price,prod_amount) 
+        VALUES ('$record_id','$no','$prod_id','$price','$amt')";  
         $result = mysqli_query($conn, $query); 
         if(!$result){
             mysqli_rollback($conn);
@@ -66,7 +70,7 @@
             exit;
         }  
 
-        $query = "UPDATE sale_order_item SET prod_amount='$amt' WHERE order_id = '$order_id' AND item_id='$no'";  
+        $query = "UPDATE sale_order_item SET prod_amount='$amt',prod_price='$price' WHERE order_id = '$order_id' AND item_id='$no'";  
         $result = mysqli_query($conn, $query);
         if(!$result){
             mysqli_rollback($conn);
