@@ -6,7 +6,7 @@
     $b_to  = $_POST['b_id_to'];
     $dt  = $_POST['date'];
     $sum  = $_POST['sum'];  
-    $user_id = $_POST['user_id'];
+    $user_id = $_POST['user_id'];   
 
     mysqli_begin_transaction($conn);  
     $sql = "INSERT INTO transfer(branch_from,branch_to,datetime,user_id) VALUE ('$b_from','$b_to','$dt','$user_id')"; 
@@ -25,7 +25,7 @@
         echo "fail";
         exit;
     }
-    $record_id = mysqli_insert_id($conn);	
+    $record_id = mysqli_insert_id($conn);
        
     foreach ($obj as $data)
     {      
@@ -46,16 +46,16 @@
             echo "fail";
             exit;
         }  
-        $sql_up = "UPDATE product_branch SET amount = amount+'$amt' WHERE branch_id = '$b_to' AND prod_id = '$prod_id'"; 
-        $result_up = mysqli_query($conn, $sql_up);    
-        if(!$result_up){
+        $sql = "UPDATE product_branch SET amount = amount+'$amt' WHERE branch_id = '$b_to' AND prod_id = '$prod_id'"; 
+        $result = mysqli_query($conn, $sql);    
+        if(!$result){
             mysqli_rollback($conn);
             echo "fail";
             exit;
         }         
-        $sql_up = "UPDATE product_branch SET amount = amount-'$amt' WHERE branch_id = '$b_from' AND prod_id = '$prod_id'"; 
-        $result_up = mysqli_query($conn, $sql_up);    
-        if(!$result_up){
+        $sql = "UPDATE product_branch SET amount = amount-'$amt' WHERE branch_id = '$b_from' AND prod_id = '$prod_id'"; 
+        $result = mysqli_query($conn, $sql);    
+        if(!$result){
             mysqli_rollback($conn);
             echo "fail";
             exit;

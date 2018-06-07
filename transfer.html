@@ -60,7 +60,7 @@
       } 
     </style>
 
-    <script>
+    <script>     
       var prod_id = 0;
       $(document).ready(function() {
         if(!localStorage.user_id){
@@ -84,7 +84,7 @@
         url: function(phrase) {
           return "http://150.95.26.163:8080/gitmew/php/search_transfer.php";
         },
-        getValue: function(element) {     
+        getValue: function(element) {              
           return element.prod_name;
         },
         ajaxSettings: {
@@ -107,11 +107,11 @@
                 type: "slide",
                 time: 100
             },            
-            onSelectItemEvent: function() {                
+            onSelectItemEvent: function() {                             
               var barcode = $("#name").getSelectedItemData().barcode;             
               prod_id = $("#name").getSelectedItemData().prod_id;            
-              var remain1 = $("#name").getSelectedItemData()[3][0];
-              var remain2 = $("#name").getSelectedItemData()[3][1];                                 
+              var remain1 = $("#name").getSelectedItemData()[3][0].amount;
+              var remain2 = $("#name").getSelectedItemData()[3][1].amount;                                 
 
               $('#barcode').val(barcode);
               $('#remain-1').val(remain1);
@@ -187,7 +187,7 @@
                     '<input id="remain-1-'+index+'" value="'+$('#remain-1').val()+'" type="number" class="form-control text-center no-spin" readonly>'+
                   '</div>'+
                   '<div class="col-1" style="padding-left: 10px; padding-right: 0px;">'+
-                    '<input id="remain-2-'+index+'" value="'+$('#remain-1').val()+'" type="number" class="form-control text-center no-spin" readonly>'+
+                    '<input id="remain-2-'+index+'" value="'+$('#remain-2').val()+'" type="number" class="form-control text-center no-spin" readonly>'+
                   '</div>'+
                   '<div class="col-1">'+
                     '<input id="amount-'+index+'" value="'+$('#amount').val()+'" min="1" type="number" class="form-control text-center no-spin" readonly>'+
@@ -205,7 +205,7 @@
                 '</div>'+      
                 '</div>';
         $('#show_list_add').append(text_html);
-        var sum = $('#total-amt').val();
+        var sum = parseInt($('#total-amt').val());
         sum += parseInt($('#amount').val());
         $('#total-amt').val(sum);
 
@@ -276,14 +276,14 @@
       }
 
       function save(){
-        if(jsonObj.length = 0){
+        if(jsonObj.length == 0){
           return 0;
         }
         var b_id_from = $('#branch-from option:selected').val();
         var b_id_to = $('#branch-to option:selected').val();
         if(b_id_from == b_id_to){
           $.alert({
-              icon: 'fas fa-warning',
+              icon: 'fa fa-warning',
               title: 'แจ้งเตือน',
               content: 'กรุณาเลือกสาขาต่างกัน',
           });
@@ -311,6 +311,7 @@
         var sum = $('#total-amt').val();      
         var dataString =  "JSON=" + jsonString + "&b_id_from=" + b_id_from + "&b_id_to=" + b_id_to + "&date=" + datetime 
         + "&sum=" + sum + "&user_id=" + localStorage.user_id;
+        console.log(dataString);
         
         if(print == "print"){
           var WinPrint  = window.open();
@@ -322,7 +323,12 @@
             async: false,
             success: function(data){
                 //alert(data);
-              if(data == "success"){       
+              if(data == "success"){ 
+                $.alert({
+                    icon: 'fas fa-save',
+                    title: 'บันทึกเสร็จสิ้น',
+                    content: 'บันทึกการโอนสินค้าเสร็จสิ้น',
+                });      
                   location.reload(true);
               }else{
                 $.alert({
@@ -332,12 +338,7 @@
                 });   
               }
             }
-        });
-        $.alert({
-            icon: 'fas fa-save',
-            title: 'บันทึกเสร็จสิ้น',
-            content: 'บันทึกการโอนสินค้าเสร็จสิ้น',
-        });
+        });       
       }
     </script>
 </head>
@@ -429,13 +430,13 @@
                   </div>
                 </div>
                 <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
-                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">
+                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่">
                 </div>
                 <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="remain-1" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1" style='padding-left: 10px; padding-right: 0px;'>
-                  <input id="remain-2" type="number" class="form-control text-center no-spin" data-index="3" readonly>
+                  <input id="remain-2" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1">
                   <input id="amount" type="number" value="1" min="1" class="form-control text-center no-spin">
@@ -504,6 +505,24 @@
       </div>
     </div> <!-- End Wrapper -->
     <script>
+       $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+
+          if($("#menu-toggle").text() == "รายการ"){
+            $("#menu-toggle").text("กลับ");
+          }else if($("#menu-toggle").text() == "กลับ"){
+            $("#menu-toggle").text("รายการ");
+          }
+
+      });
+
+      $('#name').on('keyup input', function() {
+          var name = $('#name').val();           
+          if(name == ""){
+              reset();
+          }            
+      });      
       function set_print_title(){
         text_html = "<span><i class='fa fa-print'></i></span>";
         $('input[name=print-radio]').each(function () {
