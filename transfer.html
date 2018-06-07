@@ -110,8 +110,8 @@
             onSelectItemEvent: function() {                
               var barcode = $("#name").getSelectedItemData().barcode;             
               prod_id = $("#name").getSelectedItemData().prod_id;            
-              var remain1 = $("#name").getSelectedItemData().prod_amount;
-              var remain2 = $("#name").getSelectedItemData().prod_amount;                                 
+              var remain1 = $("#name").getSelectedItemData()[3][0];
+              var remain2 = $("#name").getSelectedItemData()[3][1];                                 
 
               $('#barcode').val(barcode);
               $('#remain-1').val(remain1);
@@ -292,16 +292,13 @@
         var d = new Date($.now());     
         datetime = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
 
-        var no = 1;
         json = [];        
         var texta4 = "";
         $.each(jsonObj, function(i, field){
-          item = {}
-          item ["item_id"] =  no;              
+          item = {}            
           item ["amount"] =  jsonObj[i].amount;
           item ["prod_id"] =  jsonObj[i].prod_id;         
-          json.push(item);
-          no++;  
+          json.push(item);         
 
           texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+(i+1)+"</div>"+
               "<div class='fl-50 fs-120 tb no-bdt'>"+jsonObj[i].name+"</div>"+
@@ -325,7 +322,7 @@
             async: false,
             success: function(data){
                 //alert(data);
-              if(data != "fail"){       
+              if(data == "success"){       
                   location.reload(true);
               }else{
                 $.alert({
