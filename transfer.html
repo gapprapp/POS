@@ -75,8 +75,32 @@
         if(localStorage.role == "user"){
           $("#mb").remove();
           $("#mp").remove();
-        }    
+        } 
 
+        $(document).keydown(function(objEvent) {
+          if (objEvent.keyCode == 9) {  //tab pressed
+              objEvent.preventDefault(); // stops its action         
+          }
+          if (objEvent.keyCode == 13) {  //enter pressed
+              objEvent.preventDefault();           
+              var $this = $(objEvent.target);
+              var i_enter = parseFloat($this.attr('data-index'));                                         
+              if(i_enter == 2){
+                add();
+              }else{
+                $('[data-index="' + (i_enter+1).toString() + '"]').focus();
+              }             
+          }
+          if (objEvent.keyCode == 113) {  //f2 pressed
+              add();
+          }
+          if (objEvent.keyCode == 115) {  //f4 pressed
+              reset();
+          }
+          if (objEvent.keyCode == 118) {  //f7 pressed
+              save();          
+          }
+        })
         detail();
         setTimeout(function() {$("#name").focus();}, 100);
 
@@ -265,12 +289,12 @@
           $("#remain-1-"+i).prop('id', 'remain-1-'+(i-1));
           $("#remain-2-"+i).prop('id', 'remain-2-'+(i-1));
           $("#amount-"+i).prop('id', 'amount-'+(i-1));         
-          $("btn_edit-"+i).attr('onclick', 'edit('+(i-1)+')');
-          $("btn_check-"+i).attr('onclick', 'update('+(i-1)+')');
-          $("btn_remove-"+i).attr('onclick', 'remove('+(i-1)+')');
-          $("btn_edit-"+i).prop('id', 'no-'+(i-1));
-          $("btn_check-"+i).prop('id', 'no-'+(i-1));
-          $("btn_remove-"+i).prop('id', 'no-'+(i-1));
+          $("#btn_edit"+i).attr('onclick', 'edit('+(i-1)+')');
+          $("#btn_check"+i).attr('onclick', 'update('+(i-1)+')');
+          $("#btn_remove"+i).attr('onclick', 'remove('+(i-1)+')');
+          $("#btn_edit"+i).prop('id', 'btn_edit'+(i-1));
+          $("#btn_check"+i).prop('id', 'btn_check'+(i-1));
+          $("#btn_remove"+i).prop('id', 'btn_remove'+(i-1));
         }
         index--;
       }
@@ -340,6 +364,12 @@
             }
         });       
       }
+
+      function logout(){
+        localStorage.user_id = "";
+        window.location = "login.html";
+      }
+
     </script>
 </head>
 
@@ -430,7 +460,7 @@
                   </div>
                 </div>
                 <div class="col-3 text-center" style='padding-left: 5px; padding-right: 5px;'>
-                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่">
+                  <input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="1">
                 </div>
                 <div class="col-1" style='padding-left: 5px; padding-right: 5px;'>
                   <input id="remain-1" type="number" class="form-control text-center no-spin" readonly>
@@ -439,7 +469,7 @@
                   <input id="remain-2" type="number" class="form-control text-center no-spin" readonly>
                 </div>
                 <div class="col-1">
-                  <input id="amount" type="number" value="1" min="1" class="form-control text-center no-spin">
+                  <input id="amount" type="number" value="1" min="1" class="form-control text-center no-spin" data-index="2">
                 </div>              
               </div> <br>
 
