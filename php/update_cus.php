@@ -4,8 +4,9 @@
     $tel = $_POST['tel'];	
     $name = $_POST['name'];		
     $addr = $_POST['address'];
+    $type = $_POST['type'];	
     
-    $sql = "UPDATE customer SET customer_name = '$name', address = '$addr', tel = '$tel'
+    $sql = "UPDATE customer SET customer_name = '$name', address = '$addr', tel = '$tel',customer_type = '$type'
     WHERE customer_id = '$cus_id'"; 
     $result = mysqli_query($conn, $sql);  
 

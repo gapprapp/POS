@@ -3,8 +3,9 @@
     $name  = $_POST['name'];
     $addr  = $_POST['address'];
     $tel  = $_POST['tel'];     
-  
-    $sql = "INSERT INTO customer(customer_name,address,tel) VALUES ('$name','$addr','$tel')";
+    $type = $_POST['type'];	
+
+    $sql = "INSERT INTO customer(customer_name,address,tel,customer_type) VALUES ('$name','$addr','$tel','$type')";
     $result = mysqli_query($conn, $sql);
     $cus_id = mysqli_insert_id($conn);
 

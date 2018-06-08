@@ -130,29 +130,36 @@
                         success: function (response) {
                             EasyLoading.hide();
                             var obj = jQuery.parseJSON(response);
-                            $.each(obj, function (i, field) {            
-
+                            $.each(obj, function (i, field) {
                                 text_html = "<li id='item-" + i + "' class='list-group-item text-center rounded'>" +
                                     "<span id='span-" + i + "' hidden>" + field.customer_id + "</span>" +
                                     "<div class='row'>" +
-                                    "<div class='col-3' style='padding-right: 0;'>" +
-                                    "<div class='input-group-prepend'>" +
-                                    "<span class='input-group-text' style='margin-right: 8px;'>" + (i + 1) + "</span>" +
-                                    "<input id='name-" + i + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
+                                    "<div class='col-3 text-center'>" +                              
+                                        "<input id='name-" + i + "' type='text' class='form-control' value='" + field.customer_name + "' disabled>" +
+                                    "</div>" +                                    
+                                    "<div class='col-4 text-center'>" +
+                                        "<input id='addr-" + i + "' type='text' class='form-control' value='" + field.address + "' disabled>" +
                                     "</div>" +
+                                    "<div class='col-2 text-center'>" +
+                                        "<input id='tel-" + i + "' type='text' class='form-control no-spin' value='" + field.tel + "' disabled>" +
                                     "</div>" +
-                                    "<div class='col-6'>" +
-                                    "<input id='addr-" + i + "' type='text' class='form-control text-center' value='" + field.address + "' disabled>" +
+                                    "<div class='col-2 text-center'>" +
+                                        "<input id='type-" + i + "' type='text' class='form-control' value='"+field.customer_type+"' data-toggle='dropdown' disabled>" +
+                                        "<ul class='dropdown-menu drop-up text-center'>" +
+                                            "<li id='li-type-1' class='li-branch' onclick='settypeinput(1," + i +");' style='padding-bottom: 5px;'>ขายส่ง</li>" +
+                                            "<li id='li-type-2' class='li-branch' onclick='settypeinput(2," + i +");' style='padding-bottom: 5px;'>ขายปลีก</li>" +
+                                            "<li id='li-type-3' class='li-branch' onclick='settypeinput(3," + i +");' style='padding-bottom: 5px;'>ทั่วไป</li>" +
+                                        "</ul>" +
                                     "</div>" +
-                                    "<div class='col-2' style='padding-left: 0; padding-right: 0;'>" +
-                                    "<input id='tel-" + i + "' type='text' class='form-control text-center no-spin' value='" + field.tel + "' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-1'>" +
-                                    "<button id='btn-edit-" + i + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + i + ")'>" +
-                                    "<i id='i-edit-" + i + "' class='fa fa-edit'></i>" +
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>" +
+                                    "<button id='btn-edit-" + i + "' class='btn btn-sm btn-primary' style='margin-right: 3px;' onclick='open_edit(" + i + ")'>" +
+                                        "<i id='i-edit-" + i + "' class='fa fa-edit'></i>" +
+                                    "</button>" +
+                                    "<button id='btn-info-" + i + "' class='btn btn-sm btn-info' onclick='price_book("+field.customer_id+")'>" +
+                                        "<i id='i-info-" + i + "' class='fa fa-info-circle'></i>" +
                                     "</button>" +
                                     "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
-                                    "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
+                                        "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
                                     "</button>" +
                                     "</div>" +
                                     "</div>" +
@@ -173,6 +180,7 @@
             $("#name-" + arg).prop('disabled', false);
             $("#addr-" + arg).prop('disabled', false);
             $("#tel-" + arg).prop('disabled', false);
+            $("#type-" + arg).prop('disabled', false);
             $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
             $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
             $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
@@ -231,12 +239,14 @@
             $("#name-" + arg).prop('disabled', true);
             $("#addr-" + arg).prop('disabled', true);
             $("#tel-" + arg).prop('disabled', true);
+            $("#type-" + arg).prop('disabled', true);
 
             //Ajax save prod.. ..
             var cus_id = $("#span-" + arg).text();
             var name = $("#name-" + arg).val();
             var addr = $("#addr-" + arg).val();
-            var tel = $("#tel-" + arg).val();           
+            var tel = $("#tel-" + arg).val();  
+            var type = $("#type-" + arg).val();         
 
             $.ajax({
                 url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
@@ -245,7 +255,8 @@
                     'cus_id': cus_id,
                     'name': name,
                     'address': addr,
-                    'tel': tel
+                    'tel': tel,
+                    'type': type
                 },
                 success: function (data) {
                     if(data == "fail"){
@@ -261,11 +272,15 @@
 
         var searched_name;
         var searched_tel;
+        var searched_type;
         function search() {
             $("#search-name").focus();
             searched_name = $("#search-name").val();
             searched_tel = $("#search-tel").val();
-
+            searched_type = $("#type option:selected").text();
+            if(searched_type == "ทั้งหมด"){
+                searched_type = "";
+            }      
             $('#btn-search').prop('disabled', true);
 
             $(".list-group-item").remove();
@@ -288,6 +303,7 @@
           
             var name = searched_name;
             var tel = searched_tel;
+            var type = searched_type;
 
             // new page
             if (max_page < arg) {
@@ -302,7 +318,8 @@
                         "sort_by": sort_by,
                         "order": order,
                         'name': name,                       
-                        'tel': tel
+                        'tel': tel,
+                        'type': type
                     },
                     cache: false,
                     crossDomain: true,
@@ -327,7 +344,8 @@
                                 "sort_by": sort_by,
                                 "order": order,
                                 'name': name,                               
-                                'tel': tel
+                                'tel': tel,
+                                'type': type
                             }, function (data) {
                                 max_page_no = Math.ceil(data / 100);
                                 if (max_page_no == 1) {
@@ -344,27 +362,35 @@
                         }
                         var obj = jQuery.parseJSON(response);
                         $.each(obj, function (i, field) {                          
-                            text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
-                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>" +
+                            text_html = "<li id='item-" + (start+i) + "' class='list-group-item text-center rounded'>" +
+                                    "<span id='span-" + (start+i) + "' hidden>" + field.customer_id + "</span>" +
                                     "<div class='row'>" +
-                                    "<div class='col-3' style='padding-right: 0;'>" +
-                                    "<div class='input-group-prepend'>" +
-                                    "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
-                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
+                                    "<div class='col-3 text-center'>" +                              
+                                        "<input id='name-" + (start+i) + "' type='text' class='form-control' value='" + field.customer_name + "' disabled>" +
+                                    "</div>" +                                    
+                                    "<div class='col-4 text-center'>" +
+                                        "<input id='addr-" + (start+i) + "' type='text' class='form-control' value='" + field.address + "' disabled>" +
                                     "</div>" +
+                                    "<div class='col-2 text-center'>" +
+                                        "<input id='tel-" + (start+i) + "' type='text' class='form-control no-spin' value='" + field.tel + "' disabled>" +
                                     "</div>" +
-                                    "<div class='col-6'>" +
-                                    "<input id='addr-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.address + "' disabled>" +
+                                    "<div class='col-2 text-center'>" +
+                                        "<input id='type-" + (start+i) + "' type='text' class='form-control' value='"+field.customer_type+"' data-toggle='dropdown' disabled>" +
+                                        "<ul class='dropdown-menu drop-up text-center'>" +
+                                            "<li id='li-type-1' class='li-branch' onclick='settypeinput(1," + (start+i) +");' style='padding-bottom: 5px;'>ขายส่ง</li>" +
+                                            "<li id='li-type-2' class='li-branch' onclick='settypeinput(2," + (start+i) +");' style='padding-bottom: 5px;'>ขายปลีก</li>" +
+                                            "<li id='li-type-3' class='li-branch' onclick='settypeinput(3," + (start+i) +");' style='padding-bottom: 5px;'>ทั่วไป</li>" +
+                                        "</ul>" +
                                     "</div>" +
-                                    "<div class='col-2' style='padding-left: 0; padding-right: 0;'>" +
-                                    "<input id='tel-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.tel + "' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-1'>" +
-                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
-                                    "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>" +
+                                    "<button id='btn-edit-" + (start+i) + "' class='btn btn-sm btn-primary' style='margin-right: 3px;' onclick='open_edit(" + (start+i) + ")'>" +
+                                        "<i id='i-edit-" + (start+i) + "' class='fa fa-edit'></i>" +
                                     "</button>" +
-                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
-                                    "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                    "<button id='btn-info-" + (start+i) + "' class='btn btn-sm btn-info' onclick='price_book("+field.customer_id+")'>" +
+                                        "<i id='i-info-" + (start+i) + "' class='fa fa-info-circle'></i>" +
+                                    "</button>" +
+                                    "<button id='btn-del-" + (start+i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start+i) + ")' hidden>" +
+                                        "<i id='i-del-" + (start+i) + "' class='fa fa-minus'></i>" +
                                     "</button>" +
                                     "</div>" +
                                     "</div>" +
@@ -393,7 +419,8 @@
                             "sort_by": sort_by,
                             "order": order,
                             'name': name,                       
-                            'tel': tel
+                            'tel': tel,
+                            'type': type
                         },
                         cache: false,
                         crossDomain: true,
@@ -417,7 +444,8 @@
                                     "sort_by": sort_by,
                                     "order": order,
                                     'name': name,                       
-                                    'tel': tel
+                                    'tel': tel,
+                                    'type': type
                                 }, function (data) {
                                     max_page_no = Math.ceil(data / 100);
                                     if (max_page_no == 1) {
@@ -434,27 +462,35 @@
                             }
                             var obj = jQuery.parseJSON(response);
                             $.each(obj, function (i, field) {                              
-                                text_html = "<li id='item-" + (start + i) + "' class='list-group-item text-center rounded'>" +
-                                    "<span id='span-" + (start + i) + "' hidden>" + field.customer_id + "</span>" +
+                                text_html = "<li id='item-" + (start+i) + "' class='list-group-item text-center rounded'>" +
+                                    "<span id='span-" + (start+i) + "' hidden>" + field.customer_id + "</span>" +
                                     "<div class='row'>" +
-                                    "<div class='col-3' style='padding-right: 0;'>" +
-                                    "<div class='input-group-prepend'>" +
-                                    "<span class='input-group-text' style='margin-right: 8px;'>" + (start + i + 1) + "</span>" +
-                                    "<input id='name-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.customer_name + "' disabled>" +
+                                    "<div class='col-3 text-center'>" +                              
+                                        "<input id='name-" + (start+i) + "' type='text' class='form-control' value='" + field.customer_name + "' disabled>" +
+                                    "</div>" +                                   
+                                    "<div class='col-4 text-center'>" +
+                                        "<input id='addr-" + (start+i) + "' type='text' class='form-control' value='" + field.address + "' disabled>" +
                                     "</div>" +
+                                    "<div class='col-2 text-center'>" +
+                                        "<input id='tel-" + (start+i) + "' type='text' class='form-control no-spin' value='" + field.tel + "' disabled>" +
                                     "</div>" +
-                                    "<div class='col-6'>" +
-                                    "<input id='addr-" + (start + i) + "' type='text' class='form-control text-center' value='" + field.address + "' disabled>" +
+                                    "<div class='col-2 text-center'>" +
+                                        "<input id='type-" + (start+i) + "' type='text' class='form-control' value='"+field.customer_type+"' data-toggle='dropdown' disabled>" +
+                                        "<ul class='dropdown-menu drop-up text-center'>" +
+                                            "<li id='li-type-1' class='li-branch' onclick='settypeinput(1," + (start+i) +");' style='padding-bottom: 5px;'>ขายส่ง</li>" +
+                                            "<li id='li-type-2' class='li-branch' onclick='settypeinput(2," + (start+i) +");' style='padding-bottom: 5px;'>ขายปลีก</li>" +
+                                            "<li id='li-type-3' class='li-branch' onclick='settypeinput(3," + (start+i) +");' style='padding-bottom: 5px;'>ทั่วไป</li>" +
+                                        "</ul>" +
                                     "</div>" +
-                                    "<div class='col-2' style='padding-left: 0; padding-right: 0;'>" +
-                                    "<input id='tel-" + (start + i) + "' type='text' class='form-control text-center no-spin' value='" + field.tel + "' disabled>" +
-                                    "</div>" +
-                                    "<div class='col-1'>" +
-                                    "<button id='btn-edit-" + (start + i) + "' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='open_edit(" + (start + i) + ")'>" +
-                                    "<i id='i-edit-" + (start + i) + "' class='fa fa-edit'></i>" +
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>" +
+                                    "<button id='btn-edit-" + (start+i) + "' class='btn btn-sm btn-primary' style='margin-right: 3px;' onclick='open_edit(" + (start+i) + ")'>" +
+                                        "<i id='i-edit-" + (start+i) + "' class='fa fa-edit'></i>" +
                                     "</button>" +
-                                    "<button id='btn-del-" + (start + i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start + i) + ")' hidden>" +
-                                    "<i id='i-del-" + (start + i) + "' class='fa fa-minus'></i>" +
+                                    "<button id='btn-info-" + (start+i) + "' class='btn btn-sm btn-info' onclick='price_book("+field.customer_id+")'>" +
+                                        "<i id='i-info-" + (start+i) + "' class='fa fa-info-circle'></i>" +
+                                    "</button>" +
+                                    "<button id='btn-del-" + (start+i) + "' class='btn btn-sm btn-danger' onclick='del_row(" + (start+i) + ")' hidden>" +
+                                        "<i id='i-del-" + (start+i) + "' class='fa fa-minus'></i>" +
                                     "</button>" +
                                     "</div>" +
                                     "</div>" +
@@ -497,17 +533,15 @@
         }
 
         var is_sort = {
-            prod_name: '0',
-            prod_type_name: '0',
-            prod_cost: '0',
-            prod_price: '0'
+            customer_name: '0',
+            customer_type: '0'            
         };
         var sort_by = "none",
             order = "none";
 
         function click_sort(arg) {
             // clear other clicked_sort
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < 2; i++) {
                 //check
                 key = Object.keys(is_sort)[i];
                 if (key == arg) {
@@ -759,10 +793,11 @@
         function add_new_cus(arg){
             // add cus to db
             // check 
-            if($("#add-name-"+arg).val() != "" && $("#add-addr-"+arg).val() != "" && $("#add-tel-"+arg).val() != "" && $("#add-type-"+arg).val() != ""){
+            if($("#add-name-"+arg).val() != ""){
                 var name = $('#add-name-'+arg).val();
                 var addr = $('#add-addr-'+arg).val();
                 var tel = $('#add-tel-'+arg).val();
+                var type = $('#add-type-'+arg).val();
                 
                 $.ajax({
                     url: "http://150.95.26.163:8080/gitmew/php/add_cus.php",
@@ -770,7 +805,8 @@
                     data: {                     
                         'name': name,
                         'address': addr,
-                        'tel': tel
+                        'tel': tel,
+                        'type': type,
                     },
                     success: function (data) {
                         if(data == "fail"){
@@ -780,13 +816,16 @@
                                 content: "กรุณาลองอีกครั้ง"
                             });
                         }else{
-                            //$('#add-id-'+arg).text(data);
+                            $('#add-id-'+arg).text(data);
                             $("#add-name-"+arg).prop('disabled', true);
                             $("#add-addr-"+arg).prop('disabled', true);
                             $("#add-tel-"+arg).prop('disabled', true);
+                            $("#add-type-"+arg).prop('disabled', true);
 
                             $("#btn-add-"+arg).prop('hidden', true);
                             $("#btn-add-edit-"+arg).prop('hidden', false);
+                            $("#btn-add-info-"+arg).prop('hidden', false);
+                            $("#btn-add-info-"+arg).attr('onclick', "price_book("+data+")");
                         }                        
                     }
                 });
@@ -804,9 +843,11 @@
             $("#add-name-"+arg).prop('disabled', false);
             $("#add-addr-"+arg).prop('disabled', false);
             $("#add-tel-"+arg).prop('disabled', false);
+            $("#add-type-"+arg).prop('disabled', false);
 
             $("#btn-add-save-"+arg).prop('hidden', false);
             $("#btn-add-edit-"+arg).prop('hidden', true);
+            $("#btn-add-info-"+arg).prop('hidden', true);
             $("#btn-add-del-"+arg).prop('hidden', false);
         }
 
@@ -814,7 +855,8 @@
             var cus_id = $("#add-id-" + arg).text();
             var name = $("#add-name-" + arg).val();
             var addr = $("#add-addr-" + arg).val();
-            var tel = $("#add-tel-" + arg).val();           
+            var tel = $("#add-tel-" + arg).val();    
+            var type = $("#add-type-" + arg).val();                  
 
             $.ajax({
                 url: "http://150.95.26.163:8080/gitmew/php/update_cus.php",
@@ -823,16 +865,19 @@
                     'cus_id': cus_id,
                     'name': name,
                     'address': addr,
-                    'tel': tel
+                    'tel': tel,
+                    'type': type
                 },
                 success: function (data) {
                     if(data == "success"){
                         $("#add-name-"+arg).prop('disabled', true);
                         $("#add-addr-"+arg).prop('disabled', true);
                         $("#add-tel-"+arg).prop('disabled', true);
+                        $("#add-type-"+arg).prop('disabled', true);
 
                         $("#btn-add-save-"+arg).prop('hidden', true);
                         $("#btn-add-edit-"+arg).prop('hidden', false);
+                        $("#btn-add-info-"+arg).prop('hidden', false);
                         $("#btn-add-del-"+arg).prop('hidden', true);
                     }else{
                         $.alert({
@@ -877,20 +922,29 @@
                                             $("#add-"+i).prop('id', "add-"+(i-1));
                                             str = $("#add-no-"+i).text()-1;
                                             $("#add-no-"+i).text("+"+str+"");
+                                            $("#add-id-"+i).prop('id', "add-id-"+(i-1));
                                             $("#add-no-"+i).prop('id', "add-no-"+(i-1));
                                             $("#add-name-"+i).prop('id', "add-name-"+(i-1));
                                             $("#add-addr-"+i).prop('id', "add-addr-"+(i-1));
                                             $("#add-tel-"+i).prop('id', "add-tel-"+(i-1));
+                                            $("#add-type-"+i).prop('id', "add-type-"+(i-1));
 
                                             $("#btn-add-"+i).attr('onclick', "add_new_cus(" + (i - 1) + ")");
                                             $("#btn-add-save-"+i).attr('onclick', "save_new_cus(" + (i - 1) + ")");
                                             $("#btn-add-edit-"+i).attr('onclick', "edit_new_cus(" + (i - 1) + ")");
                                             $("#btn-add-del-"+i).attr('onclick', "del_new_cus(" + (i - 1) + ")");
+                                            $("#li-type-1-"+i).attr('onclick', "settypeadd(1," + (i - 1) + ")");
+                                            $("#li-type-2-"+i).attr('onclick', "settypeadd(2," + (i - 1) + ")");
+                                            $("#li-type-3-"+i).attr('onclick', "settypeadd(3," + (i - 1) + ")");                                           
 
                                             $("#btn-add-"+i).prop('id', "btn-add-"+(i-1));
                                             $("#btn-add-save-"+i).prop('id', "btn-add-save-"+(i-1));
                                             $("#btn-add-edit-"+i).prop('id', "btn-add-edit-"+(i-1));
                                             $("#btn-add-del-"+i).prop('id', "btn-add-del-"+(i-1));
+                                            $("#btn-add-info-"+i).prop('id', "btn-add-info-"+(i-1));
+                                            $("#li-type-1-"+i).prop('id', "li-type-1-"+(i-1));
+                                            $("#li-type-2-"+i).prop('id', "li-type-2-"+(i-1));
+                                            $("#li-type-3-"+i).prop('id', "li-type-3-"+(i-1)); 
                                         }
                                         add_index--;
                                     } else {
@@ -937,7 +991,12 @@
                                 "<input id='add-tel-"+add_index+"' type='text' class='form-control text-center'>"+
                             "</div>"+
                             "<div class='col-2 text-center'>"+
-                                "<input id='add-type-"+add_index+"' type='text' class='form-control text-center'>"+
+                                "<input id='add-type-"+add_index+"' type='text' class='form-control text-center' data-toggle='dropdown'>"+
+                                "<ul class='dropdown-menu drop-up text-center'>" +
+                                    "<li id='li-type-1-"+add_index+"' class='li-branch' onclick='settypeadd(1,"+add_index+");' style='padding-bottom: 5px;'>ขายส่ง</li>" +
+                                    "<li id='li-type-2-"+add_index+"' class='li-branch' onclick='settypeadd(2,"+add_index+");' style='padding-bottom: 5px;'>ขายปลีก</li>" +
+                                    "<li id='li-type-3-"+add_index+"' class='li-branch' onclick='settypeadd(3,"+add_index+");' style='padding-bottom: 5px;'>ทั่วไป</li>" +
+                                "</ul>" +
                             "</div>"+
                             "<div class='col-1' text-center' style='margin-top: 3px;'>"+
                                 "<button id='btn-add-"+add_index+"' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_new_cus("+add_index+")'>"+
@@ -949,7 +1008,10 @@
                                 "<button id='btn-add-edit-"+add_index+"' class='btn btn-sm btn-primary' style='margin-right: 5px;' onclick='edit_new_cus("+add_index+")' hidden>"+
                                     "<i id='i-edit-1' class='fa fa-edit'></i>"+
                                 "</button>"+
-                                "<button id='btn-add-del-"+add_index+"' class='btn btn-sm btn-danger' onclick='del_new_cus("+add_index+")' data-toggle='modal'data-target='#myModal' hidden>"+
+                                "<button id='btn-add-info-"+add_index+"' class='btn btn-sm btn-info' hidden>" +
+                                    "<i id='i-info-1' class='fa fa-info-circle'></i>" +
+                                "</button>" +
+                                "<button id='btn-add-del-"+add_index+"' class='btn btn-sm btn-danger' onclick='del_new_cus("+add_index+")' hidden>"+
                                     "<i id='i-del-' class='fa fa-minus'></i>"+
                                 "</button>"+
                             "</div>"+
@@ -959,6 +1021,18 @@
                 $('.add-group').append(text_html);
                 //$("#add-name-"+add_index).focus();
             }             
+        }
+
+        function price_book(arg){
+            window.open("pricebook.html?cid="+arg, '_blank');         
+        }
+
+        function settypeinput(id,arg){
+            $("#type-"+arg).val($("#li-type-"+id).html());
+        }
+
+        function settypeadd(id,arg){
+            $("#add-type-"+arg).val($("#li-type-"+id+"-"+arg).html());
         }
 
         function logout(){
@@ -980,7 +1054,8 @@
                 <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
                 <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
                 <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li> 
-                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                    
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>                   
                 <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
@@ -1019,14 +1094,15 @@
                             <p/>
                     </div>
                     <div class="col-3 text-center">
-                        <input id="search-name" type="text" class="form-control text-center no-spin">
+                        <input id="search-name" type="text" class="form-control text-center">
                     </div>
                     <div class="col-2 text-center">
-                        <input id="search-tel" type="number" class="form-control text-center">
+                        <input id="search-tel" type="number" class="form-control text-center no-spin">
                     </div>
                     <div class="col-1 text-center no-pd">
                         <div class="btn-group ">
-                            <select id="branch" type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                            <select id="type" type="button" class="btn btn-secondary dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                                <option class='dropdown-item text-center' style='color: #ffffff' value=''>ทั้งหมด</option>
                                 <option class='dropdown-item text-center' style='color: #ffffff' value=''>ขายส่ง</option>
                                 <option class='dropdown-item text-center' style='color: #ffffff' value=''>ขายปลีก</option>
                                 <option class='dropdown-item text-center' style='color: #ffffff' value=''>ทั่วไป</option>
@@ -1054,8 +1130,8 @@
                     </div>
                     <div class="col-2 text-center">เบอร์โทร</div>
                     <div class="col-2 text-center">
-                        <a href="#" style="color: black;" onclick="click_sort('type')">ประเภท
-                            <i id="i-type" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        <a href="#" style="color: black;" onclick="click_sort('customer_type')">ประเภท
+                            <i id="i-customer_type" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
                         </a>
                     </div>
                     <div class="col-1 text-center"></div>
@@ -1064,64 +1140,12 @@
 
             <!-- Add -->
             <ul class="add-group" style="padding-right: 20px; padding-left: 20px;" hidden>
-                <!-- Append text html 
-                <li id='add-1' class='list-group-item text-center rounded'>
-                    <div class="row">
-                        <div class="col-3 text-center">
-                            <div class="input-group-prepend">
-                                <span class='input-group-text' style='margin-right: 8px;'>+1</span>
-                                <input id="add-name-1" type="text" class="form-control text-center">
-                            </div>
-                        </div>
-                        <div class="col-6 text-center">
-                            <input id="add-addr-1" type="text" class="form-control text-center">
-                        </div>
-                        <div class="col-2 text-center">
-                            <input id="add-tel-1" type="text" class="form-control text-center">
-                        </div>
-                        <div class="col-1 text-center" style="margin-top: 3px;">
-                            <button id='btn-add-1' class='btn btn-sm btn-success' style='margin-right: 5px;' onclick='add_cus("1")'>
-                                <i id='i-edit-1' class='fa fa-plus'></i>
-                            </button>
-                            <button id='btn-del-1' class='btn btn-sm btn-danger' onclick='del_row("1")' data-toggle='modal'
-                                data-target='#myModal' hidden>
-                                <i id='i-del-' class='fa fa-minus'></i>
-                            </button>
-                        </div>
-                    </div>
-                </li>-->
+                <!-- Append text html-->              
             </ul>    
 
                 <ul class="list-group" style="padding-right: 20px; padding-left: 20px;">
                     <!-- Append text html -->
-                    <li id='item-1' class='list-group-item text-center rounded'>
-                        <div class="row">
-                            <div class="col-3 text-center">
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="col-4 text-center">
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="col-2 text-center">
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="col-2 text-center">
-                                <input type="text" class="form-control">
-                            </div>
-                            <div class="col-1 text-center" style="margin-top: 3px;">
-                                <button id='btn-edit-1' class='btn btn-sm btn-primary' style='margin-right: 3px;' onclick='open_edit("1")'>
-                                    <i id='i-edit-1' class='fa fa-edit'></i>
-                                </button>
-                                <button id='btn-info-1' class='btn btn-sm btn-info' onclick='window.location = "pricebook.html?cid=1"'>
-                                    <i id='i-info-1' class='fa fa-info-circle'></i>
-                                </button>
-                                <button id='btn-del-1' class='btn btn-sm btn-danger' onclick='del_row("1")' data-toggle='modal'
-                                    data-target='#myModal' hidden>
-                                    <i id='i-del-1' class='fa fa-minus'></i>
-                                </button>
-                            </div>
-                        </div>
-                    </li>
+                  
                 </ul>
                 <br>
             </div>

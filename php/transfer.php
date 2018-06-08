@@ -8,16 +8,52 @@
     $sum  = $_POST['sum'];  
     $user_id = $_POST['user_id'];   
 
-    mysqli_begin_transaction($conn);  
-    $sql = "INSERT INTO transfer(branch_from,branch_to,datetime,user_id) VALUE ('$b_from','$b_to','$dt','$user_id')"; 
-    $result = mysqli_query($conn, $sql);
-    if(!$result){
-        mysqli_rollback($conn);
-        echo "fail";
-        exit;
+    mysqli_begin_transaction($conn); 
+    $sql = "SELECT transfer_number,count FROM transfer ORDER BY transfer_id DESC LIMIT 1"; 
+    $result = mysqli_query($conn, $sql);    
+   
+    if(mysqli_num_rows($result) > 0){    
+        while($row = mysqli_fetch_array($result)){  
+            $number = $row['transfer_number'];
+            $year_old = substr($number,1,2);
+            $year_cur = date("y");
+            if($year_cur == $year_old){
+                $count = $row['count']+1;
+                $year = "T" . $year_cur . "-";
+                $order_number = $year . str_pad($count, 5, "0",STR_PAD_LEFT);
+                $sql1 = "INSERT INTO transfer(transfer_number,branch_from,branch_to,datetime,user_id,count) VALUE ('$order_number','$b_from','$b_to','$dt','$user_id','$count')"; 
+                $result1 = mysqli_query($conn, $sql1);
+                if(!$result1){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
+                $last_id = mysqli_insert_id($conn);	   
+            }else{
+                $year = "T" . $year_cur . "-";
+                $order_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
+                $sql2 = "INSERT INTO transfer(transfer_number,branch_from,branch_to,datetime,user_id,count) VALUE ('$order_number','$b_from','$b_to','$dt','$user_id',1)"; 
+                $result2 = mysqli_query($conn, $sql2);
+                if(!$result2){
+                    mysqli_rollback($conn);
+                    echo "fail";
+                    exit;
+                }
+                $last_id = mysqli_insert_id($conn);	   
+            }           
+        }
+    }else{
+        $year = "T" . date("y") . "-";
+        $order_number = $year . str_pad(1, 5, "0",STR_PAD_LEFT);
+        $sql3 = "INSERT INTO transfer(transfer_number,branch_from,branch_to,datetime,user_id,count) VALUE ('$order_number','$b_from','$b_to','$dt','$user_id',1)"; 
+        $result3 = mysqli_query($conn, $sql3);
+        if(!$result3){
+            mysqli_rollback($conn);
+            echo "fail";
+            exit;
+        }
+        $last_id = mysqli_insert_id($conn);	       
     }
-    $last_id = mysqli_insert_id($conn);	
-
     $sql = "INSERT INTO transfer_record(transfer_id,branch_from,branch_to,datetime,user_id) VALUE ('$last_id','$b_from','$b_to','$dt','$user_id')"; 
     $result = mysqli_query($conn, $sql);
     if(!$result){
@@ -25,8 +61,8 @@
         echo "fail";
         exit;
     }
-    $record_id = mysqli_insert_id($conn);
-       
+    $record_id = mysqli_insert_id($conn); 
+
     foreach ($obj as $data)
     {      
         $prod_id = $data['prod_id'];       
@@ -62,6 +98,6 @@
         }    
     }
     mysqli_commit($conn); 
-    echo "success";
+    echo $order_number;
     mysqli_close($conn);
 ?>

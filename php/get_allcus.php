@@ -5,30 +5,33 @@
 	$start = $_POST['start'];
 	$sort_by = $_POST['sort_by'];
 	$order = $_POST['order'];
+	$type = $_POST['type'];
 
 	$sql;
 	if($sort_by == "none" && $order == "none"){
-		if($name || $tel){			
-			$sql = "SELECT customer_id,customer_name,address,tel FROM customer 
-            WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' LIMIT $start,100";
+		if($name || $tel || $type){			
+			$sql = "SELECT customer_id,customer_name,address,tel,customer_type FROM customer 
+            WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' AND customer_type LIKE '%$type%' LIMIT $start,100";
 		}else{			
-			$sql = "SELECT customer_id,customer_name,address,tel FROM customer LIMIT $start,100";
+			$sql = "SELECT customer_id,customer_name,address,tel,customer_type FROM customer LIMIT $start,100";
 		}		
 	}else if($sort_by != "none" && $order != "none"){
-		if($name || $tel){
+		if($name || $tel || $type){
 			if($order == "asc"){
-                $sql = "SELECT customer_id,customer_name,address,tel FROM customer 
-                WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' ORDER BY $sort_by ASC LIMIT $start,100";
+                $sql = "SELECT customer_id,customer_name,address,tel,customer_type FROM customer 
+                WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' AND customer_type LIKE '%$type%' 
+				ORDER BY $sort_by ASC LIMIT $start,100";
 			}else if($order == "desc"){
-				$sql = "SELECT customer_id,customer_name,address,tel FROM customer 
-                WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' ORDER BY $sort_by DESC LIMIT $start,100";
+				$sql = "SELECT customer_id,customer_name,address,tel,customer_type FROM customer 
+                WHERE customer_name LIKE '%$name%' AND tel LIKE '%$tel%' AND customer_type LIKE '%$type%' 
+				ORDER BY $sort_by DESC LIMIT $start,100";
 			}
 		}else{
 			if($order == "asc"){
-                $sql = "SELECT customer_id,customer_name,address,tel FROM customer 
+                $sql = "SELECT customer_id,customer_name,address,tel,customer_type FROM customer 
                 ORDER BY $sort_by ASC LIMIT $start,100";
 			}else if($order == "desc"){
-				$sql = "SELECT customer_id,customer_name,address,tel FROM customer
+				$sql = "SELECT customer_id,customer_name,address,tel,customer_type FROM customer
                 ORDER BY $sort_by DESC LIMIT $start,100";
 			}
 		}

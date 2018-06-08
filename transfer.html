@@ -325,8 +325,8 @@
           json.push(item);         
 
           texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+(i+1)+"</div>"+
-              "<div class='fl-50 fs-120 tb no-bdt'>"+jsonObj[i].name+"</div>"+
-              "<div class='fl-10 fs-120 tb no-bdt'>"+jsonObj[i].amount+"</div>";
+              "<div class='fl-65 fs-120 tb no-bdt'>"+jsonObj[i].name+"</div>"+
+              "<div class='fl-25 fs-120 tb no-bdt'>"+jsonObj[i].amount+"</div>";               
         });
         var jsonString = JSON.stringify(json);
         var print = $('input[name=print-radio]:checked').val();    
@@ -345,9 +345,65 @@
             url:"http://150.95.26.163:8080/gitmew/php/transfer.php",
             data: dataString,
             async: false,
-            success: function(data){
-                //alert(data);
-              if(data == "success"){ 
+            success: function(data){               
+              if(data != "fail"){               
+                var link = "https://fonts.googleapis.com/css?family=Maitree";
+                var logo = "http://150.95.26.163:8080/gitmew/img/pps.jpg";
+                WinPrint.document.write("<html><head><link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Maitree'></head><body>");
+                WinPrint.document.write("<style>@page {size: auto; margin: 0;} .fl{float: left; text-align: center; margin-left: 50mm; margin-right: 40mm;}.fr{float: right; text-align: left; margin-right: 25mm;}.fc{float: center; text-align: center;}.fs-200-bold{font-size: 200%; margin-bottom: -10px; font-weight: bold;}.fs-200{font-size: 200%; margin-bottom: -25px;}.fs-180{font-size: 180%; margin-bottom: -25px; letter-spacing: 2px;}.fs-150-title{font-size: 150%; margin-bottom: -25px; letter-spacing: 1px;}.fs-150{font-size: 150%; margin-bottom: -15px; letter-spacing: 1px;}.fs-120{font-size: 120%; letter-spacing: 1px;}.fl-spc{float: left; width: 5%;}.fl-10{float: left; width: 10%;}.fl-15{float: left; width: 15%;}.fl-20{float: left; width: 24.9%; text-align: center;}.fl-25{float: left; width: 25%; text-align: center;}.fl-30{float: left; width: 30%; text-align: center;}.fl-35{float: left; width: 30%; text-align: center;}.fl-40{float: left; width: 40%; text-align: center;}.fl-50{float: left; width: 50%; text-align: center;}.fl-55{float: left; width: 55%; text-align: center;}.fl-65{float: left; width: 65%; text-align: center;}.fl-75{float: left; width: 70.7%; text-align: center;}.field{border-bottom: 1px dashed black;}.ctn{position: relative; width: 297mm; height: 210mm; padding: 10mm 15mm 15mm 10mm; font-family: 'Maitree';}.row{display: inline-block;}.tb-st{border: 1px solid black; text-align: center; padding: 3px;}.tb{border: 1px solid black; text-align: center; padding: 3px; border-left: none;}.no-bdt{border-top: none;}</style>"+
+                "<div class='ctn'>" +
+                  "<div class='row'>" +
+                    "<div class='fl'>" +
+                      "<img style='width: 250px; height: 150px;' src='"+logo+"'>" +
+                    "</div>" + 
+                    "<div class='fr'>" +
+                      "<p class='fs-200'>พรประสิทธิ์ PPS Auto Shop</p>" +
+                      "<p class='fs-150-title'>5 หมู่ 7 ต.ชีน้ำร้าย จ.สิงห์บุรี 16110</p>" +
+                      "<p class='fs-150-title'>โทร 065-5028828, 097-0631169</p>" +
+                    "</div>" +
+                  "</div>" +
+
+                  "<div class='fc'>" +
+                    "<p class='fs-200-bold'>ใบรายการโอนสินค้า</p>" +
+                  "</div>" +
+                  
+                  "<div class='fl-10'>" +
+                    "<p class='fs-150'>จาก(สาขา)</p>" +
+                  "</div>" +
+                  "<div class='fl-spc'>&emsp;</div>" +
+                  "<div class='fl-30'>" +
+                    "<p class='fs-150 field'>"+b_name_from+"</p>" +
+                  "</div>" +
+                  "<div class='fl-spc'>&emsp;</div>" +
+                  "<div class='fl-10'>" +
+                    "<p class='fs-150'>ถึง ​​(สาขา)</p>" +
+                  "</div>" +
+                  "<div class='fl-spc'>&emsp;</div>" +
+                  "<div class='fl-30'>" +
+                    "<p class='fs-150 field'>"+b_name_to+"</p>" +
+                  "</div>" +
+
+                  "<div class='fl-15'>" +
+                    "<p class='fs-150'>เลขที่ใบรายการ</p>" +
+                  "</div>" +
+                  "<div class='fl-35'>" +
+                    "<p class='fs-150 field'>"+data+"</p>" +
+                  "</div>" +
+                  "<div class='fl-25'>" +
+                    "<p class='fs-150'>วันที่ เวลา ที่ทำรายการ</p>" +
+                  "</div>" +
+                  "<div class='fl-30' style='margin-bottom: 80px;'>" +
+                    "<p class='fs-150 field'>"+datetime+"</p>" +
+                  "</div>" +
+
+                  "<div>" +
+                    "<div class='fl-spc fs-120 tb-st'>ลำดับ</div>" +
+                    "<div class='fl-65 fs-120 tb'>ชื่อสินค้า</div>" +
+                    "<div class='fl-25 fs-120 tb'>จำนวน</div>" +            
+                      texta4 +
+                    "<div class='fl-75 fs-120 tb-st no-bdt'>รวมจำนวนทั้งสิ้น</div>" +
+                    "<div class='fl-20 fs-120 tb no-bdt'>"+sum+"</div>" +
+                  "</div>");
                 $.alert({
                     icon: 'fas fa-save',
                     title: 'บันทึกเสร็จสิ้น',
@@ -385,7 +441,8 @@
                 <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
                 <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
                 <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
-                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                  
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
                 <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
