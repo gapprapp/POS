@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+     <!-- Easy-autocomplete -->
+     <script src="js/jquery.easy-autocomplete.js"></script>
+     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet" >
+
+    <style>
+      .nopd{
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+
+      .symb-x{
+        font-size: 130%; color: #666;
+      }
+
+      .symb-eq{
+        font-size: 150%; color: #666;
+      }
+
+      .sub{
+        margin-bottom: 5px;
+        margin-left: 2%;
+      }
+    </style>
+
+    <script>
+      var arr_index = [];
+      arr_index.push({
+        main: -1,
+        sub: -1
+      });
+      var index_main = 1;
+      function add(){
+        var bottom = $(window).height() - $("#show").offset().top - $("#show").height();
+          console.log("offset :"+ $("#show").offset().top);
+          console.log("height :"+ $("#show").height());
+          console.log("win height :"+ $(window).height());
+          console.log("bottom :"+ bottom + "\n");
+        // Always scroll to the bottom
+        if(bottom < 90){
+          $("#show").css('max-height', $("#show").height());
+          $("#show").animate({scrollTop: $('#show').prop('scrollHeight')});
+        }
+        arr_index.push({
+          main: index_main,
+          sub: 0
+        });
+        //arr_index[0].sub++;
+        //alert(arr_index[0].sub);
+
+        text_html = '<div id="muti-'+index_main+'" class="container-fullwidth">'+
+        '<div id="main-'+index_main+'" class="row" style="margin-bottom: 10px;">'+
+          '<div class="col-1"></div>'+
+          '<div class="col-2 nopd">'+
+            '<div class="input-group">'+
+              '<span class="input-group-addon">'+index_main+'</span>'+
+              '<input id="no" type="text" class="form-control text-center" readonly>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col-3 text-center nopd">'+
+            '<input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
+          '</div>'+
+          '<div class="col-1 nopd">'+
+            '<input id="unit" type="text" class="form-control text-center" readonly value="หลอด">'+
+          '</div>             '+
+          '<div class="col-3">'+
+            '<button class="btn btn-sm btn-success" style="margin-left: 5%; margin-right: 5px; width: 25%;" onclick="add_sub('+index_main+')">'+
+              '<i class="fa fa-plus"></i>'+
+            '</button>'+
+            '<button class="btn btn-sm btn-danger" style="width: 25%;">'+
+              '<i class="fa fa-trash"></i>'+
+            '</button>'+
+          '</div>'+
+        '</div>'+
+      '</div><hr id="hr-'+index_main+'" style="width: 90%;">';
+      $("#show").append(text_html);
+      index_main++;
+      }
+
+      function add_sub(arg){
+        var bottom = $(window).height() - $("#show").offset().top - $("#show").height();
+          console.log("offset :"+ $("#show").offset().top);
+          console.log("height :"+ $("#show").height());
+          console.log("win height :"+ $(window).height());
+          console.log("bottom :"+ bottom + "\n");
+        // Always scroll to the bottom
+        if(bottom < 90){
+          $("#show").css('max-height', $("#show").height());
+        }
+        arr_index[arg].sub++;
+        text_html = '<div id="sub-'+arg+'-'+arr_index[arg].sub+'" class="sub row">'+
+          '<div class="col-1"></div>'+
+          '<div class="col-2 nopd">'+
+            '<div class="input-group">'+
+              '<span class="input-group-addon" style="letter-spacing: 1px;">' +arg+'.'+arr_index[arg].sub+'</span>'+
+              '<input id="no" type="text" class="form-control text-center" readonly>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col-3 text-center nopd">'+
+            '<input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
+          '</div>'+
+          '<div class="col-1 nopd">'+
+            '<input id="price" type="number" class="form-control text-center no-spin" readonly>'+
+          '</div>'+
+          '<div class="col-1 text-center">'+
+            '<span class="symb-eq" >=</span>'+
+          '</div>'+
+          '<div class="col-1 nopd">'+
+            '<input id="times" type="text" class="form-control text-center" placeholder="ตัวคูณ">'+
+          '</div> '+
+          '<div class="col-1 text-center" style="padding-top: 2px;">'+
+            '<span class="symb-x">x</span>'+
+          '</div> '+
+          '<div class="col-1 nopd">'+
+            '<input id="min-unit" type="text" class="form-control text-center" readonly value="หลอด">'+
+          '</div>'+
+        '</div>';
+        $("#muti-"+arg).append(text_html);
+      }
+    </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav" style="margin-top: 20px">
+          <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+            <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+            <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+            <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+            <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+            <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+            <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
+            <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
+            <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>                 
+            <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+        </ul>
+    </div>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <div id="offline" class="alert alert-danger alert-dismissible" hidden>
+        <button type="button" class="close" onclick="dismiss()">&times;</button>
+        <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
+      </div>
+      <div id="online" class="alert alert-success alert-dismissible" hidden>
+        <button type="button" class="close" onclick="dismiss()">&times;</button>
+        <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
+      </div>
+
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #dab000;">
+        <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+          <h3 id="nav-title">สินค้าหลายหน่วย</h3>
+        </div>
+      </nav><br>
+
+      <div class="container-fullwidth">
+        <!-- Title -->
+        <div class="row" style="margin-bottom: 10px;">
+          <div class="col-1"></div>
+          <div class="col-2 text-center nopd">บาร์โค้ด</div>
+          <div class="col-3 text-center nopd">รายการสินค้า</div>
+          <div class="col-1 text-center nopd">หน่วย</div>
+        </div>
+      </div>
+      
+      <div id="show" class="container-fullwidth" style="overflow-y: scroll; overflow-x: hidden;">
+        
+      </div>
+    </div><!-- End page content wrapper -->
+    
+    <div id="ctn-bttm" class="fixed-bottom" style="margin-top: 10px; margin-bottom: 15px;">
+      <div class="row">
+        <div class="col-12 text-center">
+            <button class="btn btn-success" style="margin-right: 5px;" onclick="add();">เพิ่มสินค้า</button>
+            <button class="btn btn-primary" hidden>บันทึก</button>
+        </div>
+      </div>
+    </div>
+  </div> <!-- End Wrapper -->
+</body>
+</html>
