@@ -58,7 +58,7 @@
         main: -1,
         sub: -1
       });
-      var index_main = 1;
+      var index_main = 0;
       function add(){
         var bottom = $(window).height() - $("#show").offset().top - $("#show").height();
           console.log("offset :"+ $("#show").offset().top);
@@ -70,10 +70,7 @@
           $("#show").css('max-height', $("#show").height());
           $("#show").animate({scrollTop: $('#show').prop('scrollHeight')});
         }
-        arr_index.push({
-          main: index_main,
-          sub: 0
-        });
+        index_main++;
         //arr_index[0].sub++;
         //alert(arr_index[0].sub);
 
@@ -82,15 +79,16 @@
           '<div class="col-1"></div>'+
           '<div class="col-2 nopd">'+
             '<div class="input-group">'+
+              '<span id="span-id-'+index_main+'" hidden>0</span>'+
               '<span class="input-group-addon">'+index_main+'</span>'+
-              '<input id="no" type="text" class="form-control text-center" readonly>'+
+              '<input id="no-'+index_main+'" type="text" class="form-control text-center" readonly>'+
             '</div>'+
           '</div>'+
           '<div class="col-3 text-center nopd">'+
-            '<input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
+            '<input id="name-'+index_main+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
           '</div>'+
           '<div class="col-1 nopd">'+
-            '<input id="unit" type="text" class="form-control text-center" readonly value="หลอด">'+
+            '<input id="unit-'+index_main+'" type="text" class="form-control text-center" readonly value="หลอด">'+
           '</div>             '+
           '<div class="col-3">'+
             '<button class="btn btn-sm btn-success" style="margin-left: 5%; margin-right: 5px; width: 25%;" onclick="add_sub('+index_main+')">'+
@@ -102,8 +100,52 @@
           '</div>'+
         '</div>'+
       '</div><hr id="hr-'+index_main+'" style="width: 90%;">';
-      $("#show").append(text_html);
-      index_main++;
+        $("#show").append(text_html);
+        var options = {
+        url: function(phrase) {
+        return "http://150.95.26.163:8080/gitmew/php/search_prod.php";
+        },
+        getValue: function(element) {     
+        return element.prod_name;
+        },
+        ajaxSettings: {
+        method: "POST",
+        data: {}
+        },
+        preparePostData: function(data) {    
+            $('#span-id-'+index_main).text(0);                             
+            data.phrase = $("#name-"+index_main).val();                      
+            return data;            
+        },
+        minCharNumber: 3,
+        list: {         
+            maxNumberOfElements: 1000,
+            showAnimation: {
+                type: "slide",
+                time: 100
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 100
+            },                
+            onChooseEvent: function() {                
+            var barcode = $("#name-"+index_main).getSelectedItemData().barcode;          
+            var unit_name = $("#name-"+index_main).getSelectedItemData().unit_name;
+            $('#span-id-'+index_main).text($("#name-"+index_main).getSelectedItemData().prod_id);
+        
+            $('#no-'+index_main).val(barcode);         
+            $('#unit-'+index_main).val(unit_name);          
+            },            
+        },     
+        requestDelay: 300,
+        theme: "blue-light",         
+        };
+    
+        $("#name-"+index_main).easyAutocomplete(options);
+        arr_index.push({
+          main: index_main,
+          sub: 0
+        });       
       }
 
       function add_sub(arg){
@@ -121,30 +163,72 @@
           '<div class="col-1"></div>'+
           '<div class="col-2 nopd">'+
             '<div class="input-group">'+
+              '<span id="span-id-'+arg+'-'+arr_index[arg].sub+'" hidden>0</span>'+
               '<span class="input-group-addon" style="letter-spacing: 1px;">' +arg+'.'+arr_index[arg].sub+'</span>'+
-              '<input id="no" type="text" class="form-control text-center" readonly>'+
+              '<input id="no-'+arg+'-'+arr_index[arg].sub+'" type="text" class="form-control text-center" readonly>'+
             '</div>'+
           '</div>'+
           '<div class="col-3 text-center nopd">'+
-            '<input id="name" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
+            '<input id="name-'+arg+'-'+arr_index[arg].sub+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
           '</div>'+
           '<div class="col-1 nopd">'+
-            '<input id="price" type="number" class="form-control text-center no-spin" readonly>'+
+            '<input id="unit-'+arg+'-'+arr_index[arg].sub+'" type="number" class="form-control text-center no-spin" readonly>'+
           '</div>'+
           '<div class="col-1 text-center">'+
             '<span class="symb-eq" >=</span>'+
           '</div>'+
           '<div class="col-1 nopd">'+
-            '<input id="times" type="text" class="form-control text-center" placeholder="ตัวคูณ">'+
+            '<input id="times-'+arg+'-'+arr_index[arg].sub+'" type="text" class="form-control text-center" placeholder="ตัวคูณ">'+
           '</div> '+
           '<div class="col-1 text-center" style="padding-top: 2px;">'+
             '<span class="symb-x">x</span>'+
           '</div> '+
           '<div class="col-1 nopd">'+
-            '<input id="min-unit" type="text" class="form-control text-center" readonly value="หลอด">'+
+            '<input id="min-unit" type="text" class="form-control text-center" readonly value="'+$('#unit-'+arg).val()+'">'+
           '</div>'+
         '</div>';
         $("#muti-"+arg).append(text_html);
+        var options = {
+        url: function(phrase) {
+        return "http://150.95.26.163:8080/gitmew/php/search_prod.php";
+        },
+        getValue: function(element) {     
+        return element.prod_name;
+        },
+        ajaxSettings: {
+        method: "POST",
+        data: {}
+        },
+        preparePostData: function(data) {    
+            $('#span-id-'+arg+'-'+arr_index[arg].sub).text(0);                             
+            data.phrase = $("#name-"+arg+'-'+arr_index[arg].sub).val();                       
+            return data;            
+        },
+        minCharNumber: 3,
+        list: {         
+            maxNumberOfElements: 1000,
+            showAnimation: {
+                type: "slide",
+                time: 100
+            },
+            hideAnimation: {
+                type: "slide",
+                time: 100
+            },                
+            onChooseEvent: function() {                
+            var barcode = $("#name-"+arg+'-'+arr_index[arg].sub).getSelectedItemData().barcode;          
+            var unit_name = $("#name-"+arg+'-'+arr_index[arg].sub).getSelectedItemData().unit_name;
+            $('#span-id-'+arg+'-'+arr_index[arg].sub).text($("#name-"+arg+'-'+arr_index[arg].sub).getSelectedItemData().prod_id);
+        
+            $('#no-'+arg+'-'+arr_index[arg].sub).val(barcode);         
+            $('#unit-'+arg+'-'+arr_index[arg].sub).val(unit_name);          
+            },            
+        },     
+        requestDelay: 300,
+        theme: "blue-light",         
+        };
+    
+        $("#name-"+arg+'-'+arr_index[arg].sub).easyAutocomplete(options);
       }
     </script>
 </head>
@@ -168,15 +252,7 @@
     </div>
 
     <!-- Page Content -->
-    <div id="page-content-wrapper">
-      <div id="offline" class="alert alert-danger alert-dismissible" hidden>
-        <button type="button" class="close" onclick="dismiss()">&times;</button>
-        <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
-      </div>
-      <div id="online" class="alert alert-success alert-dismissible" hidden>
-        <button type="button" class="close" onclick="dismiss()">&times;</button>
-        <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
-      </div>
+    <div id="page-content-wrapper">  
 
       <!-- Navbar -->
       <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #dab000;">

@@ -193,7 +193,7 @@
                     data: {}
                     },
                     preparePostData: function(data) {    
-                        $('#span-id-').text(0);                             
+                        $('#span-id-'+c_prod).text(0);                             
                         data.phrase = $("#name-"+c_prod).val();                       
                         return data;            
                     },
