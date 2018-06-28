@@ -53,6 +53,99 @@
     </style>
 
     <script>
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "http://150.95.26.163:8080/gitmew/php/get_quantity.php",         
+          success: function(data){        
+            var obj = jQuery.parseJSON(data);  
+            console.log(obj);         
+            if(obj){
+              $.each(obj, function(i, field){               
+                var bottom = $(window).height() - $("#show").offset().top - $("#show").height();               
+                // Always scroll to the bottom
+                if(bottom < 90){
+                  $("#show").css('max-height', $("#show").height());
+                  $("#show").animate({scrollTop: $('#show').prop('scrollHeight')});
+                }
+                index_main++;      
+
+                text_html = '<div id="muti-'+index_main+'" class="container-fullwidth">'+
+                '<div id="main-'+index_main+'" class="row" style="margin-bottom: 10px;">'+
+                  '<div class="col-1"></div>'+
+                  '<div class="col-2 nopd">'+
+                    '<div class="input-group">'+
+                      '<span id="span-id-'+index_main+'" hidden>'+obj[i].prod_id+'</span>'+
+                      '<span id="at-'+index_main+'" class="input-group-addon">'+index_main+'</span>'+
+                      '<input id="no-'+index_main+'" value="'+obj[i].barcode+'" ype="text" class="form-control text-center" readonly>'+
+                    '</div>'+
+                  '</div>'+
+                  '<div class="col-3 text-center nopd">'+
+                    '<input id="name-'+index_main+'" value="'+obj[i].prod_name+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" readonly>'+
+                  '</div>'+
+                  '<div class="col-1 nopd">'+
+                    '<input id="unit-'+index_main+'" value="'+obj[i].unit_name+'" type="text" class="form-control text-center" readonly>'+
+                  '</div>             '+
+                  '<div class="col-3">'+
+                    '<button id="btn-add-'+index_main+'" class="btn btn-sm btn-success" style="margin-left: 5%; margin-right: 5px; width: 25%;" onclick="add_sub('+index_main+')">'+
+                      '<i class="fa fa-plus"></i>'+
+                    '</button>'+
+                    '<button id="btn-del-'+index_main+'" class="btn btn-sm btn-danger" style="width: 25%;" onclick="del_multi('+index_main+')">'+
+                      '<i class="fa fa-trash"></i>'+
+                    '</button>'+
+                  '</div>'+
+                '</div>'+
+              '</div><hr id="hr-'+index_main+'" style="width: 90%;">';
+                $("#show").append(text_html);
+                arr_index.push({
+                  main: index_main,
+                  sub: 0
+                });                 
+                for(var m = 0; m < obj[i][0].length ; m++){
+                  arr_index[index_main].sub++;
+                  text_html = '<div id="sub-'+index_main+'-'+arr_index[index_main].sub+'" class="sub row">'+
+                    '<div class="col-1"></div>'+
+                    '<div class="col-2 nopd">'+
+                      '<div class="input-group">'+
+                        '<span id="span-id-'+index_main+'-'+arr_index[index_main].sub+'" hidden>'+obj[i][0][m].prod_id_sub+'</span>'+
+                        '<span id="at-'+index_main+'-'+arr_index[index_main].sub+'" class="input-group-addon" style="letter-spacing: 1px;">' +index_main+'.'+arr_index[index_main].sub+'</span>'+
+                        '<input id="no-'+index_main+'-'+arr_index[index_main].sub+'"  value="'+obj[i][0][m].barcode+'" type="text" class="form-control text-center" readonly>'+
+                      '</div>'+
+                    '</div>'+
+                    '<div class="col-3 text-center nopd">'+
+                      '<input id="name-'+index_main+'-'+arr_index[index_main].sub+'"  value="'+obj[i][0][m].prod_name+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" readonly>'+
+                    '</div>'+
+                    '<div class="col-1 nopd">'+
+                      '<input id="unit-'+index_main+'-'+arr_index[index_main].sub+'"  value="'+obj[i][0][m].unit_name+'" type="text" class="form-control text-center" readonly>'+
+                    '</div>'+
+                    '<div class="col-1 text-center">'+
+                      '<span class="symb-eq" >=</span>'+
+                    '</div>'+
+                    '<div class="col-1 nopd">'+
+                      '<input id="times-'+index_main+'-'+arr_index[index_main].sub+'"  value="'+obj[i][0][m].quantity+'" type="text" class="form-control text-center" placeholder="ตัวคูณ" readonly>'+
+                    '</div> '+
+                    '<div class="col-1 text-center" style="padding-top: 2px;">'+
+                      '<span class="symb-x">x</span>'+
+                    '</div> '+
+                    '<div class="col-1 nopd">'+
+                      '<input id="min-unit" type="text" class="form-control text-center" readonly value="'+$('#unit-'+index_main).val()+'">'+
+                    '</div>'+
+                    '<div class="col-1 text-center nopd">'+
+                      '<button id="btn-add-'+index_main+'-'+arr_index[index_main].sub+'" class="btn btn-sm btn-success" onclick="save('+index_main+','+arr_index[index_main].sub+')" hidden>'+
+                        '<i class="fa fa-plus"></i>'+
+                      '</button>'+
+                      '<button id="btn-del-'+index_main+'-'+arr_index[index_main].sub+'" class="btn btn-sm btn-danger" onclick="del_sub('+index_main+','+arr_index[index_main].sub+')"><i class="fa fa-trash"></i></button>'+
+                    '</div>'+
+                  '</div>';
+                  $("#muti-"+index_main).append(text_html);
+                }            
+              });
+            }
+            
+          }
+        }); 
+      });
+
       var arr_index = [];
       arr_index.push({
         main: -1,
@@ -60,6 +153,9 @@
       });
       var index_main = 0;
       function add(){
+        if(!$('#name-'+index_main+'-1').is('[readonly]') && $('#name-'+index_main+'-1').is(':visible') || $('#name-'+index_main).is(':visible') && !$('#name-'+index_main).is('[readonly]')){
+          return 0;
+        }
         var bottom = $(window).height() - $("#show").offset().top - $("#show").height();
           console.log("offset :"+ $("#show").offset().top);
           console.log("height :"+ $("#show").height());
@@ -70,9 +166,7 @@
           $("#show").css('max-height', $("#show").height());
           $("#show").animate({scrollTop: $('#show').prop('scrollHeight')});
         }
-        index_main++;
-        //arr_index[0].sub++;
-        //alert(arr_index[0].sub);
+        index_main++;      
 
         text_html = '<div id="muti-'+index_main+'" class="container-fullwidth">'+
         '<div id="main-'+index_main+'" class="row" style="margin-bottom: 10px;">'+
@@ -80,27 +174,27 @@
           '<div class="col-2 nopd">'+
             '<div class="input-group">'+
               '<span id="span-id-'+index_main+'" hidden>0</span>'+
-              '<span class="input-group-addon">'+index_main+'</span>'+
+              '<span id="at-'+index_main+'" class="input-group-addon">'+index_main+'</span>'+
               '<input id="no-'+index_main+'" type="text" class="form-control text-center" readonly>'+
             '</div>'+
           '</div>'+
           '<div class="col-3 text-center nopd">'+
-            '<input id="name-'+index_main+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
+            '<input id="name-'+index_main+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่">'+
           '</div>'+
           '<div class="col-1 nopd">'+
-            '<input id="unit-'+index_main+'" type="text" class="form-control text-center" readonly value="หลอด">'+
+            '<input id="unit-'+index_main+'" type="text" class="form-control text-center" readonly>'+
           '</div>             '+
           '<div class="col-3">'+
-            '<button class="btn btn-sm btn-success" style="margin-left: 5%; margin-right: 5px; width: 25%;" onclick="add_sub('+index_main+')">'+
+            '<button id="btn-add-'+index_main+'" class="btn btn-sm btn-success" style="margin-left: 5%; margin-right: 5px; width: 25%;" onclick="add_sub('+index_main+')">'+
               '<i class="fa fa-plus"></i>'+
             '</button>'+
-            '<button class="btn btn-sm btn-danger" style="width: 25%;">'+
+            '<button id="btn-del-'+index_main+'" class="btn btn-sm btn-danger" style="width: 25%;" onclick="del_multi('+index_main+')">'+
               '<i class="fa fa-trash"></i>'+
             '</button>'+
           '</div>'+
         '</div>'+
       '</div><hr id="hr-'+index_main+'" style="width: 90%;">';
-        $("#show").append(text_html);
+        $("#show").append(text_html);       
         var options = {
         url: function(phrase) {
         return "http://150.95.26.163:8080/gitmew/php/search_prod.php";
@@ -113,8 +207,10 @@
         data: {}
         },
         preparePostData: function(data) {    
-            $('#span-id-'+index_main).text(0);                             
-            data.phrase = $("#name-"+index_main).val();                      
+            $('#span-id-'+index_main).text(0);   
+            console.log(index_main);
+            data.phrase = $("#name-"+index_main).val();  
+            console.log(data.phrase);                    
             return data;            
         },
         minCharNumber: 3,
@@ -128,10 +224,11 @@
                 type: "slide",
                 time: 100
             },                
-            onChooseEvent: function() {                
+            onChooseEvent: function() {   
+            console.log(index_main);
             var barcode = $("#name-"+index_main).getSelectedItemData().barcode;          
             var unit_name = $("#name-"+index_main).getSelectedItemData().unit_name;
-            $('#span-id-'+index_main).text($("#name-"+index_main).getSelectedItemData().prod_id);
+            $('#span-id-'+index_main).text($("#name-"+index_main).getSelectedItemData().prod_id);            
         
             $('#no-'+index_main).val(barcode);         
             $('#unit-'+index_main).val(unit_name);          
@@ -140,7 +237,7 @@
         requestDelay: 300,
         theme: "blue-light",         
         };
-    
+        //console.log(index_main);
         $("#name-"+index_main).easyAutocomplete(options);
         arr_index.push({
           main: index_main,
@@ -149,6 +246,15 @@
       }
 
       function add_sub(arg){
+        if(!$('#name-'+arg+'-'+arr_index[arg].sub).is('[readonly]') && $('#name-'+arg+'-'+arr_index[arg].sub).is(':visible')){
+          $('#sub-'+arg+'-'+arr_index[arg].sub).remove();
+          arr_index[arg].sub--;
+          return 0;
+        }
+        if($('#span-id-'+arg).text() == 0 || $('#name-'+arg).val() == ""){
+          return 0;
+        }
+        $('#name-'+arg).prop('readonly',true);
         var bottom = $(window).height() - $("#show").offset().top - $("#show").height();
           console.log("offset :"+ $("#show").offset().top);
           console.log("height :"+ $("#show").height());
@@ -164,15 +270,15 @@
           '<div class="col-2 nopd">'+
             '<div class="input-group">'+
               '<span id="span-id-'+arg+'-'+arr_index[arg].sub+'" hidden>0</span>'+
-              '<span class="input-group-addon" style="letter-spacing: 1px;">' +arg+'.'+arr_index[arg].sub+'</span>'+
+              '<span id="at-'+arg+'-'+arr_index[arg].sub+'" class="input-group-addon" style="letter-spacing: 1px;">' +arg+'.'+arr_index[arg].sub+'</span>'+
               '<input id="no-'+arg+'-'+arr_index[arg].sub+'" type="text" class="form-control text-center" readonly>'+
             '</div>'+
           '</div>'+
           '<div class="col-3 text-center nopd">'+
-            '<input id="name-'+arg+'-'+arr_index[arg].sub+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่" data-index="2">'+
+            '<input id="name-'+arg+'-'+arr_index[arg].sub+'" type="text" class="form-control text-center" placeholder="พิมพ์ชื่อรายการสินค้าที่นี่">'+
           '</div>'+
           '<div class="col-1 nopd">'+
-            '<input id="unit-'+arg+'-'+arr_index[arg].sub+'" type="number" class="form-control text-center no-spin" readonly>'+
+            '<input id="unit-'+arg+'-'+arr_index[arg].sub+'" type="text" class="form-control text-center" readonly>'+
           '</div>'+
           '<div class="col-1 text-center">'+
             '<span class="symb-eq" >=</span>'+
@@ -187,7 +293,10 @@
             '<input id="min-unit" type="text" class="form-control text-center" readonly value="'+$('#unit-'+arg).val()+'">'+
           '</div>'+
           '<div class="col-1 text-center nopd">'+
-            '<button class="btn btn-danger"><i class="fa fa-trash"></i></button>'+
+            '<button id="btn-add-'+arg+'-'+arr_index[arg].sub+'" class="btn btn-sm btn-success" onclick="save('+arg+','+arr_index[arg].sub+')">'+
+              '<i class="fa fa-plus"></i>'+
+            '</button>'+
+            '<button id="btn-del-'+arg+'-'+arr_index[arg].sub+'" class="btn btn-sm btn-danger" onclick="del_sub('+arg+','+arr_index[arg].sub+')" hidden><i class="fa fa-trash"></i></button>'+
           '</div>'+
         '</div>';
         $("#muti-"+arg).append(text_html);
@@ -203,8 +312,10 @@
         data: {}
         },
         preparePostData: function(data) {    
-            $('#span-id-'+arg+'-'+arr_index[arg].sub).text(0);                             
-            data.phrase = $("#name-"+arg+'-'+arr_index[arg].sub).val();                       
+            $('#span-id-'+arg+'-'+arr_index[arg].sub).text(0);
+            console.log(arg);                             
+            data.phrase = $("#name-"+arg+'-'+arr_index[arg].sub).val(); 
+            console.log(data.phrase);                      
             return data;            
         },
         minCharNumber: 3,
@@ -233,6 +344,146 @@
     
         $("#name-"+arg+'-'+arr_index[arg].sub).easyAutocomplete(options);
       }
+
+      function save(arg,arg2){
+        if($('#span-id-'+arg+'-'+arg2).text() == 0 || $('#name-'+arg+'-'+arg2).val() == "" ||  $('#times-'+arg+'-'+arg2).val() == ""){
+          return 0;
+        }
+        $.ajax({
+          type: "POST",
+          url: "http://150.95.26.163:8080/gitmew/php/add_quantity.php",
+          data: {'prod_id': $('#span-id-'+arg).text(),
+          'prod_id_sub': $('#span-id-'+arg+'-'+arg2).text(),
+          'quantity': $('#times-'+arg+'-'+arg2).val()},
+          success: function(data){
+              if(data == 'success'){
+                $('#name-'+arg+'-'+arg2).prop('readonly',true);
+                $('#times-'+arg+'-'+arg2).prop('readonly',true);
+                $('#btn-del-'+arg+'-'+arg2).prop('hidden',false);
+                $('#btn-add-'+arg+'-'+arg2).prop('hidden',true);
+              }else{
+                  $.alert({
+                      icon: 'fa fa-warning',
+                      title: 'พบปัญหา',
+                      content: 'กรุณาลองอีกครั้ง',
+                  });
+              }
+          }
+        });      
+      }
+
+      function del_multi(arg){
+        $.ajax({
+          type: "POST",
+          url: "http://150.95.26.163:8080/gitmew/php/delete_quantity.php",
+          data: {'prod_id': $('#span-id-'+arg).text()},
+          success: function(data){
+              if(data == 'success'){
+                if(!$('#name-'+index_main).is('[readonly]')){
+                  $("#muti-"+index_main).remove();
+                  $("#hr-"+index_main).remove();
+                  arr_index.splice(index_main,1);
+                  index_main--;
+                }      
+                if($('#name-'+arg).is('[readonly]')){
+                  $("#muti-"+arg).remove();
+                  $("#hr-"+arg).remove();
+                
+                  for(i = arg+1; i <= index_main; i++){
+                    if(!$('#name-'+i+'-'+arr_index[i].sub).is('[readonly]') && $('#name-'+i+'-'+arr_index[i].sub).is(':visible')){
+                      console.log(i);
+                      del_sub2(i,arr_index[i].sub);
+                    } 
+                    console.log(i);
+                    $("#muti-"+i).prop('id', "muti-"+(i-1));   
+                    $("#main-"+i).prop('id', "main-"+(i-1));          
+                    $("#at-"+i).text(i-1);
+                    $("#at-"+i).prop('id', "at-"+(i-1));
+                    $("#span-id-"+i).prop('id', "span-id-"+(i-1));
+                    $("#no-"+i).prop('id', "no-"+(i-1));
+                    $("#name-"+i).prop('id', "name-"+(i-1));
+                    $("#unit-"+i).prop('id', "unit-"+(i-1));    
+                    $("#hr-"+i).prop('id', "hr-"+(i-1));                  
+
+                    $("#btn-add-"+i).attr('onclick', "add_sub("+(i - 1)+")");
+                    $("#btn-del-"+i).attr('onclick', "del_multi("+(i - 1)+")");
+
+                    $("#btn-add-"+i).prop('id', "btn-add-"+(i-1));
+                    $("#btn-del-"+i).prop('id', "btn-del-"+(i-1)); 
+                        
+                    
+                    for(j = 1; j <= arr_index[i].sub; j++){
+                      console.log(i);
+                      $("#sub-"+i+'-'+j).prop('id', "sub-"+(i-1)+'-'+j);         
+                      $("#at-"+i+'-'+j).text((i-1)+'.'+j);
+                      $("#at-"+i+'-'+j).prop('id', "at-"+(i-1)+'-'+j);
+                      $("#span-id-"+i+'-'+j).prop('id', "span-id-"+(i-1)+'-'+j);
+                      $("#no-"+i+'-'+j).prop('id', "no-"+(i-1)+'-'+j);
+                      $("#name-"+i+'-'+j).prop('id', "name-"+(i-1)+'-'+j);
+                      $("#unit-"+i+'-'+j).prop('id', "unit-"+(i-1)+'-'+j);
+                      $("#times-"+i+'-'+j).prop('id', "times-"+(i-1)+'-'+j);        
+
+                      $("#btn-add-"+i+'-'+j).attr('onclick', "save("+(i - 1)+","+j+")");
+                      $("#btn-del-"+i+'-'+j).attr('onclick', "del_sub("+(i - 1)+","+j+")");
+
+                      $("#btn-add-"+i+'-'+j).prop('id', "btn-add-"+(i-1)+'-'+j);
+                      $("#btn-del-"+i+'-'+j).prop('id', "btn-del-"+(i-1)+'-'+j); 
+                    }
+                  }
+                  arr_index.splice(arg,1);
+                  index_main--;
+                }        
+              }else{
+                  $.alert({
+                      icon: 'fa fa-warning',
+                      title: 'พบปัญหา',
+                      content: 'กรุณาลองอีกครั้ง',
+                  });
+              }
+          }
+        });        
+      }
+
+      function del_sub(arg,arg2){
+        $.ajax({
+          type: "POST",
+          url: "http://150.95.26.163:8080/gitmew/php/delete_quantity.php",
+          data: {'prod_id_sub': $('#span-id-'+arg+'-'+arg2).text()},
+          success: function(data){
+              if(data == 'success'){
+                del_sub2(arg,arg2);
+              }else{
+                  $.alert({
+                      icon: 'fa fa-warning',
+                      title: 'พบปัญหา',
+                      content: 'กรุณาลองอีกครั้ง',
+                  });
+              }
+          }
+        });  
+      }
+
+      function del_sub2(arg,arg2){
+        $("#sub-"+arg+'-'+arg2).remove();
+        for(k = arg2+1; k <= arr_index[arg].sub; k++){
+          $("#sub-"+arg+'-'+k).prop('id', "sub-"+arg+'-'+(k-1));         
+          $("#at-"+arg+'-'+k).text(arg+'.'+(k-1));
+          $("#at-"+arg+'-'+k).prop('id', "at-"+arg+'-'+(k-1));
+          $("#span-id-"+arg+'-'+k).prop('id', "span-id-"+arg+'-'+(k-1));
+          $("#no-"+arg+'-'+k).prop('id', "no-"+arg+'-'+(k-1));
+          $("#name-"+arg+'-'+k).prop('id', "name-"+arg+'-'+(k-1));
+          $("#unit-"+arg+'-'+k).prop('id', "unit-"+arg+'-'+(k-1));
+          $("#times-"+arg+'-'+k).prop('id', "times-"+arg+'-'+(k-1));        
+
+          $("#btn-add-"+arg+'-'+k).attr('onclick', "save("+arg+","+(k - 1)+")");
+          $("#btn-del-"+arg+'-'+k).attr('onclick', "del_sub("+arg+","+(k - 1)+")");
+
+          $("#btn-add-"+arg+'-'+k).prop('id', "btn-add-"+arg+'-'+(k-1));
+          $("#btn-del-"+arg+'-'+k).prop('id', "btn-del-"+arg+'-'+(k-1)); 
+        }
+        arr_index[arg].sub--;
+      }
+
     </script>
 </head>
 
@@ -245,11 +496,12 @@
             <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
             <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
             <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
-            <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
-            <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-            <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
-            <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
-            <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>                 
+            <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>
+            <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li>
+            <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>
+            <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>
+            <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
+            <li><a href="http://150.95.26.163:8080/gitmew/multi_unit.html">๐ สินค้าหลายหน่วย</a></li>
             <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
         </ul>
     </div>
@@ -292,5 +544,20 @@
       </div>
     </div>
   </div> <!-- End Wrapper -->
+
+  <!-- Menu Toggle -->
+  <script>
+      // Menu Toggle
+      $("#menu-toggle").click(function (e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+
+          if ($("#menu-toggle").text() == "รายการ") {
+              $("#menu-toggle").text("กลับ");
+          } else if ($("#menu-toggle").text() == "กลับ") {
+              $("#menu-toggle").text("รายการ");
+          }
+      });
+  </script>
 </body>
 </html>
