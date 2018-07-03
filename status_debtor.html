@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+    <!-- Date Picker -->
+    <link href="css/datepicker.css" rel="stylesheet">
+    <script src="js/datepicker.js"></script>
+    <script src="js/datepicker.th-TH.js"></script>
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <!-- Easy-autocomplete -->
+    <script src="js/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+    <link rel="stylesheet" href="css/easy-loading.css">
+    <script src="js/easy-loading.js"></script>
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet">
+    <style>
+        .list-group-item {
+            padding: 6px 20px;
+            margin-bottom: 6px;
+        }
+
+        .no-pd{
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .li-branch, #transfer-pay, #debtor-pay{
+            cursor: pointer;
+        }
+        
+        .light_trans{
+            border: solid 1px #428bca; 
+            border-radius: 3px; 
+            background: #428bca; 
+            margin-right: 3%;
+        }
+
+        .light_debt{
+            border: solid 1px #ffc71f; 
+            border-radius: 3px; 
+            background: #ffc71f
+        }
+
+        .dim{
+            background: #a9a9a9 !important;
+            border-color: #a9a9a9 !important;
+        }
+        .li-warning{
+            background: #ff7f7f;
+            border-color: #ff7f7f;
+        }
+
+        .li-success{
+            background: #7fbf7f;
+            border-color: #7fbf7f;
+        }
+    </style>
+
+    <script>
+        var max_page_no = 0;
+        var dt = "";
+        var role;
+        $(document).ready(function () {  
+            /*if(!localStorage.user_id){
+                $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "กรุณาเข้าสู่ระบบก่อน"
+                });
+                window.location = "login.html";
+            }*/  
+
+            if(localStorage.role == "user"){
+                $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: 'ไม่อนุญาติสำหรับบุคคลทั่วไป',
+                });
+                window.history.back();
+            } 
+            $("#search-billno").focus();
+            $(document).keydown(function(objEvent) {               
+                if (objEvent.keyCode == 13) {  //enter pressed
+                    objEvent.preventDefault();           
+                    if($("#search-billno").is(":focus") || $("#search-name").is(":focus") || $("#search-user").is(":focus") ){
+                        search();
+                    }      
+                }
+                if (objEvent.keyCode == 113) {  //f2 pressed
+                    search();
+                }
+                if (objEvent.keyCode == 115) {  //f4 pressed
+                    shift();
+                }              
+            })         
+
+            $.ajax({
+                url:"http://150.95.26.163:8080/gitmew/php/get_branch.php",
+                type:"GET",
+                success:function(data)
+                {
+                    var obj = jQuery.parseJSON(data);
+                    $('#ul-branch').append("<li id='li-branch-0' class='li-branch' onclick='setbranch(0);' style='padding-bottom: 5px;'>ทั้งหมด</li>");
+                    $.each(obj, function(i, field){                        
+                        $('#ul-branch').append("<li id='li-branch-"+field.branch_id+"' class='li-branch' onclick='setbranch("+field.branch_id+");' style='padding-bottom: 5px;'>"+field.branch_name+"</li>");
+                    });
+                    $('#branch').text("ทั้งหมด");
+                }
+            });             
+            // datepicker
+            $('[data-toggle="datepicker"]').datepicker({
+                language: 'th-TH',
+                format: 'yyyy-mm-dd',
+                autoHide: true
+            }).change(function (event) {
+                var date = $('#dpicker').val();
+                var split = date.split("-");// yyyy[0] mm[1] dd[2] 
+                var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+                var d = new Date(split[0], split[1] - 1, split[2]);
+                var first = days[d.getDay()];
+                $('#dpicker').val(first + " " + date);
+                dt = split[0] + "-" + split[1] + "-" + split[2];         
+            });
+
+            // Get max
+            var path = "http://150.95.26.163:8080/gitmew/php/get_max_order.php";
+            $.post(path, {
+                'start': 0,
+                "sort_by": sort_by,
+                "order": order,
+            }, function (data) {
+                url = new URL(window.location.href);
+                sl = url.searchParams.get("sl");
+                max_page_no = Math.ceil(data / 100);
+                if (sl == 1) {
+                    // Go last page
+                    pagination('last');
+                } else {
+                    // Get First 100
+                    $.ajax({
+                        type: "POST",
+                        url: "http://150.95.26.163:8080/gitmew/php/get_allorder.php",
+                        data: {
+                            'start': 0,
+                            'sort_by': sort_by,
+                            'order': order
+                        },
+                        cache: false,
+                        crossDomain: true,
+                        beforeSend: function(){
+                          EasyLoading.show({                           
+                            text: "กำลังโหลด"                            
+                          });
+                        },
+                        success: function (response) {
+                            EasyLoading.hide();
+                            var obj = jQuery.parseJSON(response);
+                            $.each(obj, function (i, field) {
+
+                            text_html = "<li id='item-"+i+"' class='list-group-item text-center rounded'>"+
+                                    "<span id='span-" + i + "' hidden>" + field.order_id + "</span>"+
+                                    "<div class='row' style='margin-left: 10px;'>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<div class='input-group-prepend'>" +
+                                    "<span class='input-group-text' style='margin-right: 16px;'>" + (i + 1) + "</span>"+
+                                    "<input id=bill_no-"+i+"'' type='text' class='form-control text-center' value='"+field.order_number+"' disabled>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='cus-"+i+"' type='text' class='form-control text-center' value='"+field.customer_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='user-"+i+"' type='text' class='form-control text-center' value='"+field.user_name+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='branch-"+i+"' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
+                                    "<span id='span-branch-" + i + "' hidden></span>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1,"+i+");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
+                                        "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2,"+i+");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
+                                        "<li id='li-branch-3' class='li-branch' onclick='setbranchinput(3,"+i+");' style='padding-bottom: 5px;'>อ่างทอง</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='pay-"+i+"' type='text' class='form-control text-center' value='"+field.payment_type+"' data-toggle='dropdown' disabled>"+
+                                    "<ul class='dropdown-menu drop-up text-center'>" +
+                                        "<li id='li-pay-1' class='li-branch' onclick='setpayinput(1,"+i+");' style='padding-bottom: 5px;'>เงินสด</li>" +
+                                        "<li id='li-pay-2' class='li-branch' onclick='setpayinput(2,"+i+");' style='padding-bottom: 5px;'>เงินโอน</li>" +
+                                        "<li id='li-pay-3' class='li-branch' onclick='setpayinput(3,"+i+");' style='padding-bottom: 5px;'>ลูกหนี้</li>" +
+                                    "</ul>" +
+                                    "</div>"+
+                                    "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
+                                    "<input id='total-"+i+"' type='text' class='form-control text-center' value='"+field.total_price+"' disabled>"+
+                                    "</div>"+
+                                    "<div class='col-2 text-right no-pd'>"+
+                                    "<div class='input-group-prepend no-pd'>"+
+                                    "<input id='date-"+i+"' type='text' class='form-control text-center' value='"+field.date_time+"' disabled style='margin-right: 5px;'>"+
+                                    "</div>"+
+                                    "</div>"+
+                                    "<div class='col-1 text-center' style='margin-top: 3px;'>"+
+                                    "<button id='btn-edit-"+i+"' class='btn btn-sm btn-primary' onclick='open_edit(" + i +")' style='margin-right: 5px'>"+
+                                        "<i id='i-edit-"+i+"' class='fa fa-edit'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-info-"+i+"' class='btn btn-sm btn-info' onclick='bill_detail("+i+","+cash+")'>"+
+                                        "<i id='i-info-"+i+"' class='fa fa-info-circle'></i>"+
+                                    "</button>"+
+                                    "<button id='btn-del-" + i + "' class='btn btn-sm btn-danger' onclick='del_row(" + i + ")' hidden>" +
+                                        "<i id='i-del-" + i + "' class='fa fa-minus'></i>" +
+                                        "</button>" +
+                                    "</div>"+
+                                "</div>"+
+                            "</li>";
+                            $(".list-group").append(text_html);
+                            });
+                        }
+                    });
+                }
+            });            
+        });
+
+        window.addEventListener('popstate', function(event) { /* เมื่อ event popstate ทำงาน จะสั่งให้ทำอะไร? */
+            var state = event.state; /* ดึง data ของ history entry นั้นๆ */
+            if (state !== null) { /* ถ้า history entry นี้ มี data... */
+                if(state.title == "search"){
+                    $("#search-name").val(state.name);
+                    $("#search-user").val(state.user);
+                    $("#search-billno").val(state.bill);          
+                    $("#dpicker").val(state.dt);
+                    dt = state.dt;
+                    setbranch(state.b_id);
+                    setpay(state.pay);
+                    search();
+                }else if(state.title == "shift"){
+                    shift();
+                }
+            }
+        });
+
+        function open_edit(arg) {
+            if(localStorage.role == "manager"){
+                $.alert({
+                    icon: 'fa fa-warning',
+                    title: 'เตือน',
+                    content: 'อนุญาติสำหรับแอดมินเท่านั้น',
+                });
+                return 0;
+            }
+            $("#btn-info-" + arg).prop('hidden', true);      
+            $("#branch-" + arg).prop('disabled', false);
+            $("#pay-" + arg).prop('disabled', false);
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-success');
+            $("#btn-edit-" + arg).attr('onclick', "save_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-check-square');
+            $("#btn-del-" + arg).prop('hidden', false);
+        }
+
+        function del_row(arg) {
+            $.confirm({
+                icon: 'fa fa-warning',
+                title: 'แน่ใจหรือว่าต้องการลบ!',
+                content: 'ต้องการลบรายการสินค้าออกจากฐานข้อมูล!',
+                buttons: {
+                    danger: {
+                        btnClass: 'btn-danger',
+                        text: 'ลบ', // With spaces and symbols,
+                        action: function () {
+                            var order_id = $("#span-" + arg).html();                           
+                            $.ajax({
+                                url: "http://150.95.26.163:8080/gitmew/php/delete_order.php",
+                                type: "POST",
+                                data: {
+                                    'order_id': order_id
+                                },
+                                success: function (data) {
+                                    if (data == "success") {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'รายการสินค้าได้ถูกลบแล้ว',
+                                        });
+                                        $("#item-" + arg).remove();
+                                    } else {
+                                        $.alert({
+                                            icon: 'fa fa-warning',
+                                            title: 'เตือน',
+                                            content: 'โปรดลองอีกครั้ง',
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    ยกเลิก: function () { },
+                }
+            });
+        }
+
+        function save_edit(arg) {
+            $("#btn-info-"+arg).prop('hidden', false);
+            $("#btn-edit-" + arg).attr('class', 'btn btn-sm btn-primary');
+            $("#btn-edit-" + arg).attr('onclick', "open_edit(" + arg + ")");
+            $("#i-edit-" + arg).attr('class', 'fa fa-edit');
+            $("#btn-del-" + arg).prop('hidden', true);
+
+            $("#branch-" + arg).prop('disabled', true);
+            $("#pay-" + arg).prop('disabled', true);
+
+            //Ajax save prod.. ..
+            var branch_id = $("#span-branch-" + arg).html();
+            var pay = $("#pay-" + arg).val();
+            var order_id = $("#span-" + arg).html();                    
+
+            $.ajax({
+                url: "http://150.95.26.163:8080/gitmew/php/update_order.php",
+                type: "POST",
+                data: {
+                    'order_id': order_id,
+                    'branch_id': branch_id,
+                    'pay': pay                        
+                },
+                success: function (data) { 
+                    if(data == "fail"){
+                        $.alert({
+                            icon: 'fa fa-warning',
+                            title: 'พบปัญหา',
+                            content: 'กรุณาลองอีกครั้ง',
+                        });
+                    }               
+                }
+            });
+        }
+
+        var searched_name = "";
+        var searched_user = "";
+        var searched_billno = "";      
+        var searched_pay = "";       
+        function search() {            
+            $("#search-billno").focus();
+            searched_name = $("#search-name").val();
+            searched_user = $("#search-user").val();
+            searched_billno = $("#search-billno").val();          
+            searched_pay = $("#pay").html(); 
+            var data = {title:'search',
+                        name: searched_name,
+                        user: searched_user,
+                        bill: searched_billno,
+                        pay: searched_pay,
+                        b_id: b_id,
+                        dt: dt};
+            if(searched_pay == "ทั้งหมด"){
+                searched_pay = "";
+            }             
+            history.pushState(data, "search", "");
+            
+            $('#btn-search').prop('disabled', true);
+
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('search');
+        }
+
+        var is_sort = {
+            order_number: '0',
+            date_time: '0',
+            customer_id: '0'
+        };
+        var sort_by = "none",
+            order = "none";
+
+        function click_sort(arg) {
+            // clear other clicked_sort
+            for (var i = 0; i < 3; i++) {
+                //check
+                key = Object.keys(is_sort)[i];
+                if (key == arg) {
+                    is_sort.key = 1;
+                } else {
+                    $("#i-" + key).prop('hidden', true);
+                    $("#i-" + key).attr('class', 'fa fa-sort-down');
+                    $("#i-" + key).css('vertical-align', 'top');
+
+                    order = "none";
+                    sort_by = "none";
+                }
+            }
+
+            if ($("#i-" + arg).is(':hidden')) {
+                $("#i-" + arg).prop('hidden', false);
+                sort_by = arg;
+                order = "asc";
+            } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-down')) {
+                $("#i-" + arg).attr('class', 'fa fa-sort-up');
+                $("#i-" + arg).css('vertical-align', 'middle');
+                sort_by = arg;
+                order = "desc";
+            } else if ($("#i-" + arg).is(':visible') && $("#i-" + arg).hasClass('fa-sort-up')) {
+                $("#i-" + arg).prop('hidden', true);
+                $("#i-" + arg).attr('class', 'fa fa-sort-down');
+                $("#i-" + arg).css('vertical-align', 'top');
+                order = "none";
+                sort_by = "none";
+            }
+          
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('sort');
+        }
+
+        var page = 1;
+        var cash = ""; 
+
+        function logout() {
+            localStorage.user_id = "";
+            window.location = "login.html";
+        }
+
+        var b_id = "";
+        function setbranch(arg){
+            if(arg == 0){
+                b_id = "";
+            }else{
+                b_id = arg;
+            }            
+            var b = $('#li-branch-'+arg).text()
+            $("#branch").text(b);
+        }
+
+        function setpay(arg){
+            $("#pay").text(arg);
+        }
+
+        function setpayinput(id,arg){
+            $("#pay-"+arg).val($("#li-pay-"+id).html());
+        }
+
+        function setbranchinput(id,arg){
+            $("#branch-"+arg).val($("#li-branch-"+id).html());
+            $('#span-branch-'+arg).text(id);
+        }
+
+        function bill_detail(arg,sft){
+            var order_id = $('#span-'+arg).html();
+            if(sft == 1){
+                window.open("shift_bill.html?order="+order_id, '_blank');               
+            }else{
+                window.open("bill_info.html?order="+order_id, '_blank');              
+            }   
+            
+        }
+
+        function shift(){
+            // load รายการขายภายในกะ
+            // info-btn กดแล้วไปที่หน้า shift_bill?bill=1 (1-> bill_id)
+            var data = {title:'shift'};
+            history.pushState(data, "shift", "");
+            $("#search-billno").focus();
+            $('#btn-shift').prop('disabled', true);
+
+            $(".list-group-item").remove();
+            max_page = page = prev_page = 1;
+            pagination('shift');          
+        }       
+    </script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+                <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>                    
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+        <!-- End sidebar -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #ea7e93;">
+                <div class="clearfix">
+                    <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+                </div>
+                <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                    <h3 id="nav-title">สถานะลูกหนี้</h3>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <!--<div class="container-fullwidth justify-content-center">
+                <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-3"></div>
+                    <div id="transfer-pay" class="col-3 light_trans">
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-12 text-center">
+                                <h3 style="color: white;">เงินโอน</h3>
+                            </div>
+                        </div><hr style="margin-top: 0; background: #ffffff;">
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-12 text-center">
+                                <h1 style="color: white; font-size: 400%;">12</h1>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-12 text-right">
+                                <h5 style="color: white;">
+                                    <i class="fas fa-angle-right"></i>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="debtor-pay" class="col-3 light_debt">
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-12 text-center">
+                                <h3 style="color: #666;">ลูกหนี้</h3>
+                            </div>
+                        </div><hr style="margin-top: 0; background: #666;">
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-12 text-center">
+                                <h1 style="color: #666; font-size: 400%;">12</h1>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-12 text-right">
+                                <h5 style="color: #666;">
+                                    <i class="fas fa-angle-right"></i>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3"></div>
+                </div></div>
+            <hr style="width: 90%;">-->
+            <!-- Header -->
+            <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px; margin-left: 2%; margin-right: 2%;">
+                <div class="row">
+                    <div class="col-2 no-pd text-right">
+                        <a href="#" style="color: black;" onclick="click_sort('order_number')">เลขที่รายการ
+                            <i id="i-order_number" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-2 text-center" style="padding-left: 9%;">
+                        <a href="#" style="color: black;" onclick="click_sort('customer_id')">ลูกค้า
+                            <i id="i-customer_id" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>
+                    <div class="col-1 text-center" style="margin-left: 4%;">
+                        ผู้บันทึก
+                    </div>
+                    <div class="col-1 text-center" style="margin-left: 1%;">สาขา</div>
+                    <div class="col-1 text-center" style="margin-left: 1%;">การชำระ</div>
+                    <div class="col-1 text-center no-pd" style="margin-left: 2px;">สุทธิ</div> 
+                    <div class="col-2 text-center">
+                        <a href="#" style="color: black;" onclick="click_sort('date_time')">วันที่
+                            <i id="i-date_time" class="fa fa-sort-down" style="vertical-align: top; margin-left:2px;" hidden></i>
+                        </a>
+                    </div>  
+                    <div class="col-1"></div>               
+                </div>
+                <br>
+
+                <ul class="list-group">
+                    <!--Append text html -->
+                   <li id="item-0" class="list-group-item text-center rounded li-warning"><span id="span-0" hidden="">1</span><div class="row" style="margin-left: 10px;"><div class="col-2 text-center no-pd" style="margin-right: 16px;"><div class="input-group-prepend"><span class="input-group-text" style="margin-right: 16px;">1</span><input id="bill_no-0''" type="text" class="form-control text-center" value="TST-010101" disabled=""></div></div><div class="col-2 text-center no-pd" style="margin-right: 16px;"><input id="cus-0" type="text" class="form-control text-center" value="Fenix" disabled=""></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="user-0" type="text" class="form-control text-center" value="admin" disabled=""></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="branch-0" type="text" class="form-control text-center" value="คลังสินค้า" data-toggle="dropdown" disabled=""><span id="span-branch-0" hidden=""></span><ul class="dropdown-menu drop-up text-center"><li id="li-branch-1" class="li-branch" onclick="setbranchinput(1,0);" style="padding-bottom: 5px;">สิงห์บุรี</li><li id="li-branch-2" class="li-branch" onclick="setbranchinput(2,0);" style="padding-bottom: 5px;">คลังสินค้า</li><li id="li-branch-3" class="li-branch" onclick="setbranchinput(3,0);" style="padding-bottom: 5px;">อ่างทอง</li></ul></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="pay-0" type="text" class="form-control text-center" value="เงินโอน" data-toggle="dropdown" disabled=""></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="total-0" type="text" class="form-control text-center" value="22" disabled=""></div><div class="col-2 text-right no-pd"><div class="input-group-prepend no-pd"><input id="date-0" type="text" class="form-control text-center" value="2018-03-31 22:19:45" disabled="" style="margin-right: 5px;"></div></div><div class="col-1 text-center" style="margin-top: 3px;"><button id="btn-edit-0" class="btn btn-sm btn-primary" onclick="open_edit(0)" style="margin-right: 5px"><i id="i-edit-0" class="fa fa-edit"></i></button><button id="btn-info-0" class="btn btn-sm btn-info" onclick="bill_detail(0,)"><i id="i-info-0" class="fa fa-info-circle"></i></button><button id="btn-del-0" class="btn btn-sm btn-danger" onclick="del_row(0)" hidden=""><i id="i-del-0" class="fa fa-minus"></i></button></div></div></li>
+                   <li id="item-0" class="list-group-item text-center rounded li-success"><span id="span-0" hidden="">1</span><div class="row" style="margin-left: 10px;"><div class="col-2 text-center no-pd" style="margin-right: 16px;"><div class="input-group-prepend"><span class="input-group-text" style="margin-right: 16px;">1</span><input id="bill_no-0''" type="text" class="form-control text-center" value="TST-010101" disabled=""></div></div><div class="col-2 text-center no-pd" style="margin-right: 16px;"><input id="cus-0" type="text" class="form-control text-center" value="Fenix" disabled=""></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="user-0" type="text" class="form-control text-center" value="admin" disabled=""></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="branch-0" type="text" class="form-control text-center" value="คลังสินค้า" data-toggle="dropdown" disabled=""><span id="span-branch-0" hidden=""></span><ul class="dropdown-menu drop-up text-center"><li id="li-branch-1" class="li-branch" onclick="setbranchinput(1,0);" style="padding-bottom: 5px;">สิงห์บุรี</li><li id="li-branch-2" class="li-branch" onclick="setbranchinput(2,0);" style="padding-bottom: 5px;">คลังสินค้า</li><li id="li-branch-3" class="li-branch" onclick="setbranchinput(3,0);" style="padding-bottom: 5px;">อ่างทอง</li></ul></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="pay-0" type="text" class="form-control text-center" value="เงินโอน" data-toggle="dropdown" disabled=""></div><div class="col-1 text-center no-pd" style="margin-right: 16px;"><input id="total-0" type="text" class="form-control text-center" value="22" disabled=""></div><div class="col-2 text-right no-pd"><div class="input-group-prepend no-pd"><input id="date-0" type="text" class="form-control text-center" value="2018-03-31 22:19:45" disabled="" style="margin-right: 5px;"></div></div><div class="col-1 text-center" style="margin-top: 3px;"><button id="btn-edit-0" class="btn btn-sm btn-primary" onclick="open_edit(0)" style="margin-right: 5px"><i id="i-edit-0" class="fa fa-edit"></i></button><button id="btn-info-0" class="btn btn-sm btn-info" onclick="bill_detail(0,)"><i id="i-info-0" class="fa fa-info-circle"></i></button><button id="btn-del-0" class="btn btn-sm btn-danger" onclick="del_row(0)" hidden=""><i id="i-del-0" class="fa fa-minus"></i></button></div></div></li>
+                </ul>
+                <br>
+            </div>
+        </div>
+        <!-- End page content wrapper -->
+    </div>
+    <!-- End Wrapper -->
+
+    <!-- Menu Toggle -->
+    <script>
+        // Menu Toggle
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+
+            if ($("#menu-toggle").text() == "รายการ") {
+                $("#menu-toggle").text("กลับ");
+            } else if ($("#menu-toggle").text() == "กลับ") {
+                $("#menu-toggle").text("รายการ");
+            }
+        });
+
+        $("#transfer-pay").hover(function() {
+            $("#transfer-pay").css('background', '#3b7db5');
+            $("#transfer-pay").css('border-color', '#3b7db5');
+        }, function() {
+            $("#transfer-pay").css('background', '#428bca');
+            $("#transfer-pay").css('border-color', '#428bca');
+        });
+
+        $("#debtor-pay").hover(function() {
+            $("#debtor-pay").css('background', '#ffd24b');
+            $("#debtor-pay").css('border-color', '#ffd24b');
+        }, function() {
+            $("#debtor-pay").css('background', '#ffc71f');
+            $("#debtor-pay").css('border-color', '#ffc71f');
+        });
+
+        $("#transfer-pay").click(function() {
+            $("#debtor-pay").addClass('dim');
+            $("#transfer-pay").removeClass('dim');
+        });
+        $("#debtor-pay").click(function() {
+             $("#transfer-pay").addClass('dim');
+            $("#debtor-pay").removeClass('dim');
+        });       
+    </script>
+</body>
+
+</html>
