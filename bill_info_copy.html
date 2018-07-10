@@ -66,7 +66,13 @@
             background: #fdfcfb; 
             width: 48%; 
             display: inline-block;
+            padding-top: 3%;
+            padding-bottom: 0;
         }
+        .fa-chevron-left, .fa-chevron-right{
+            cursor: pointer;
+        }
+
     </style>
 
     <script>
@@ -209,7 +215,7 @@
                         if(field.datetime){
                             if(obj[i][5] != null){                                
                                 for(var j=0 ; j < obj[i][5].length;j++){
-                                    txt += '<div class="row"><div class="col-7"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right" style="color: red;"><p>'+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>';
+                                    txt += '<div class="row"><div class="col-5"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right" style="color: red;"><p>จาก x ชิ้น</p></div><div class="col-2 text-right" style="color: red;"><p>เป็น '+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>';
                                 }
                             }      
                             if(obj[i][4].type == "edit"){
@@ -602,6 +608,25 @@
                 }
             });
         }
+
+        function nav_bill(arg){
+            
+            if(0){
+                //if last or end??
+                //
+            }else{
+                $("#bill_left").fadeOut(200).fadeIn(200);
+                $("#bill_right").fadeOut(200).fadeIn(200);
+
+                if(arg == "left"){
+                    // if not last then copy right to left and fill new bill info to right
+                    //if last do nothing
+                }else if(arg == "right"){
+                    // if not last then copy left to right and fill new bill info to left
+                    //if last do nothing
+                }
+            }
+        }
     </script>
 </head>
 
@@ -618,8 +643,7 @@
                 <li><a href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
                 <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>  
                 <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
-                <li><a href="http://150.95.26.163:8080/gitmew/multi_unit.html">๐ สินค้าหลายหน่วย</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>                   
                 <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
             </ul>
         </div>
@@ -639,38 +663,77 @@
             <!-- End Navbar -->
 
             <div id="ctn-show" class="container justify-content-center" style="display: flex; align-items: center;">
-                <div class="jumbotron text-center" style="margin-right: 2%">
-                   
+                <div>
+                    <i class="fas fa-chevron-left" onclick="nav_bill('left')"></i>
+                </div>
+                <div id="bill_left" class="jumbotron text-center" style="margin-left: 2%; margin-right: 2%;">
                     <div class="row">
-                        <div class="col-7 text-right">
+                        <div class="col-8 text-right">
                             <h5>PPS AUTO GROUP</h5>
                         </div>
-                        <div class="col-4 text-left no-pd">
-                            <h5 id="branch"></h5>
+                        <div class="col-3 text-left no-pd">
+                            <h5 id="branch">สาขา</h5>
                         </div>
                     </div>
                     <h5 id="number" style="margin-top: 15px;"></h5>
                     <h5 id='date' style="letter-spacing: 2px;"></h5>
                     <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-1"></div>
-                        <div class="col-2 text-left">
-                            <h5>ลูกค้า : </h5>
+                        <div class="col-2 text-center">
+                            <h5>ลูกค้า</h5>
                         </div>
                         <div class="col-4 text-left no-pd">
-                            <h5 id='cus'></h5>
+                            <h5 id='cus'>ชื่อลูกค้าบลาๆๆ</h5>
                         </div>
-                        <div class="col-2 text-right">
-                            <h5>ผู้บันทึก : </h5>
+                        <div class="col-3 text-right">
+                            <h5>ผู้บันทึก</h5>
                         </div>
-                        <div class="col-2 text-left no-pd">
-                            <h5 id='user'></h5>
+                        <div class="col-3 text-left no-pd">
+                            <h5 id='user'>ชายสองสาม</h5>
                         </div>            
 
                     </div> 
                     <hr style="width: 80%">                   
                     
                     <div id="show_prod">                       
-                      
+                      <div class='row' style='margin-bottom: 5px;'>
+                      <span id='span-id-" + i + "' hidden>1</span>                           
+                      <div class='col-1' onclick='select_prod(1);'>
+                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
+                      </div>
+                      <div class='col-6 text-left' style='padding-right: 0px;'>
+                          <h5 id='prod-1'>ชื่อสินค้า</h5>
+                      </div>
+                      <div class='col-4 text-right'>
+                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
+                      </div>
+                      <div class='col-1'></div>
+                      </div>
+                      <div class='row' style='margin-bottom: 5px;'>
+                      <span id='span-id-" + i + "' hidden>1</span>                           
+                      <div class='col-1' onclick='select_prod(1);'>
+                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
+                      </div>
+                      <div class='col-6 text-left' style='padding-right: 0px;'>
+                          <h5 id='prod-1'>ชื่อสินค้า</h5>
+                      </div>
+                      <div class='col-4 text-right'>
+                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
+                      </div>
+                      <div class='col-1'></div>
+                      </div>
+                      <div class='row' style='margin-bottom: 5px;'>
+                      <span id='span-id-" + i + "' hidden>1</span>                           
+                      <div class='col-1' onclick='select_prod(1);'>
+                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
+                      </div>
+                      <div class='col-6 text-left' style='padding-right: 0px;'>
+                          <h5 id='prod-1'>ชื่อสินค้า</h5>
+                      </div>
+                      <div class='col-4 text-right'>
+                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
+                      </div>
+                      <div class='col-1'></div>
+                      </div>
                     </div>                 
                     <hr style="width: 80%">
                               
@@ -720,7 +783,7 @@
                         </div>
                     </div>
                    
-                    <div class="row">
+                    <!--<div class="row">
                         <div class="col-12 text-center">
                             <button class="btn btn-lg btn-primary" style="width: 20%;" onclick="edit();">
                                 แก้ไข <i class="fa fa-edit"></i>
@@ -753,40 +816,76 @@
                             </span>
                             </button>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
-                <div class="jumbotron text-center">
-                   
+                <div id="bill_right" class="jumbotron text-center" style="margin-right: 2%;">
                     <div class="row">
-                        <div class="col-7 text-right">
+                        <div class="col-8 text-right">
                             <h5>PPS AUTO GROUP</h5>
                         </div>
-                        <div class="col-4 text-left no-pd">
-                            <h5 id="branch"></h5>
+                        <div class="col-3 text-left no-pd">
+                            <h5 id="branch">สาขา</h5>
                         </div>
                     </div>
                     <h5 id="number" style="margin-top: 15px;"></h5>
                     <h5 id='date' style="letter-spacing: 2px;"></h5>
                     <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-1"></div>
-                        <div class="col-2 text-left">
-                            <h5>ลูกค้า : </h5>
+                        <div class="col-2 text-center">
+                            <h5>ลูกค้า</h5>
                         </div>
                         <div class="col-4 text-left no-pd">
-                            <h5 id='cus'></h5>
+                            <h5 id='cus'>ชื่อลูกค้าบลาๆๆ</h5>
                         </div>
-                        <div class="col-2 text-right">
-                            <h5>ผู้บันทึก : </h5>
+                        <div class="col-3 text-right">
+                            <h5>ผู้บันทึก</h5>
                         </div>
-                        <div class="col-2 text-left no-pd">
-                            <h5 id='user'></h5>
+                        <div class="col-3 text-left no-pd">
+                            <h5 id='user'>ชายสองสาม</h5>
                         </div>            
 
                     </div> 
                     <hr style="width: 80%">                   
                     
                     <div id="show_prod">                       
-                      
+                      <div class='row' style='margin-bottom: 5px;'>
+                      <span id='span-id-" + i + "' hidden>1</span>                           
+                      <div class='col-1' onclick='select_prod(1);'>
+                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
+                      </div>
+                      <div class='col-6 text-left' style='padding-right: 0px;'>
+                          <h5 id='prod-1'>ชื่อสินค้า</h5>
+                      </div>
+                      <div class='col-4 text-right'>
+                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
+                      </div>
+                      <div class='col-1'></div>
+                      </div>
+                      <div class='row' style='margin-bottom: 5px;'>
+                      <span id='span-id-" + i + "' hidden>1</span>                           
+                      <div class='col-1' onclick='select_prod(1);'>
+                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
+                      </div>
+                      <div class='col-6 text-left' style='padding-right: 0px;'>
+                          <h5 id='prod-1'>ชื่อสินค้า</h5>
+                      </div>
+                      <div class='col-4 text-right'>
+                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
+                      </div>
+                      <div class='col-1'></div>
+                      </div>
+                      <div class='row' style='margin-bottom: 5px;'>
+                      <span id='span-id-" + i + "' hidden>1</span>                           
+                      <div class='col-1' onclick='select_prod(1);'>
+                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
+                      </div>
+                      <div class='col-6 text-left' style='padding-right: 0px;'>
+                          <h5 id='prod-1'>ชื่อสินค้า</h5>
+                      </div>
+                      <div class='col-4 text-right'>
+                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
+                      </div>
+                      <div class='col-1'></div>
+                      </div>
                     </div>                 
                     <hr style="width: 80%">
                               
@@ -836,7 +935,7 @@
                         </div>
                     </div>
                    
-                    <div class="row">
+                    <!--<div class="row">
                         <div class="col-12 text-center">
                             <button class="btn btn-lg btn-primary" style="width: 20%;" onclick="edit();">
                                 แก้ไข <i class="fa fa-edit"></i>
@@ -869,9 +968,11 @@
                             </span>
                             </button>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
-
+                <div>
+                    <i class="fas fa-chevron-right" onclick="nav_bill('right')"></i>
+                </div>
             </div>
             <div id="ctn-edit" class="container justify-content-center" style="width: 55%" hidden>
                 <div class="jumbotron text-center" style="background: #fdfcfb; padding: 20px; ">
@@ -967,8 +1068,9 @@
                     </div>
                 </div>
             </div>
-            <div class="container justify-content-center" style="width: 70%">
-                <div id="ctn-show-history" class="jumbotron" style="background: #fdfcfb; padding: 20px; ">
+
+            <div class="container-full-width justify-content-center" style="display: flex; align-items: center; width: 100%;">
+                <div id="ctn-show-history" class="jumbotron " style="background: #fdfcfb; padding: 20px; width: 90%;">
                     <div class="row">
                         <div class="col-12">
                             <h4>ประวัติการทำรายการ</h4><hr style="margin-top: 1%;">
@@ -995,8 +1097,8 @@
                                 <div class="row"><div class="col-7"><p>- ขามิชลินใหญ่</p></div><div class="col-2 text-right"><p>1 ชิ้น</p></div><div class="col-2 text-right no-pd"><p>1500 บาท</p></div></div>
                             </div>
                         </div>
-                    </div>-->
-                    <!--<div class="row">
+                    </div>
+                    <div class="row">
                         <div class="col-2 text-center">
                             <h5 class="net-old">ยอดเดิม</h5>
                         </div>
@@ -1010,8 +1112,8 @@
                             </div>
                             
                         </div>
-                    </div>-->
-                    <!--<div class="row">
+                    </div>
+                    <div class="row">
                         <div class="col-2 text-center">
                             <h5 class="net-new">ยอดใหม่</h5>
                         </div>
