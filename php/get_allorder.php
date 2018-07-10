@@ -7,7 +7,7 @@
   $user_name = $_POST['user_name'];
   $pay = $_POST['pay'];
   $start = $_POST['start'];
-	$sort_by = $_POST['sort_by'];
+  $sort_by = $_POST['sort_by'];
   $order = $_POST['order'];
   $shift = $_POST['shift'];
   $txt = "(cancel)";
