@@ -311,13 +311,18 @@
                                 '</div><hr style="margin-top: 1%;">'); 
                                 if(obj[i][5] != null){                                
                                     for(var j=0 ; j < obj[i][5].length;j++){ 
-                                        var indexx = 0;                                                                               
+                                        var indexx = -1;                                                                               
                                         for(var n=0 ; n < array_bill[0].length;n++){                                       
                                             if(obj[i][5][j].prod_id == array_bill[0][n].prod_id){
                                                 indexx = n;
+                                                break;
                                             }
-                                        }                                      
-                                        $('#list-prod-'+i).append('<div class="row"><div class="col-5"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right" style="color: red;"><p>จาก '+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right" style="color: red;"><p>เป็น '+ array_bill[0][indexx].amt+' ชิ้น</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>');
+                                        } 
+                                        if(indexx == -1){
+                                            $('#list-prod-'+i).append('<div class="row"><div class="col-5"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right" style="color: red;"><p>จาก '+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right" style="color: red;"><p>เป็นคืนสินค้า</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>'); 
+                                        }else{
+                                            $('#list-prod-'+i).append('<div class="row"><div class="col-5"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right" style="color: red;"><p>จาก '+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right" style="color: red;"><p>เป็น '+ array_bill[0][indexx].amt+' ชิ้น</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>');
+                                        }                                       
                                     }
                                 } 
                             }else if(obj[i][4].type == "refund"){
