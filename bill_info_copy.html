@@ -82,20 +82,22 @@
         var text = "";
         var texta4 = "";
         array_amt = [];
-        $(document).ready(function () {
-            /*if(!localStorage.user_id){
+        array_bill = [];
+        var rgt = lft = index_rgt = index_lft = 0;
+        $(document).ready(function(){
+            if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }*/
+            }
             url = new URL(window.location.href);
             order_id = url.searchParams.get("order"); 
 
             $.ajax({
-                url:"http://150.95.26.163:8080/gitmew/php/get_order_item.php",
+                url:"http://150.95.26.163:8080/gitmew/php/get_order_item2.php",
                 method:"POST",
                 data:{'order_id':order_id},
                 beforeSend: function(){
@@ -136,88 +138,157 @@
                     $('#discount').text(dis);           
                     $('#total').text(final_sum);           
                     $('#get').text(get);    
-                    $('#change').text(change);                      
-                    $.each(obj, function(i, field){   
-                        if(i > 0){
-                            $('#show_prod').append("<div class='row' style='margin-bottom: 5px;'>" +
-                            "<span id='span-id-" + i + "' hidden>" + obj[i].prod_id + "</span>"+                           
-                            "<div class='col-1' onclick='select_prod("+i+");'>" +
-                                "<i id='i-"+i+"' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>" +
-                            "</div>" +
-                            "<div class='col-6 text-left' style='padding-right: 0px;'>" +
-                                "<h5 id='prod-1'>"+obj[i].prod_name+"</h5>" +
-                            "</div>" +
-                            "<div class='col-4 text-right'>" +
-                                "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+obj[i][3]+" x "+obj[i].prod_amount+"</h5>" +
-                            "</div>" +
-                            "<div class='col-1'></div>" +
-                            "</div>");
+                    $('#change').text(change); 
+                    item = {};
+                    item ["b"] =  obj[0].branch_name;
+                    item ["date"] = datetime;
+                    item ["num"] = order_num;  
+                    item ["user"] =  user;  
+                    item ["cus"] =  cus_name;
+                    item ["sum"] = sum;
+                    item ["dis"] = dis;  
+                    item ["total"] =  final_sum;     
+                    item ["get"] = get;  
+                    item ["chng"] =  change;                                
+                    array_bill.push(item); 
+                    index_rgt = 1;
+                    rgt++;                   
+                    array_bill2 = [];
+                    $.each(obj, function(i, field){
+                        if(i > 0){                           
+                            if(Object.keys(obj[i]).length != 17){
+                                $('#show_prod').append("<div class='row' style='margin-bottom: 5px;'>" +
+                                "<span id='span-id-" + i + "' hidden>" + obj[i].prod_id + "</span>"+                           
+                                "<div class='col-1' onclick='select_prod("+i+");'>" +
+                                    "<i id='i-"+i+"' class='far fa-square mew' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>" +
+                                "</div>" +
+                                "<div class='col-6 text-left' style='padding-right: 0px;'>" +
+                                    "<h5 id='prod-1'>"+obj[i].prod_name+"</h5>" +
+                                "</div>" +
+                                "<div class='col-4 text-right'>" +
+                                    "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+obj[i][3]+" x "+obj[i].prod_amount+"</h5>" +
+                                "</div>" +
+                                "<div class='col-1'></div>" +
+                                "</div>");
 
-                            $('#show_edit').append("<div class='row' style='margin-bottom: 10px;'>" +
-                            "<span id='span-" + i + "' hidden>" + obj[i].prod_id + "</span>"+
-                            "<span id='old-price-" + i + "' hidden>" + obj[i][9].old_price + "</span>"+
-                            "<span id='e-price-" + i + "' hidden>"+obj[i][3]+"</span>"+
-                            "<div class='col-1'></div>" +
-                            "<div class='col-5 text-left' style='padding-right: 0px;'>" +
-                                "<h5 id='input-prod'>"+obj[i].prod_name+"</h5>" +
-                            "</div>" +
-                            "<div class='col-2 text-right' style='padding-top: 10px;'>" +
-                                "<h5 id='input-price-"+i+"'>"+obj[i][3]+"</h5>" +
-                            "</div>" +
-                            "<div class='col-1 text-right' style='padding-top: 10px;'>" +
-                                "<h5>x</h5>" +
-                            "</div>" +
-                            "<div class='col-2 text-right'>" +
-                                "<input id='input-amt-"+i+"' oninput='chng_amt("+i+","+obj[i].prod_amount+","+obj[i][3]+")' type='number' class='form-control text-right' value='"+obj[i].prod_amount+"'>" +
-                            "</div>" +
-                           " <div class='col-1'></div>" +
-                            "</div>"); 
-                            count = i; 
+                                $('#show_edit').append("<div class='row' style='margin-bottom: 10px;'>" +
+                                "<span id='span-" + i + "' hidden>" + obj[i].prod_id + "</span>"+
+                                "<span id='old-price-" + i + "' hidden>" + obj[i][9].old_price + "</span>"+
+                                "<span id='e-price-" + i + "' hidden>"+obj[i][3]+"</span>"+
+                                "<div class='col-1'></div>" +
+                                "<div class='col-5 text-left' style='padding-right: 0px;'>" +
+                                    "<h5 id='input-prod'>"+obj[i].prod_name+"</h5>" +
+                                "</div>" +
+                                "<div class='col-2 text-right' style='padding-top: 10px;'>" +
+                                    "<h5 id='input-price-"+i+"'>"+obj[i][3]+"</h5>" +
+                                "</div>" +
+                                "<div class='col-1 text-right' style='padding-top: 10px;'>" +
+                                    "<h5>x</h5>" +
+                                "</div>" +
+                                "<div class='col-2 text-right'>" +
+                                    "<input id='input-amt-"+i+"' oninput='chng_amt("+i+","+obj[i].prod_amount+","+obj[i][3]+")' type='number' class='form-control text-right' value='"+obj[i].prod_amount+"'>" +
+                                "</div>" +
+                                " <div class='col-1'></div>" +
+                                "</div>"); 
+                                count = i; 
 
-                            net = obj[i].prod_amount*obj[i][3];
-                            text += "<div class='left'>"+obj[i].prod_name+"("+obj[i][3]+")</div>" + "<div class='mid'>"+obj[i].prod_amount+"</div>" + "<div class='right'>"+net+"</div>";
-                            texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+i+"</div>"+
-                                "<div class='fl-50 fs-120 tb no-bdt'>"+obj[i].prod_name+"</div>"+
-                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].prod_amount+"</div>"+
-                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].unit_name+"</div>"+
-                                "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i][3]+"</div>"+
-                                "<div class='fl-10 fs-120 tb no-bdt'>"+net+"</div>";
+                                net = obj[i].prod_amount*obj[i][3];
+                                text += "<div class='left'>"+obj[i].prod_name+"("+obj[i][3]+")</div>" + "<div class='mid'>"+obj[i].prod_amount+"</div>" + "<div class='right'>"+net+"</div>";
+                                texta4 += "<div class='fl-spc fs-120 tb-st no-bdt'>"+i+"</div>"+
+                                    "<div class='fl-50 fs-120 tb no-bdt'>"+obj[i].prod_name+"</div>"+
+                                    "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].prod_amount+"</div>"+
+                                    "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i].unit_name+"</div>"+
+                                    "<div class='fl-10 fs-120 tb no-bdt'>"+obj[i][3]+"</div>"+
+                                    "<div class='fl-10 fs-120 tb no-bdt'>"+net+"</div>";
 
-                            if(obj[i][10]){
-                                arr = []                           
-                                obj[i][10].push(i)
-                                arr = obj[i][10];
-                                array_amt.push(arr); 
+                                if(obj[i][10]){
+                                    arr = []                           
+                                    obj[i][10].push(i)
+                                    arr = obj[i][10];
+                                    array_amt.push(arr); 
+                                }
+                                $('#btm').prop('hidden',false);
+                                item = {};
+                                item ["name"] =  obj[i].prod_name;
+                                item ["amt"] = obj[i].prod_amount;
+                                item ["price"] = obj[i][3];  
+                                item ["prod_id"] =  obj[i].prod_id;           
+                                array_bill2.push(item);
+                            }else{
+                                if(lft == 0){
+                                    index_lft = 3;
+                                    $('#branch_lft').text(obj[i].branch_name); 
+                                    $('#date_lft').text(obj[i].datetime); 
+                                    $('#number_lft').text(order_num); 
+                                    $('#user_lft').text(user);         
+                                    $('#cus_lft').text(cus_name); 
+                                    $('#sum_lft').text(obj[i].sum_price);    
+                                    $('#discount_lft').text(obj[i].total_discount);           
+                                    $('#total_lft').text(obj[i].total_price);           
+                                    $('#get_lft').text(obj[i].get_money);    
+                                    $('#change_lft').text(obj[i].change_money);                                                               
+                                }
+                                array_bill3 = [];
+                                for(var m = 0;m < obj[i][8].length;m++){
+                                    if(lft == 0){
+                                        $('#show_prod_lft').append("<div class='row' style='margin-bottom: 5px;'>" +
+                                        "<span id='span-id-" + i + "' hidden>" + obj[i][8][m].prod_id + "</span>"+                                    
+                                        "<div class='col-6 text-left' style='padding-right: 0px;'>" +
+                                            "<h5 id='prod-1'>"+obj[i][8][m].prod_name+"</h5>" +
+                                        "</div>" +
+                                        "<div class='col-4 text-right'>" +
+                                            "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+obj[i][8][m].prod_price+" x "+obj[i][8][m].prod_amount+"</h5>" +
+                                        "</div>" +
+                                        "<div class='col-1'></div>" +
+                                        "</div>");   
+                                    }                                  
+                                    item = {};
+                                    item ["name"] =  obj[i][8][m].prod_name;
+                                    item ["amt"] = obj[i][8][m].prod_amount;
+                                    item ["price"] = obj[i][8][m].prod_price;  
+                                    item ["prod_id"] =  obj[i][8][m].prod_id;          
+                                    array_bill3.push(item);                                      
+                                }                                
+                                item = {};
+                                item ["b"] =  obj[i].branch_name;
+                                item ["date"] = obj[i].datetime;
+                                item ["num"] = order_num;
+                                item ["user"] =  user;
+                                item ["cus"] =  cus_name;
+                                item ["sum"] = obj[i].sum_price;
+                                item ["dis"] = obj[i].total_discount;
+                                item ["total"] =  obj[i].total_price;
+                                item ["get"] = obj[i].get_money;
+                                item ["chng"] =  obj[i].change_money;                               
+                                array_bill.push(item);
+                                lft++;                                
+                                array_bill.splice(array_bill.length-1,0,array_bill3);                                                                                                            
                             }
-                                         
                         }                       
-                    });
-                                  
+                    });                   
+                    array_bill.splice(0,0,array_bill2);  
+                    get_his();                  
                 }
             });    
+            console.log(array_bill);                          
+        });   
 
+        function get_his(){
             $.ajax({
-                url:"http://150.95.26.163:8080/gitmew/php/get_order_history.php",
+                url:"http://150.95.26.163:8080/gitmew/php/get_order_history2.php",
                 method:"POST",
-                data:{'order_id':order_id},
+                data:{'order_id':order_id},               
                 beforeSend: function(){
                     EasyLoading.show({                           
                     text: "กำลังโหลด"                            
                     });
                 },
-                success:function(data)
-                {
+                success:function(data){
                     EasyLoading.hide();
                     var obj = jQuery.parseJSON(data); 
                     console.log(obj);                                            
-                    $.each(obj, function(i, field){
-                        var txt = "";
-                        if(field.datetime){
-                            if(obj[i][5] != null){                                
-                                for(var j=0 ; j < obj[i][5].length;j++){
-                                    txt += '<div class="row"><div class="col-5"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right" style="color: red;"><p>จาก x ชิ้น</p></div><div class="col-2 text-right" style="color: red;"><p>เป็น '+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>';
-                                }
-                            }      
+                    $.each(obj, function(i, field){                       
+                        if(field.datetime){                              
                             if(obj[i][4].type == "edit"){
                                 $('#ctn-show-history').append('<div class="row">' +
                                 '<div class="col-4">' +
@@ -228,8 +299,7 @@
                                 '</div>' +
                                     '<div class="col-8">' +
                                         '<h5 style="text-decoration: underline; letter-spacing: 1px;">แก้ไขรายการสินค้า</h5>' +
-                                        '<div style="margin-top: 3%;">' +  
-                                            txt +                                          
+                                        '<div id="list-prod-'+i+'" style="margin-top: 3%;">' +                                                                                   
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
@@ -238,7 +308,18 @@
                                     '<div class="col-10">' +
                                         '<p>'+field.note+'</p>' +
                                     '</div>'+
-                                '</div><hr style="margin-top: 1%;">');  
+                                '</div><hr style="margin-top: 1%;">'); 
+                                if(obj[i][5] != null){                                
+                                    for(var j=0 ; j < obj[i][5].length;j++){ 
+                                        var indexx = 0;                                                                               
+                                        for(var n=0 ; n < array_bill[0].length;n++){                                       
+                                            if(obj[i][5][j].prod_id == array_bill[0][n].prod_id){
+                                                indexx = n;
+                                            }
+                                        }                                      
+                                        $('#list-prod-'+i).append('<div class="row"><div class="col-5"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right" style="color: red;"><p>จาก '+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right" style="color: red;"><p>เป็น '+ array_bill[0][indexx].amt+' ชิ้น</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>');
+                                    }
+                                } 
                             }else if(obj[i][4].type == "refund"){
                                 $('#ctn-show-history').append('<div class="row">'+
                                         '<div class="col-4">'+
@@ -249,29 +330,31 @@
                                         '</div>'+
                                         '<div class="col-8">'+
                                             '<h5 style="text-decoration: underline; letter-spacing: 1px;">คืนรายการสินค้า</h5>'+
-                                            '<div style="margin-top: 3%;">'+
-                                                txt + 
+                                            '<div id="list-prod-'+i+'" style="margin-top: 3%;">'+                                               
                                             '</div>'+
                                         '</div>'+
                                     '</div>'+
+                                    '<div class="row" style="margin-top: 1%;"><div class="col-5"></div><div class="col-2 text-right"></div><div class="col-2 text-right"></div><div class="col-2 text-right no-pd"><p>รวม '+field.sum_price+' บาท</p></div></div>' +
                                     '<br><div id="note'+i+'" class="row"> '  +                               
                                     ' <div class="col-2 text-center"><h5 style="text-decoration: underline;">หมายเหตุ : </h5></div>'+
                                     ' <div class="col-10">' +
                                         ' <p>'+field.note+'</p>'+
                                         '</div>'+
-                                    '</div><hr style="margin-top: 1%;">' );
+                                    '</div><hr style="margin-top: 1%;">' );                                   
+                                if(obj[i][5] != null){                                
+                                    for(var j=0 ; j < obj[i][5].length;j++){
+                                        $('#list-prod-'+i).append('<div class="row"><div class="col-5"><p>- '+obj[i][5][j].prod_name+'</p></div><div class="col-2 text-right"></div><div class="col-2 text-right"><p>'+obj[i][5][j].prod_amount+' ชิ้น</p></div><div class="col-2 text-right no-pd"><p>'+obj[i][5][j].prod_price+' บาท</p></div></div>');
+                                    }  
+                                }                                
                             }
                             if(obj[i].note == ""){
                                 $("#note"+i).prop("hidden",true);
-                            }
-                        }                     
-                    });
-                                  
+                            } 
+                        }                    
+                    });                                  
                 }
             });    
-           
-           
-        });
+        }
    
         function chng_amt(arg,amt_old,price){
             var amt = $('#input-amt-' + arg).val();
@@ -342,10 +425,11 @@
             });*/
         }
 
-        function edit(){   
+        function edit(){
             console.log(array_amt);      
-            $("#ctn-show").prop('hidden', true);
+            //$("#ctn-show").prop('hidden', true);
             $("#ctn-edit").prop('hidden', false);
+            $("#bill_right").prop('hidden', true);            
 
             //Copy val to input-val
             $('#input-branch').text($('#branch').html()); 
@@ -360,7 +444,7 @@
             $('#input-change').text($('#change').html());                        
         }
 
-        function save(){
+        function save(){           
             json = [];
             for(var j = 1 ; j <= count ; j++){
                 var arr_price = $('#price-'+j).text().split(" x ");              
@@ -376,7 +460,7 @@
                 }               
             }          
             if(json.length == 0 && dis == $('#input-discount').val() && get == $('#input-get').val()){
-                $("#ctn-show").prop('hidden', false);
+                $("#bill_right").prop('hidden', false);
                 $("#ctn-edit").prop('hidden', true);              
                 return 0;
             }            
@@ -435,7 +519,10 @@
                             }
                         });
                     }
-                  },ยกเลิก: function () {}
+                  },ยกเลิก: function () {
+                    $("#bill_right").prop('hidden', false);
+                    $("#ctn-edit").prop('hidden', true);   
+                  }
                 }
               });   
           
@@ -493,7 +580,7 @@
             window.location = "login.html";
         }
 
-        function print(){   
+        function print(){
             var WinPrint  = window.open();         
             $('input:radio[name="print-option"]').each(function(){
                 if($(this).is(':checked')){
@@ -610,20 +697,151 @@
         }
 
         function nav_bill(arg){
-            
-            if(0){
+           if(!$("#ctn-edit").prop('hidden') || $('#refund').prop('hidden')){
+               return 0;
+            }
+          
+            if(array_bill.length <= 2){
                 //if last or end??
-                //
+                
             }else{
-                $("#bill_left").fadeOut(200).fadeIn(200);
-                $("#bill_right").fadeOut(200).fadeIn(200);
-
                 if(arg == "left"){
                     // if not last then copy right to left and fill new bill info to right
                     //if last do nothing
+                    if(lft > 1){
+                        $("#bill_left").fadeOut(200).fadeIn(200);
+                        $("#bill_right").fadeOut(200).fadeIn(200);
+                        $('#show_prod').empty();
+                        $('#show_prod_lft').empty();
+
+                        $('#branch').text(array_bill[index_lft].b); 
+                        $('#date').text(array_bill[index_lft].date); 
+                        $('#number').text(array_bill[index_lft].num); 
+                        $('#user').text(array_bill[index_lft].user);         
+                        $('#cus').text(array_bill[index_lft].cus); 
+                        $('#sum').text(array_bill[index_lft].sum);    
+                        $('#discount').text(array_bill[index_lft].dis);           
+                        $('#total').text(array_bill[index_lft].total);           
+                        $('#get').text(array_bill[index_lft].get);    
+                        $('#change').text(array_bill[index_lft].chng); 
+
+                        for(var i = 1 ; i <= array_bill[index_lft-1].length;i++){
+                            $('#show_prod').append("<div class='row' style='margin-bottom: 5px;'>" +
+                                "<span id='span-id-" + i + "' hidden>" + array_bill[index_lft-1][i-1].prod_id + "</span>"+                           
+                                "<div class='col-1' onclick='select_prod("+i+");'>" +
+                                    "<i id='i-"+i+"' class='far fa-square mew' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>" +
+                                "</div>" +
+                                "<div class='col-6 text-left' style='padding-right: 0px;'>" +
+                                    "<h5 id='prod-1'>"+array_bill[index_lft-1][i-1].name+"</h5>" +
+                                "</div>" +
+                                "<div class='col-4 text-right'>" +
+                                    "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+array_bill[index_lft-1][i-1].price+" x "+array_bill[index_lft-1][i-1].amt+"</h5>" +
+                                "</div>" +
+                                "<div class='col-1'></div>" +
+                                "</div>");
+                        }
+
+                        $('#branch_lft').text(array_bill[index_lft+2].b); 
+                        $('#date_lft').text(array_bill[index_lft+2].date); 
+                        $('#number_lft').text(array_bill[index_lft+2].num); 
+                        $('#user_lft').text(array_bill[index_lft+2].user);         
+                        $('#cus_lft').text(array_bill[index_lft+2].cus); 
+                        $('#sum_lft').text(array_bill[index_lft+2].sum);    
+                        $('#discount_lft').text(array_bill[index_lft+2].dis);           
+                        $('#total_lft').text(array_bill[index_lft+2].total);           
+                        $('#get_lft').text(array_bill[index_lft+2].get);    
+                        $('#change_lft').text(array_bill[index_lft+2].chng); 
+                        index_rgt = index_lft;
+                        index_lft = index_lft+2;
+
+                        for(var i = 0 ; i < array_bill[index_lft-1].length;i++){
+                            $('#show_prod_lft').append("<div class='row' style='margin-bottom: 5px;'>" +
+                                "<span id='span-id-" + i + "' hidden>" + array_bill[index_lft-1][i].prod_id + "</span>"+                                    
+                                "<div class='col-6 text-left' style='padding-right: 0px;'>" +
+                                    "<h5 id='prod-1'>"+array_bill[index_lft-1][i].name+"</h5>" +
+                                "</div>" +
+                                "<div class='col-4 text-right'>" +
+                                    "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+array_bill[index_lft-1][i].price+" x "+array_bill[index_lft-1][i].amt+"</h5>" +
+                                "</div>" +
+                                "<div class='col-1'></div>" +
+                                "</div>");  
+                        }
+
+                        lft--;
+                        rgt++;
+                        $('#btm').prop('hidden',true);
+                    }
+                   
                 }else if(arg == "right"){
                     // if not last then copy left to right and fill new bill info to left
                     //if last do nothing
+                    if(rgt > 1){
+                        $("#bill_left").fadeOut(200).fadeIn(200);
+                        $("#bill_right").fadeOut(200).fadeIn(200);
+                        $('#show_prod').empty();
+                        $('#show_prod_lft').empty();
+
+                        $('#branch_lft').text(array_bill[index_rgt].b); 
+                        $('#date_lft').text(array_bill[index_rgt].date); 
+                        $('#number_lft').text(array_bill[index_rgt].num); 
+                        $('#user_lft').text(array_bill[index_rgt].user);         
+                        $('#cus_lft').text(array_bill[index_rgt].cus); 
+                        $('#sum_lft').text(array_bill[index_rgt].sum);    
+                        $('#discount_lft').text(array_bill[index_rgt].dis);           
+                        $('#total_lft').text(array_bill[index_rgt].total);           
+                        $('#get_lft').text(array_bill[index_rgt].get);    
+                        $('#change_lft').text(array_bill[index_rgt].chng);
+
+                        for(var i = 0 ; i < array_bill[index_rgt-1].length;i++){
+                            $('#show_prod_lft').append("<div class='row' style='margin-bottom: 5px;'>" +
+                                "<span id='span-id-" + i + "' hidden>" + array_bill[index_rgt-1][i].prod_id + "</span>"+                                    
+                                "<div class='col-6 text-left' style='padding-right: 0px;'>" +
+                                    "<h5 id='prod-1'>"+array_bill[index_rgt-1][i].name+"</h5>" +
+                                "</div>" +
+                                "<div class='col-4 text-right'>" +
+                                    "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+array_bill[index_rgt-1][i].price+" x "+array_bill[index_rgt-1][i].amt+"</h5>" +
+                                "</div>" +
+                                "<div class='col-1'></div>" +
+                                "</div>");  
+                        } 
+
+                        $('#branch').text(array_bill[index_rgt-2].b); 
+                        $('#date').text(array_bill[index_rgt-2].date); 
+                        $('#number').text(array_bill[index_rgt-2].num); 
+                        $('#user').text(array_bill[index_rgt-2].user);         
+                        $('#cus').text(array_bill[index_rgt-2].cus); 
+                        $('#sum').text(array_bill[index_rgt-2].sum);    
+                        $('#discount').text(array_bill[index_rgt-2].dis);           
+                        $('#total').text(array_bill[index_rgt-2].total);           
+                        $('#get').text(array_bill[index_rgt-2].get);    
+                        $('#change').text(array_bill[index_rgt-2].chng); 
+                        index_lft = index_rgt;
+                        index_rgt = index_rgt-2;
+
+                        for(var i = 1 ; i <= array_bill[index_rgt-1].length;i++){
+                            $('#show_prod').append("<div class='row' style='margin-bottom: 5px;'>" +
+                                "<span id='span-id-" + i + "' hidden>" + array_bill[index_rgt-1][i-1].prod_id + "</span>"+                           
+                                "<div class='col-1' onclick='select_prod("+i+");'>" +
+                                    "<i id='i-"+i+"' class='far fa-square mew' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>" +
+                                "</div>" +
+                                "<div class='col-6 text-left' style='padding-right: 0px;'>" +
+                                    "<h5 id='prod-1'>"+array_bill[index_rgt-1][i-1].name+"</h5>" +
+                                "</div>" +
+                                "<div class='col-4 text-right'>" +
+                                    "<h5 id='price-"+i+"' style='letter-spacing: 1px;'>"+array_bill[index_rgt-1][i-1].price+" x "+array_bill[index_rgt-1][i-1].amt+"</h5>" +
+                                "</div>" +
+                                "<div class='col-1'></div>" +
+                                "</div>");
+                        } 
+                        
+                        lft++;
+                        rgt--;
+                        if(index_rgt == 1){
+                            $('#btm').prop('hidden',false);
+                        }                        
+                    }else{
+
+                    }
                 }
             }
         }
@@ -664,7 +882,7 @@
 
             <div id="ctn-show" class="container justify-content-center" style="display: flex; align-items: center;">
                 <div>
-                    <i class="fas fa-chevron-left" onclick="nav_bill('left')"></i>
+                    <i id="nav-lft" class="fas fa-chevron-left" onclick="nav_bill('left')"></i>
                 </div>
                 <div id="bill_left" class="jumbotron text-center" style="margin-left: 2%; margin-right: 2%;">
                     <div class="row">
@@ -672,68 +890,30 @@
                             <h5>PPS AUTO GROUP</h5>
                         </div>
                         <div class="col-3 text-left no-pd">
-                            <h5 id="branch">สาขา</h5>
+                            <h5 id="branch_lft">สาขา</h5>
                         </div>
                     </div>
-                    <h5 id="number" style="margin-top: 15px;"></h5>
-                    <h5 id='date' style="letter-spacing: 2px;"></h5>
+                    <h5 id="number_lft" style="margin-top: 15px;"></h5>
+                    <h5 id='date_lft' style="letter-spacing: 2px;"></h5>
                     <div class="row" style="margin-bottom: 5px;">
                         <div class="col-2 text-center">
                             <h5>ลูกค้า</h5>
                         </div>
                         <div class="col-4 text-left no-pd">
-                            <h5 id='cus'>ชื่อลูกค้าบลาๆๆ</h5>
+                            <h5 id='cus_lft'></h5>
                         </div>
                         <div class="col-3 text-right">
                             <h5>ผู้บันทึก</h5>
                         </div>
                         <div class="col-3 text-left no-pd">
-                            <h5 id='user'>ชายสองสาม</h5>
+                            <h5 id='user_lft'></h5>
                         </div>            
 
                     </div> 
                     <hr style="width: 80%">                   
                     
-                    <div id="show_prod">                       
-                      <div class='row' style='margin-bottom: 5px;'>
-                      <span id='span-id-" + i + "' hidden>1</span>                           
-                      <div class='col-1' onclick='select_prod(1);'>
-                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
-                      </div>
-                      <div class='col-6 text-left' style='padding-right: 0px;'>
-                          <h5 id='prod-1'>ชื่อสินค้า</h5>
-                      </div>
-                      <div class='col-4 text-right'>
-                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
-                      </div>
-                      <div class='col-1'></div>
-                      </div>
-                      <div class='row' style='margin-bottom: 5px;'>
-                      <span id='span-id-" + i + "' hidden>1</span>                           
-                      <div class='col-1' onclick='select_prod(1);'>
-                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
-                      </div>
-                      <div class='col-6 text-left' style='padding-right: 0px;'>
-                          <h5 id='prod-1'>ชื่อสินค้า</h5>
-                      </div>
-                      <div class='col-4 text-right'>
-                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
-                      </div>
-                      <div class='col-1'></div>
-                      </div>
-                      <div class='row' style='margin-bottom: 5px;'>
-                      <span id='span-id-" + i + "' hidden>1</span>                           
-                      <div class='col-1' onclick='select_prod(1);'>
-                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
-                      </div>
-                      <div class='col-6 text-left' style='padding-right: 0px;'>
-                          <h5 id='prod-1'>ชื่อสินค้า</h5>
-                      </div>
-                      <div class='col-4 text-right'>
-                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
-                      </div>
-                      <div class='col-1'></div>
-                      </div>
+                    <div id="show_prod_lft">                       
+                   
                     </div>                 
                     <hr style="width: 80%">
                               
@@ -743,7 +923,7 @@
                             <h5>รวม</h5>
                         </div>
                         <div class="col-2 text-right">
-                            <h5 id='sum' style="letter-spacing: 1px;"></h5>
+                            <h5 id='sum_lft' style="letter-spacing: 1px;"></h5>
                         </div>
                     </div>
                     <div class="row" style="margin-bottom: 5px;">
@@ -752,7 +932,7 @@
                             <h5>ลด</h5>
                         </div>
                         <div class="col-2 text-right">
-                            <h5 id='discount' style="letter-spacing: 1px;"></h5>
+                            <h5 id='discount_lft' style="letter-spacing: 1px;"></h5>
                         </div>
                     </div>
                     <div class="row" style="margin-bottom: 5px;">
@@ -761,7 +941,7 @@
                             <h5>สุทธิ</h5>
                         </div>
                         <div class="col-2 text-right">
-                            <h5 id='total' style="letter-spacing: 1px;"></h5>
+                            <h5 id='total_lft' style="letter-spacing: 1px;"></h5>
                         </div>
                     </div>
                     <div class="row" style="margin-bottom: 5px;">
@@ -770,7 +950,7 @@
                             <h5>รับ</h5>
                         </div>
                         <div class="col-2 text-right">
-                            <h5 id='get' style="letter-spacing: 1px;"></h5>
+                            <h5 id='get_lft' style="letter-spacing: 1px;"></h5>
                         </div>
                     </div>
                     <div class="row" style="margin-bottom: 35px;">
@@ -779,44 +959,10 @@
                             <h5>ทอน</h5>
                         </div>
                         <div class="col-2 text-right">
-                            <h5 id='change' style="letter-spacing: 1px;"></h5>
+                            <h5 id='change_lft' style="letter-spacing: 1px;"></h5>
                         </div>
-                    </div>
-                   
-                    <!--<div class="row">
-                        <div class="col-12 text-center">
-                            <button class="btn btn-lg btn-primary" style="width: 20%;" onclick="edit();">
-                                แก้ไข <i class="fa fa-edit"></i>
-                            </button>
-                            <button id="delete" class="btn btn-lg btn-danger" style="width: 20%;" onclick="remove();">
-                                ลบ
-                                <i class="fa fa-trash-alt"></i>
-                            </button>
-                            <button id="del_confirm" class="btn btn-lg btn-danger" style="text-align: center;" 
-                            onclick="confirm_delete();" hidden>ยืนยัน
-                            <span>
-                                <i class="fa fa-trash-alt" style="color: white !important;"></i>
-                            </span>
-                            </button>
-                            <button id="refund" class="btn btn-lg btn-success" style="text-align: center;" 
-                            onclick="refund();">คืนสินค้า
-                            <span>
-                                <i class="fas fa-redo-alt"></i>
-                            </span>
-                            </button>
-                            <button id="refund_confirm" class="btn btn-lg btn-success" style="text-align: center;" 
-                            onclick="confirm_refund();" hidden>ยืนยัน
-                            <span>
-                                <i class="fas fa-redo-alt" style="color: white !important;"></i>
-                            </span>
-                            </button>
-                            <button id="print-title" class="btn btn-lg btn-warning" style="text-align: center;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
-                            <span>
-                                <i class="fa fa-print"></i>
-                            </span>
-                            </button>
-                        </div>
-                    </div>-->
+                    </div>                 
+                
                 </div>
                 <div id="bill_right" class="jumbotron text-center" style="margin-right: 2%;">
                     <div class="row">
@@ -846,46 +992,8 @@
                     </div> 
                     <hr style="width: 80%">                   
                     
-                    <div id="show_prod">                       
-                      <div class='row' style='margin-bottom: 5px;'>
-                      <span id='span-id-" + i + "' hidden>1</span>                           
-                      <div class='col-1' onclick='select_prod(1);'>
-                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
-                      </div>
-                      <div class='col-6 text-left' style='padding-right: 0px;'>
-                          <h5 id='prod-1'>ชื่อสินค้า</h5>
-                      </div>
-                      <div class='col-4 text-right'>
-                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
-                      </div>
-                      <div class='col-1'></div>
-                      </div>
-                      <div class='row' style='margin-bottom: 5px;'>
-                      <span id='span-id-" + i + "' hidden>1</span>                           
-                      <div class='col-1' onclick='select_prod(1);'>
-                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
-                      </div>
-                      <div class='col-6 text-left' style='padding-right: 0px;'>
-                          <h5 id='prod-1'>ชื่อสินค้า</h5>
-                      </div>
-                      <div class='col-4 text-right'>
-                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
-                      </div>
-                      <div class='col-1'></div>
-                      </div>
-                      <div class='row' style='margin-bottom: 5px;'>
-                      <span id='span-id-" + i + "' hidden>1</span>                           
-                      <div class='col-1' onclick='select_prod(1);'>
-                          <i id='i-1' class='far fa-square' style='color: #666666; padding-top: 10%; font-size: 120%;' hidden value=''></i>
-                      </div>
-                      <div class='col-6 text-left' style='padding-right: 0px;'>
-                          <h5 id='prod-1'>ชื่อสินค้า</h5>
-                      </div>
-                      <div class='col-4 text-right'>
-                          <h5 id='price-1' style='letter-spacing: 1px;'>300 x 15</h5>
-                      </div>
-                      <div class='col-1'></div>
-                      </div>
+                    <div id="show_prod">
+                    
                     </div>                 
                     <hr style="width: 80%">
                               
@@ -935,7 +1043,7 @@
                         </div>
                     </div>
                    
-                    <!--<div class="row">
+                    <div id="btm" class="row" hidden>
                         <div class="col-12 text-center">
                             <button class="btn btn-lg btn-primary" style="width: 20%;" onclick="edit();">
                                 แก้ไข <i class="fa fa-edit"></i>
@@ -968,106 +1076,105 @@
                             </span>
                             </button>
                         </div>
-                    </div>-->
-                </div>
-                <div>
-                    <i class="fas fa-chevron-right" onclick="nav_bill('right')"></i>
-                </div>
-            </div>
-            <div id="ctn-edit" class="container justify-content-center" style="width: 55%" hidden>
-                <div class="jumbotron text-center" style="background: #fdfcfb; padding: 20px; ">
-                  
-                    <div class="row">
-                        <div class="col-7 text-right">
-                            <h5>PPS AUTO GROUP</h5>
-                        </div>
-                        <div class="col-4 text-left no-pd">
-                            <h5 id="input-branch"></h5>
-                        </div>
                     </div>
-                    
-                    <h5  id="input-number" style="margin-top: 15px;">S18-00018</h5>
-                    <h5 id='input-date' style="letter-spacing: 2px;"></h5>
-                    <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-1"></div>
-                        <div class="col-2 text-left">
-                            <h5>ลูกค้า : </h5>
-                        </div>
-                        <div class="col-4 text-left no-pd">
-                            <h5 id="input-cus"></h5>
-                        </div>
-                        <div class="col-2 text-right">
-                            <h5>ผู้บันทึก : </h5>
-                        </div>
-                        <div class="col-2 text-left no-pd">
-                            <h5 id="input-user"></h5>
-                        </div>
-                    </div>
-                    <hr style="width: 80%">
-                  
-            
-                    <div id="show_edit">                       
+                </div> 
+                <div id="ctn-edit" style="width: 50%" hidden>
+                    <div class="jumbotron text-center">
                       
+                        <div class="row">
+                            <div class="col-8 text-right">
+                                <h5>PPS AUTO GROUP</h5>
+                            </div>
+                            <div class="col-3 text-left no-pd">
+                                <h5 id="input-branch"></h5>
+                            </div>
+                        </div>
+                        
+                        <h5  id="input-number" style="margin-top: 15px;">S18-00018</h5>
+                        <h5 id='input-date' style="letter-spacing: 2px;"></h5>
+                        <div class="row" style="margin-bottom: 5px;">                       
+                            <div class="col-2 text-left">
+                                <h5>ลูกค้า : </h5>
+                            </div>
+                            <div class="col-4 text-left no-pd">
+                                <h5 id="input-cus"></h5>
+                            </div>
+                            <div class="col-3 text-right">
+                                <h5>ผู้บันทึก : </h5>
+                            </div>
+                            <div class="col-3 text-left no-pd">
+                                <h5 id="input-user"></h5>
+                            </div>
+                        </div>
+                        <hr style="width: 80%">
+                      
+                
+                        <div id="show_edit">                       
+                          
+                        </div>
+                       
+                        <hr style="width: 80%">
+                         
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col-3"></div>
+                            <div class="col-4 text-left" style="padding-right: 0px;">
+                                <h5>รวม</h5>
+                            </div>
+                            <div class="col-2 text-right">
+                                <h5 id="input-sum">1</h5>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col-3"></div>
+                            <div class="col-4 text-left col-lg-offset-1" style="padding-right: 0px; padding-top: 5px;">
+                                <h5>ลด</h5>
+                            </div>
+                            <div class="col-2 text-right">
+                                <input id="input-discount" type="text" class="form-control text-right" value="9000">
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col-3"></div>
+                            <div class="col-4 text-left" style="padding-right: 0px;">
+                                <h5>สุทธิ</h5>
+                            </div>
+                            <div class="col-2 text-right">
+                                <h5 id="input-total">1</h5>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col-3"></div>
+                            <div class="col-4 text-left" style="padding-right: 0px; padding-top: 5px;">
+                                <h5>รับ</h5>
+                            </div>
+                            <div class="col-2 text-right">
+                                <input id="input-get" type="text" class="form-control text-right" value="5000">
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 35px;">
+                            <div class="col-3"></div>
+                            <div class="col-4 text-left" style="padding-right: 0px;">
+                                <h5>ทอน</h5>
+                            </div>
+                            <div class="col-2 text-right">
+                                <h5 id="input-change">1</h5>
+                            </div>
+                        </div>
+                       
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <button class="btn btn-lg btn-success" style="width: 20%;" onclick="save();">
+                                    บันทึก
+                                    <i class="fa fa-check-square"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                   
-                    <hr style="width: 80%">
-                     
-                    <div class="row" style="margin-bottom: 10px;">
-                        <div class="col-3"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px;">
-                            <h5>รวม</h5>
-                        </div>
-                        <div class="col-3 text-right no-pd">
-                            <h5 id="input-sum">1</h5>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-3"></div>
-                        <div class="col-4 text-left col-lg-offset-1" style="padding-right: 0px; padding-top: 5px;">
-                            <h5>ลด</h5>
-                        </div>
-                        <div class="col-3 text-right no-pd">
-                            <input id="input-discount" type="text" class="form-control text-right" value="9000">
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-3"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px;">
-                            <h5>สุทธิ</h5>
-                        </div>
-                        <div class="col-3 text-right no-pd">
-                            <h5 id="input-total">1</h5>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 5px;">
-                        <div class="col-3"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px; padding-top: 5px;">
-                            <h5>รับ</h5>
-                        </div>
-                        <div class="col-3 text-right no-pd">
-                            <input id="input-get" type="text" class="form-control text-right" value="5000">
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 35px;">
-                        <div class="col-3"></div>
-                        <div class="col-4 text-left" style="padding-right: 0px;">
-                            <h5>ทอน</h5>
-                        </div>
-                        <div class="col-3 text-right no-pd">
-                            <h5 id="input-change">1</h5>
-                        </div>
-                    </div>
-                   
-                    <div class="row">
-                        <div class="col-12 text-center">
-                            <button class="btn btn-lg btn-success" style="width: 20%;" onclick="save();">
-                                บันทึก
-                                <i class="fa fa-check-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </div>     
+                <div>
+                    <i id="nav-rgt" class="fas fa-chevron-right" onclick="nav_bill('right')"></i>
+                </div>             
+            </div>                  
 
             <div class="container-full-width justify-content-center" style="display: flex; align-items: center; width: 100%;">
                 <div id="ctn-show-history" class="jumbotron " style="background: #fdfcfb; padding: 20px; width: 90%;">
@@ -1279,7 +1386,7 @@
             });
 
         function refund(){
-            $('.fa-check-square').prop('hidden', false);
+            $('.mew').prop('hidden', false);
             /*if($("#del_confirm").is(":visible")){
                 $('#del_confirm').prop('hidden', true); 
                 $('#delete').prop('hidden', false); 
@@ -1287,15 +1394,15 @@
             $('#refund_confirm').prop('hidden', false); 
             $('#refund').prop('hidden', true);
 
-            clear_selected();
+            clear_selected();          
         }
 
         arr_refund = [];
         function select_prod(arg){
             if($("#i-"+arg).css('color') == "rgb(0, 128, 0)"){
                 // Disselect
-                $("#i-"+arg).addClass('far fa-square');
-                $("#i-"+arg).removeClass('fas fa-check-square');
+                $("#i-"+arg).addClass('far fa-square mew');
+                $("#i-"+arg).removeClass('fas fa-check-square mew');
                 $("#i-"+arg).css('color', '#666666');
                 for(var i = 0 ; i < arr_refund.length ; i++){
                     if(arr_refund[i].arg == arg){
@@ -1306,8 +1413,8 @@
               
             }else{
                 // Select
-                $("#i-"+arg).removeClass('far fa-square');
-                $("#i-"+arg).addClass('fas fa-check-square');
+                $("#i-"+arg).removeClass('far fa-square mew');
+                $("#i-"+arg).addClass('fas fa-check-square mew');
                 $("#i-"+arg).css('color', 'green');
                 var ch = false;
                 for(var i = 0 ; i < arr_refund.length ; i++){
@@ -1330,7 +1437,7 @@
             }
         }
 
-        function confirm_refund(){
+        function confirm_refund(){           
             $.confirm({
                 title: 'คืนสินค้าในรายการเสร็จสิ้น',
                 content: '<div class="form-group"><label for="txt-area">หมายเหตุ</label><textarea class="form-control" id="txt-area" rows="5"></textarea></div>',
@@ -1371,7 +1478,7 @@
                             data: datastr,
                             success: function (data) {
                                 if(data == "success"){                 
-                                    $('.fa-check-square').prop('hidden', true); 
+                                    $('.mew').prop('hidden', true); 
                                     $('#refund_confirm').prop('hidden', true); 
                                     $('#refund').prop('hidden', false);    
                                     location.reload(true);  
@@ -1386,7 +1493,7 @@
                         });                                       
                     }
                   },ยกเลิก: function () {
-                    $('.fa-check-square').prop('hidden', true); 
+                    $('.mew').prop('hidden', true); 
                     $('#refund_confirm').prop('hidden', true); 
                     $('#refund').prop('hidden', false);
                   }

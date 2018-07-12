@@ -174,7 +174,7 @@
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
                                     "<input id='branch-"+i+"' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
-                                    "<span id='span-branch-" + i + "' hidden></span>"+
+                                    "<span id='span-branch-" + i + "' hidden>"+field.branch_id+"</span>"+
                                     "<ul class='dropdown-menu drop-up text-center'>" +
                                         "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1,"+i+");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
                                         "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2,"+i+");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
@@ -236,6 +236,7 @@
             }
         });
 
+        var b_id,pay_o;
         function open_edit(arg) {
             if(localStorage.role == "manager"){
                 $.alert({
@@ -244,7 +245,9 @@
                     content: 'อนุญาติสำหรับแอดมินเท่านั้น',
                 });
                 return 0;
-            }
+            }           
+            b_id = $("#span-branch-" + arg).html();
+            pay_o = $("#pay-" + arg).val();
             $("#btn-info-" + arg).prop('hidden', true);      
             $("#branch-" + arg).prop('disabled', false);
             $("#pay-" + arg).prop('disabled', false);
@@ -308,7 +311,10 @@
             //Ajax save prod.. ..
             var branch_id = $("#span-branch-" + arg).html();
             var pay = $("#pay-" + arg).val();
-            var order_id = $("#span-" + arg).html();                    
+            var order_id = $("#span-" + arg).html();    
+            if(b_id == branch_id && pay == pay_o){
+                return 0;
+            }
 
             $.ajax({
                 url: "http://150.95.26.163:8080/gitmew/php/update_order.php",
@@ -452,7 +458,7 @@
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
                                     "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
-                                    "<span id='span-branch-" + (start + i) + "' hidden></span>"+
+                                    "<span id='span-branch-" + (start + i) + "' hidden>"+field.branch_id+"</span>"+
                                     "<ul class='dropdown-menu drop-up text-center'>" +
                                         "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
                                         "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +
@@ -571,7 +577,7 @@
                                     "</div>"+
                                     "<div class='col-1 text-center no-pd' style='margin-right: 16px;'>"+
                                     "<input id='branch-" + (start + i) + "' type='text' class='form-control text-center' value='"+field.branch_name+"' data-toggle='dropdown' disabled>"+
-                                    "<span id='span-branch-" + (start + i) + "' hidden></span>"+
+                                    "<span id='span-branch-" + (start + i) + "' hidden>"+field.branch_id+"</span>"+
                                     "<ul class='dropdown-menu drop-up text-center'>" +
                                         "<li id='li-branch-1' class='li-branch' onclick='setbranchinput(1," + (start + i) +");' style='padding-bottom: 5px;'>สิงห์บุรี</li>" +
                                         "<li id='li-branch-2' class='li-branch' onclick='setbranchinput(2," + (start + i) +");' style='padding-bottom: 5px;'>คลังสินค้า</li>" +

@@ -21,8 +21,7 @@
     }   
     $return_id = mysqli_insert_id($conn);	   
     
-    $query = "UPDATE sale_order SET sum_price='$sum',total_discount='0',total_price='$sum'
-    ,get_money='0',change_money='0' WHERE order_id = '$order_id'";  
+    $query = "UPDATE sale_order SET sum_price='$sum' WHERE order_id = '$order_id'";
     $result = mysqli_query($conn, $query);
     if(!$result){
         mysqli_rollback($conn);

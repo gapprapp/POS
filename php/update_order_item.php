@@ -12,9 +12,22 @@
     $comment = $_POST['comment'];
     $dt = $_POST['dt'];
 
+    $query = "SELECT * FROM sale_order WHERE order_id = '$order_id'";  
+    $result = mysqli_query($conn, $query);
+    if(mysqli_num_rows($result) > 0){    
+        while($row = mysqli_fetch_array($result)){
+            $summ = $row['sum_price'];            
+            $diss = $row['total_discount'];
+            $totall = $row['total_price'];
+            $gett = $row['get_money'];
+            $chngg = $row['change_money'];
+        }   
+    }
+
+
     mysqli_begin_transaction($conn);
-    $query = "INSERT INTO order_record(order_id,datetime,sum_price,total_price,note,total_discount,get_money,change_money) 
-    VALUES ('$order_id','$dt','$sum','$total','$comment','$discount','$get','$change')";  
+    $query = "INSERT INTO order_record(order_id,datetime,sum_price,total_price,note,branch_id,total_discount,get_money,change_money) 
+    VALUES ('$order_id','$dt','$summ','$totall','$comment','$branch_id','$diss','$gett','$chngg')";  
     $result = mysqli_query($conn, $query);  
     if(!$result){
         mysqli_rollback($conn);
@@ -39,11 +52,15 @@
         $price = $data['price'];  
         $prod_id = $data['prod_id'];  
 
-        $query = "SELECT prod_amount FROM sale_order_item WHERE order_id = '$order_id' AND item_id='$no'";  
+        $query = "SELECT * FROM sale_order_item WHERE order_id = '$order_id' AND item_id='$no'";  
         $result = mysqli_query($conn, $query);
         if(mysqli_num_rows($result) > 0){    
             while($row = mysqli_fetch_array($result)){
-                $amt_old = $row['prod_amount'];               
+                $amt_old = $row['prod_amount'];
+                $prod_id_old = $row['prod_id'];
+                $price_old = $row['prod_price'];       
+                $dis_old = $row['prod_discount'];         
+                $bonus_old = $row['bonus'];                    
             }   
         } 
         
@@ -61,8 +78,8 @@
             exit;
         }
 
-        $query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_price,prod_amount) 
-        VALUES ('$record_id','$no','$prod_id','$price','$amt')";  
+        $query = "INSERT INTO order_record_item(order_id,item_id,prod_id,prod_price,prod_amount,prod_discount,bonus) 
+        VALUES ('$record_id','$no','$prod_id_old','$price_old','$amt_old','$dis_old','$bonus_old')";
         $result = mysqli_query($conn, $query); 
         if(!$result){
             mysqli_rollback($conn);

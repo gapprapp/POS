@@ -46,7 +46,7 @@
       }   
   } 
 
-  $sql = "SELECT o.record_id,b.branch_name,o.date_time,o.sum_price,o.total_discount,o.total_price,o.get_money,o.change_money FROM order_record o INNER JOIN branch b 
+  $sql = "SELECT o.record_id,b.branch_name,o.datetime,o.sum_price,o.total_discount,o.total_price,o.get_money,o.change_money FROM order_record o INNER JOIN branch b 
   ON o.branch_id = b.branch_id WHERE o.order_id = '$order_id' ORDER BY o.record_id DESC";
   $result = mysqli_query($conn, $sql);
   if(mysqli_num_rows($result) > 0){    
