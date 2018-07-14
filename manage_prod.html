@@ -64,14 +64,14 @@
       $("#li-next").addClass('disabled');
       $("#li-prev").addClass('disabled');
 
-      if(!localStorage.user_id){
+      /*if(!localStorage.user_id){
           $.alert({
           icon: 'fa fa-warning',
           title: 'เตือน',
           content: "กรุณาเข้าสู่ระบบก่อน"
           });
           window.location = "login.html";
-      }   
+      }*/   
 
       if(localStorage.role == "user"){
           $.alert({
@@ -2000,7 +2000,7 @@
         <div class="clearfix">
           <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
         </div>
-        <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+        <div class="collapse navbar-collapse justify-content-md-center " id="navbarCollapse">
           <h3 id="nav-title">จัดการสินค้า</h3>
         </div>
       </nav>
@@ -2157,7 +2157,7 @@
               </div>
               <div class="col-1"></div>
             </div><br>
-            <div id="show-amt-container" class="container">
+            <div id="show-amt-container" class="container" style="max-height: 300px; overflow-y: scroll;">
               <!-- Append after click เพิ่ม -->
             </div><br>
             <!-- Modal footer -->
@@ -2185,7 +2185,7 @@
               <div class="col-1"></div>
             </div>
             <br>
-            <div id="show-cus-container" class="container">
+            <div id="show-cus-container" class="container" style="max-height: 300px; overflow-y: scroll;">
               <!-- Append after click เพิ่ม -->
             </div><br>
             <!-- Modal footer -->
@@ -2227,6 +2227,9 @@
 
   <!-- Menu Toggle -->
   <script>
+    /*$(window).on('load',function(){
+        $('#infoModal').modal('show');
+    });*/
     // Menu Toggle
     $("#menu-toggle").click(function(e) {
       e.preventDefault();

@@ -39,6 +39,9 @@
     <link href="css/untitled.css" rel="stylesheet">
 
     <style>
+        #btm{
+            padding-bottom: 5%;
+        }
         h1,h3,h4 {
             color: #4c4c4c;
         }
@@ -85,14 +88,14 @@
         array_bill = [];
         var rgt = lft = index_rgt = index_lft = 0;
         $(document).ready(function(){
-            if(!localStorage.user_id){
+            /*if(!localStorage.user_id){
                 $.alert({
                 icon: 'fa fa-warning',
                 title: 'เตือน',
                 content: "กรุณาเข้าสู่ระบบก่อน"
                 });
                 window.location = "login.html";
-            }
+            }*/
             url = new URL(window.location.href);
             order_id = url.searchParams.get("order"); 
 
@@ -433,8 +436,14 @@
         function edit(){
             console.log(array_amt);      
             //$("#ctn-show").prop('hidden', true);
-            $("#ctn-edit").prop('hidden', false);
-            $("#bill_right").prop('hidden', true);            
+            if(!$("#bill_right").is(':visible')){
+                // only bill
+                $("#bill_edit").prop('hidden', false);
+                $("#bill_left").prop('hidden', true);
+            }else{
+                $("#bill_edit").prop('hidden', false);
+                $("#bill_right").prop('hidden', true);  
+            }          
 
             //Copy val to input-val
             $('#input-branch').text($('#branch').html()); 
@@ -466,7 +475,7 @@
             }          
             if(json.length == 0 && dis == $('#input-discount').val() && get == $('#input-get').val()){
                 $("#bill_right").prop('hidden', false);
-                $("#ctn-edit").prop('hidden', true);              
+                $("#bill_edit").prop('hidden', true);              
                 return 0;
             }            
 
@@ -512,7 +521,7 @@
                                     $('#change').text($('#input-change').html()); 
 
                                     $("#ctn-show").prop('hidden', false);
-                                    $("#ctn-edit").prop('hidden', true);
+                                    $("#bill_edit").prop('hidden', true);
                                     location.reload(true);  
                                 }else {
                                     $.alert({
@@ -526,7 +535,7 @@
                     }
                   },ยกเลิก: function () {
                     $("#bill_right").prop('hidden', false);
-                    $("#ctn-edit").prop('hidden', true);   
+                    $("#bill_edit").prop('hidden', true);   
                   }
                 }
               });   
@@ -702,7 +711,7 @@
         }
 
         function nav_bill(arg){
-           if(!$("#ctn-edit").prop('hidden') || $('#refund').prop('hidden')){
+           if(!$("#bill_edit").prop('hidden') || $('#refund').prop('hidden')){
                return 0;
             }
           
@@ -967,9 +976,42 @@
                             <h5 id='change_lft' style="letter-spacing: 1px;"></h5>
                         </div>
                     </div>                 
-                
+                    <div id="btm" class="row">
+                        <div class="col-12 text-center">
+                            <button class="btn btn-primary" style="width: 20%;" onclick="edit();">
+                                แก้ไข <i class="fa fa-edit"></i>
+                            </button>
+                            <button id="delete" class="btn btn-danger" style="width: 20%;" onclick="remove();">
+                                ลบ
+                                <i class="fa fa-trash-alt"></i>
+                            </button>
+                            <button id="del_confirm" class="btn btn-danger" style="text-align: center;" 
+                            onclick="confirm_delete();" hidden>ยืนยัน
+                            <span>
+                                <i class="fa fa-trash-alt" style="color: white !important;"></i>
+                            </span>
+                            </button>
+                            <button id="refund" class="btn btn-success" style="text-align: center;" 
+                            onclick="refund();">คืนสินค้า
+                            <span>
+                                <i class="fas fa-redo-alt"></i>
+                            </span>
+                            </button>
+                            <button id="refund_confirm" class="btn btn-success" style="text-align: center;" 
+                            onclick="confirm_refund();" hidden>ยืนยัน
+                            <span>
+                                <i class="fas fa-redo-alt" style="color: white !important;"></i>
+                            </span>
+                            </button>
+                            <button id="print-title" class="btn btn-warning" style="text-align: center;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
+                            <span>
+                                <i class="fa fa-print"></i>
+                            </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div id="bill_right" class="jumbotron text-center" style="margin-right: 2%;">
+                <div id="bill_right" class="jumbotron text-center" style="margin-right: 2%;" hidden>
                     <div class="row">
                         <div class="col-8 text-right">
                             <h5>PPS AUTO GROUP</h5>
@@ -1048,134 +1090,127 @@
                         </div>
                     </div>
                    
-                    <div id="btm" class="row" hidden>
+                    <div id="btm" class="row">
                         <div class="col-12 text-center">
-                            <button class="btn btn-lg btn-primary" style="width: 20%;" onclick="edit();">
+                            <button class="btn btn-primary" style="width: 20%;" onclick="edit();">
                                 แก้ไข <i class="fa fa-edit"></i>
                             </button>
-                            <button id="delete" class="btn btn-lg btn-danger" style="width: 20%;" onclick="remove();">
+                            <button id="delete" class="btn btn-danger" style="width: 20%;" onclick="remove();">
                                 ลบ
                                 <i class="fa fa-trash-alt"></i>
                             </button>
-                            <button id="del_confirm" class="btn btn-lg btn-danger" style="text-align: center;" 
+                            <button id="del_confirm" class="btn btn-danger" style="text-align: center;" 
                             onclick="confirm_delete();" hidden>ยืนยัน
                             <span>
                                 <i class="fa fa-trash-alt" style="color: white !important;"></i>
                             </span>
                             </button>
-                            <button id="refund" class="btn btn-lg btn-success" style="text-align: center;" 
+                            <button id="refund" class="btn btn-success" style="text-align: center;" 
                             onclick="refund();">คืนสินค้า
                             <span>
                                 <i class="fas fa-redo-alt"></i>
                             </span>
                             </button>
-                            <button id="refund_confirm" class="btn btn-lg btn-success" style="text-align: center;" 
+                            <button id="refund_confirm" class="btn btn-success" style="text-align: center;" 
                             onclick="confirm_refund();" hidden>ยืนยัน
                             <span>
                                 <i class="fas fa-redo-alt" style="color: white !important;"></i>
                             </span>
                             </button>
-                            <button id="print-title" class="btn btn-lg btn-warning" style="text-align: center;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
+                            <button id="print-title" class="btn btn-warning" style="text-align: center;" data-toggle="modal" data-target="#printModal">ใบเสร็จ
                             <span>
                                 <i class="fa fa-print"></i>
                             </span>
                             </button>
                         </div>
                     </div>
-                </div> 
-                <div id="ctn-edit" style="width: 50%" hidden>
-                    <div class="jumbotron text-center">
-                      
-                        <div class="row">
-                            <div class="col-8 text-right">
-                                <h5>PPS AUTO GROUP</h5>
-                            </div>
-                            <div class="col-3 text-left no-pd">
-                                <h5 id="input-branch"></h5>
-                            </div>
+                </div>
+
+                <div id="bill_edit" class="jumbotron text-center" style="margin-right: 2%;" hidden>
+                    <div class="row">
+                        <div class="col-8 text-right">
+                            <h5>PPS AUTO GROUP</h5>
                         </div>
-                        
-                        <h5  id="input-number" style="margin-top: 15px;">S18-00018</h5>
-                        <h5 id='input-date' style="letter-spacing: 2px;"></h5>
-                        <div class="row" style="margin-bottom: 5px;">                       
-                            <div class="col-2 text-left">
-                                <h5>ลูกค้า : </h5>
-                            </div>
-                            <div class="col-4 text-left no-pd">
-                                <h5 id="input-cus"></h5>
-                            </div>
-                            <div class="col-3 text-right">
-                                <h5>ผู้บันทึก : </h5>
-                            </div>
-                            <div class="col-3 text-left no-pd">
-                                <h5 id="input-user"></h5>
-                            </div>
-                        </div>
-                        <hr style="width: 80%">
-                      
-                
-                        <div id="show_edit">                       
-                          
-                        </div>
-                       
-                        <hr style="width: 80%">
-                         
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col-3"></div>
-                            <div class="col-4 text-left" style="padding-right: 0px;">
-                                <h5>รวม</h5>
-                            </div>
-                            <div class="col-2 text-right">
-                                <h5 id="input-sum">1</h5>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col-3"></div>
-                            <div class="col-4 text-left col-lg-offset-1" style="padding-right: 0px; padding-top: 5px;">
-                                <h5>ลด</h5>
-                            </div>
-                            <div class="col-2 text-right">
-                                <input id="input-discount" type="text" class="form-control text-right" value="9000">
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col-3"></div>
-                            <div class="col-4 text-left" style="padding-right: 0px;">
-                                <h5>สุทธิ</h5>
-                            </div>
-                            <div class="col-2 text-right">
-                                <h5 id="input-total">1</h5>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 5px;">
-                            <div class="col-3"></div>
-                            <div class="col-4 text-left" style="padding-right: 0px; padding-top: 5px;">
-                                <h5>รับ</h5>
-                            </div>
-                            <div class="col-2 text-right">
-                                <input id="input-get" type="text" class="form-control text-right" value="5000">
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom: 35px;">
-                            <div class="col-3"></div>
-                            <div class="col-4 text-left" style="padding-right: 0px;">
-                                <h5>ทอน</h5>
-                            </div>
-                            <div class="col-2 text-right">
-                                <h5 id="input-change">1</h5>
-                            </div>
-                        </div>
-                       
-                        <div class="row">
-                            <div class="col-12 text-center">
-                                <button class="btn btn-lg btn-success" style="width: 20%;" onclick="save();">
-                                    บันทึก
-                                    <i class="fa fa-check-square"></i>
-                                </button>
-                            </div>
+                        <div class="col-3 text-left no-pd">
+                            <h5 id="input-branch"></h5>
                         </div>
                     </div>
-                </div>     
+                    <h5  id="input-number" style="margin-top: 15px;">S18-00018</h5>
+                    <h5 id='input-date' style="letter-spacing: 2px;"></h5>
+                    <div class="row" style="margin-bottom: 5px;">                       
+                        <div class="col-2 text-left">
+                            <h5>ลูกค้า </h5>
+                        </div>
+                        <div class="col-4 text-left no-pd">
+                            <h5 id="input-cus"></h5>
+                        </div>
+                        <div class="col-3 text-right">
+                            <h5>ผู้บันทึก </h5>
+                        </div>
+                        <div class="col-3 text-left no-pd">
+                            <h5 id="input-user"></h5>
+                        </div>
+                    </div>
+                    <hr style="width: 80%">
+                    <div id="show_edit">                       
+                      
+                    </div>
+                    <hr style="width: 80%">
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>รวม</h5>
+                        </div>
+                        <div class="col-4 text-right">
+                            <h5 id="input-sum">1</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left col-lg-offset-1" style="padding-right: 0px; padding-top: 5px;">
+                            <h5>ลด</h5>
+                        </div>
+                        <div class="col-4 text-right">
+                            <input id="input-discount" type="text" class="form-control form-control-sm text-right">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>สุทธิ</h5>
+                        </div>
+                        <div class="col-4 text-right">
+                            <h5 id="input-total">1</h5>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px; padding-top: 5px;">
+                            <h5>รับ</h5>
+                        </div>
+                        <div class="col-4 text-right">
+                            <input id="input-get" type="text" class="form-control form-control-sm text-right" value="5000">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 35px;">
+                        <div class="col-3"></div>
+                        <div class="col-4 text-left" style="padding-right: 0px;">
+                            <h5>ทอน</h5>
+                        </div>
+                        <div class="col-4 text-right">
+                            <h5 id="input-change">1</h5>
+                        </div>
+                    </div>
+                   
+                    <div id="btm" class="row">
+                        <div class="col-12 text-center">
+                            <button class="btn btn-success" style="width: 20%;" onclick="save();">
+                                บันทึก
+                                <i class="fa fa-check-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>    
                 <div>
                     <i id="nav-rgt" class="fas fa-chevron-right" onclick="nav_bill('right')"></i>
                 </div>             

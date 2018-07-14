@@ -278,3 +278,8 @@ img{
   max-height: 200px; 
   overflow-y: auto; 
 }
+
+.a{color: #666;}
+.a:hover{color: #666;}
+
+.span-a{color: #666; font-size: 90%;}

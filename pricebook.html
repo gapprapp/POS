@@ -42,8 +42,8 @@
         }
 
         .no-pd{
-            padding-left: 0;
-            padding-right: 0;
+            padding-left: 4px;
+            padding-right: 4px;
         }
     </style>
 
@@ -82,43 +82,43 @@
                     console.log(obj);                                 
                         $.each(obj, function(i, field){
                             c_prod++;
-                           $('.list-group').append('<li id="item-'+c_prod+'" class="list-group-item text-center rounded">' +
-                                '<span id="span-id-'+c_prod+'" hidden>'+field.prod_id+'</span>' +
-                                '<div class="row">' +
-                                    '<div class="col-3" style="margin-left: 3%;">' +
-                                        '<div class="input-group">' +
-                                        '<input id="no-'+c_prod+'" value="'+c_prod+'" type="text" class="form-control text-center" style="width: 15%;" readonly>' +
-                                        '<input id="barcode-'+c_prod+'" value="'+field.barcode+'" type="text" class="form-control text-center" style="width: 85%;" readonly>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class="col-3 text-center">' +
-                                        '<input id="name-'+c_prod+'" value="'+field.prod_name+'" type="text" class="form-control text-center" readonly>' +
-                                    '</div>' +
-                                    '<div class="col-1 text-center">' +
-                                        '<input id="unit-'+c_prod+'" value="'+field.unit_name+'" type="text" class="form-control text-center" readonly>' +
-                                    '</div>' +
-                                    '<div class="col-1 text-center no-pd" style="margin-left: 1%; margin-right: 1%;">' +
-                                        '<input id="price-'+c_prod+'" value="'+field.prod_price+'" type="text" class="form-control text-center" readonly>' +
-                                    '</div>' +
-                                    '<div class="col-1 text-center no-pd">' +
-                                        '<input id="sprice-'+c_prod+'" onkeyup="chng_sprice('+c_prod+')" value="'+field.special_prod_price+'" type="text" class="form-control text-center" readonly>' +
-                                    '</div>' +
-                                    '<div class="col-1 text-center no-pd" style="margin-left: 1%;">' +
-                                        '<input id="diff-'+c_prod+'" value="'+(field.prod_price-field.special_prod_price)+'" type="text" class="form-control text-center" readonly>' +
-                                    '</div>' +
-                                    '<div class="col-1 text-center" style="margin-top: 3px;">' +
-                                        '<button id="btn-edit-'+c_prod+'" class="btn btn-sm btn-primary" style="margin-right: 1%;" onclick="open_edit('+c_prod+')">'+
-                                            '<i id="i-edit-1" class="fa fa-edit"></i>' +
-                                        '</button>' +
-                                        '<button id="btn-save-'+c_prod+'" class="btn btn-sm btn-success" style="margin-right: 1%;" onclick="save_edit('+c_prod+')" hidden>' +
-                                            '<i id="i-edit-1" class="fa fa-check-square"></i>' +
-                                        '</button>' +
-                                        '<button id="btn-del-'+c_prod+'" class="btn btn-sm btn-danger" onclick="del_row('+c_prod+',\'st\')" hidden>' +
-                                            '<i id="i-del-1" class="fa fa-minus"></i>' +
-                                        '</button>' +
-                                    '</div>' +
-                                '</div>' +
-                           ' </li>');
+                           $('#list-group').append('<li id="item-'+c_prod+'" class="list-group-item text-center rounded">' +
+                       '<span id="span-id-'+c_prod+'" hidden>'+field.prod_id+'</span>' +
+                       '<div class="row" style="margin-left: 2%;">' +
+                           '<div class="col-3 no-pd">' +
+                               '<div class="input-group">' +
+                               '<input id="no-'+c_prod+'" value="'+c_prod+'" type="text" class="form-control text-center" style="width: 20%;" readonly>' +
+                               '<input id="barcode-'+c_prod+'" value="'+field.barcode+'" type="text" class="form-control text-center" style="width: 80%;" readonly>' +
+                           '</div>' +
+                           '</div>' +
+                           '<div class="col-3 text-center no-pd">' +
+                               '<input id="name-'+c_prod+'" value="'+field.prod_name+'" type="text" class="form-control text-center" readonly>' +
+                           '</div>' +
+                           '<div class="col-1 text-center no-pd">' +
+                               '<input id="unit-'+c_prod+'" value="'+field.unit_name+'" type="text" class="form-control text-center" readonly>' +
+                           '</div>' +
+                           '<div class="col-1 text-center no-pd">' +
+                               '<input id="price-'+c_prod+'" value="'+field.prod_price+'" type="text" class="form-control text-center" readonly>' +
+                           '</div>' +
+                           '<div class="col-1 text-center no-pd">' +
+                               '<input id="sprice-'+c_prod+'" onkeyup="chng_sprice('+c_prod+')" value="'+field.special_prod_price+'" type="text" class="form-control text-center" readonly>' +
+                           '</div>' +
+                           '<div class="col-1 text-center no-pd">' +
+                               '<input id="diff-'+c_prod+'" value="'+(field.prod_price-field.special_prod_price)+'" type="text" class="form-control text-center" readonly>' +
+                           '</div>' +
+                           '<div class="col-2 text-center no-pd" style="margin-top: 3px;">' +
+                              '<button id="btn-edit-'+c_prod+'" class="btn btn-sm btn-primary" onclick="open_edit('+c_prod+')" hidden>' +
+                                   '<i id="i-edit-1" class="fa fa-edit"></i>' +
+                               '</button>' +
+                               '<button id="btn-save-'+c_prod+'" class="btn btn-sm btn-success" onclick="save_edit('+c_prod+')" style="margin-right: 3px;">' +
+                                   '<i id="i-edit-1" class="fa fa-check-square"></i>' +
+                               '</button>' +
+                               '<button id="btn-del-'+c_prod+'" class="btn btn-sm btn-danger" onclick="del_row('+c_prod+',\'st\')" style="margin-right: 3px;">' +
+                                   '<i id="i-del-1" class="fa fa-minus"></i>' +
+                               '</button>' +
+                          '</div>' +
+                      '</div>' +
+                   '</li>');
                         });
                     }                 
                 }               
@@ -135,34 +135,35 @@
                 return 0;
             } // Already click
             else{
+                console.log("Hello");
                 //add_index++;
-                c_prod++                   
-                $(".add-group").prop('hidden', false);
+                c_prod++;                  
+                $("#add-group").prop('hidden', false);
                 var text_html = '<li id="item-'+c_prod+'" class="list-group-item text-center rounded">'+
-                        '<span id="span-id-'+c_prod+'" hidden>0</span>' +
-                        '<div class="row">'+
-                            '<div class="col-3" style="margin-left: 3%;">'+
+                        '<span id="span-id-'+c_prod+'" hidden>0</span>'+
+                        '<div class="row" style="margin-left: 2%;">'+
+                            '<div class="col-3 no-pd">'+
                                 '<div class="input-group">'+
-                                '<input id="no-'+c_prod+'" type="text" class="form-control text-center" style="width: 15%;" readonly value="'+c_prod+'">'+
-                                '<input id="barcode-'+c_prod+'" type="text" class="form-control text-center" style="width: 85%;" readonly>'+
+                                '<input id="no-'+c_prod+'" type="text" class="form-control text-center" style="width: 20%;" value="'+c_prod+'" readonly>'+
+                                '<input id="barcode-'+c_prod+'" type="text" class="form-control text-center" style="width: 80%;" readonly>'+
                               '</div>'+
                             '</div>'+
-                            '<div class="col-3 text-center">'+
+                            '<div class="col-3 text-center no-pd">'+
                                 '<input id="name-'+c_prod+'" type="text" class="form-control text-center">'+
                             '</div>'+
-                            '<div class="col-1 text-center">'+
-                                '<input id="unit-'+c_prod+'" type="text" class="form-control text-center" readonly>'+
-                            '</div>'+
-                            '<div class="col-1 text-center no-pd" style="margin-left: 1%; margin-right: 1%;">'+
-                                '<input id="price-'+c_prod+'" type="text" class="form-control text-center" readonly>'+
+                            '<div class="col-1 text-center no-pd">'+
+                                '<input id="unit-'+c_prod+'" type="text" class="form-control text-center">'+
                             '</div>'+
                             '<div class="col-1 text-center no-pd">'+
-                                '<input id="sprice-'+c_prod+'" onkeyup="chng_sprice('+c_prod+')" type="text" class="form-control text-center">'+
+                                '<input id="price-'+c_prod+'" type="text" class="form-control text-center">'+
                             '</div>'+
-                            '<div class="col-1 text-center no-pd" style="margin-left: 1%;">'+
-                                '<input id="diff-'+c_prod+'" type="text" class="form-control text-center" readonly>'+
+                            '<div class="col-1 text-center no-pd">'+
+                                '<input id="sprice-'+c_prod+'" onkeyup="chng_sprice('+c_prod+')" type="number" class="form-control text-center no-spin" style="font-size: 90%;">'+
                             '</div>'+
-                            '<div class="col-1 text-center" style="margin-top: 3px;">'+
+                            '<div class="col-1 text-center no-pd">'+
+                                '<input id="diff-'+c_prod+'" type="number" class="form-control text-center no-spin" style="font-size: 90%;" readonly>'+
+                            '</div>'+
+                            '<div class="col-2 text-center" style="margin-top: 3px;">'+
                                 '<button id="btn-edit-'+c_prod+'" class="btn btn-sm btn-primary" style="margin-right: 3px;"+ onclick="open_edit('+c_prod+')" hidden>'+
                                     '<i class="fa fa-edit"></i>'+
                                 '</button>'+
@@ -178,7 +179,7 @@
                             '</div>'+
                         '</div>'+
                     '</li>';
-                $(".add-group").append(text_html);               
+                $("#add-group").append(text_html);               
                 $("#name-"+c_prod).focus();
 
                 var options = {
@@ -508,9 +509,19 @@
                     <a href="#menu-toggle" class="navbar-brand " id="menu-toggle" style="color: #666;">รายการ</a>
                 </div>
                 <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
-                    <h3 id="nav-title" style="color: #666;">สมุดราคา</h3>
+                  <h3 id="nav-title" style="color: #666;">สมุดราคา</h3>
                 </div>
             </nav>
+            <!-- Page Navs -->
+            <div class="row" style="margin-top: -20px;">
+                <div class="col-12 text-right">
+                <div class="justify-content-md-right" id="navbarCollapse">
+                  <a href="manage_cus.html" title="" class="a">จัดการลูกค้า</a>
+                  <span class="span-a">></span>
+                  <a href="#" title="" class="a">สมุดราคา</a>
+                </div>
+                </div>
+            </div>
             <!-- End Navbar -->
             <div class="container-fullwidth justify-content-center">
                 <!-- 3 Search 
@@ -562,57 +573,100 @@
            
                 <!-- Header -->
                 <div class="container-fullwidth justify-content-center" style="max-height: 100vh-70px;">
-                    <div class="row" style="padding-right: 5%; padding-left: 5%; margin-top: 25px; margin-bottom: 10px;">
-                    <div class="col-3 text-center" style="margin-left: 3%;">บาร์โค้ด</div>
-                    <div class="col-3 text-center">รายการสินค้า</div>
-                    <div class="col-1 text-center">หน่วย</div>
-                    <div class="col-1 text-center no-pd" style="margin-left: 1%; margin-right: 1%;">ราคา</div>
+                    <div class="row" style="margin-left: 1%; margin-top: 25px; margin-bottom: 10px;">
+                    <div class="col-3 text-center no-pd">บาร์โค้ด</div>
+                    <div class="col-3 text-center no-pd">รายการสินค้า</div>
+                    <div class="col-1 text-center no-pd">หน่วย</div>
+                    <div class="col-1 text-center no-pd">ราคา</div>
                     <div class="col-1 text-center no-pd">ราคาพิเศษ</div>
-                    <div class="col-1 text-center no-pd" style="margin-left: 1%;">ลดไป</div>
+                    <div class="col-1 text-center no-pd">ลดไป</div>
                     <div class="col-1"></div>
                   </div>
 
                 <!-- Add -->
-                <ul class="add-group" style="padding-right: 3.5%; padding-left: 3.5%;" hidden>
-                    <!-- Append text html 
-                    <li id='add-1' class='list-group-item text-center rounded'>
-                        <div class="row">
-                            <div class="col-3">
+                <ul id="add-group" class="list-group" hidden style="margin-bottom: 2%;">
+                    <!-- Good 
+                    <li id="item-'+c_prod+'" class='list-group-item text-center rounded'>
+                        <span id="span-id-'+c_prod+'" hidden>0</span>
+                        <div class="row" style="margin-left: 2%;">
+                            <div class="col-3 no-pd">
                                 <div class="input-group">
-                                <input id="no" type="text" class="form-control" style="width: 15%;" readonly>
-                                <input id="barcode" type="text" class="form-control text-center" style="width: 85%;" readonly>
+                                <input id="no-'+c_prod+'" type="text" class="form-control text-center" style="width: 20%;" readonly>
+                                <input id="barcode-'+c_prod+'" type="text" class="form-control text-center" style="width: 80%;" readonly>
                               </div>
                             </div>
-                            <div class="col-3 text-center">
-                                <input type="text" class="form-control">
+                            <div class="col-3 text-center no-pd">
+                                <input id="name-'+c_prod+'" type="text" class="form-control text-center">
                             </div>
-                            <div class="col-1 text-center">
-                                <input type="text" class="form-control">
+                            <div class="col-1 text-center no-pd">
+                                <input id="unit-'+c_prod+'" type="text" class="form-control text-center">
                             </div>
-                            <div class="col-1 text-center">
-                                <input type="text" class="form-control">
+                            <div class="col-1 text-center no-pd">
+                                <input id="price-'+c_prod+'" type="text" class="form-control text-center">
                             </div>
-                            <div class="col-1 text-center">
-                                <input type="text" class="form-control">
+                            <div class="col-1 text-center no-pd">
+                                <input id="sprice-'+c_prod+'" onkeyup="chng_sprice('+c_prod+')" type="number" class="form-control text-center no-spin" style="font-size: 90%;">
                             </div>
-                            <div class="col-1 text-center">
-                                <input type="text" class="form-control">
+                            <div class="col-1 text-center no-pd">
+                                <input id="diff-'+c_prod+'" type="number" class="form-control text-center no-spin" style="font-size: 90%;" readonly>
                             </div>
-                            <div class="col-1 text-center">
-                                <input type="text" class="form-control" readonly>
-                            </div>
-                            <div class="col-1 text-center" style="margin-top: 3px;">
-                                <button id='btn-add-1' class='btn btn-sm btn-success' style='margin-right: 3px;' onclick='add_new_prod("1")'>
-                                    <i id='i-add-1' class='fa fa-plus'></i>
+                            <div class="col-2 text-center" style="margin-top: 3px;">
+                                <button id="btn-edit-'+c_prod+'" class="btn btn-sm btn-primary" style="margin-right: 3px;"+ onclick="open_edit('+c_prod+')" hidden>
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button id="btn-save-'+c_prod+'" class="btn btn-sm btn-success" style="margin-right: 3px;"+ onclick="save_edit('+c_prod+')" hidden>
+                                    <i class="fa fa-check-square"></i>
+                                </button>
+                                <button id="btn-del-'+c_prod+'" class="btn btn-sm btn-danger" style="margin-right: 3px;"+ onclick="del_row('+c_prod+',\'add\')" hidden>
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                                <button id="btn-add-'+c_prod+'" class="btn btn-sm btn-success" style="margin-right: 3px;"+ onclick="add_new_prod('+c_prod+')">
+                                    <i class="fa fa-plus"></i>
                                 </button>
                             </div>
                         </div>
                     </li>-->
                 </ul>
 
-                <ul class="list-group" style="padding-right: 3.5%; padding-left: 3.5%;">
+                <ul id="list-group" class="list-group">
                     <!-- Append text html -->
-                   
+                   <li id="item-'+c_prod+'" class="list-group-item text-center rounded">
+                       <span id="span-id-'+c_prod+'" hidden>'+field.prod_id+'</span>
+                       <div class="row" style="margin-left: 2%;">
+                           <div class="col-3 no-pd">
+                               <div class="input-group">
+                               <input id="no-'+c_prod+'" value="'+c_prod+'" type="text" class="form-control text-center" style="width: 20%;" readonly>
+                               <input id="barcode-'+c_prod+'" value="'+field.barcode+'" type="text" class="form-control text-center" style="width: 80%;" readonly>
+                           </div>
+                           </div>
+                           <div class="col-3 text-center no-pd">
+                               <input id="name-'+c_prod+'" value="'+field.prod_name+'" type="text" class="form-control text-center" readonly>
+                           </div>
+                           <div class="col-1 text-center no-pd">
+                               <input id="unit-'+c_prod+'" value="'+field.unit_name+'" type="text" class="form-control text-center" readonly>
+                           </div>
+                           <div class="col-1 text-center no-pd">
+                               <input id="price-'+c_prod+'" value="'+field.prod_price+'" type="text" class="form-control text-center" readonly>
+                           </div>
+                           <div class="col-1 text-center no-pd">
+                               <input id="sprice-'+c_prod+'" onkeyup="chng_sprice('+c_prod+')" value="'+field.special_prod_price+'" type="text" class="form-control text-center" readonly>
+                           </div>
+                           <div class="col-1 text-center no-pd">
+                               <input id="diff-'+c_prod+'" value="'+(field.prod_price-field.special_prod_price)+'" type="text" class="form-control text-center" readonly>
+                           </div>
+                           <div class="col-2 text-center no-pd" style="margin-top: 3px;">
+                               <button id="btn-edit-'+c_prod+'" class="btn btn-sm btn-primary" onclick="open_edit('+c_prod+')" hidden>
+                                   <i id="i-edit-1" class="fa fa-edit"></i>
+                               </button>
+                               <button id="btn-save-'+c_prod+'" class="btn btn-sm btn-success" onclick="save_edit('+c_prod+')">
+                                   <i id="i-edit-1" class="fa fa-check-square"></i>
+                               </button>
+                               <button id="btn-del-'+c_prod+'" class="btn btn-sm btn-danger" onclick="del_row('+c_prod+',\'st\')">
+                                   <i id="i-del-1" class="fa fa-minus"></i>
+                               </button>
+                          </div>
+                      </div>
+                   </li>
                 </ul>
                 <br>
             </div>
