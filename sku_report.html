@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>รายงานสินค้า</title>
+
+  <!-- Bootstrap Import -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+
+  <!-- Super cool dialog-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+  <!-- Date Picker -->
+  <link href="css/datepicker.css" rel="stylesheet">
+  <script src="js/datepicker.js"></script>
+  <script src="js/datepicker.th-TH.js"></script>
+  
+  <!-- Sidbar -->
+  <link href="css/simple-sidebar.css" rel="stylesheet">
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+  <!-- Main -->
+  <link href="css/untitled.css" rel="stylesheet">
+
+  <style>
+    .disabled{
+      background-color: #444;
+      color: white;
+    }
+
+    .nopd-5{
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+    .nopd{
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .inline{
+        display: inline-block;
+    }
+
+    h2{
+      width: 25%; border: solid 1px #666; border-radius: 3px; color: white; background-color: #666; padding-top: 9px; padding-bottom: 9px; letter-spacing: 1px;
+    }
+    h4{
+      width: 18%; border: solid 1px #666; border-radius: 3px; color: white; background-color: #666; padding-top: 9px; padding-bottom: 9px; letter-spacing: 1px;
+    }
+  </style>
+
+    <script>
+      $(document).ready(function() {
+        $("#opt-month").addClass('disabled');
+        $("#select-year").prop('hidden', true);
+        $("#select-month").prop('hidden', true);
+
+        $("#title-1").prop('hidden', false);
+        $("#date-full").prop('hidden', false);
+        $("#title-2").prop('hidden', true);
+        $("#date-year").prop('hidden', true);
+
+        // Date Now..
+        var d = new Date($.now());
+        date = d.getDate();
+        month = d.getMonth();
+        var year = d.getFullYear() + 543;
+        //alert(date + ' / ' + month + ' / ' + year);
+        fullmonth = checkmonth(month);
+        $("#date-full").text(date + " " + fullmonth + " พ.ศ. " + year);
+
+        // datepicker
+        $('[data-toggle="datepicker"]').datepicker({
+            language: 'th-TH',
+            format: 'yyyy-mm-dd',
+            autoHide: true,
+            endDate: '0d'
+        }).change(function (event) {
+            //alert(event.target.id);
+            var date = $(this).val();
+            var split = date.split("-");// yyyy[0] mm[1] dd[2] 
+            var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+            var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            var d = new Date(split[0], split[1]-1, split[2]);
+            var first = days[d.getDay()];
+            month_index = split[1].replace(/^0+/, '');
+            thai_year = (parseInt(split[0])+543)%2500;
+            $(this).val((first + " " + split[2] + "/" + month[month_index] + "/" + thai_year));
+            id = event.target.id.split('opt-');
+            text = id[1]+"complete";
+            $("#" + event.target.id).trigger(text);
+        });
+      });
+
+      function checkfullmonth(arg){
+        var i = 0;
+        var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        for(i; i < month.length; i++){
+          if(arg == month[i]){
+            return i;
+          }
+        }
+      }
+
+      function checkmonth(arg){
+        switch(arg) {
+            case 1: return 'มกราคม';
+            case 2: return 'กุมภาพันธ์';
+            case 3: return 'มีนาคม';
+            case 4: return 'เมษายน';
+            case 5: return 'พฤษภาคม';
+            case 6: return 'มิถุนายน';
+            case 7: return 'กรกฎาคม';
+            case 8: return 'สิงหาคม';
+            case 9: return 'กันยายน';
+            case 10: return 'ตุลาคม';
+            case 11: return 'พฤศจิกายน';
+            case 12: return 'ธันวาคม'; 
+        }    
+      }
+
+      function setbranch(arg){
+        if(arg == "show"){
+          $("#btn-branch").text("ทั้งหมด");
+          $("#row-slct-branch").prop('hidden', true);
+          $(".input-spcf-branch").prop('hidden', true);
+          $(".head-wthout-branch").prop('hidden', true);
+          $(".input-wthout-branch").prop('hidden', true);
+          $(".head-spcf-branch").prop('hidden', true);
+          $(".head-wth-branch").prop('hidden', false);
+          $(".input-wth-branch").prop('hidden', false);
+        }else if(arg == "non"){
+          $("#btn-branch").text("ไม่แสดง");
+          $("#row-slct-branch").prop('hidden', true);
+          $(".head-wth-branch").prop('hidden', true);
+          $(".input-wth-branch").prop('hidden', true);
+          $(".input-spcf-branch").prop('hidden', true);
+          $(".head-spcf-branch").prop('hidden', true);
+          $(".head-wthout-branch").prop('hidden', false);
+          $(".input-wthout-branch").prop('hidden', false);
+        }else if(arg == "select"){
+          // arg == number -> 0-n followed by size of branch arry
+          // branch[0] == "สิงห์บุรี"
+          //$("#btn-branch").text(branch[0]);
+          $("#btn-branch").text("เลือกสาขา");
+          $("#row-slct-branch").prop('hidden', false);
+          $(".head-wth-branch").prop('hidden', true);
+          $(".input-wth-branch").prop('hidden', true);
+          $(".head-wthout-branch").prop('hidden', true);
+          $(".input-wthout-branch").prop('hidden', true);
+          $(".input-spcf-branch").prop('hidden', false);
+          $(".head-spcf-branch").prop('hidden', false);
+        }
+      }
+
+      function setmonth(arg){
+        var text;
+        switch(arg) {
+            case 1:
+              text = "มกราคม";
+              $("#select-month .btn").text(text);
+              break;
+            case 2:
+              text = "กุมภาพันธ์";
+              $("#select-month .btn").text(text);
+              break;
+            case 3:
+              text = "มีนาคม";
+              $("#select-month .btn").text(text);
+              break;
+            case 4:
+              text = "เมษายน";
+              $("#select-month .btn").text(text);
+              break;
+            case 5:
+              text = "พฤษภาคม";
+              $("#select-month .btn").text(text);
+              break;
+            case 6:
+              text = "มิถุนายน";
+              $("#select-month .btn").text(text);
+              break;
+            case 7:
+              text = "กรกฎาคม";
+              $("#select-month .btn").text(text);
+              break;
+            case 8:
+              text = "สิงหาคม";
+              $("#select-month .btn").text(text);
+              break;
+            case 9:
+              text = "กันยายน";
+              $("#select-month .btn").text(text);
+              break;
+            case 10:
+              text = "ตุลาคม";
+              $("#select-month .btn").text(text);
+              break;
+            case 11:
+              text = "พฤศจิกายน";
+              $("#select-month .btn").text(text);
+              break;
+            case 12:
+              text = "ธันวาคม";
+              $("#select-month .btn").text(text);
+              break;  
+        }
+
+        $("#title-1").text(text);
+        $("#date-full").prop('hidden', true);
+        $("#date-year").prop('hidden', false);
+        $("#date-year").text(year);
+      }
+
+      function setyear(arg){
+        $("#select-year .btn").text("ปี "+arg);
+        $("#date-year").prop('hidden', false);
+        $("#date-year").text("พ.ศ. " + arg);
+      }
+
+      function checkChange(arg){
+        txt = $(arg).next().text();
+        if(arg.checked == true){
+          $('<div id="head-'+txt+'" class="col-1 text-center nopd-5"><span class="inline">สาขา</span> <span class="inline">'+txt+'</span></div>').insertBefore($('#head-spcf-total'));
+          $('<div id="head-'+txt+'" class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>').insertBefore($('#input-spcf-total'));
+        }if(arg.checked == false){
+          $("#head-"+txt).remove();
+          $("#input-"+txt).remove();
+        }
+      }
+    </script>
+</head>
+
+<body style="overflow-x: auto;">
+    <div id="wrapper">
+      <!-- Sidebar -->
+      <div id="sidebar-wrapper">
+          <ul class="sidebar-nav" style="margin-top: 20px">
+            <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+              <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+              <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+              <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
+              <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
+              <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
+              <li><a href="http://150.95.26.163:8080/gitmew/multi_unit.html">๐ สินค้าหลายหน่วย</a></li>
+              <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+          </ul>
+      </div>
+
+      <!-- Page Content -->
+      <div id="page-content-wrapper">
+          <div id="offline" class="alert alert-danger alert-dismissible" hidden>
+            <button type="button" class="close" onclick="dismiss()">&times;</button>
+            <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
+          </div>
+          <div id="online" class="alert alert-success alert-dismissible" hidden>
+            <button type="button" class="close" onclick="dismiss()">&times;</button>
+            <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
+          </div>
+          <!-- Navbar -->
+          <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #98b280;">
+            <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+              <h3 id="nav-title">รายงานสินค้า</h3>
+            </div>
+          </nav>         
+
+          <!-- Ctn-Options -->
+          <div class="container-fullwidth">
+            <div class="row" style="margin-bottom: 2px;">
+              <div class="col-1"></div>
+              <div class="col-3 text-left" style="padding-left: 0;">แสดง จน. ขายของสาขา</div>
+              <div class="col-8"></div>
+            </div>
+
+            <div class="row">
+              <div class="col-1"></div>
+              <div class="col-2 text-left">
+                <button id="btn-branch" class="btn btn-secondary dropdown-toggle" type="button" id="branch-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 115px;">ไม่แสดง</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 115px !important; padding: 0 !important;">
+                  <a class="dropdown-item text-center" onclick="setbranch('show');">ทั้งหมด</a>
+                  <a class="dropdown-item text-center" onclick="setbranch('non');">ไม่แสดง</a>
+                  <a class="dropdown-item text-center" onclick="setbranch('select');">เลือกสาขา</a>
+                </div>
+              </div>
+              <div class="col-3 input-group nopd">
+                  <input id="opt-from" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd" placeholder="เลือกวันที่" hidden readonly style="margin-right: 5px;">
+                  <input id="opt-to" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd" placeholder="ถึงวันที่" hidden disabled>
+              </div>
+              <div class="col-3 input-group">
+                  <button id="opt-date" class="btn btn-secondary disabled" style="width: 90px; background-color: #666; margin-right: 5px;">รายวัน</button>
+                  <button id="opt-month" class="btn btn-secondary" style="background-color: #666;">รายเดือน</button>
+              </div>
+              <div class="col-3 input-group">
+                  <div id="select-month" class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666;  margin-right: 10px; width: 105px;">เดือน
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important; max-height: 150px !important; overflow-y: auto;">
+                      <a class="dropdown-item text-center" onclick="setmonth(1);" href="#">มกราคม</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(2);" href="#">กุมภาพันธ์</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(3);" href="#">มีนาคม</a>
+                       <a class="dropdown-item text-center" onclick="setmonth(4);" href="#">เมษายน</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(5);" href="#">พฤษภาคม</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(6);" href="#">มิถุนายน</a>
+                       <a class="dropdown-item text-center" onclick="setmonth(7);" href="#">กรกฎาคม</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(8);" href="#">สิงหาคม</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(9);" href="#">กันยายน</a>
+                       <a class="dropdown-item text-center" onclick="setmonth(10);" href="#">ตุลาคม</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(11);" href="#">พฤศจิกายน</a>
+                      <a class="dropdown-item text-center" onclick="setmonth(12);" href="#">ธันวาคม</a>
+                    </div>
+                  </div>
+                  <div id="select-year" class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">
+                      ปี 2561
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important;">
+                      <a class="dropdown-item" href="#" onclick="setyear('2561')">ปี 2561</a>
+                      <a class="dropdown-item" href="#" onclick="setyear('2560')">ปี 2560</a>
+                      <a class="dropdown-item" href="#" onclick="setyear('2559')">ปี 2559</a>
+                    </div>
+                  </div>
+              </div>
+            </div> 
+
+            <!-- Checkbox Select Branch -->
+            <div id="row-slct-branch" class="row" style="margin-top: 20px; padding-right: 12%;" hidden>
+              <div class="col-1"></div>
+              <div class="col-1 text-center">สาขา : </div>
+              <div class="col-10 input-group text-left">
+                <div class="col-2 nopd">
+                  <input type="checkbox" onchange="checkChange(this);">
+                  <label for="" style="margin-right: 2px;">สิงห์บุรี</label>
+                </div>
+                <div class="col-2 nopd">
+                  <input type="checkbox" onchange="checkChange(this);">
+                  <label for="" style="margin-right: 2px;">อ่างทอง</label>
+                </div>
+                <div class="col-2 nopd">
+                  <input type="checkbox" onchange="checkChange(this);">
+                  <label for="" style="margin-right: 2px;">คลังสินค้า</label>
+                </div>
+              </div>
+            </div>
+          </div> <hr style="width: 90%;">
+
+          <!-- Ctn-Date and Month -->
+          <div class="container-fullwidth" style="margin-bottom: 20px;">
+            <div id="row-title-1" class="row justify-content-center">
+              <!-- วันนี้ // รายวัน // เดือนต่างๆ -->
+              <h2 id="title-1" class="text-center">สินค้า</h2>
+            </div>
+            <div id="row-title-2" class="row justify-content-center" hidden>
+              <!-- จาก ถึง -->
+              <h4 id="date-from" class="text-center"></h4>
+              <h1 style="color: #666; padding-top: 3px; margin-left: 10px; margin-right: 10px;">-</h1>
+              <h4 id="date-to" class="text-center"></h4>
+            </div>
+            <div id="row-date" class="row justify-content-center">
+              <p id="date-full" >22 มกราคม พ.ศ. 2561</p>
+              <p id="date-year" hidden>พ.ศ. 2561</p>
+            </div>
+          </div>
+          
+          <!-- Ctn-Header -->
+          <div id="ctn-head" class="container-fullwidth">
+            <div class="row head-wth-branch justify-content-center" hidden>
+              <div class="col-2 text-center nopd-5">บาร์โค๊ด</div>
+              <div class="col-3 text-center nopd-5">ชื่อสินค้า</div>
+              <div class="col-1 text-center nopd-5">ราคา</div>
+              <div class="col-1 text-center nopd-5">หน่วย</div>
+              <div class="col-1 text-center nopd"><span class="inline">สาขา</span> <span class="inline">สิงห์บุรี</span></div>
+              <div class="col-1 text-center nopd"><span class="inline">สาขา</span> <span class="inline">อ่างทอง</span></div>
+              <div class="col-1 text-center nopd"><span class="inline">สาขา</span> <span class="inline">คลังสินค้า</span></div>
+              <div class="col-1 text-center nopd">จำนวนรวม</div>
+            </div>
+            <div class="row head-wthout-branch justify-content-center" >
+              <div class="col-2 text-center nopd-5">บาร์โค๊ด</div>
+              <div class="col-3 text-center nopd-5">ชื่อสินค้า</div>
+              <div class="col-1 text-center nopd-5">ราคา</div>
+              <div class="col-1 text-center nopd-5">หน่วย</div>
+              <div class="col-1 text-center nopd">จำนวนรวม</div>
+            </div>
+            <div class="row head-spcf-branch justify-content-center" hidden>
+              <div class="col-2 text-center nopd-5">บาร์โค๊ด</div>
+              <div class="col-3 text-center nopd-5">ชื่อสินค้า</div>
+              <div class="col-1 text-center nopd-5">ราคา</div>
+              <div class="col-1 text-center nopd-5">หน่วย</div>
+              <div id="head-spcf-total" class="col-1 text-center nopd-5">จำนวนรวม</div>
+            </div>
+          </div>
+
+          <!-- Ctn-Show -->
+          <div id="ctn-show" class="container-fullwidth" style="margin-top: 5px;">
+            <div class="row input-wth-branch justify-content-center" style="flex-wrap: nowrap;" hidden>
+              <div class="col-2 nopd-5">
+                <div class='input-group-prepend'>
+                  <span id="span-no" class='input-group-text'>#</span>
+                  <input id='barcode' type='text' class='form-control text-center'>
+                </div>
+              </div>
+              <div class="col-3 nopd-5">
+                <input id='name' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='price' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='unit' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='branch-1' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='branch-2' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='branch-3' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+            </div>
+            <div class="row input-wthout-branch justify-content-center" style="flex-wrap: nowrap;" >
+              <div class="col-2 nopd-5">
+                <div class='input-group-prepend'>
+                  <span id="span-no" class='input-group-text'>#</span>
+                  <input id='barcode' type='text' class='form-control text-center'>
+                </div>
+              </div>
+              <div class="col-3 nopd-5">
+                <input id='name' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='price' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='unit' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+            </div>
+            <div class="row input-spcf-branch justify-content-center" style="flex-wrap: nowrap;" hidden>
+              <div class="col-2 nopd-5">
+                <div class='input-group-prepend'>
+                  <span id="span-no" class='input-group-text'>#</span>
+                  <input id='barcode' type='text' class='form-control text-center'>
+                </div>
+              </div>
+              <div class="col-3 nopd-5">
+                <input id='name' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='price' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='unit' type='text' class='form-control text-center'>
+              </div>
+              <div id="input-spcf-total" class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+            </div>
+          </div>
+      </div><!-- End page content wrapper -->
+    </div> <!-- End Wrapper -->
+
+  <script>
+    $("#opt-date").click(function(event) {
+          if($(this).hasClass('disabled')) $(this).removeClass('disabled');
+          if(!$("#opt-from").is(":visible")){$("#opt-from").prop('hidden', false); $("#btn-from").prop('hidden', false); $("#btn-to").prop('hidden', false); $("#opt-to").prop('hidden', false);} 
+          $("#opt-month").addClass('disabled');
+          $("#select-year").prop('hidden', true);
+          $("#select-month").prop('hidden', true);
+      });
+
+      $("#opt-month").click(function(event) {
+          if($(this).hasClass('disabled')) $(this).removeClass('disabled');
+          if(!$("#select-year").is(":visible")){
+            $("#select-year").prop('hidden', false);
+            $("#select-month").prop('hidden', false);
+          } 
+          ($("#opt-from")).prop("hidden", true);
+          ($("#opt-to")).prop("hidden", true);
+          $("#opt-date").addClass('disabled');
+      });
+
+      $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+
+        if($("#menu-toggle").text() == "รายการ"){
+          $("#menu-toggle").text("กลับ");
+        }else if($("#menu-toggle").text() == "กลับ"){
+          $("#menu-toggle").text("รายการ");
+        }
+      });
+
+      $("#opt-from").on('fromcomplete',function() {
+        $("#opt-to").prop('disabled', false);
+        $("#opt-to").prop('readonly', true);
+        $("#date-full").prop('hidden', true);
+        $("#date-year").prop('hidden', true);
+
+        // change date on title-1
+        $("#title-1").text($("#opt-from").val());
+        $("#row-title-2").prop('hidden', true);
+        $("#row-title-1").prop('hidden', false);
+        $("#opt-to").val("");
+
+        // get and show data from db
+      });
+
+      $("#opt-to").on('tocomplete',function() {
+        // change date on title-2
+        temp = $(this).val().split(' ');
+        temp = temp[1].split('/');
+        temp_date = parseInt(temp[0]);
+        temp_month = checkfullmonth(temp[1]);
+
+        temp_from = $("#opt-from").val().split(' ');
+        temp_from = temp_from[1].split('/');
+        temp_from_date = parseInt(temp_from[0]); // opt-from date //
+        temp_from_month = checkfullmonth(temp_from[1]); // opt-from month //
+        //alert(temp_date + " " + temp_from_date);
+
+        if(temp_date < temp_from_date || temp_month < temp_from_month){
+          $(this).val("");
+          alert("กรุณาเลือกวันที่ถัดออกไป");
+        }else{
+          // วันที่ถูกต้อง
+          $("#title-1").text('');
+          $("#row-title-1").prop('hidden', true);
+          $("#row-title-2").prop('hidden', false);
+          $("#date-from").text($("#opt-from").val());
+          $("#date-to").text($("#opt-to").val());
+        }
+      });
+  </script>
+</body>
+</html>

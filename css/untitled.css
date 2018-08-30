@@ -283,3 +283,8 @@ img{
 .a:hover{color: #666;}
 
 .span-a{color: #666; font-size: 90%;}
+
+#opt-from, #opt-to{
+  cursor: pointer;
+}
+

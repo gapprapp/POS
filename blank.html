@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PPS Auto Group</title>
+
+    <!-- Bootstrap Import -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Super cool dialog-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+     <!-- Easy-autocomplete -->
+     <script src="js/jquery.easy-autocomplete.js"></script>
+     <link rel="stylesheet" href="css/easy-autocomplete.min.css">
+     <link rel="stylesheet" href="css/easy-autocomplete.themes.min.css">
+
+    <!-- Sidbar -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+    <!-- Main -->
+    <link href="css/untitled.css" rel="stylesheet">
+</head>
+
+<body style="overflow-x: scroll;">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+              <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/multi_unit.html">๐ สินค้าหลายหน่วย</a></li>
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div id="offline" class="alert alert-danger alert-dismissible" hidden>
+              <button type="button" class="close" onclick="dismiss()">&times;</button>
+              <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
+            </div>
+            <div id="online" class="alert alert-success alert-dismissible" hidden>
+              <button type="button" class="close" onclick="dismiss()">&times;</button>
+              <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
+            </div>
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #860b0b;">
+              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                <h3 id="nav-title">blank</h3>
+              </div>
+            </nav>         
+            
+        </div><!-- End page content wrapper -->
+    </div> <!-- End Wrapper -->
+</body>
+</html>

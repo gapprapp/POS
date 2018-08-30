@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="">
+      <meta name="author" content="">
+
+      <title>แดชบอร์ด</title>
+
+      <!-- Bootstrap Import -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+
+      <!-- Super cool dialog-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+      <!-- Date Picker -->
+      <link href="css/datepicker.css" rel="stylesheet">
+      <script src="js/datepicker.js"></script>
+      <script src="js/datepicker.th-TH.js"></script>
+      
+      <!-- Sidbar -->
+      <link href="css/simple-sidebar.css" rel="stylesheet">
+      <!-- Font -->
+      <link href="https://fonts.googleapis.com/css?family=Prompt" rel="stylesheet">
+      <!-- Main -->
+      <link href="css/untitled.css" rel="stylesheet">
+
+    <!-- Chart -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <style>
+        .card-footer{
+            background: white; border: none; margin-top: -20px; font-size: 125%; letter-spacing: 1px;
+        }
+
+        .disabled{
+            background-color: #444;
+            color: white;
+        }
+
+        .card-body{
+            cursor: pointer;
+        }
+
+        .inline{
+            display: inline-block;
+        }
+
+        .nopd-5{
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+          var myChart;
+
+            // datepicker
+            $('[data-toggle="datepicker"]').datepicker({
+                language: 'th-TH',
+                format: 'yyyy-mm-dd',
+                autoHide: true,
+                endDate: '0d'
+            }).change(function (event) {
+                //alert(event.target.id);
+                var date = $(this).val();
+                var split = date.split("-");// yyyy[0] mm[1] dd[2] 
+                var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+                var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                var d = new Date(split[0], split[1]-1, split[2]);
+                var first = days[d.getDay()];
+                month_index = split[1].replace(/^0+/, '');
+                thai_year = (parseInt(split[0])+543)%2500;
+                $(this).val((first + " " + split[2] + "/" + month[month_index] + "/" + thai_year));
+                id = event.target.id.split('opt-');
+                text = id[1]+"complete";
+                $("#" + event.target.id).trigger(text);
+            });
+        });
+        function checkfullmonth(arg){
+          var i = 0;
+          var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+          for(i; i < month.length; i++){
+            if(arg == month[i]){
+              return i;
+            }
+          }
+        }
+
+        function setmonth(arg){
+            var text;
+            switch(arg) {
+              case 1:
+                text = "มกราคม"; break;
+              case 2:
+                text = "กุมภาพันธ์"; break;
+              case 3:
+                text = "มีนาคม"; break;
+              case 4:
+                text = "เมษายน"; break;
+              case 5:
+                text = "พฤษภาคม"; break;
+              case 6:
+                text = "มิถุนายน"; break;
+              case 7:
+                text = "กรกฎาคม"; break;
+              case 8:
+                text = "สิงหาคม"; break;
+              case 9:
+                text = "กันยายน"; break;
+              case 10:
+                text = "ตุลาคม"; break;
+              case 11:
+                text = "พฤศจิกายน"; break;
+              case 12:
+                text = "ธันวาคม"; break;
+              default:
+                text = "ทุกเดือน"; break;  
+            }
+
+            $("#select-month .btn").text(text);
+            $("#title-1").text(text);
+            $("#date-full").prop('hidden', true);
+            $("#date-year").prop('hidden', false);
+            //$("#date-year").text(year);
+            myChart.destroy();
+            var ctx = document.getElementById('sale-chart');
+            var option;
+            if(arg != 0){
+              option = {
+              type: 'bar',
+                data: {
+                    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"],
+                    datasets: [{
+                        label: "ยอดขายเดือน"+ text,
+                        backgroundColor: '#666',
+                        borderColor: '#666',
+                        data: [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 0, 10, 5, 2, 20, 30, 45, 50, 20, 1],
+                    }]
+                },
+            options : {
+              scales: {
+                xAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'วันที่'
+                  }
+                }],
+                yAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'ยอดขาย'
+                  }
+                }]
+              }
+            }
+              };
+            }else if(arg == 0){
+              option = {
+                type: 'bar',
+                data: {
+                  labels: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+                    datasets: [{
+                        label: "ยอดขายต่อเดือน ปี 2561",
+                        backgroundColor: '#666',
+                        borderColor: '#666',
+                        data: [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 55, 75],
+                    }]
+                },
+                options : {
+                  scales: {
+                    xAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'วันที่'
+                      }
+                    }],
+                    yAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'ยอดขาย'
+                      }
+                    }]
+                  }
+                }
+              };
+            }
+            myChart = new Chart(ctx, option);
+        }
+
+      function setyear(arg){
+        $("#opt-year .btn").text("ปี "+arg);
+        $("#date-year").prop('hidden', false);
+        $("#date-year").text("พ.ศ. " + arg);
+      }
+    </script>
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav" style="margin-top: 20px">
+              <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+                <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
+                <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
+                <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
+                <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
+                <li><a href="http://150.95.26.163:8080/gitmew/multi_unit.html">๐ สินค้าหลายหน่วย</a></li>
+                <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div id="offline" class="alert alert-danger alert-dismissible" hidden>
+              <button type="button" class="close" onclick="dismiss()">&times;</button>
+              <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
+            </div>
+            <div id="online" class="alert alert-success alert-dismissible" hidden>
+              <button type="button" class="close" onclick="dismiss()">&times;</button>
+              <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
+            </div>
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #666;">
+              <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+                <h3 id="nav-title">ข้อมูลการขาย</h3>
+              </div>
+            </nav>
+            <!-- Ctn-Card -->
+            <div class="container-fullwidth" style="padding-left: 40px; padding-right: 40px;">
+                <div class="row">
+                    <div class="col-3 text-center">
+                        <div class="card text-center">
+                          <div class="card-header">
+                            <h3 style="color: #666;">ยอดขายวันนี้</h3>
+                          </div>
+                          <div class="card-body" style="margin-top: 20px;" onclick="window.location='sale_report.html'">
+                            <h2 class="card-title" style="letter-spacing: 1px; color: #666;">24,000</h2>
+                          </div>
+                          <div class="card-footer text-muted text-right">
+                            บาท
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-3 text-center">
+                        <div class="card text-center">
+                          <div class="card-header">
+                            <h3 style="color: #666;">จำนวนสินค้า</h3>
+                          </div>
+                          <div class="card-body" style="margin-top: 20px;" onclick="window.location='sku_report.html'">
+                            <h2 class="card-title" style="letter-spacing: 1px; color: #666;">78</h2>
+                          </div>
+                          <div class="card-footer text-muted text-right">
+                            SKU Item
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-3 text-center">
+                        <div class="card text-center">
+                          <div class="card-header">
+                            <h3 style="color: #666;">รายการขาย</h3>
+                          </div>
+                          <div class="card-body" style="margin-top: 20px;" onclick="window.location='bill_report.html'">
+                            <h2 class="card-title" style="letter-spacing: 1px; color: #666;">148</h2>
+                          </div>
+                          <div class="card-footer text-muted text-right"> รายการ
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-3 text-center">
+                        <div class="card text-center">
+                          <div class="card-header">
+                            <h3 style="color: #666;">จำนวนลูกค้า</h3>
+                          </div>
+                          <div class="card-body" style="margin-top: 20px;" onclick="window.location='member_report.html'">
+                            <h2 class="card-title" style="letter-spacing: 1px; color: #666;">24</h2>
+                          </div>
+                          <div class="card-footer text-muted text-right">
+                            คน
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            <!-- Ctn-Options -->
+            <div class="container-fullwidth" style="margin-top: 35px; padding-left: 10px; padding-right: 10px;">
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-4 input-group justify-content-center">
+                        <input id="opt-from" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd-5" placeholder="เลือกวันที่" hidden readonly style="margin-right: 10px;">
+                        <input id="opt-to" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd-5" placeholder="ถึงวันที่" hidden disabled> 
+                    </div>
+                    <div class="col-3 input-group">
+                        <button id="opt-date" class="btn btn-secondary disabled" style="width: 80px; background-color: #666; margin-right: 5px;">รายวัน</button>
+                        <button id="opt-month" class="btn btn-secondary" style="ackground-color: #666;">รายเดือน</button>
+                    </div>
+                    <div class="col-3 input-group justify-content-center">
+                        <div id="select-month" class="dropdown">
+                          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666;  margin-right: 10px; width: 105px;">เดือน
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important; max-height: 150px !important; overflow-y: auto;">
+                            <a class="dropdown-item text-center" onclick="setmonth(0);" href="#">ทุกเดือน</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(1);" href="#">มกราคม</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(2);" href="#">กุมภาพันธ์</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(3);" href="#">มีนาคม</a>
+                             <a class="dropdown-item text-center" onclick="setmonth(4);" href="#">เมษายน</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(5);" href="#">พฤษภาคม</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(6);" href="#">มิถุนายน</a>
+                             <a class="dropdown-item text-center" onclick="setmonth(7);" href="#">กรกฎาคม</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(8);" href="#">สิงหาคม</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(9);" href="#">กันยายน</a>
+                             <a class="dropdown-item text-center" onclick="setmonth(10);" href="#">ตุลาคม</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(11);" href="#">พฤศจิกายน</a>
+                            <a class="dropdown-item text-center" onclick="setmonth(12);" href="#">ธันวาคม</a>
+                          </div>
+                        </div>
+                        <div id="opt-year" class="dropdown">
+                          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">
+                            ปี 2561
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important; padding: 0 !important;">
+                            <a class="dropdown-item" href="#" onclick="setyear('2561')">ปี 2561</a>
+                            <a class="dropdown-item" href="#" onclick="setyear('2560')">ปี 2560</a>
+                            <a class="dropdown-item" href="#" onclick="setyear('2559')">ปี 2559</a>
+                          </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- Ctn-Chart -->
+            <div class="container-fullwidth" style="margin-top: 15px; padding-left: 14%; padding-right: 14%; max-width: 100%; overflow-x: scroll;">
+                <canvas id="sale-chart" style="width: 100%; height: 350px;"></canvas>
+            </div>   
+
+            <!-- Ctn-Report -->
+            <div class="container-fullwidth"  style="margin-top: 30px; padding-left: 14%; padding-right: 14%;">
+                <div class="row" style="margin-bottom: 15px;">
+                    <div class="col-4">
+                        <div class="card text-center">
+                          <div class="card-body">
+                            <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">ยอดขายสินค้า</span> <span class="inline">รายวัน / รายเดือน</span></h3>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card text-center">
+                          <div class="card-body">
+                            <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้า</span> <span class="inline">เรียงตามยอดขาย</span></h3>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card text-center">
+                          <div class="card-body">
+                            <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้า</span> <span class="inline">ตามจำนวนขาย</span></h3>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <div class="card text-center">
+                          <div class="card-body">
+                            <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายชื่อลูกค้า</span> <span class="inline">เรียงตามยอดขาย</span></h3>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card text-center">
+                          <div class="card-body">
+                            <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้าคงเหลือ</span> <span class="inline">ในคลังสินค้า</span></h3>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="card text-center">
+                          <div class="card-body">
+                            <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้า</span> <span class="inline">ต่ำกว่าค่าประมาณการ</span></h3>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div><!-- End page content wrapper -->
+    </div> <!-- End Wrapper -->
+    <script>
+        var ctx = document.getElementById('sale-chart');
+        var option = {
+          type: 'bar',
+          data: {
+            labels: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+              datasets: [{
+                  label: "ยอดขายต่อเดือน ปี 2561",
+                  backgroundColor: '#666',
+                  borderColor: '#666',
+                  data: [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 55, 75],
+              }]
+            },
+            options : {
+              scales: {
+                xAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'เดือน'
+                  }
+                }],
+                yAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'ยอดขาย'
+                  }
+                }]
+              }
+            }
+          };
+        myChart = new Chart(ctx, option);
+        ctx.onclick = function(evt){
+          var activePoints = myChart.getElementsAtEvent(evt);
+          var firstPoint = activePoints[0];
+          var label = myChart.data.labels[firstPoint._index];
+          var value = myChart.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
+          if (firstPoint !== undefined)
+            //alert(label + ": " + value);
+            window.location = "sale_report.html?m="+label;
+        };
+    </script>
+    <script>
+      var lastday = function(y,m){
+        return  new Date(y, m, 0).getDate();
+      };
+
+      function range(fromdate, frommonth, todate, tomonth) {
+        var arr = [];
+        nowyear = $("#opt-year .btn").text();
+        nowyear = nowyear.split('ปี ')[1]-543;
+        var lastday = lastday(nowyear,2);
+        alert(pan);
+        //alert(pan);
+        if(frommonth == tomonth){
+          var diffdate = todate - fromdate;
+
+          for(var i = fromdate; i <= todate; i++)
+            arr.push(i);
+        }
+      }
+      $("#opt-date").click(function(event) {
+          if($(this).hasClass('disabled')) $(this).removeClass('disabled');
+          if(!$("#opt-from").is(":visible")){$("#opt-from").prop('hidden', false); $("#opt-to").prop('hidden', false);} 
+          $("#opt-month").addClass('disabled');
+          $("#opt-year").prop('hidden', true);
+      });
+      $("#opt-month").click(function(event) {
+          if($(this).hasClass('disabled')) $(this).removeClass('disabled');
+          if(!$("#opt-year").is(":visible")) $("#opt-year").prop('hidden', false);
+          ($("#opt-from")).prop("hidden", true);
+          ($("#opt-to")).prop("hidden", true);
+          $("#opt-date").addClass('disabled');
+      });
+
+      $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+
+        if($("#menu-toggle").text() == "รายการ"){
+          $("#menu-toggle").text("กลับ");
+        }else if($("#menu-toggle").text() == "กลับ"){
+          $("#menu-toggle").text("รายการ");
+        }
+      });
+
+      $("#opt-from").on('fromcomplete',function() {
+        $("#opt-to").prop('disabled', false);
+        $("#opt-to").prop('readonly', true);
+        $("#date-full").prop('hidden', true);
+        $("#date-year").prop('hidden', true);
+
+        // change date on title-1
+        $("#title-1").text($("#opt-from").val());
+
+        // get and show data from db
+      });
+
+      $("#opt-to").on('tocomplete',function() {
+        // change date on title-2
+        temp = $(this).val().split(' ');
+        temp = temp[1].split('/');
+        todate = parseInt(temp[0]);
+        tomonth = checkfullmonth(temp[1]);
+
+        temp_from = $("#opt-from").val().split(' ');
+        temp_from = temp_from[1].split('/');
+        fromdate = parseInt(temp_from[0]); // opt-from date //
+        frommonth = checkfullmonth(temp_from[1]); // opt-from month //
+        //alert(fromdate + " " + todate);
+        //alert(frommonth + " " + tomonth);
+
+        if((frommonth == tomonth && fromdate < todate) || frommonth < tomonth){
+          // วันที่ถูกต้อง
+          $("#title-1").text('');
+          $("#row-title-1").prop('hidden', true);
+          $("#row-title-2").prop('hidden', false);
+          $("#date-from").text($("#opt-from").val());
+          $("#date-to").text($("#opt-to").val());
+        }else{
+          $(this).val("");
+          alert("กรุณาเลือกวันที่ถัดออกไป");
+        }
+
+        /*Get data and push
+        var data = [];
+        data.push("1");*/
+        myChart.destroy();
+        var ctx = document.getElementById('sale-chart');
+        var option = {
+          type: 'bar',
+            data: {
+                labels: range(fromdate, frommonth, todate, tomonth),
+                datasets: [{
+                    label: "ยอดขายต่อเดือน ปี 2561",
+                    backgroundColor: '#666',
+                    borderColor: '#666',
+                    data: [0, 10, 5, 2, 20, 30, 45, 50, 20],
+                }]
+            },
+            options : {
+              scales: {
+                xAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'วันที่'
+                  }
+                }],
+                yAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'ยอดขาย'
+                  }
+                }]
+              }
+            }
+          };
+        myChart = new Chart(ctx, option);
+        ctx.onclick = function(evt){
+          var activePoints = myChart.getElementsAtEvent(evt);
+          var firstPoint = activePoints[0];
+          var label = myChart.data.labels[firstPoint._index];
+          var value = myChart.data.datasets[firstPoint._datasetIndex].data[firstPoint._index];
+          if (firstPoint !== undefined)
+            //alert(label + ": " + value);
+            window.location = "sale_report.html?m="+label;
+        };
+      });
+    </script>
+</body>
+</html>
