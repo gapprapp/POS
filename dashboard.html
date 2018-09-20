@@ -60,19 +60,41 @@
     </style>
 
     <script>
+      var date_from, date_to;
         $(document).ready(function() {
-          var myChart;
-
             // datepicker
-            $('[data-toggle="datepicker"]').datepicker({
+            $('#opt-from').datepicker({
                 language: 'th-TH',
                 format: 'yyyy-mm-dd',
                 autoHide: true,
                 endDate: '0d'
             }).change(function (event) {
                 //alert(event.target.id);
-                var date = $(this).val();
-                var split = date.split("-");// yyyy[0] mm[1] dd[2] 
+                date_from = $(this).val();
+                //alert(date_from);
+                var split = date_from.split("-");// yyyy[0] mm[1] dd[2] 
+                var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+                var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                var d = new Date(split[0], split[1]-1, split[2]);
+                var first = days[d.getDay()];
+                month_index = split[1].replace(/^0+/, '');
+                thai_year = (parseInt(split[0])+543)%2500;
+                $(this).val((first + " " + split[2] + "/" + month[month_index] + "/" + thai_year));
+                id = event.target.id.split('opt-');
+                text = id[1]+"complete";
+                $("#" + event.target.id).trigger(text);
+            });
+
+            $('#opt-to').datepicker({
+                language: 'th-TH',
+                format: 'yyyy-mm-dd',
+                autoHide: true,
+                endDate: '0d'
+            }).change(function (event) {
+                //alert(event.target.id);
+                date_to = $(this).val();
+                //alert(date_to);
+                var split = date_to.split("-");// yyyy[0] mm[1] dd[2] 
                 var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
                 var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
                 var d = new Date(split[0], split[1]-1, split[2]);
@@ -95,57 +117,185 @@
           }
         }
 
-        function setmonth(arg){
-            var text;
-            switch(arg) {
-              case 1:
-                text = "มกราคม"; break;
-              case 2:
-                text = "กุมภาพันธ์"; break;
-              case 3:
-                text = "มีนาคม"; break;
-              case 4:
-                text = "เมษายน"; break;
-              case 5:
-                text = "พฤษภาคม"; break;
-              case 6:
-                text = "มิถุนายน"; break;
-              case 7:
-                text = "กรกฎาคม"; break;
-              case 8:
-                text = "สิงหาคม"; break;
-              case 9:
-                text = "กันยายน"; break;
-              case 10:
-                text = "ตุลาคม"; break;
-              case 11:
-                text = "พฤศจิกายน"; break;
-              case 12:
-                text = "ธันวาคม"; break;
-              default:
-                text = "ทุกเดือน"; break;  
+      function setmonth(arg){
+        $("#opt-from").val("");
+        $("#opt-to").val("");
+        $("#opt-from").prop("hidden", true);
+        $("#opt-to").prop("hidden", true);
+        $("#opt-month").removeClass('disabled');
+        $("#opt-date").addClass('disabled');
+
+          var text;
+          switch(arg) {
+            case 1:
+              text = "มกราคม"; break;
+            case 2:
+              text = "กุมภาพันธ์"; break;
+            case 3:
+              text = "มีนาคม"; break;
+            case 4:
+              text = "เมษายน"; break;
+            case 5:
+              text = "พฤษภาคม"; break;
+            case 6:
+              text = "มิถุนายน"; break;
+            case 7:
+              text = "กรกฎาคม"; break;
+            case 8:
+              text = "สิงหาคม"; break;
+            case 9:
+              text = "กันยายน"; break;
+            case 10:
+              text = "ตุลาคม"; break;
+            case 11:
+              text = "พฤศจิกายน"; break;
+            case 12:
+              text = "ธันวาคม"; break;
+            default:
+              text = "ทุกเดือน"; break;  
+          }
+
+          $("#select-month .btn").text(text);
+          $("#title-1").text(text);
+          $("#date-full").prop('hidden', true);
+          $("#date-year").prop('hidden', false);
+          //$("#date-year").text(year);
+          myChart.destroy();
+          var ctx = document.getElementById('sale-chart');
+          var option;
+          if(arg != 0){
+            // Check last day of month
+            year = $("#opt-year .btn").text();
+            year = year.split('ปี ')[1]-543;
+            arrdate = [];
+            var lastday = new Date(year, arg, 0).getDate();
+            for(j = 1; j <= lastday; j++){
+              arrdate.push(j);
             }
 
-            $("#select-month .btn").text(text);
-            $("#title-1").text(text);
-            $("#date-full").prop('hidden', true);
-            $("#date-year").prop('hidden', false);
-            //$("#date-year").text(year);
-            myChart.destroy();
-            var ctx = document.getElementById('sale-chart');
-            var option;
-            if(arg != 0){
-              option = {
+            // ajax get data ;; ;; 
+            // loop by arrdate.length
+            arrdata = [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 0, 10, 5, 2, 20, 30, 45, 50, 20, 1];
+
+
+            option = {
+            type: 'bar',
+              data: {
+                  labels: arrdate,
+                  datasets: [{
+                      label: "ยอดขายเดือน"+ text,
+                      backgroundColor: '#666',
+                      borderColor: '#666',
+                      data: arrdata,
+                  }]
+              },
+          options : {
+            scales: {
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'วันที่'
+                }
+              }],
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'ยอดขาย'
+                }
+              }]
+            }
+          }
+            };
+          }else if(arg == 0){
+            option = {
               type: 'bar',
-                data: {
-                    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"],
-                    datasets: [{
-                        label: "ยอดขายเดือน"+ text,
-                        backgroundColor: '#666',
-                        borderColor: '#666',
-                        data: [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 0, 10, 5, 2, 20, 30, 45, 50, 20, 1],
-                    }]
-                },
+              data: {
+                labels: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+                  datasets: [{
+                      label: "ยอดขายต่อเดือน ปี 2561",
+                      backgroundColor: '#666',
+                      borderColor: '#666',
+                      data: [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 55, 75],
+                  }]
+              },
+              options : {
+                scales: {
+                  xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'วันที่'
+                    }
+                  }],
+                  yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'ยอดขาย'
+                    }
+                  }]
+                }
+              }
+            };
+          }
+          myChart = new Chart(ctx, option);
+      }
+
+      function textmonth(arg){
+        var text;
+        switch(arg) {
+            case 1:
+              text = "มกราคม"; break;
+            case 2:
+              text = "กุมภาพันธ์"; break;
+            case 3:
+              text = "มีนาคม"; break;
+            case 4:
+              text = "เมษายน"; break;
+            case 5:
+              text = "พฤษภาคม"; break;
+            case 6:
+              text = "มิถุนายน"; break;
+            case 7:
+              text = "กรกฎาคม"; break;
+            case 8:
+              text = "สิงหาคม"; break;
+            case 9:
+              text = "กันยายน"; break;
+            case 10:
+              text = "ตุลาคม"; break;
+            case 11:
+              text = "พฤศจิกายน"; break;
+            case 12:
+              text = "ธันวาคม"; break;
+        }return text;      
+      }
+
+      function setyear(arg){
+        $("#opt-year .btn").text("ปี "+arg);
+        year = $("#opt-year .btn").text();
+        $("#date-year").prop('hidden', false);
+        $("#date-year").text("พ.ศ. " + arg);
+          $("#opt-from").val("");
+          $("#opt-to").val("");
+          $("#opt-from").prop("hidden", true);
+          $("#opt-to").prop("hidden", true);
+          $("#opt-month").removeClass('disabled');
+          $("#opt-date").addClass('disabled');
+
+          // get data
+
+          myChart.destroy();
+          var ctx = document.getElementById('sale-chart');
+          var option = {
+            type: 'bar',
+            data: {
+              labels: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+                datasets: [{
+                    label: "ยอดขายต่อเดือน ปี " + year,
+                    backgroundColor: '#666',
+                    borderColor: '#666',
+                    data: [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 15, 5],
+                }]
+            },
             options : {
               scales: {
                 xAxes: [{
@@ -162,44 +312,8 @@
                 }]
               }
             }
-              };
-            }else if(arg == 0){
-              option = {
-                type: 'bar',
-                data: {
-                  labels: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
-                    datasets: [{
-                        label: "ยอดขายต่อเดือน ปี 2561",
-                        backgroundColor: '#666',
-                        borderColor: '#666',
-                        data: [0, 10, 5, 2, 20, 30, 45, 50, 20, 1, 55, 75],
-                    }]
-                },
-                options : {
-                  scales: {
-                    xAxes: [{
-                      scaleLabel: {
-                        display: true,
-                        labelString: 'วันที่'
-                      }
-                    }],
-                    yAxes: [{
-                      scaleLabel: {
-                        display: true,
-                        labelString: 'ยอดขาย'
-                      }
-                    }]
-                  }
-                }
-              };
-            }
-            myChart = new Chart(ctx, option);
-        }
-
-      function setyear(arg){
-        $("#opt-year .btn").text("ปี "+arg);
-        $("#date-year").prop('hidden', false);
-        $("#date-year").text("พ.ศ. " + arg);
+          };
+        myChart = new Chart(ctx, option);
       }
     </script>
 </head>
@@ -347,8 +461,8 @@
             </div>
 
             <!-- Ctn-Chart -->
-            <div class="container-fullwidth" style="margin-top: 15px; padding-left: 14%; padding-right: 14%; max-width: 100%; overflow-x: scroll;">
-                <canvas id="sale-chart" style="width: 100%; height: 350px;"></canvas>
+            <div class="container-fullwidth" style="margin-top: 15px; padding-left: 14%; padding-right: 14%; max-width: 100%;">
+                <canvas id="sale-chart"></canvas>
             </div>   
 
             <!-- Ctn-Report -->
@@ -356,21 +470,21 @@
                 <div class="row" style="margin-bottom: 15px;">
                     <div class="col-4">
                         <div class="card text-center">
-                          <div class="card-body">
+                          <div class="card-body" onclick="window.location = 'sale_report.html'">
                             <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">ยอดขายสินค้า</span> <span class="inline">รายวัน / รายเดือน</span></h3>
                           </div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="card text-center">
-                          <div class="card-body">
+                          <div class="card-body" onclick="window.location = 'sale_report.html?sort=net'">
                             <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้า</span> <span class="inline">เรียงตามยอดขาย</span></h3>
                           </div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="card text-center">
-                          <div class="card-body">
+                          <div class="card-body" onclick="window.location = 'sale_report.html?sort=amount'">
                             <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้า</span> <span class="inline">ตามจำนวนขาย</span></h3>
                           </div>
                         </div>
@@ -379,21 +493,21 @@
                 <div class="row">
                     <div class="col-4">
                         <div class="card text-center">
-                          <div class="card-body">
+                          <div class="card-body" onclick="window.location = 'member_report.html?sort=net'">
                             <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายชื่อลูกค้า</span> <span class="inline">เรียงตามยอดขาย</span></h3>
                           </div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="card text-center">
-                          <div class="card-body">
+                          <div class="card-body" onclick="window.location = 'http://150.95.26.163:8080/gitmew/manage_prod.html'">
                             <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้าคงเหลือ</span> <span class="inline">ในคลังสินค้า</span></h3>
                           </div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="card text-center">
-                          <div class="card-body">
+                          <div class="card-body" onclick="">
                             <h3 class="card-title" style="letter-spacing: 1px; color: #666;"><span class="inline" style="margin-bottom: 10px;">รายการสินค้า</span> <span class="inline">ต่ำกว่าค่าประมาณการ</span></h3>
                           </div>
                         </div>
@@ -444,29 +558,62 @@
         };
     </script>
     <script>
-      var lastday = function(y,m){
-        return  new Date(y, m, 0).getDate();
-      };
-
+      var lable;
+      function checkmaxdate(year, arg){
+        var maxdate = new Date(year, arg, 0).getDate();
+        return maxdate;
+      }
       function range(fromdate, frommonth, todate, tomonth) {
         var arr = [];
-        nowyear = $("#opt-year .btn").text();
-        nowyear = nowyear.split('ปี ')[1]-543;
-        var lastday = lastday(nowyear,2);
-        alert(pan);
-        //alert(pan);
+        year = $("#opt-year .btn").text();
+        year = year.split('ปี ')[1]-543;
+        //var date1 = new Date(date_from);
+        //var date2 = new Date(date_to);
+        //var timeDiff = Math.abs(date2.getTime() - date1.getTime()); var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); //alert(diffDays);
         if(frommonth == tomonth){
-          var diffdate = todate - fromdate;
-
           for(var i = fromdate; i <= todate; i++)
             arr.push(i);
+          lable = "ยอดขายจาก " + fromdate + " - " + todate + " " + textmonth(frommonth) + " ปี  " + parseInt(year+543);
         }
+        else{
+          var arrmonth = [];
+          for(var j = frommonth; j <= tomonth; j++) {
+            arrmonth.push(j);
+            //alert(arrmonth); // 7 8 9
+          }
+          // loop arrmonth get max date of month and plus
+          var date = [];
+          for(var a = 0; a < arrmonth.length; a++){
+            var maxdate = checkmaxdate(year, arrmonth[a]);
+            if(a == 0){
+              // First
+              date = maxdate - fromdate;
+              for(b = fromdate; b <= maxdate; b++){
+                arr.push(b);
+              }
+            }
+            else if(a+1 == arrmonth.length){
+              // Last
+              date = date + todate;
+              for(b = 1; b <= todate; b++){
+                arr.push(b);
+              }
+            }else {
+              // Middle
+              date = date + maxdate;
+              for(b = 1; b <= maxdate; b++){
+                arr.push(b);
+              }
+            }
+          }
+          lable = "ยอดขายจาก " + fromdate + " " + textmonth(frommonth) + " ถึง " + todate + " " + textmonth(tomonth) + " ปี  " + parseInt(year+543);
+        }
+        return arr;
       }
       $("#opt-date").click(function(event) {
           if($(this).hasClass('disabled')) $(this).removeClass('disabled');
           if(!$("#opt-from").is(":visible")){$("#opt-from").prop('hidden', false); $("#opt-to").prop('hidden', false);} 
           $("#opt-month").addClass('disabled');
-          $("#opt-year").prop('hidden', true);
       });
       $("#opt-month").click(function(event) {
           if($(this).hasClass('disabled')) $(this).removeClass('disabled');
@@ -523,6 +670,7 @@
         }else{
           $(this).val("");
           alert("กรุณาเลือกวันที่ถัดออกไป");
+          return 0;
         }
 
         /*Get data and push
@@ -535,7 +683,7 @@
             data: {
                 labels: range(fromdate, frommonth, todate, tomonth),
                 datasets: [{
-                    label: "ยอดขายต่อเดือน ปี 2561",
+                    label: lable,
                     backgroundColor: '#666',
                     borderColor: '#666',
                     data: [0, 10, 5, 2, 20, 30, 45, 50, 20],
