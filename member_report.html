@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>รายงานการขาย</title>
+  <title>รายงานลูกค้า</title>
 
   <!-- Bootstrap Import -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -24,6 +24,10 @@
   <link href="css/datepicker.css" rel="stylesheet">
   <script src="js/datepicker.js"></script>
   <script src="js/datepicker.th-TH.js"></script>
+
+  <!-- Loading -->
+  <link rel="stylesheet" href="css/easy-loading.css">
+  <script src="js/easy-loading.js"></script>
   
   <!-- Sidbar -->
   <link href="css/simple-sidebar.css" rel="stylesheet">
@@ -56,6 +60,10 @@
     }
     h4{
       width: 18%; border: solid 1px #666; border-radius: 3px; color: white; background-color: #666; padding-top: 9px; padding-bottom: 9px; letter-spacing: 1px;
+    }
+
+    .mg-1{
+      margin-right: 1%;
     }
   </style>
 
@@ -302,6 +310,7 @@
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666;  margin-right: 10px; width: 105px;">เดือน
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important; max-height: 150px !important; overflow-y: auto;">
+                      <a class="dropdown-item text-center" onclick="setmonth(0);" href="#">ทุกเดือน</a>
                       <a class="dropdown-item text-center" onclick="setmonth(1);" href="#">มกราคม</a>
                       <a class="dropdown-item text-center" onclick="setmonth(2);" href="#">กุมภาพันธ์</a>
                       <a class="dropdown-item text-center" onclick="setmonth(3);" href="#">มีนาคม</a>
@@ -317,9 +326,7 @@
                     </div>
                   </div>
                   <div id="select-year" class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">
-                      ปี 2561
-                    </button>
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">ปี 2561</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important;">
                       <a class="dropdown-item" href="#" onclick="setyear('2561')">ปี 2561</a>
                       <a class="dropdown-item" href="#" onclick="setyear('2560')">ปี 2560</a>
@@ -371,33 +378,33 @@
           <!-- Ctn-Header -->
           <div id="ctn-head" class="container-fullwidth">
             <div class="row head-wthout-branch justify-content-center" >
-              <div class="col-3 text-center nopd-5" style="margin-right: 1%;">ชื่อลูกค้า</div>
-              <div class="col-1 text-center nopd-5" style="margin-right: 1%;">สาขา</div>
-              <div class="col-1 text-center nopd" style="margin-right: 1%;">รูปแบบการชำระ</div>
-              <div class="col-1 text-center nopd-5" style="margin-right: 1%;">จำนวนรายการ</div>
+              <div class="col-3 text-center nopd-5 mgr-1">ชื่อลูกค้า</div>
+              <div class="col-1 text-center nopd-5 mgr-1">สาขา</div>
+              <div class="col-1 text-center nopd mgr-1">รูปแบบการชำระ</div>
+              <div class="col-1 text-center nopd-5 mgr-1">จำนวนรายการ</div>
               <div class="col-1 text-center nopd">รวมสุทธิ</div>
             </div>
           </div>
 
           <!-- Ctn-Show -->
           <div id="ctn-show" class="container-fullwidth" style="margin-top: 5px;">
-            <div class="row input-wthout-branch justify-content-center" style="flex-wrap: nowrap;" >
-              <div class="col-3 nopd-5" style="margin-right: 1%;">
+            <!--<div class="row input-wthout-branch justify-content-center" style="flex-wrap: nowrap;" >
+              <div class="col-3 nopd-5 mgr-1">
                 <input id='cus_name' type='text' class='form-control text-center'>
               </div>
-              <div class="col-1 nopd-5" style="margin-right: 1%;">
+              <div class="col-1 nopd-5 mgr-1">
                 <input id='branch' type='text' class='form-control text-center'>
               </div>
-              <div class="col-1 nopd-5" style="margin-right: 1%;">
+              <div class="col-1 nopd-5 mgr-1">
                 <input id='type' type='text' class='form-control text-center'>
               </div>
-              <div class="col-1 nopd-5" style="margin-right: 1%;">
+              <div class="col-1 nopd-5 mgr-1">
                 <input id='amount' type='text' class='form-control text-center'>
               </div>
               <div class="col-1 nopd">
                 <input id='net' type='text' class='form-control text-center'>
               </div>
-            </div>
+            </div>-->
           </div>
       </div><!-- End page content wrapper -->
     </div> <!-- End Wrapper -->
@@ -412,14 +419,43 @@
       });
 
       $("#opt-month").click(function(event) {
-          if($(this).hasClass('disabled')) $(this).removeClass('disabled');
-          if(!$("#select-year").is(":visible")){
-            $("#select-year").prop('hidden', false);
-            $("#select-month").prop('hidden', false);
-          } 
-          ($("#opt-from")).prop("hidden", true);
-          ($("#opt-to")).prop("hidden", true);
-          $("#opt-date").addClass('disabled');
+        if($(this).hasClass('disabled')) $(this).removeClass('disabled');
+        if(!$("#select-year").is(":visible")){
+          $("#select-year").prop('hidden', false);
+          $("#select-month").prop('hidden', false);
+        } 
+        ($("#opt-from")).prop("hidden", true);
+        ($("#opt-to")).prop("hidden", true);
+        $("#opt-date").addClass('disabled');
+
+        year = $("#select-year .btn").text().split(" ")[1]-543;
+        console.log(year);
+
+        $.ajax({
+          url: 'http://150.95.26.163:8080/gitmew/php/report_customer.php',
+          type: 'POST',
+          data: {
+            year_list: 'view_by_month',
+            year: year
+          },
+          cache: false,
+          crossDomain: true,
+          beforeSend: function(){
+            EasyLoading.show({                           
+              text: "กำลังโหลด"                            
+            });
+          }
+        })
+        .done(function(data) {
+          EasyLoading.hide();
+          console.log(data);
+        })
+        .fail(function() {
+          console.log("error");
+        })
+        .always(function() {
+          console.log("complete");
+        });
       });
 
       $("#menu-toggle").click(function(e) {

@@ -20,6 +20,10 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
+      <!-- Loading -->
+      <link rel="stylesheet" href="css/easy-loading.css">
+      <script src="js/easy-loading.js"></script>
+
       <!-- Date Picker -->
       <link href="css/datepicker.css" rel="stylesheet">
       <script src="js/datepicker.js"></script>
@@ -57,18 +61,50 @@
       h4{
         width: 20%; border: solid 1px #666; border-radius: 3px; color: white; background-color: #666; padding-top: 9px; padding-bottom: 9px; letter-spacing: 1px;
       }
+      p{
+        margin-bottom: 1px;
+      }
     </style>
 
     <script>
+      var year = (new Date().getFullYear()) + 543; var branch;
+      var order_by = "sale_value", order_seq = "ASC";
       $(document).ready(function() {
+        //$("#ctn-in-0").hide();
+        url = new URL(window.location.href);
+        m = url.searchParams.get("m");
+        mth = url.searchParams.get("mth");
+        d = url.searchParams.get("d");
+        y = url.searchParams.get("y");
+        if(m){
+          setmonth(m);
+          if(y){
+            y = parseInt(y);
+            y = y +543;
+            setyear(y);
+          }
+
+          $("#opt-month").trigger("click");
+        }else if(d){
+          d = d.replace(/^0+/, '');
+          mth = mth.replace(/^0+/, '');
+          //alert("case d mth" + d + ' / ' + mth + ' / ' + year);
+          fullmonth = checkmonth(mth);
+          $("#date-full").text(d + " " + fullmonth + " ปี " + year);
+
+          $("#opt-month").addClass('disabled');
+          $("#select-year").prop('hidden', true);
+          $("#select-month").prop('hidden', true);
+        }else{
         // Date Now..
-        var d = new Date($.now());
-        date = d.getDate();
-        month = d.getMonth();
-        var year = d.getFullYear() + 543;
-        //alert(date + ' / ' + month + ' / ' + year);
+        date = (new Date().getDate());
+        month = (new Date().getMonth()+1);
+        //alert("case else "+date + ' / ' + month + ' / ' + year);
         fullmonth = checkmonth(month);
-        $("#date-full").text(date + " " + fullmonth + " พ.ศ. " + year);
+        $("#date-full").text(date + " " + fullmonth + " ปี " + year);
+        $("#select-year").prop('hidden', true);
+        $("#select-month").prop('hidden', true);
+        }
 
         // datepicker
         $('[data-toggle="datepicker"]').datepicker({
@@ -91,43 +127,27 @@
             text = id[1]+"complete";
             $("#" + event.target.id).trigger(text);
         });
-        
-        url = new URL(window.location.href);
-        month = url.searchParams.get("m");
-        //alert(month);
-        if(month){
-          setmonth(month);
-        }
-
-        $("#opt-month").addClass('disabled');
-        $("#select-year").prop('hidden', true);
-        $("#select-month").prop('hidden', true);
-
-        $("#title-1").prop('hidden', false);
-        $("#date-full").prop('hidden', false);
-        $("#title-2").prop('hidden', true);
-        $("#date-year").prop('hidden', true);
       });
 
       function checkmonth(arg){
         switch(arg) {
-            case 1: return 'มกราคม';
-            case 2: return 'กุมภาพันธ์';
-            case 3: return 'มีนาคม';
-            case 4: return 'เมษายน';
-            case 5: return 'พฤษภาคม';
-            case 6: return 'มิถุนายน';
-            case 7: return 'กรกฎาคม';
-            case 8: return 'สิงหาคม';
-            case 9: return 'กันยายน';
-            case 10: return 'ตุลาคม';
-            case 11: return 'พฤศจิกายน';
-            case 12: return 'ธันวาคม'; 
+            case 1: case "1": return 'มกราคม';
+            case 2: case "2": return 'กุมภาพันธ์';
+            case 3: case "3": return 'มีนาคม';
+            case 4: case "4": return 'เมษายน';
+            case 5: case "5": return 'พฤษภาคม';
+            case 6: case "6": return 'มิถุนายน';
+            case 7: case "7": return 'กรกฎาคม';
+            case 8: case "8": return 'สิงหาคม';
+            case 9: case "9": return 'กันยายน';
+            case 10: case "10": return 'ตุลาคม';
+            case 11: case "11": return 'พฤศจิกายน';
+            case 12: case "12": return 'ธันวาคม'; 
         }    
       }
 
       function checkfullmonth(arg){
-        var i = 0;
+        i = 0;
         var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
         for(i; i < month.length; i++){
           if(arg == month[i]){
@@ -136,79 +156,87 @@
         }
       }
 
-      function setbranch(arg){
-        if(arg == "show"){
-          $("#btn-branch").text("ทั้งหมด");
-          $("#row-slct-branch").prop('hidden', true);
-          $(".input-spcf-branch").prop('hidden', true);
-          $(".head-wthout-branch").prop('hidden', true);
-          $(".input-wthout-branch").prop('hidden', true);
-          $(".head-spcf-branch").prop('hidden', true);
-          $(".head-wth-branch").prop('hidden', false);
-          $(".input-wth-branch").prop('hidden', false);
-        }else if(arg == "non"){
-          $("#btn-branch").text("ไม่แสดง");
-          $("#row-slct-branch").prop('hidden', true);
-          $(".head-wth-branch").prop('hidden', true);
-          $(".input-wth-branch").prop('hidden', true);
-          $(".input-spcf-branch").prop('hidden', true);
-          $(".head-spcf-branch").prop('hidden', true);
-          $(".head-wthout-branch").prop('hidden', false);
-          $(".input-wthout-branch").prop('hidden', false);
-        }else if(arg == "select"){
-          // arg == number -> 0-n followed by size of branch arry
-          // branch[0] == "สิงห์บุรี"
-          //$("#btn-branch").text(branch[0]);
-          $("#btn-branch").text("เลือกสาขา");
-          $("#row-slct-branch").prop('hidden', false);
-          $(".head-wth-branch").prop('hidden', true);
-          $(".input-wth-branch").prop('hidden', true);
-          $(".head-wthout-branch").prop('hidden', true);
-          $(".input-wthout-branch").prop('hidden', true);
-          $(".input-spcf-branch").prop('hidden', false);
-          $(".head-spcf-branch").prop('hidden', false);
-        }
-      }
-
+      var index_m; var last_i_m = 0;
       function setmonth(arg){
         var text;
         switch(arg) {
+            case 0:
+            case "0":
+              m = []; // moth that have data
+              for(i = 1; i < data_month.length; i++){
+                if(data_month[i] == 1){
+                  m.push(i);
+                }
+              }
+              // UI Append
+              // Head
+              $("#ctn-head").append('<div id="head" class="row" style="flex-wrap: nowrap;"> <div class="col-3 text-center nopd-5">บาร์โค๊ด</div> <div class="col-3 text-center nopd-5">ชื่อสินค้า</div> <div class="col-1 text-center nopd-5">ราคา</div> <div class="col-1 text-center nopd-5">หน่วย</div>');
+              // Body(input)
+              $("#ctn-show").append('<div id="show" class="row align-items-center" style="flex-wrap: nowrap;"> <div class="col-3 text-center input-group-prepend align-items-center" style="padding-right: 5px;"> <button class="btn btn-info btn-sm" style="margin-left: 5px; height: 100%;" onclick="$("#ctn-in-0").slideToggle(400);"> <i class="fas fa-sort-down"></i> </button> <span id="span-no" class="input-group-text" style="margin-left: 5px;">0</span> <input type="text" class="form-control text-center"> </div> <div class="col-3 nopd"> <input type="text" class="form-control text-center"> </div> <div class="col-1 nopd-5"> <input type="text" class="form-control text-center"> </div> <div class="col-1 nopd-5"> <input type="text" class="form-control text-center"> </div>');
+              for(i = 0; i < m.length; i++){
+                // console.log(m[i]); --> 3 4 5 6 7 8 9
+                //Head
+                $("#head").append('<div class="col-1 text-center nopd-5">จน. เดือน'+m[i]+'</div>');
+                $("#head").append('<div class="col-1 text-center nopd-5">ยอด เดือน'+m[i]+'</div>');
+
+                //Body(input)
+                $("#show").append('<div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>');
+                $("#show").append('<div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>');
+              }
+              $("#head").append('<div class="col-1 text-center nopd-5">จน. รวม '+year+'</div>');
+              $("#head").append('<div class="col-1 text-center nopd-5">ยอดรวม '+year+'</div></div>');
+              $("#show").append('<div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>');
+              $("#show").append('<div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>');
+              text = "ทุกเดือน"; break;
             case 1:
-              text = "มกราคม";
-              break;
+            case "1":
+              text = "มกราคม"; break;
             case 2:
-              text = "กุมภาพันธ์";
-              break;
+            case "2":
+              text = "กุมภาพันธ์"; break;
             case 3:
-              text = "มีนาคม";
-              break;
+            case "3":
+              text = "มีนาคม"; break;
             case 4:
-              text = "เมษายน";
-              break;
+            case "4":
+              text = "เมษายน"; break;
             case 5:
-              text = "พฤษภาคม";
-              break;
+            case "5":
+              text = "พฤษภาคม"; break;
             case 6:
-              text = "มิถุนายน";
-              break;
+            case "6":
+              text = "มิถุนายน"; break;
             case 7:
-              text = "กรกฎาคม";
-              break;
+            case "7":
+              text = "กรกฎาคม"; break;
             case 8:
-              text = "สิงหาคม";
-              break;
+            case "8":
+              text = "สิงหาคม"; break;
             case 9:
-              text = "กันยายน";
-              break;
+            case "9":
+              index_m = 0;
+              for(i = 0; i < prod_month.length; i++){
+                bc = prod_month[i].barcode; pn = prod_month[i].prod_name; pp = prod_month[i].prod_price;
+                un = prod_month[i].unit_name; amt = prod_month[i].amt9; sv = prod_month[i].sale_value9;
+
+                if(amt != null && sv != null){
+                  $("#ctn-show").append("<div class='row justify-content-center' style='margin-bottom: 5px;' > <div class='col-2 nopd-5'> <div class='input-group-prepend'> <span id='span-"+index_m+"' class='input-group-text'>"+(index_m+1)+"</span> <input readonly type='text' class='form-control text-center' value='"+bc+"'> </div> </div> <div class='col-3 nopd-5'> <input readonly type='text' class='form-control text-center' value='"+pn+"'> </div> <div class='col-1 nopd-5'> <input readonly type='text' class='form-control text-center' value='"+pp+"'> </div> <div class='col-1 nopd-5'> <input readonly type='text' class='form-control text-center' value='"+un+"'> </div> <div class='col-1 nopd-5'> <input readonly type='text' class='form-control text-center' value='"+amt+"'> </div> <div class='col-1 nopd-5'> <input readonly type='text' class='form-control text-center' value='"+sv+"'> </div> </div>");
+                  index_m++;
+                }if(index_m == 500){
+                  last_i_m = i;
+                  break;
+                }
+              }
+              text = "กันยายน"; break;
             case 10:
-              text = "ตุลาคม";
-              break;
+            case "10":
+              text = "ตุลาคม"; break;
             case 11:
-              text = "พฤศจิกายน";
-              break;
+            case "11":
+              text = "พฤศจิกายน"; break;
             case 12:
-              text = "ธันวาคม";
-              break;
+            case "12":
+              text = "ธันวาคม"; break;
             default:
               text = arg;
         }
@@ -217,13 +245,22 @@
         $("#title-1").text(text);
         $("#date-full").prop('hidden', true);
         $("#date-year").prop('hidden', false);
-        $("#date-year").text(year);
+        $("#date-year").text("ปี " + year);
       }
 
       function setyear(arg){
-        $("#select-year .btn").text("ปี "+arg);
-        $("#date-year").prop('hidden', false);
-        $("#date-year").text("พ.ศ. " + arg);
+        if($("#date-full").is(":visible")){
+          $("#date-full").prop('hidden', true);
+        }
+        if(arg == "ทั้งหมด"){
+          $("#select-year .btn").text(arg);
+          $("#date-year").prop('hidden', false);
+          $("#date-year").text(arg);
+        }else{
+          $("#select-year .btn").text("ปี "+arg);
+          $("#date-year").prop('hidden', false);
+          $("#date-year").text("ปี " + arg);
+        }
       }
 
       function checkChange(arg){
@@ -234,6 +271,28 @@
         }if(arg.checked == false){
           $("#head-"+txt).remove();
           $("#input-"+txt).remove();
+        }
+      }
+
+      function setorderby(arg){
+        order_by = arg;
+        if(arg == 'amt'){
+          $("#by-total").addClass('disabled');
+          $("#by-amt").removeClass('disabled');
+        }else{
+          $("#by-amt").addClass('disabled');
+          $("#by-total").removeClass('disabled');
+        }
+      }
+
+      function setorderseq(arg){
+        order_seq = arg;
+        if(arg == 'ASC'){
+          $("#by-desc").addClass('disabled');
+          $("#by-asc").removeClass('disabled');
+        }else{
+          $("#by-asc").addClass('disabled');
+          $("#by-desc").removeClass('disabled');
         }
       }
     </script>
@@ -280,36 +339,23 @@
           </nav>         
 
           <!-- Ctn-Options -->
-          <div class="container-fullwidth">
-            <div class="row" style="margin-bottom: 2px;">
-              <div class="col-1"></div>
-              <div class="col-3 text-left" style="padding-left: 0;">แสดงยอดขายของสาขา</div>
-              <div class="col-8"></div>
-            </div>
-
-            <div class="row">
-              <div class="col-1"></div>
-              <div class="col-2 text-left">
-                <button id="btn-branch" class="btn btn-secondary dropdown-toggle" type="button" id="branch-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 115px;">ไม่แสดง</button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 115px !important; padding: 0 !important;">
-                  <a class="dropdown-item text-center" onclick="setbranch('show');">ทั้งหมด</a>
-                  <a class="dropdown-item text-center" onclick="setbranch('non');">ไม่แสดง</a>
-                  <a class="dropdown-item text-center" onclick="setbranch('select');">เลือกสาขา</a>
-                </div>
-              </div>
-              <div class="col-3 input-group nopd">
+          <br><div class="container-fullwidth">
+            <div class="row justify-content-center">
+              <div class="col-4 input-group" style="padding-left: 0;">
                   <input id="opt-from" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd" placeholder="เลือกวันที่" hidden readonly style="margin-right: 5px;">
                   <input id="opt-to" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd" placeholder="ถึงวันที่" hidden disabled>
               </div>
-              <div class="col-3 input-group">
-                  <button id="opt-date" class="btn btn-secondary disabled" style="width: 90px; background-color: #666; margin-right: 5px;">รายวัน</button>
-                  <button id="opt-month" class="btn btn-secondary" style="background-color: #666;">รายเดือน</button>
+              <div class="col-3 input-group nopd">
+                  <button id="opt-date" class="btn btn-secondary disabled" style="width: 75px; background-color: #666; margin-right: 5px;">รายวัน</button>
+                  <button id="opt-month" class="btn btn-secondary disabled" style="background-color: #666; margin-right: 5px;">รายเดือน</button>
+                  <button id="opt-year" class="btn btn-secondary disabled" style="width: 75px; background-color: #666;">รายปี</button>
               </div>
-              <div class="col-3 input-group">
+              <div class="col-3 input-group text-center">
                   <div id="select-month" class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666;  margin-right: 10px; width: 105px;">เดือน
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important; max-height: 150px !important; overflow-y: auto;">
+                      <a class="dropdown-item text-center" onclick="setmonth(0);" href="#">ทุกเดือน</a>
                       <a class="dropdown-item text-center" onclick="setmonth(1);" href="#">มกราคม</a>
                       <a class="dropdown-item text-center" onclick="setmonth(2);" href="#">กุมภาพันธ์</a>
                       <a class="dropdown-item text-center" onclick="setmonth(3);" href="#">มีนาคม</a>
@@ -325,35 +371,54 @@
                     </div>
                   </div>
                   <div id="select-year" class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">
-                      ปี 2561
-                    </button>
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">ปี 2561</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important;">
                       <a class="dropdown-item" href="#" onclick="setyear('2561')">ปี 2561</a>
                       <a class="dropdown-item" href="#" onclick="setyear('2560')">ปี 2560</a>
-                      <a class="dropdown-item" href="#" onclick="setyear('2559')">ปี 2559</a>
+                      <a class="dropdown-item" href="#" onclick="setyear('ทั้งหมด')">ทั้งหมด</a>
                     </div>
                   </div>
               </div>
             </div> 
 
-            <!-- Checkbox Select Branch -->
-            <div id="row-slct-branch" class="row" style="margin-top: 20px; padding-right: 12%;" hidden>
-              <div class="col-1"></div>
-              <div class="col-1 text-center">สาขา : </div>
-              <div class="col-10 input-group text-left">
-                <div class="col-2 nopd">
-                  <input type="checkbox" onchange="checkChange(this);">
-                  <label for="" style="margin-right: 2px;">สิงห์บุรี</label>
+          
+          <div id="row-filter" class="row justify-content-center" style="margin-top: 20px;">
+            <div class="col-6 nopd text-right">
+              <div class="row justify-content-end" style="display: flex; align-items: center;">
+                <div class="col-1"></div>
+                <div class="col-3 text-center">จัดเรียงโดย : </div>
+                <div class="col-6 input-group">
+                  <button id="by-amt" class="btn btn-secondary disabled" style="background-color: #666; margin-right: 15px;" onclick="setorderby('amt')">จำนวน</button>
+                  <button id="by-total" class="btn btn-secondary" style="background-color: #666;" onclick="setorderby('sale_value')">ราคารวม</button>
                 </div>
-                <div class="col-2 nopd">
-                  <input type="checkbox" onchange="checkChange(this);">
-                  <label for="" style="margin-right: 2px;">อ่างทอง</label>
+              </div>
+            </div>
+            <div class="col-6 nopd text-left">
+              <div class="row justify-content-start" style="display: flex; align-items: center;">
+                <div class="col-1"></div>
+                <div class="col-3 text-center">จัดเรียงจาก : </div>
+                <div class="col-6 input-group">
+                  <button id="by-desc" class="btn btn-secondary disabled" style="background-color: #666; margin-right: 15px;" onclick="setorderseq('DESC')">มาก > น้อย</button>
+                  <button id="by-asc" class="btn btn-secondary" style="background-color: #666;" onclick="setorderseq('ASC')">น้อย > มาก</button>
                 </div>
-                <div class="col-2 nopd">
-                  <input type="checkbox" onchange="checkChange(this);">
-                  <label for="" style="margin-right: 2px;">คลังสินค้า</label>
-                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Checkbox Select Branch -->
+          <div id="row-slct-branch" class="row justify-content-center" style="margin-top: 10px;" hidden>
+            <div class="col-12 input-group text-center justify-content-center">
+              <div class="col-1">สาขา : </div>
+              <div class="col-2 nopd">
+                <input type="checkbox" onchange="checkChange(this);">
+                <label for="" style="margin-right: 5px;">สิงห์บุรี</label>
+              </div>
+              <div class="col-2 nopd">
+                <input type="checkbox" onchange="checkChange(this);">
+                <label for="" style="margin-right: 5px;">อ่างทอง</label>
+              </div>
+              <div class="col-2 nopd">
+                <input type="checkbox" onchange="checkChange(this);">
+                <label for="" style="margin-right: 5px;">คลังสินค้า</label>
               </div>
             </div>
           </div> <hr style="width: 90%;">
@@ -366,19 +431,19 @@
             </div>
             <div id="row-title-2" class="row justify-content-center" hidden>
               <!-- จาก ถึง -->
-              <h4 id="date-from" class="text-center"></h4>
+              <h4 id="h4-from" class="text-center"></h4>
               <h3 style="color: #666; padding-top: 5px; margin-left: 10px; margin-right: 10px;"> ถึง </h3>
-              <h4 id="date-to" class="text-center"></h4>
+              <h4 id="h4-to" class="text-center"></h4>
             </div>
             <div id="row-date" class="row justify-content-center">
-              <p id="date-full" >22 มกราคม พ.ศ. 2561</p>
-              <p id="date-year" hidden>พ.ศ. 2561</p>
+              <p id="date-full" >22 มกราคม ปี 2561</p>
+              <p id="date-year" hidden>ปี 2561</p>
             </div>
           </div>
           
           <!-- Ctn-Header -->
           <div id="ctn-head" class="container-fullwidth">
-            <div class="row head-wth-branch justify-content-center" hidden>
+            <!--<div class="row head-wth-branch justify-content-center" hidden>
               <div class="col-2 text-center nopd-5">บาร์โค๊ด</div>
               <div class="col-3 text-center nopd-5">ชื่อสินค้า</div>
               <div class="col-1 text-center nopd-5">ราคา</div>
@@ -389,14 +454,6 @@
               <div class="col-1 text-center nopd"><span class="inline">ยอดขาย</span> <span class="inline">สาขา 3</span></div>
               <div class="col-1 text-center nopd">ยอดขายรวม</div>
             </div>
-            <div class="row head-wthout-branch justify-content-center" >
-              <div class="col-2 text-center nopd-5">บาร์โค๊ด</div>
-              <div class="col-3 text-center nopd-5">ชื่อสินค้า</div>
-              <div class="col-1 text-center nopd-5">ราคา</div>
-              <div class="col-1 text-center nopd-5">หน่วย</div>
-              <div class="col-1 text-center nopd-5">จำนวน</div>
-              <div class="col-1 text-center nopd">ยอดขายรวม</div>
-            </div>
             <div class="row head-spcf-branch justify-content-center" hidden>
               <div class="col-2 text-center nopd-5">บาร์โค๊ด</div>
               <div class="col-3 text-center nopd-5">ชื่อสินค้า</div>
@@ -405,11 +462,40 @@
               <div class="col-1 text-center nopd-5">จำนวน</div>
               <div id="head-spcf-total"  class="col-1 text-center nopd">ยอดขายรวม</div>
             </div>
+            <div id="head" class="row" style="flex-wrap: nowrap;" hidden>
+              <div class="col-3 text-center nopd-5">บาร์โค๊ด</div>
+              <div class="col-3 text-center nopd-5">ชื่อสินค้า</div>
+              <div class="col-1 text-center nopd-5">ราคา</div>
+              <div class="col-1 text-center nopd-5">หน่วย</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 1</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 1</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 2</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 2</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 3</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 3</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 4</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 4</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 5</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 5</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-1 text-center nopd-5">จำนวนเดือน 1</div>
+              <div class="col-1 text-center nopd-5">ยอดเดือน1</div>
+              <div class="col-2 text-center nopd" style="padding-right: 3%;">ยอดขายรวม</div>
+            </div>-->
           </div>
 
           <!-- Ctn-Show -->
           <div id="ctn-show" class="container-fullwidth" style="margin-top: 5px;">
-            <div class="row input-wth-branch justify-content-center" style="flex-wrap: nowrap;" hidden>
+            <!--<div class="row input-wth-branch justify-content-center" style="flex-wrap: nowrap;" hidden>
               <div class="col-2 nopd-5">
                 <div class='input-group-prepend'>
                   <span id="span-no" class='input-group-text'>#</span>
@@ -441,29 +527,6 @@
                 <input id='total' type='text' class='form-control text-center'>
               </div>
             </div>
-            <div class="row input-wthout-branch justify-content-center" style="flex-wrap: nowrap;" >
-              <div class="col-2 nopd-5">
-                <div class='input-group-prepend'>
-                  <span id="span-no" class='input-group-text'>#</span>
-                  <input id='barcode' type='text' class='form-control text-center'>
-                </div>
-              </div>
-              <div class="col-3 nopd-5">
-                <input id='name' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd-5">
-                <input id='price' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd-5">
-                <input id='unit' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd-5">
-                <input id='amount' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd-5">
-                <input id='total' type='text' class='form-control text-center'>
-              </div>
-            </div>
             <div class="row input-spcf-branch justify-content-center" style="flex-wrap: nowrap;" hidden>
               <div class="col-2 nopd-5">
                 <div class='input-group-prepend'>
@@ -486,28 +549,274 @@
               <div id="input-spcf-total" class="col-1 nopd-5">
                 <input id='total' type='text' class='form-control text-center'>
               </div>
+            </div>-->
+            <div class="row align-items-center" style="flex-wrap: nowrap;" hidden>
+              <div class="col-3 text-center input-group-prepend align-items-center" style="padding-right: 5px;">
+                <button class="btn btn-info btn-sm" style="margin-left: 5px; height: 100%;" onclick="$('#ctn-in-0').slideToggle(400);">
+                  <i class="fas fa-sort-down"></i>
+                </button>
+                <span id="span-no" class='input-group-text' style="margin-left: 5px;">0</span>
+                <input id='barcode' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-3 nopd">
+                <input id='name' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='price' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='unit' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5">
+                <input id='amount' type='text' class='form-control text-center'>
+              </div>
+              <div class="col-1 nopd-5" style="padding-left: 5px;">
+                <input id='total' type='text' class='form-control text-center'>
+              </div>
             </div>
+            <!--<div id="ctn-in-0" class="container-fullwidth" style="padding-bottom: 10px; background-color: white; border-radius: 5px;margin: 10px auto;">
+              <div class="col-3">สาขา 1 : </div>
+              <div class="row justify-content-start" style="padding-top: 10px; padding-left: 4%; width: 98%;">
+                <div class="col-12">
+                  <div class="row align-items-center justify-content-center">
+                    <div class="col-1 nopd-5 text-center">จน. เดือน1</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน2</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน3</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน4</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน5</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน6</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน7</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน8</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน9</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน10</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน11</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน12</div>
+                  </div>
+                  <div class="row align-items-center justify-content-center" style="margin-top: 3px; margin-bottom: 8px;">
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                  </div>
+                  <div class="row align-items-center justify-content-center">
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน1</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน2</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน3</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน4</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน5</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน6</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน7</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน8</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน9</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน10</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน11</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน12</div>
+                  </div>
+                  <div class="row align-items-center justify-content-center" style="margin-top: 3px; margin-bottom: 20px;">
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="col-3">สาขา 2 : </div>
+              <div class="row justify-content-start" style="padding-top: 10px; padding-left: 4%; width: 98%;">
+                <div class="col-12">
+                  <div class="row align-items-center justify-content-center">
+                    <div class="col-1 nopd-5 text-center">จน. เดือน1</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน2</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน3</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน4</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน5</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน6</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน7</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน8</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน9</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน10</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน11</div>
+                    <div class="col-1 nopd-5 text-center">จน. เดือน12</div>
+                  </div>
+                  <div class="row align-items-center justify-content-center" style="margin-top: 3px; margin-bottom: 8px;">
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                  </div>
+                  <div class="row align-items-center justify-content-center">
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน1</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน2</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน3</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน4</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน5</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน6</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน7</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน8</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน9</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน10</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน11</div>
+                    <div class="col-1 nopd-5 text-center">ยอด เดือน12</div>
+                  </div>
+                  <div class="row align-items-center justify-content-center" style="margin-top: 3px;">
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                    <div class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>
+                  </div>
+                </div>
+              </div>
+            </div>-->
           </div>
+        </div>
       </div><!-- End page content wrapper -->
     </div> <!-- End Wrapper -->
     <script>
+      var prod_month = [];
       $("#opt-date").click(function(event) {
           if($(this).hasClass('disabled')) $(this).removeClass('disabled');
           if(!$("#opt-from").is(":visible")){$("#opt-from").prop('hidden', false); $("#btn-from").prop('hidden', false); $("#btn-to").prop('hidden', false); $("#opt-to").prop('hidden', false);} 
           $("#opt-month").addClass('disabled');
+          $("#opt-year").addClass('disabled');
           $("#select-year").prop('hidden', true);
           $("#select-month").prop('hidden', true);
       });
-
+      var data_month = [-1,0,0,0,0,0,0,0,0,0,0,0,0,0];
       $("#opt-month").click(function(event) {
           if($(this).hasClass('disabled')) $(this).removeClass('disabled');
-          if(!$("#select-year").is(":visible")){
+          if(!$("#select-month").is(":visible")){
             $("#select-year").prop('hidden', false);
             $("#select-month").prop('hidden', false);
           } 
-          ($("#opt-from")).prop("hidden", true);
-          ($("#opt-to")).prop("hidden", true);
+          $("#opt-from").prop("hidden", true);
+          $("#opt-to").prop("hidden", true);
           $("#opt-date").addClass('disabled');
+          $("#opt-year").addClass('disabled');
+
+          var year = $("#select-year .btn").text().split(" ")[1]-543;
+          if(prod_month.length == 0){
+            $.ajax({
+            url: 'http://150.95.26.163:8080/gitmew/php/report_sale.php',
+            type: 'POST',
+            data: {
+              year_list: 'view_by_month', 
+              year: year,
+              order_by: order_by,
+              order_seq: order_seq
+            },
+            beforeSend: function(){
+              EasyLoading.show({                           
+                text: "กำลังโหลด"                            
+              });
+            }
+          })
+          .done(function(data) {
+            EasyLoading.hide();
+            //console.log(data);
+            var obj = jQuery.parseJSON(data);
+            $.each(obj, function(i, field){ 
+              prod_month.push({
+                barcode: field.barcode,
+                prod_name: field.prod_name,
+                prod_price: field.prod_price,
+                unit_name: field.unit_name,
+                amt: field.amt,
+                sale_value: field.sale_value,
+              });
+              i = prod_month.length-1;
+              /*console.log("bc "+field.barcode);console.log("na "+field.prod_name);console.log("pp "+field.prod_price);console.log("un "+field.unit_name);console.log("a "+field.amt); console.log("sv "+field.sale_value);*/
+              if(field.amt1){if(data_month[1] == 0) data_month[1] = 1; Object.assign(prod_month[i], {amt1: field.amt1, sale_value1: field.sale_value1});}
+              if(field.amt2){if(data_month[2] == 0) data_month[2] = 1; Object.assign(prod_month[i], {amt2: field.amt2, sale_value2: field.sale_value2});}
+              if(field.amt3){if(data_month[3] == 0) data_month[3] = 1; Object.assign(prod_month[i], {amt3: field.amt3, sale_value3: field.sale_value3});}
+              if(field.amt4){if(data_month[4] == 0) data_month[4] = 1; Object.assign(prod_month[i], {amt4: field.amt4, sale_value4: field.sale_value4});}
+              if(field.amt5){if(data_month[5] == 0) data_month[5] = 1; Object.assign(prod_month[i], {amt5: field.amt5, sale_value5: field.sale_value5});}
+              if(field.amt6){if(data_month[6] == 0) data_month[6] = 1; Object.assign(prod_month[i], {amt6: field.amt6, sale_value6: field.sale_value6});}
+              if(field.amt7){if(data_month[7] == 0) data_month[7] = 1; Object.assign(prod_month[i], {amt7: field.amt7, sale_value7: field.sale_value7});}
+              if(field.amt8){if(data_month[8] == 0) data_month[8] = 1; Object.assign(prod_month[i], {amt8: field.amt8, sale_value8: field.sale_value8});}
+              if(field.amt9){if(data_month[9] == 0) data_month[9] = 1; Object.assign(prod_month[i], {amt9: field.amt9, sale_value9: field.sale_value9});}
+              if(field.amt10){if(data_month[10] == 0) data_month[10] = 1; Object.assign(prod_month[i], {amt10: field.amt10, sale_value10: field.sale_value10});}
+              if(field.amt11){if(data_month[11] == 0) data_month[11] = 1; Object.assign(prod_month[i], {amt11: field.amt11, sale_value11: field.sale_value11});}
+              if(field.amt12){if(data_month[12] == 0) data_month[12] = 1; Object.assign(prod_month[i], {amt12: field.amt12, sale_value12: field.sale_value12});}
+            });
+            setmonth(0); // all month
+          })
+          .fail(function() {
+            console.log("error");
+          })
+          .always(function() {
+            console.log("complete");
+          });
+          }
+      });
+
+      $("#opt-year").click(function(event) {
+        if($(this).hasClass('disabled')) $(this).removeClass('disabled');
+        if($("#select-month").is(":visible")){
+          $("#select-month").prop('hidden', true);
+        }else{
+          $("#select-year").prop('hidden', false);
+        }
+        $("#opt-from").prop("hidden", true);
+        $("#opt-to").prop("hidden", true);
+        $("#opt-date").addClass('disabled');
+        $("#opt-month").addClass('disabled');
       });
 
       $("#menu-toggle").click(function(e) {
@@ -554,8 +863,8 @@
           $("#title-1").text('');
           $("#row-title-1").prop('hidden', true);
           $("#row-title-2").prop('hidden', false);
-          $("#date-from").text($("#opt-from").val());
-          $("#date-to").text($("#opt-to").val());
+          $("#h4-from").text($("#opt-from").val());
+          $("#h4-to").text($("#opt-to").val());
         }
       });
     </script>
