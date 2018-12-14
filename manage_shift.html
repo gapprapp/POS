@@ -262,8 +262,10 @@
                                 if (max_page_no == 1) {
                                     $("#nav-pagination").prop('hidden', true);
                                 } else if (max_page_no == 2) {
+                                    $("#nav-pagination").prop('hidden', false);
                                     $("#pg-rd a").text("#");
                                     $("#pg-rd").attr('class', 'page-item disabled');
+                                    $("#li-next").attr('class', 'page-item disabled');
                                 } else {
                                     $("#nav-pagination").prop('hidden', false);
                                     $("#pg-rd a").text("3");
@@ -354,8 +356,10 @@
                                     if (max_page_no == 1) {
                                         $("#nav-pagination").prop('hidden', true);
                                     } else if (max_page_no == 2) {
+                                        $("#nav-pagination").prop('hidden', false);
                                         $("#pg-rd a").text("#");
                                         $("#pg-rd").attr('class', 'page-item disabled');
+                                        $("#li-next").attr('class', 'page-item disabled');
                                     } else {
                                         $("#nav-pagination").prop('hidden', false);
                                         $("#pg-rd a").text("3");
@@ -530,7 +534,7 @@
                 }
             } else if (arg == "st") {
                 //console.log("st");
-                if (page != 2) {
+                if (page > 2 && page != 1) {
                     if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
                     if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
 

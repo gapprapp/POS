@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Try</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script>
+        $(document).ready(function () {
+
+            var amt1_1 = "10";
+            var amt1_2 = "20";
+            var amt1_3 = "20";
+            var sale_value1_1 = "110";
+            var sale_value1_2 = "120";
+            var sale_value1_3= "120";
+
+            for(var i = 1; i <= 3; i++){
+                $("#amt"+i).text(eval("amt1"+"_"+i));
+                $("#sv"+i).text(eval("sale_value1"+"_"+i));
+            }
+        });
+    </script>
+</head>
+<body>
+    <p id="amt1">Hello</p>
+    <p id="amt2">Hello</p>
+    <p id="amt3">Hello</p>
+    <p id="sv1">Hello</p>
+    <p id="sv2">Hello</p>
+    <p id="sv3">Hello</p>
+</body>
+</html>
