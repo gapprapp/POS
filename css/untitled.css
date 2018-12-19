@@ -1,8 +1,9 @@
 *{
-  outline: none !important;
+  outline: 0 !important;
+  box-shadow: 0 !important;
 }
 
-*:focus {outline:none !important}
+*:focus, *:hover, *:active, .open>.dropdown-toggle * {outline:0 !important; box-shadow: 0 !important;}
 
 body {
   font-family: 'Prompt', sans-serif;
