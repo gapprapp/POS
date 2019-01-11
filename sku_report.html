@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   
-  <title>รายงานยอดขาย</title>
+  <title>รายงานสินค้า</title>
   
   <!-- Bootstrap Import -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -177,7 +177,12 @@
         }
       });
 
-      /********/
+      /**** Set dropdown year ****/
+      text = '';
+      for (var y = 0; y < 4; y++) {
+        text = text + '<a class="dropdown-item" href="#" onclick="setyear(\'' + (t_year - y) + '\')">ปี ' + (t_year - y) + '</a>';
+      }
+      $("#year_all").after(text);
 
       url = new URL(window.location.href);
       m = url.searchParams.get("m");
@@ -259,1336 +264,1232 @@
         }
       }
 
-      function checkfullmonth(arg) {
-        i = 0;
-        var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-        for (i; i < month.length; i++) {
-          if (arg == month[i]) {
-            if (i < 10) {
-              i = "0" + i;
-            }
-            return i;
+    function checkfullmonth(arg) {
+      i = 0;
+      var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      for (i; i < month.length; i++) {
+        if (arg == month[i]) {
+          if (i < 10) {
+            i = "0" + i;
           }
+          return i;
         }
       }
+    }
 
-      function loadMax(data) {
-        var path = "http://150.95.26.163:8080/gitmew/php/report_sale_max.php";
-        $.post(path, data,
-          function (response) {
-            max_page_no = Math.ceil(response / 100);
-            if (max_page_no == 1) {
-              // only one page
-              $("#nav-pagination").prop('hidden', true);
-            } else if (max_page_no == 2) {
-              $("#pg-rd a").text("#");
-              $("#pg-rd").attr('class', 'page-item disabled');
-              $("#li-next").attr('class', 'page-item disabled');
-            } else {
-              $("#pg-rd a").text("3");
-              $("#pg-rd").attr('class', 'page-item');
-            }
+    function loadMax(data) {
+      var path = "http://150.95.26.163:8080/gitmew/php/report_sku_max.php";
+      $.post(path, data,
+        function (response) {
+          console.log(response);
+          max_page_no = Math.ceil(response / 100);
+          if (max_page_no == 1) {
+            // only one page
+            $("#nav-pagination").prop('hidden', true);
+          } else if (max_page_no == 2) {
+            $("#pg-rd a").text("#");
+            $("#pg-rd").attr('class', 'page-item disabled');
+            $("#li-next").attr('class', 'page-item disabled');
+          } else {
+            $("#pg-rd a").text("3");
+            $("#pg-rd").attr('class', 'page-item');
           }
-        );
+        }
+      );
+    }
+
+    // Object เก็บค่าที่แสดง0
+    var list = [];
+
+    function setmonth(arg) {
+      var text, data;
+      switch (arg) {
+        case 0:
+        case "0":
+          mode = 'allmonth';
+          old_data = data = { report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "ทุกเดือน"; break;
+        case 1:
+        case "1":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 1, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "มกราคม"; break;
+        case 2:
+        case "2":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 2, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "กุมภาพันธ์"; break;
+        case 3:
+        case "3":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 3, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "มีนาคม"; break;
+        case 4:
+        case "4":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 4, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "เมษายน"; break;
+        case 5:
+        case "5":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 5, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "พฤษภาคม"; break;
+        case 6:
+        case "6":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 6, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "มิถุนายน"; break;
+        case 7:
+        case "7":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 7, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "กรกฎาคม"; break;
+        case 8:
+        case "8":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 8, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "สิงหาคม"; break;
+        case 9:
+        case "9":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 9, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "กันยายน"; break;
+        case 10:
+        case "10":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 10, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "ตุลาคม"; break;
+        case 11:
+        case "11":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 11, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "พฤศจิกายน"; break;
+        case 12:
+        case "12":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 12, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "ธันวาคม"; break;
+        default:
+          text = 'จำนวนขาย';
+      }$("div[id*='item-']").remove(); $("div[class*='more-']").remove();
+
+      if ($("#select-year .btn").text() == 'ปี') {
+        $("#select-year .btn").text('ปี ' + t_year);
       }
 
-      // Object เก็บค่าที่แสดง0
-      var list = [];
+      loadMax(data);
+      load(1, data);
 
-      function setmonth(arg) {
-        var text, data;
-        switch (arg) {
-          case 0:
-          case "0":
-            mode = 'allmonth';
-            old_data = data = { report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "ทุกเดือน"; break;
-          case 1:
-          case "1":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 1, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "มกราคม"; break;
-          case 2:
-          case "2":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 2, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "กุมภาพันธ์"; break;
-          case 3:
-          case "3":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 3, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "มีนาคม"; break;
-          case 4:
-          case "4":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 4, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "เมษายน"; break;
-          case 5:
-          case "5":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 5, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "พฤษภาคม"; break;
-          case 6:
-          case "6":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 6, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "มิถุนายน"; break;
-          case 7:
-          case "7":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 7, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "กรกฎาคม"; break;
-          case 8:
-          case "8":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 8, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "สิงหาคม"; break;
-          case 9:
-          case "9":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 9, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "กันยายน"; break;
-          case 10:
-          case "10":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 10, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "ตุลาคม"; break;
-          case 11:
-          case "11":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 11, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "พฤศจิกายน"; break;
-          case 12:
-          case "12":
-            mode = 'alldate_selectedmonth';
-            old_data = data = { report_mode: mode, month: 12, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-            text = "ธันวาคม"; break;
-          default:
-            text = 'ยอดขาย';
-        }$("div[id*='item-']").remove(); $("div[class*='more-']").remove();
+      pagination_reset();
 
-        if ($("#select-year .btn").text() == 'ปี') {
-          $("#select-year .btn").text('ปี ' + t_year);
-        }
+      max_page = 0;
 
-        loadMax(data);
-        load(1, data);
+      $("#select-month .btn").text(text);
+      $("#title-1").text(text);
+      $("#date-full").prop('hidden', true);
+      $("#date-year").prop('hidden', false);
+    }
 
-        pagination_reset();
+    function setyear(arg) {
+      // clear old *item- and *more-
+      $("div[id*='item-']").remove(); $("div[class*='more-']").remove();
 
-        max_page = 0;
-
-        $("#select-month .btn").text(text);
-        $("#title-1").text(text);
+      year = parseInt(arg - 543);
+      if ($("#date-full").is(":visible")) {
         $("#date-full").prop('hidden', true);
-        $("#date-year").prop('hidden', false);
       }
 
-      function setyear(arg) {
-        // clear old *item- and *more-
-        $("div[id*='item-']").remove(); $("div[class*='more-']").remove();
+      if (!$("#opt-month").hasClass('disable')) {
+        $("#select-year .btn").text("ปี " + arg);
+        $("#select-month .btn").text('เดือน');
+      } else {
+        if (arg == "0") {
+          mode = 'allyear';
+          old_data = data = { report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          loadMax(data);
+          load(1, data);
 
-        temp = parseInt(arg - 543);
-        if ($("#date-full").is(":visible")) {
-          $("#date-full").prop('hidden', true);
-        }
+          pagination_reset();
 
-        if (!$("#opt-month").hasClass('disable')) {
+          max_page = 0;
+
+          $("#select-year .btn").text("ทั้งหมด");
+          $("#date-year").prop('hidden', false);
+          $("#date-year").text("ทั้งหมด");
+        } else {
+          mode = 'allmonth';
+          old_data = data = { report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          loadMax(data);
+          load(1, data);
+
+          pagination_reset();
+
+          max_page = 0;
           $("#select-year .btn").text("ปี " + arg);
+          $("#date-year").prop('hidden', false);
+          $("#date-year").text("ปี " + arg);
+        }
+      }
+    }
+
+    /*function setorderby(arg) {
+      if (arg != order_by) {
+        if (!$('#opt-date').hasClass('disable')) {
+          $('#opt-date').addClass('disable');
+          $('#opt-from').prop({ hidden: true });
+          $('#opt-to').prop({ hidden: true, disable: true });
+          $("#opt-to").val("");
+          $("#opt-from").val("");
+        }
+
+        if (!$('#opt-month').hasClass('disable')) {
+          $('#opt-month').addClass('disable');
+          $("#select-year").prop('hidden', true);
+          $("#select-month").prop('hidden', true);
           $("#select-month .btn").text('เดือน');
-        } else {
-          if (arg == "0") {
-            mode = 'allyear';
-            old_data = data = { report_mode: mode, year: temp, order_by: order_by, order_seq: order_seq, start: 0 };
-            loadMax(data);
-            load(1, data);
+          $("#select-year .btn").text('ปี');
+        }
 
-            pagination_reset();
-
-            max_page = 0;
-
-            $("#select-year .btn").text("ทั้งหมด");
-            $("#date-year").prop('hidden', false);
-            $("#date-year").text("ทั้งหมด");
-          } else {
-            mode = 'allmonth';
-            old_data = data = { report_mode: mode, year: temp, order_by: order_by, order_seq: order_seq, start: 0 };
-            loadMax(data);
-            load(1, data);
-
-            pagination_reset();
-
-            max_page = 0;
-            $("#select-year .btn").text("ปี " + arg);
-            $("#date-year").prop('hidden', false);
-            $("#date-year").text("ปี " + arg);
-          }
+        if (!$('#opt-year').hasClass('disable')) {
+          $('#opt-year').addClass('disable');
+          $("#select-year").prop('hidden', true);
         }
       }
 
-      function setorderby(arg) {
-        if (arg != order_by) {
-          if (!$('#opt-date').hasClass('disable')) {
-            $('#opt-date').addClass('disable');
-            $('#opt-from').prop({ hidden: true });
-            $('#opt-to').prop({ hidden: true, disable: true });
-            $("#opt-to").val("");
-            $("#opt-from").val("");
-          }
+      order_by = arg;
+      if (arg == 'amt') {
+        if (!$("#by-total").hasClass('disable')) {
+          $("#by-total").addClass('disable');
+        }
+        $("#by-amt").removeClass('disable');
+      } else {
+        if (!$("#by-amt").hasClass('disable')) {
+          $("#by-amt").addClass('disable');
+        }
+        $("#by-total").removeClass('disable');
+      }
+    }*/
 
-          if (!$('#opt-month').hasClass('disable')) {
-            $('#opt-month').addClass('disable');
-            $("#select-year").prop('hidden', true);
-            $("#select-month").prop('hidden', true);
-            $("#select-month .btn").text('เดือน');
-            $("#select-year .btn").text('ปี');
-          }
-
-          if (!$('#opt-year').hasClass('disable')) {
-            $('#opt-year').addClass('disable');
-            $("#select-year").prop('hidden', true);
-          }
+    function setorderseq(arg) {
+      if (arg != order_seq) {
+        if (!$('#opt-date').hasClass('disable')) {
+          $('#opt-date').addClass('disable');
+          $('#opt-from').prop({ hidden: true });
+          $('#opt-to').prop({ hidden: true, disable: true });
+          $("#opt-to").val("");
+          $("#opt-from").val("");
         }
 
-        order_by = arg;
-        if (arg == 'amt') {
-          if (!$("#by-total").hasClass('disable')) {
-            $("#by-total").addClass('disable');
-          }
-          $("#by-amt").removeClass('disable');
-        } else {
-          if (!$("#by-amt").hasClass('disable')) {
-            $("#by-amt").addClass('disable');
-          }
-          $("#by-total").removeClass('disable');
+        if (!$('#opt-month').hasClass('disable')) {
+          $('#opt-month').addClass('disable');
+          $("#select-year").prop('hidden', true);
+          $("#select-month").prop('hidden', true);
+          $("#select-month .btn").text('เดือน');
+          $("#select-year .btn").text('ปี');
+        }
+
+        if (!$('#opt-year').hasClass('disable')) {
+          $('#opt-year').addClass('disable');
+          $("#select-year").prop('hidden', true);
         }
       }
-
-      function setorderseq(arg) {
-        if (arg != order_seq) {
-          if (!$('#opt-date').hasClass('disable')) {
-            $('#opt-date').addClass('disable');
-            $('#opt-from').prop({ hidden: true });
-            $('#opt-to').prop({ hidden: true, disable: true });
-            $("#opt-to").val("");
-            $("#opt-from").val("");
-          }
-
-          if (!$('#opt-month').hasClass('disable')) {
-            $('#opt-month').addClass('disable');
-            $("#select-year").prop('hidden', true);
-            $("#select-month").prop('hidden', true);
-            $("#select-month .btn").text('เดือน');
-            $("#select-year .btn").text('ปี');
-          }
-
-          if (!$('#opt-year').hasClass('disable')) {
-            $('#opt-year').addClass('disable');
-            $("#select-year").prop('hidden', true);
-          }
+      order_seq = arg;
+      if (arg == 'ASC') {
+        if (!$("#by-desc").hasClass('disable')) {
+          $("#by-desc").addClass('disable');
         }
-        order_seq = arg;
-        if (arg == 'ASC') {
-          if (!$("#by-desc").hasClass('disable')) {
-            $("#by-desc").addClass('disable');
-          }
-          $("#by-asc").removeClass('disable');
+        $("#by-asc").removeClass('disable');
 
-          //homes.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-          //console.log("ascending", homes);
-        } else {
-          if (!$("#by-asc").hasClass('disable')) {
-            $("#by-asc").addClass('disable');
-          }
-          $("#by-desc").removeClass('disable');
-
-          //homes.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-          //console.log("descending", homes);
+        //homes.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        //console.log("ascending", homes);
+      } else {
+        if (!$("#by-asc").hasClass('disable')) {
+          $("#by-asc").addClass('disable');
         }
+        $("#by-desc").removeClass('disable');
+
+        //homes.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        //console.log("descending", homes);
       }
+    }
 
-      function pagination_reset() {
-        page = 1;
+    function pagination_reset() {
+      page = 1;
 
-        if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
-        if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+      if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+      if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+      if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+      st = $("#pg-st a").text('1');
+      nd = $("#pg-nd a").text('2');
+      rd = $("#pg-rd a").text('3');
+    }
+
+    var page = 1;
+    function pagination(arg) {
+      var start = (page * 100) - 100; // pg = 1 start = 0
+
+      if (arg == "st") {
+        if (page > 2 && page != 1) {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page -= 1;
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 1); // 1 -> 2
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 1);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 1);
+        } else if (page == 2) {
+          if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = 1;
+
+        } else {
+          return 0;
+        }
+      } else if (arg == "nd") {
+        //console.log("nd");
+        if (page == 1) page++;
+        else if (page == max_pap - ge_no) page--;
+        if ($("#pg-nd").hasClass('active')) return 0;
+        else $("#pg-nd").attr('class', 'active');
+        if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
         if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+      } else if (arg == "rd") {
+        if (page + 1 == max_page_no) {
+          if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
 
-        st = $("#pg-st a").text('1');
-        nd = $("#pg-nd a").text('2');
-        rd = $("#pg-rd a").text('3');
-      }
+          page = max_page_no;
+          st = $("#pg-st a").text(parseInt(max_page_no - 2));
+          nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+          rd = $("#pg-rd a").text(parseInt(max_page_no));
+        } else {
+          //console.log("rd");
+          if (page == max_page_no) return 0;
 
-      var page = 1;
-      function pagination(arg) {
-        var start = (page * 100) - 100; // pg = 1 start = 0
-
-        if (arg == "st") {
-          if (page > 2 && page != 1) {
-            if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
-            if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
-
-            page -= 1;
-            st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 1); // 1 -> 2
-            nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 1);
-            rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 1);
-          } else if (page == 2) {
-            if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
-            if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
-            if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
-
-            page = 1;
-
-          } else {
-            return 0;
-          }
-        } else if (arg == "nd") {
-          //console.log("nd");
-          if (page == 1) page++;
-          else if (page == max_pap - ge_no) page--;
-          if ($("#pg-nd").hasClass('active')) return 0;
-          else $("#pg-nd").attr('class', 'active');
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
           if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
           if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
-        } else if (arg == "rd") {
-          if (page + 1 == max_page_no) {
-            if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
-            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
-            if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
 
-            page = max_page_no;
-            st = $("#pg-st a").text(parseInt(max_page_no - 2));
-            nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
-            rd = $("#pg-rd a").text(parseInt(max_page_no));
-          } else {
-            //console.log("rd");
-            if (page == max_page_no) return 0;
+          if (page == 1) page += 2; // page = 3
+          else page += 1;
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 1); // 1 -> 2
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 1);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 1);
+        }
+      } else if (arg == "prev") {
+        //console.log("prev");
+        if (page <= 11) {
+          if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
 
+          page = 1;
+          st = $("#pg-st a").text("1");
+          nd = $("#pg-nd a").text("2");
+          rd = $("#pg-rd a").text("3");
+        } else {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = page - 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 10);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 10);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 10);
+        }
+      } else if (arg == "next") {
+        //console.log("next");
+        if ($("#pg-st").hasClass('active')) {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+          page = page + 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 9);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 9);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 9);
+        } else {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+          page = page + 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 10);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 10);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 10);
+        }
+      } else if (arg == "last") {
+        //console.log("last");
+        if (max_page_no <= 3) {
+          if (max_page_no == 2) {
+            //console.log("2");
             if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
             if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
             if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
 
-            if (page == 1) page += 2; // page = 3
-            else page += 1;
-            st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 1); // 1 -> 2
-            nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 1);
-            rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 1);
-          }
-        } else if (arg == "prev") {
-          //console.log("prev");
-          if (page <= 11) {
-            if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
-            if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
-            if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
-
-            page = 1;
+            page = 2;
             st = $("#pg-st a").text("1");
             nd = $("#pg-nd a").text("2");
             rd = $("#pg-rd a").text("3");
-          } else {
-            if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
-            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
-            if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
-
-            page = page - 10;
-
-            st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 10);
-            nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 10);
-            rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 10);
-          }
-        } else if (arg == "next") {
-          //console.log("next");
-          if ($("#pg-st").hasClass('active')) {
-            if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
-            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
-
-            page = page + 10;
-
-            st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 9);
-            nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 9);
-            rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 9);
-          } else {
-            if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
-            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
-
-            page = page + 10;
-
-            st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 10);
-            nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 10);
-            rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 10);
-          }
-        } else if (arg == "last") {
-          //console.log("last");
-          if (max_page_no <= 3) {
-            if (max_page_no == 2) {
-              //console.log("2");
-              if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
-              if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
-              if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
-
-              page = 2;
-              st = $("#pg-st a").text("1");
-              nd = $("#pg-nd a").text("2");
-              rd = $("#pg-rd a").text("3");
-            } else if (max_page_no == 3) {
-              //console.log("3");
-              if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
-              if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
-              if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
-
-              page = 3;
-              st = $("#pg-st a").text("1");
-              nd = $("#pg-nd a").text("2");
-              rd = $("#pg-rd a").text("3");
-            }
-          } else {
+          } else if (max_page_no == 3) {
+            //console.log("3");
             if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
             if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
             if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
 
-            page = max_page_no;
-            st = $("#pg-st a").text(parseInt(max_page_no - 2));
-            nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
-            rd = $("#pg-rd a").text(parseInt(max_page_no));
+            page = 3;
+            st = $("#pg-st a").text("1");
+            nd = $("#pg-nd a").text("2");
+            rd = $("#pg-rd a").text("3");
           }
-        }
-        // Un-Disabled li-prev
-        if (page > 1) {
-          $("#li-prev").prop('class', 'page-item');
-        } else if (page == 1) {
-          $("#li-prev").prop('class', 'page-item disabled');
-        }
+        } else {
+          if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
 
-        load(page);
-      }
-
-      function prev() {
-        pagination('prev');
-      }
-
-      function next() {
-        if (page + 10 < max_page_no) {
-          pagination('next');
-        } else if (page + 10 >= max_page_no) {
-          pagination('last');
+          page = max_page_no;
+          st = $("#pg-st a").text(parseInt(max_page_no - 2));
+          nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+          rd = $("#pg-rd a").text(parseInt(max_page_no));
         }
       }
-
-      function commas(x) {
-        var parts = x.toString().split(".");
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return parts.join(".");
+      // Un-Disabled li-prev
+      if (page > 1) {
+        $("#li-prev").prop('class', 'page-item');
+      } else if (page == 1) {
+        $("#li-prev").prop('class', 'page-item disabled');
       }
 
-      var max_page = 1;
+      load(page);
+    }
 
-      function load(page, data) {
-        $("div[id*='item-']").prop('hidden', true);
-        $("div[class*='more-']").prop('hidden', true);
-        start = (page == 1 ? 0 : 100 * (page - 1));
+    function prev() {
+      pagination('prev');
+    }
 
-        data = (typeof data !== 'undefined') ? data : old_data;
-        data.start = start;
+    function next() {
+      if (page + 10 < max_page_no) {
+        pagination('next');
+      } else if (page + 10 >= max_page_no) {
+        pagination('last');
+      }
+    }
 
-        if (page > max_page) {
-          // Max page = New page.. ..
-          max_page = page;
+    function commas(x) {
+      var parts = x.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }
+
+    var max_page = 1;
+
+    function load(page, data) {
+      $("div[id*='item-']").prop('hidden', true);
+      $("div[class*='more-']").prop('hidden', true);
+      start = (page == 1 ? 0 : 100 * (page - 1));
+
+      data = (typeof data !== 'undefined') ? data : old_data;
+      data.start = start;
+
+      if (page > max_page) {
+        // Max page = New page.. ..
+        max_page = page;
+        getData(start, data);
+      } else {
+        // Load old page.. .. 
+        if ($("#item-" + start).length == 0) {
+          // Skiped pg.. ..
           getData(start, data);
         } else {
-          // Load old page.. .. 
-          if ($("#item-" + start).length == 0) {
-            // Skiped pg.. ..
-            getData(start, data);
-          } else {
-            // Old pg (Loaded pg).. ..
-            // Loop for dis-hidden item in pg.. ..
-            for (var i = start; i < (start + 100); i++) {
-              $("#item-" + i).prop('hidden', false);
-            }
+          // Old pg (Loaded pg).. ..
+          // Loop for dis-hidden item in pg.. ..
+          for (var i = start; i < (start + 100); i++) {
+            $("#item-" + i).prop('hidden', false);
           }
         }
       }
+    }
 
-      function getData(start, data) {
-        //console.log(mode);
-        var path = 'http://150.95.26.163:8080/gitmew/php/sku_report_main.php';
+    function getData(start, data) {
+      //console.log(mode);
+      var path = 'http://150.95.26.163:8080/gitmew/php/sku_report_main.php';
+      $.ajax({
+        url: path,
+        type: 'POST',
+        data: data,
+        beforeSend: function () {
+          EasyLoading.show({
+            text: "กำลังโหลด"
+          });
+        },
+        success: function (response) {
+          EasyLoading.hide();
+          // Response == null // No data
+          var obj = jQuery.parseJSON(response);
+          if (obj == null) {
+            if (mode == 'alldate_selectedmonth') {
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "ไม่มีข้อมูลในเดือนที่เลือก!!"
+              });
+            } if (mode == '')
+              return 0;
+          }
+
+          // LOOP FILL DATA
+          $.each(obj, function (i, field) {
+            var more = "more-" + i; // class "more";
+            //var branch = "branch-" + i; // class "branch";
+            //console.log(more);
+
+            i = (start + i);
+
+
+            /*
+              $("#input_price").numeric({
+            allowThouSep: true
+            });
+            */
+            // Main var run in getData
+            list[i] = {
+              "prod_id": field.prod_id,
+              "barcode": field.barcode,
+              "prod_name": field.prod_name,
+              "prod_price": commas(field.prod_price),
+              "unit_name": field.unit_name,
+              "amt": commas(field.amt),
+            };
+
+            // ROW INPUT
+            row_input = "<div id='item-" + i + "' class='row justify-content-center align-items-center' style='margin-bottom: 5px;'>" +
+              "<div class='col-2 nopd-5'>" +
+              "<div class='input-group-prepend'>" +
+              "<span id='id-" + i + "' hidden>" + list[i].prod_id + "</span>" +
+              "<span id='span-no' class='input-group-text'>" + (i + 1) + "</span>" +
+              "<input id='barcode' type='text' class='form-control text-center' readonly value='" + list[i].barcode + "'>" +
+              "</div>" +
+              "</div>" +
+              "<div class='col-3 nopd-5'>" +
+              "<input id='name' type='text' class='form-control text-center' readonly value='" + list[i].prod_name + "'>" +
+              "</div>" +
+              "<div class='col-1 nopd-5'>" +
+              "<input id='price' type='text' class='form-control text-center' readonly value='" + list[i].prod_price + "'>" +
+              "</div>" +
+              "<div class='col-1 nopd-5'>" +
+              "<input id='unit' type='text' class='form-control text-center' readonly value='" + list[i].unit_name + "'>" +
+              "</div>" +
+              "<div class='col-1 nopd-5'>" +
+              "<input id='amount' type='text' class='form-control text-center' readonly value='" + list[i].amt + "'>" +
+              "</div>" +
+              "<div class='col-1'>" +
+              "<button id='more_btn-" + i + "' class='btn btn-info btn-sm' onclick='getMore(" + i + ")'>" +
+              "<i class='fa fa-sort-down'></i>" +
+              "</button>" +
+              "</div>" +
+              "</div>";
+            $("#ctn-show").append(row_input);
+          });
+          $("#ctn-head").prop('hidden', false);
+          $("#nav-pagination").prop('hidden', false);
+        }
+      });
+    }
+
+    function getMore(i) {
+      //console.log("getMore Function " + list[i].prod_id);
+      //console.log(i + " " + mode + " " + prod_id);
+      // $(".more-"+i),slideToggle(400);
+      var exist = false;
+      if ($(".more-" + i).length == 0) {
+        // Class more-i dose not exist
+        var path = 'http://150.95.26.163:8080/gitmew/php/sku_report_more.php';
+        var more_data;
+        //{ report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+        if (mode == "allmonth") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id, year: year };
+        } else if (mode == "allyear") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id };
+        } else if (mode == "alldate_selectedmonth") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id, month: old_data.month, year: old_data.year };
+        } else if (mode == "alldate_daterange") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id, date_from: old_data.date_from, date_to: old_data.date_to };
+        }
         $.ajax({
+          type: "POST",
           url: path,
-          type: 'POST',
-          data: data,
+          data: more_data,
           beforeSend: function () {
             EasyLoading.show({
               text: "กำลังโหลด"
             });
           },
           success: function (response) {
-            EasyLoading.hide();
-            // Response == null // No data
             var obj = jQuery.parseJSON(response);
-            if (obj == null) {
-              if (mode == 'alldate_selectedmonth') {
-                $.alert({
-                  icon: 'fa fa-warning',
-                  title: 'เตือน',
-                  content: "ไม่มีข้อมูลในเดือนที่เลือก!!"
-                });
-              } if (mode == '')
-                return 0;
-            }
-
-            // LOOP FILL DATA
-            $.each(obj, function (i, field) {
-              var more = "more-" + i; // class "more";
-              //var branch = "branch-" + i; // class "branch";
-              //console.log(more);
-
-              i = (start + i);
-
-
-              /*
-               $("#input_price").numeric({
-              allowThouSep: true
-              });
-              */
-              // Main var run in getData
-              list[i] = {
-                "prod_id": field.prod_id,
-                "barcode": field.barcode,
-                "prod_name": field.prod_name,
-                "prod_price": commas(field.prod_price),
-                "unit_name": field.unit_name,
-                "amt": commas(field.amt),
-                "sale_value": commas(field.sale_value),
-              };
-
-              // ROW INPUT
-              row_input = "<div id='item-" + i + "' class='row justify-content-center align-items-center' style='margin-bottom: 5px;'>" +
-                "<div class='col-2 nopd-5'>" +
-                "<div class='input-group-prepend'>" +
-                "<span id='id-" + i + "' hidden>" + list[i].prod_id + "</span>" +
-                "<span id='span-no' class='input-group-text'>" + (i + 1) + "</span>" +
-                "<input id='barcode' type='text' class='form-control text-center' readonly value='" + list[i].barcode + "'>" +
-                "</div>" +
-                "</div>" +
-                "<div class='col-3 nopd-5'>" +
-                "<input id='name' type='text' class='form-control text-center' readonly value='" + list[i].prod_name + "'>" +
-                "</div>" +
-                "<div class='col-1 nopd-5'>" +
-                "<input id='price' type='text' class='form-control text-center' readonly value='" + list[i].prod_price + "'>" +
-                "</div>" +
-                "<div class='col-1 nopd-5'>" +
-                "<input id='unit' type='text' class='form-control text-center' readonly value='" + list[i].unit_name + "'>" +
-                "</div>" +
-                "<div class='col-1 nopd-5'>" +
-                "<input id='amount' type='text' class='form-control text-center' readonly value='" + list[i].amt + "'>" +
-                "</div>" +
-                "<div class='col-1 nopd-5'>" +
-                "<input id='total' type='text' class='form-control text-center' readonly value='" + list[i].sale_value + "'>" +
-                "</div>" +
-                "<div class='col-1'>" +
-                "<button id='more_btn-" + i + "' class='btn btn-info btn-sm' onclick='getMore(" + i + ")'>" +
-                "<i class='fa fa-sort-down'></i>" +
-                "</button>" +
-                "</div>" +
-                "</div>";
-              $("#ctn-show").append(row_input);
-            });
-            $("#ctn-head").prop('hidden', false);
-            $("#nav-pagination").prop('hidden', false);
+            showMore(i, obj, exist);
+            EasyLoading.hide();
           }
         });
+      } else {
+        exist = true;
+        showMore(i, 0, exist);
+        EasyLoading.hide();
       }
 
-      function getMore(i) {
-        //console.log("getMore Function " + list[i].prod_id);
-        //console.log(i + " " + mode + " " + prod_id);
-        // $(".more-"+i),slideToggle(400);
-        var exist = false;
-        if ($(".more-" + i).length == 0) {
-          // Class more-i dose not exist
-          var path = 'http://150.95.26.163:8080/gitmew/php/sale_report_more.php';
-          var more_data;
-          //{ report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
-          if (mode == "allmonth") {
-            more_data = { report_mode: mode, prod_id: list[i].prod_id, year: year };
-          } else if (mode == "allyear") {
-            more_data = { report_mode: mode, prod_id: list[i].prod_id };
-          } else if (mode == "alldate_selectedmonth") {
-            more_data = { report_mode: mode, prod_id: list[i].prod_id, month: old_data.month, year: old_data.year };
-          } else if (mode == "alldate_daterange") {
-            more_data = { report_mode: mode, prod_id: list[i].prod_id, date_from: old_data.date_from, date_to: old_data.date_to };
+    }
+
+    function showMore(i, obj, exist) {
+      console.log(obj);
+      var more = "more-" + i;
+      if (!exist) {
+        // MORE CONTAINER
+        more_ctn = '<div class="container-fullwidth ' + more + '" style="margin-bottom: 8px;">';
+        more_end = '</div>';
+
+        if (mode == "allmonth") {
+          // ROW 12 MONTH
+          row_12m ='<div class="row">' +
+            '<div class="col-12 text-center">จำนวนขาย</div>' +
+            '</div> <hr style="margin-top: 5px;">' +
+          '<div class="row" style="margin-bottom: 5px;">' +
+            '<div class="col-1 text-center">มกรา</div>' +
+            '<div class="col-1 text-center">กุมภา</div>' +
+            '<div class="col-1 text-center">มีนา</div>' +
+            '<div class="col-1 text-center">เมษา</div>' +
+            '<div class="col-1 text-center">พฤษภา</div>' +
+            '<div class="col-1 text-center">มิถุนา</div>' +
+            '<div class="col-1 text-center">กรกฎา</div>' +
+            '<div class="col-1 text-center">สิงหา</div>' +
+            '<div class="col-1 text-center">กันยา</div>' +
+            '<div class="col-1 text-center">ตุลา</div>' +
+            '<div class="col-1 text-center">พฤศจิกา</div>' +
+            '<div class="col-1 text-center">ธันวา</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[1].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[2].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[3].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[4].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[5].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[6].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[7].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[8].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[9].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[10].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[11].amt) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[12].amt) + '">' +
+            '</div>' +
+            '</div>' +
+            '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
+            '<div class="col-12 text-center">' +
+            '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
+            '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
+            '</div>' +
+            '</div>';
+          $("#item-" + i).after(more_ctn + row_12m + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else if (mode == "allyear") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          rowyear = "";
+          end_rowyear = '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
+            '<div class="col-12 text-center">' +
+            '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
+            '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
+            '</div>' +
+            '</div>';
+          //$("#item-" + i).after(more_ctn);
+
+          var loop;
+          //mod = count % 3; if (mod > 0) mod = 1;
+          loop = (count / 3) + 1;
+          var l = 1;
+
+          for (var o = 1; o <= loop; o++) {
+            var row_title = '<div class="row justify-content-center align-items-center"' + 'style="margin-bottom: 5px;">' +
+              '<div class="col-2"></div>';
+
+            var row_input = '<div class="row justify-content-center align-items-center">' +
+              '<div class="col-2">จำนวนขาย</div>';
+
+            //$("."+more).append(rowyear);
+            for (l = l; l <= 3 * o; l++) {
+              //console.log("o :" + o +" l :" + l + " count : " + count);
+              // Remain in row fill "-" (dash..)
+              if (l > count) {
+                //console.log("hi");
+                row_title += '<div class="col-3 text-center">ปี -</div>';
+                row_input += '<div class="col-3" style="padding-left: 10px; padding-right: 10px;">' +
+                  '<input type="text" class="form-control form-control-sm text-center" readonly value="-">' +
+                  '</div>';
+              } else {
+                row_title += '<div class="col-3 text-center">ปี ' + obj[l].year + '</div>';
+                row_input += '<div class="col-3" style="padding-left: 10px; padding-right: 10px;">' +
+                  '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                  '</div>';
+              }
+            } row_title += '</div>'; row_input += '</div>';
+            rowyear = row_title + row_input + end_rowyear;
+            row_title = row_input = "";
           }
-          $.ajax({
-            type: "POST",
-            url: path,
-            data: more_data,
-            beforeSend: function () {
-              EasyLoading.show({
-                text: "กำลังโหลด"
-              });
-            },
-            success: function (response) {
-              var obj = jQuery.parseJSON(response);
-              showMore(i, obj, exist);
-              EasyLoading.hide();
+
+          $("#item-" + i).after(more_ctn + rowyear + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else if (mode == "alldate_selectedmonth") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          rowdaterange = "";
+          end_rowdaterange = '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
+            '<div class="col-12 text-center">' +
+            '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
+            '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
+            '</div>' +
+            '</div>';
+          //$("#item-" + i).after(more_ctn);
+
+          // Start day
+          //                0      1      2      3      4      5      6
+          var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          var temp_skip = 0, skip = 0;
+          $.each(day_name, function (index, val) {
+            if (val == obj[1].day) {
+              // val = first-day
+              skip = index;
+              temp_skip = index;
             }
           });
-        } else {
-          exist = true;
-          showMore(i, 0, exist);
-          EasyLoading.hide();
-        }
 
-      }
+          var loop;
+          //mod = count % 7; if (mod > 0) mod = 1;
+          loop = ((count + skip) / 7) + 1;
+          var l = 1 - temp_skip;
+          var row_title = "";
+          var row_input = "";
 
-      function showMore(i, obj, exist) {
-        //console.log(obj);
-        var more = "more-" + i;
-        if (!exist) {
-          // MORE CONTAINER
-          more_ctn = '<div class="container-fullwidth ' + more + '" style="margin-bottom: 8px;">';
-          more_end = '</div>';
 
-          if (mode == "allmonth") {
-            // ROW 12 MONTH
-            row_12m = '<div class="row">' +
-              '<div class="col-1 text-center">มกรา</div>' +
-              '<div class="col-1 text-center">กุมภา</div>' +
-              '<div class="col-1 text-center">มีนา</div>' +
-              '<div class="col-1 text-center">เมษา</div>' +
-              '<div class="col-1 text-center">พฤษภา</div>' +
-              '<div class="col-1 text-center">มิถุนา</div>' +
-              '<div class="col-1 text-center">กรกฎา</div>' +
-              '<div class="col-1 text-center">สิงหา</div>' +
-              '<div class="col-1 text-center">กันยา</div>' +
-              '<div class="col-1 text-center">ตุลา</div>' +
-              '<div class="col-1 text-center">พฤศจิกา</div>' +
-              '<div class="col-1 text-center">ธันวา</div>' +
-              '</div>' +
-              '<hr style="margin-top: 5px;">' +
-              // ********* Amonut ********* //
-              '<div class="row" style="margin-bottom: 5px;">' +
-              '<div class="col-1 text-left">จำนวน :</div>' +
-              '</div>' +
-              '<div class="row">' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[1].amt1) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[2].amt2) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[3].amt3) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[4].amt4) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[5].amt5) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[6].amt6) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[7].amt7) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[8].amt8) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[9].amt9) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[10].amt10) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[11].amt11) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[12].amt12) + '">' +
-              '</div>' +
-              '</div>' +
-              // ********* Price ********* //
-              '<div class="row" style="margin-bottom: 5px; margin-top: 10px;">' +
-              '<div class="col-1 text-left">ราคา :</div>' +
-              '</div>' +
-              '<div class="row">' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[1].sale_value1) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[2].sale_value2) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[3].sale_value3) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[4].sale_value4) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[5].sale_value5) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[6].sale_value6) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[7].sale_value7) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[8].sale_value8) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[9].sale_value9) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[10].sale_value10) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[11].sale_value11) + '">' +
-              '</div>' +
-              '<div class="col-1 text-center nopd-5">' +
-              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[12].sale_value12) + '">' +
-              '</div>' +
-              '</div>' +
-              '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
-              '<div class="col-12 text-center">' +
-              '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
-              '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
-              '</div>' +
-              '</div>';
-            $("#item-" + i).after(more_ctn + row_12m + more_end);
-            $("." + more).hide();
-            $("." + more).slideToggle(400);
-
-            // Done loading more .. .. next time will only slide
-            $("#more_btn-" + i).click(function (e) {
-              $("." + more).slideToggle(400);
-            });
-          }
-          else if (mode == "allyear") {
-            // Count year.. ..
-            var count = 0;
-            $.each(obj, function (i, field) {
-              count++;
-            });
-
-            rowyear = "";
-            end_rowyear = '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
-              '<div class="col-12 text-center">' +
-              '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
-              '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
-              '</div>' +
-              '</div>';
-            //$("#item-" + i).after(more_ctn);
-
-            var mod, loop;
-            mod = count % 3; if (mod > 0) mod = 1;
-            loop = (count / 3) + mod;
-            var l = 1;
-
-            for (var o = 1; o <= loop; o++) {
-              var row_title = '<div class="row justify-content-center align-items-center"' + 'style="margin-bottom: 5px;">' +
-                '<div class="col-2"></div>';
-
-              var row_input = '<div class="row justify-content-center align-items-center">' +
-                '<div class="col-2">จำนวน : ราคา</div>';
-
-              //$("."+more).append(rowyear);
-              for (l = l; l <= 3 * o; l++) {
-                //console.log("o :" + o +" l :" + l + " count : " + count);
-                // Remain in row fill "-" (dash..)
+          for (var o = 1; o <= loop; o++) {
+            // Initial 
+            if (o == 1) {
+              row_title = '<div class="row justify-content-center align-items-center">วันที่/เดือน (จำนวน : ราคารวม)</div>' +
+                '<div class="row week">' +
+                '<div class="col-md-1 text-center" style="border-right: black 1px solid;"> อา.</div>' +
+                '<div class="col-md-1 text-center" style="border-right: black 1px solid;">จ.</div>' +
+                '<div class="col-md-1 text-center" style="border-right: black 1px solid;">อ.</div>' +
+                '<div class="col-md-1 text-center" style="border-right: black 1px solid;">พ.</div>' +
+                '<div class="col-md-1 text-center" style="border-right: black 1px solid;">พฤ.</div>' +
+                '<div class="col-md-1 text-center" style="border-right: black 1px solid;">ศ.</div>' +
+                '<div class="col-md-1 text-center">ส.</div>' +
+                '</div><hr>' +
+                '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input = '<div class="row week">';
+            } else {
+              row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input += '<div class="row week">';
+            }
+            if (o == 2) temp_skip = 0;
+            for (var l = l; l <= ((o * 7) - skip); l++) {
+              if (l <= 0) {
+                // Fill space
+                row_title += '<div class="col-md-1 nopd text-center"></div>';
+                row_input += '<div class="col-md-1 text-center" style="border-right: black solid 1px;"></div>';
+              } else {
+                // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
                 if (l > count) {
-                  //console.log("hi");
-                  row_title += '<div class="col-3 text-center">ปี -</div>';
-                  row_input += '<div class="col-3 input-group">' +
-                    '<input type="text" class="form-control form-control-sm text-center" readonly value="-">' +
-                    '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                    '<input type="text" class="form-control form-control-sm text-center" readonly value="-">' +
-                    '</div>';
-                } else {
-                  row_title += '<div class="col-3 text-center">ปี ' + obj[l].year + '</div>';
-                  row_input += '<div class="col-3 input-group">' +
-                    '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
-                    '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                    '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
-                    '</div>';
-                }
-              } row_title += '</div>'; row_input += '</div>';
-              rowyear = row_title + row_input + end_rowyear;
-              row_title = row_input = "";
-            }
-
-            $("#item-" + i).after(more_ctn + rowyear + more_end);
-            $("." + more).hide();
-            $("." + more).slideToggle(400);
-
-            // Done loading more .. .. next time will only slide
-            $("#more_btn-" + i).click(function (e) {
-              $("." + more).slideToggle(400);
-            });
-          }
-          else if (mode == "alldate_selectedmonth") {
-            // Count year.. ..
-            var count = 0;
-            $.each(obj, function (i, field) {
-              count++;
-            });
-
-            rowdaterange = "";
-            end_rowdaterange = '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
-              '<div class="col-12 text-center">' +
-              '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
-              '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
-              '</div>' +
-              '</div>';
-            //$("#item-" + i).after(more_ctn);
-
-            // Start day
-            //                0      1      2      3      4      5      6
-            var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            var temp_skip = 0, skip = 0;
-            $.each(day_name, function (index, val) {
-              if (val == obj[1].day) {
-                // val = first-day
-                skip = index;
-                temp_skip = index;
-              }
-            });
-
-            var mod, loop;
-            mod = count % 7; if (mod > 0) mod = 1;
-            loop = ((count + skip) / 7) + mod;
-            var l = 1 - temp_skip;
-            var row_title = "";
-            var row_input = "";
-
-
-            for (var o = 1; o <= loop; o++) {
-              // Initial 
-              if (o == 1) {
-                row_title = '<div class="row justify-content-center align-items-center">วันที่/เดือน (จำนวน : ราคารวม)</div>' +
-                  '<div class="row week">' +
-                  '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;"> อา.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">จ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">อ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">พ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">พฤ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">ศ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center">ส.</div>' +
-                  '</div><hr>' +
-                  '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                row_input = '<div class="row week">';
-              } else {
-                row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                row_input += '<div class="row week">';
-              }
-              if (o == 2) temp_skip = 0;
-              for (var l = l; l <= ((o * 7) - skip); l++) {
-                if (l <= 0) {
-                  // Fill space
+                  // in row.. ..
                   row_title += '<div class="col-md-1 nopd text-center"></div>';
-                  row_input += '<div class="col-md-1 nopd-5 text-center" style="border-right: black solid 1px;"></div>';
+                  row_input += '<div class="col-md-1 text-center"></div>';
                 } else {
-                  // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
-                  if (l > count) {
-                    // in row.. ..
-                    row_title += '<div class="col-md-1 nopd text-center"></div>';
-                    row_input += '<div class="col-md-1 nopd-5 text-center"></div>';
+                  // in row.. ..
+                  row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
+
+                  if (l == ((o * 7) - skip)) {
+                    row_input += '<div class="col-md-1">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                      '</div>';
                   } else {
-                    // in row.. ..
-                    row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
-
-                    if (l == ((o * 7) - skip)) {
-                      row_input += '<div class="col-md-1 nopd-5 input-group">' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
-                        '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
-                        '</div>';
-                    } else {
-                      row_input += '<div class="col-md-1 nopd-5 input-group" style="border-right: black solid 1px;">' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
-                        '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
-                        '</div>';
-                    }
-                  }
-                }
-              } row_title += '</div>'; row_input += '</div>';
-              rowdaterange += row_title + row_input;
-              row_title = ""; row_input = "";
-            }
-            rowdaterange += end_rowdaterange;
-
-            $("#item-" + i).after(more_ctn + rowdaterange + more_end);
-            $("." + more).hide();
-            $("." + more).slideToggle(400);
-
-            // Done loading more .. .. next time will only slide
-            $("#more_btn-" + i).click(function (e) {
-              $("." + more).slideToggle(400);
-            });
-          }
-          else if (mode == "alldate_daterange") {
-            // Count year.. ..
-            var count = 0;
-            $.each(obj, function (i, field) {
-              count++;
-            });
-
-            rowdaterange = "";
-            end_rowdaterange = '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
-              '<div class="col-12 text-center">' +
-              '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
-              '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
-              '</div>' +
-              '</div>';
-            //$("#item-" + i).after(more_ctn);
-
-            // Start day
-            //                0      1      2      3      4      5      6
-            var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            var temp_skip = 0, skip = 0;
-            $.each(day_name, function (index, val) {
-              if (val == obj[1].day) {
-                // val = first-day
-                skip = index;
-                temp_skip = index;
-              }
-            });
-
-            var mod, loop;
-            mod = count % 7; if (mod > 0) mod = 1;
-            loop = ((count + skip) / 7) + mod;
-            var l = 1 - temp_skip;
-            var row_title = "";
-            var row_input = "";
-
-
-            for (var o = 1; o <= loop; o++) {
-              console.log("Loop o : " + o);
-              // Initial 
-              if (o == 1) {
-                row_title = '<div class="row justify-content-center align-items-center">วันที่/เดือน (จำนวน : ราคารวม)</div>' +
-                  '<div class="row week">' +
-                  '<div class="col-md-1 nopd-5 text-center"> อา.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center">จ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center">อ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center">พ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center">พฤ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center">ศ.</div>' +
-                  '<div class="col-md-1 nopd-5 text-center">ส.</div>' +
-                  '</div><hr>' +
-                  '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                row_input = '<div class="row week">';
-              } else {
-                row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                row_input += '<div class="row week">';
-              }
-              if (o == 2) temp_skip = 0;
-              for (var l = l; l <= ((o * 7) - skip); l++) {
-                console.log("Loop l : " + l);
-                if (l <= 0) {
-                  // Fill space
-                  row_title += '<div class="col-md-1 nopd text-center"></div>';
-                  row_input += '<div class="col-md-1 nopd-5 text-center" style="border-right: black solid 1px;"></div>';
-                } else {
-                  // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
-                  if (l > count) {
-                    // in row.. ..
-                    row_title += '<div class="col-md-1 nopd text-center"></div>';
-                    row_input += '<div class="col-md-1 nopd-5 text-center"></div>';
-                  } else {
-                    // in row.. ..
-                    row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
-                    if (l == ((o * 7) - skip)) {
-                      row_input += '<div class="col-md-1 nopd-5 input-group">' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
-                        '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
-                        '</div>';
-                    } else {
-                      row_input += '<div class="col-md-1 nopd-5 input-group" style="border-right: black solid 1px;">' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
-                        '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
-                        '</div>';
-                    }
-                  }
-                }
-              } row_title += '</div>'; row_input += '</div>';
-              rowdaterange += row_title + row_input;
-              row_title = ""; row_input = "";
-            }
-            rowdaterange += end_rowdaterange;
-
-            $("#item-" + i).after(more_ctn + rowdaterange + more_end);
-            $("." + more).hide();
-            $("." + more).slideToggle(400);
-
-            // Done loading more .. .. next time will only slide
-            $("#more_btn-" + i).click(function (e) {
-              $("." + more).slideToggle(400);
-            });
-          }
-          else {
-            return 0;
-          }
-        }
-      }
-
-      function getBranch(i) {
-        var exist = false;
-        if ($(".branch-" + i).length == 0) {
-          // Class more-i dose not exist
-          var path = 'http://150.95.26.163:8080/gitmew/php/sale_report_branch.php';
-          var branch_data;
-          if (mode == "allmonth") {
-            branch_data = { report_mode: mode, prod_id: list[i].prod_id, year: year };
-          } else if (mode == "allyear") {
-            branch_data = { report_mode: mode, prod_id: list[i].prod_id };
-          } else if (mode == "alldate_selectedmonth") {
-            branch_data = { report_mode: mode, prod_id: list[i].prod_id, month: old_data.month, year: old_data.year };
-          } else if (mode == "alldate_daterange") {
-            branch_data = { report_mode: mode, prod_id: list[i].prod_id, date_from: old_data.date_from, date_to: old_data.date_to };
-          }
-          $.ajax({
-            type: "POST",
-            url: path,
-            data: branch_data,
-            beforeSend: function () {
-              EasyLoading.show({
-                text: "กำลังโหลด"
-              });
-            },
-            success: function (response) {
-              var obj = jQuery.parseJSON(response);
-              showBranch(i, obj, exist);
-              EasyLoading.hide();
-            }
-          });
-        } else {
-          exist = true;
-          showBranch(i, 0, exist);
-          EasyLoading.hide();
-        }
-      }
-
-      function showBranch(i, obj, exist) {
-        console.log(obj);
-        $("#ishow-" + i).prop('hidden', true);
-        $("#ihide-" + i).prop('hidden', false);
-
-        var branch_ctn = "";
-        if (!exist && c_branch > 0) {
-          var branch = "branch-" + i;
-          branch_ctn = '<div class="container-fullwidth ' + branch + '" hidden>';
-
-          if (mode == "allmonth") {
-            // LOOP branch -> month
-            for (var b = 1; b <= c_branch; b++) {
-              // Loop every branch.. ..
-              // Loop every month.. ..
-              // eval("obj[" + m + "].amt" + m + "_" + b));
-              // eval("obj[" + m + "].sale_value" + m + "_" + b));
-
-              branch_ctn += '<hr><div class="row" style="margin-bottom: 5px;">' +
-                '<div class="col-4 text-left">จำนวน สาขา ' + b_name[b] + ' :</div>' +
-                '</div>' +
-                '<div class="row" style="margin-bottom: 5px; margin-top: 10px;">' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[1].amt1_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[2].amt2_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[3].amt3_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[4].amt4_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[5].amt5_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[6].amt6_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[7].amt7_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[8].amt8_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[9].amt9_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[10].amt10_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[11].amt11_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[12].amt12_" + b)) + '">' +
-                '</div>' +
-                '</div>' +
-                '<div class="row" style="margin-bottom: 5px; margin-top: 10px;">' +
-                '<div class="col-4 text-left">ราคา สาขา ' + b_name[b] + ' :</div>' +
-                '</div>' +
-                '<div class="row">' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[1].sale_value1_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[2].sale_value2_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[3].sale_value3_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[4].sale_value4_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[5].sale_value5_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[6].sale_value6_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[7].sale_value7_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[8].sale_value8_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[9].sale_value9_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[10].sale_value10_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[11].sale_value11_" + b)) + '">' +
-                '</div>' +
-                '<div class="col-1 text-center nopd-5">' +
-                '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[12].sale_value12_" + b)) + '">' +
-                '</div>' +
-                '</div>';
-            } branch_ctn += '</div>'; // end container 
-            $("#row_arw-" + i).before(branch_ctn);
-            $("." + branch).prop('hidden', false);
-          }
-          else if (mode == "allyear") {
-            console.log(obj);
-            // Count year.. ..
-            var count = 0;
-            $.each(obj, function (i, field) {
-              count++;
-            });
-            for (var c = 1; c <= count; c++) {
-              // Loop year.. ..
-              branch_ctn += '<hr><div class="row align-items-center"' + 'style="margin-bottom: 5px;">' +
-                '<div class="col-12 text-center">ปี ' + obj[c].year + ' (จำนวน : ราคารวม)</div>' +
-                '</div>';
-              var mod, loop;
-              mod = c_branch % 3; if (mod > 0) mod = 1;
-              loop = (c_branch / 3) + mod; // loop row.
-              var b = 1;
-              var l = 1;
-              for (var l = l; l <= loop; l++) {
-                // row
-                var row_title = '<div class="row justify-content-center ' +
-                  'align-items-center" style="margin-bottom: 5px;"> ';
-                var row_input = '<div class="row justify-content-center ' +
-                  'align-items-center" > ';
-                for (var b = b; b <= l * 3; b++) {
-                  if (b > c_branch) {
-                    // fill "-"
-                  } else {
-                    row_title += '<div class="col-3 text-center">' + b_name[b] + '</div>';
-                    row_input += '<div class="col-3 input-group">' +
-                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[c].amt" + b)) + '">' +
-                      '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[c].sale_value" + b)) + '">' +
+                    row_input += '<div class="col-md-1" style="border-right: black solid 1px;">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
                       '</div>';
                   }
-                } row_title += '</div>'; row_input += '</div>';
-                branch_ctn += row_title + row_input;
-                row_input = row_title = "";
-              }
-            } branch_ctn += '</div>'; // end container 
-            $("#row_arw-" + i).before(branch_ctn);
-            $("." + branch).prop('hidden', false);
-          }
-          else if (mode == "alldate_selectedmonth") {
-            // Count year.. ..
-            var count = 0;
-            $.each(obj, function (i, field) {
-              count++;
-            });
-
-            // Start day
-            //                0      1      2      3      4      5      6
-            var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            var temp_skip = 0, skip = 0;
-            $.each(day_name, function (index, val) {
-              if (val == obj[1].day) {
-                // val = first-day
-                skip = index;
-              }
-            });
-
-            var mod, loop;
-            mod = count % 7; if (mod > 0) mod = 1;
-            loop = ((count + skip) / 7) + mod;
-            var row_title = "";
-            var row_input = "";
-            var row_branch = "";
-
-            for (var b = 1; b <= c_branch; b++) {
-              var l = 1 - skip;
-              for (var o = 1; o <= loop; o++) {
-                // Initial 
-                if (o == 1) {
-                  row_title = '<br><div class="row justify-content-center align-items-center" style="text-decoration: underline;">สาขา ' + b_name[b] + ' (จำนวน : ราคารวม)</div>' +
-                    '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                  row_input = '<div class="row week">';
-                } else {
-                  row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                  row_input += '<div class="row week">';
                 }
-                for (l = l; l <= ((o * 7) - skip); l++) {
-                  if (l <= 0) {
-                    // Fill space
-                    row_title += '<div class="col-md-1 nopd text-center"></div>';
-                    row_input += '<div class="col-md-1 nopd-5 text-center" style="border-right: black solid 1px;"></div>';
+              }
+            } row_title += '</div>'; row_input += '</div>';
+            rowdaterange += row_title + row_input;
+            row_title = ""; row_input = "";
+          }
+          rowdaterange += end_rowdaterange;
+
+          $("#item-" + i).after(more_ctn + rowdaterange + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else if (mode == "alldate_daterange") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          rowdaterange = "";
+          end_rowdaterange = '<div id="row_arw-' + i + '" class="row" style="margin-top: 5px;">' +
+            '<div class="col-12 text-center">' +
+            '<i id="ishow-' + i + '" class="fa fa-sort-down" onclick="getBranch(' + i + ')"></i>' +
+            '<i id="ihide-' + i + '" class="fa fa-sort-up" onclick="hideBranch(' + i + ')" hidden></i>' +
+            '</div>' +
+            '</div>';
+          //$("#item-" + i).after(more_ctn);
+
+          // Start day
+          //                0      1      2      3      4      5      6
+          var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          var temp_skip = 0, skip = 0;
+          $.each(day_name, function (index, val) {
+            if (val == obj[1].day) {
+              // val = first-day
+              skip = index;
+              temp_skip = index;
+            }
+          });
+
+          var loop;
+          //mod = count % 7; if (mod > 0) mod = 1;
+          loop = ((count + skip) / 7) + 1;
+          var l = 1 - temp_skip;
+          var row_title = "";
+          var row_input = "";
+
+
+          for (var o = 1; o <= loop; o++) {
+            console.log("Loop o : " + o);
+            // Initial 
+            if (o == 1) {
+              row_title = '<div class="row justify-content-center align-items-center">วันที่/เดือน (จำนวน : ราคารวม)</div>' +
+                '<div class="row week">' +
+                '<div class="col-md-1 text-center"> อา.</div>' +
+                '<div class="col-md-1 text-center">จ.</div>' +
+                '<div class="col-md-1 text-center">อ.</div>' +
+                '<div class="col-md-1 text-center">พ.</div>' +
+                '<div class="col-md-1 text-center">พฤ.</div>' +
+                '<div class="col-md-1 text-center">ศ.</div>' +
+                '<div class="col-md-1 text-center">ส.</div>' +
+                '</div><hr>' +
+                '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input = '<div class="row week">';
+            } else {
+              row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input += '<div class="row week">';
+            }
+            if (o == 2) temp_skip = 0;
+            for (var l = l; l <= ((o * 7) - skip); l++) {
+              console.log("Loop l : " + l);
+              if (l <= 0) {
+                // Fill space
+                row_title += '<div class="col-md-1 nopd text-center"></div>';
+                row_input += '<div class="col-md-1 text-center" style="border-right: black solid 1px;"></div>';
+              } else {
+                // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
+                if (l > count) {
+                  // in row.. ..
+                  row_title += '<div class="col-md-1 nopd text-center"></div>';
+                  row_input += '<div class="col-md-1 text-center"></div>';
+                } else {
+                  // in row.. ..
+                  row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
+                  if (l == ((o * 7) - skip)) {
+                    row_input += '<div class="col-md-1 input-group">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                      '</div>';
                   } else {
-                    // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
-                    if (l > count) {
-                      // in row.. ..
-                      row_title += '<div class="col-md-1 nopd text-center"></div>';
-                      row_input += '<div class="col-md-1 nopd-5 text-center"></div>';
+                    row_input += '<div class="col-md-1 input-group" style="border-right: black solid 1px;">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                      '</div>';
+                  }
+                }
+              }
+            } row_title += '</div>'; row_input += '</div>';
+            rowdaterange += row_title + row_input;
+            row_title = ""; row_input = "";
+          }
+          rowdaterange += end_rowdaterange;
+
+          $("#item-" + i).after(more_ctn + rowdaterange + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else {
+          return 0;
+        }
+      }else{
+        // if(exist) ...
+        return;
+      }
+    }
+
+    function getBranch(i) {
+      var exist = false;
+      if ($(".branch-" + i).length == 0) {
+        // Class more-i dose not exist
+        var path = 'http://150.95.26.163:8080/gitmew/php/sku_report_branch.php';
+        var branch_data;
+        if (mode == "allmonth") {
+          branch_data = { report_mode: mode, prod_id: list[i].prod_id, year: year };
+        } else if (mode == "allyear") {
+          branch_data = { report_mode: mode, prod_id: list[i].prod_id };
+        } else if (mode == "alldate_selectedmonth") {
+          branch_data = { report_mode: mode, prod_id: list[i].prod_id, month: old_data.month, year: old_data.year };
+        } else if (mode == "alldate_daterange") {
+          branch_data = { report_mode: mode, prod_id: list[i].prod_id, date_from: old_data.date_from, date_to: old_data.date_to };
+        }
+        $.ajax({
+          type: "POST",
+          url: path,
+          data: branch_data,
+          beforeSend: function () {
+            EasyLoading.show({
+              text: "กำลังโหลด"
+            });
+          },
+          success: function (response) {
+            var obj = jQuery.parseJSON(response);
+            showBranch(i, obj, exist);
+            EasyLoading.hide();
+          }
+        });
+      } else {
+        exist = true;
+        showBranch(i, 0, exist);
+        EasyLoading.hide();
+      }
+    }
+
+    function showBranch(i, obj, exist) {
+      console.log(obj);
+      $("#ishow-" + i).prop('hidden', true);
+      $("#ihide-" + i).prop('hidden', false);
+
+      var branch_ctn = "";
+      if (!exist && c_branch > 0) {
+        var branch = "branch-" + i;
+        branch_ctn = '<div class="container-fullwidth ' + branch + '" hidden>';
+
+        if (mode == "allmonth") {
+          // LOOP branch -> month
+          for (var b = 1; b <= c_branch; b++) {
+            // Loop every branch.. ..
+            // Loop every month.. ..
+            // eval("obj[" + m + "].amt" + m + "_" + b));
+            // eval("obj[" + m + "].sale_value" + m + "_" + b));
+
+            branch_ctn += '<hr><div class="row" style="margin-bottom: 5px;">' +
+              '<div class="col-4 text-left">จำนวน สาขา ' + b_name[b] + ' :</div>' +
+              '</div>' +
+              '<div class="row" style="margin-bottom: 5px; margin-top: 10px;">' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[1].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[2].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[3].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[4].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[5].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[6].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[7].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[8].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[9].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[10].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[11].amt" + b)) + '">' +
+              '</div>' +
+              '<div class="col-1 text-center nopd-5">' +
+              '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[12].amt" + b)) + '">' +
+              '</div>' +
+              '</div>';
+          } branch_ctn += '</div>'; // end container 
+          $("#row_arw-" + i).before(branch_ctn);
+          $("." + branch).prop('hidden', false);
+        }
+        else if (mode == "allyear") {
+          console.log(obj);
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+          for (var c = 1; c <= count; c++) {
+            // Loop year.. ..
+            branch_ctn += '<hr><div class="row align-items-center"' + 'style="margin-bottom: 5px;">' +
+              '<div class="col-12 text-center">จำนวนขาย ปี ' + obj[c].year + '</div>' +
+              '</div>';
+            var loop;
+            //mod = c_branch % 3; if (mod > 0) mod = 1;
+            loop = (c_branch / 3) + 1; // loop row.
+            var b = 1;
+            var l = 1;
+            for (var l = l; l <= loop; l++) {
+              // row
+              var row_title = '<div class="row justify-content-center ' +
+                'align-items-center" style="margin-bottom: 5px;"> ';
+              var row_input = '<div class="row justify-content-center ' +
+                'align-items-center" > ';
+              for (var b = b; b <= l * 3; b++) {
+                if (b > c_branch) {
+                  // fill "-"
+                } else {
+                  row_title += '<div class="col-3 text-center">' + b_name[b] + '</div>';
+                  row_input += '<div class="col-3">' +
+                    '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[c].amt" + b)) + '">' +
+                    '</div>';
+                }
+              } row_title += '</div>'; row_input += '</div>';
+              branch_ctn += row_title + row_input;
+              row_input = row_title = "";
+            }
+          } branch_ctn += '</div>'; // end container 
+          $("#row_arw-" + i).before(branch_ctn);
+          $("." + branch).prop('hidden', false);
+        }
+        else if (mode == "alldate_selectedmonth") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          // Start day
+          //                0      1      2      3      4      5      6
+          var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          var temp_skip = 0, skip = 0;
+          $.each(day_name, function (index, val) {
+            if (val == obj[1].day) {
+              // val = first-day
+              skip = index;
+            }
+          });
+
+          var loop;
+          //mod = count % 7; if (mod > 0) mod = 1;
+          loop = ((count + skip) / 7) + 1;
+          var row_title = "";
+          var row_input = "";
+          var row_branch = "";
+
+          for (var b = 1; b <= c_branch; b++) {
+            var l = 1 - skip;
+            for (var o = 1; o <= loop; o++) {
+              // Initial 
+              if (o == 1) {
+                row_title = '<br><div class="row justify-content-center align-items-center" style="text-decoration: underline;">จำนวนขาย สาขา ' + b_name[b] + '</div>' +
+                  '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+                row_input = '<div class="row week">';
+              } else {
+                row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+                row_input += '<div class="row week">';
+              }
+              for (l = l; l <= ((o * 7) - skip); l++) {
+                if (l <= 0) {
+                  // Fill space
+                  row_title += '<div class="col-md-1 nopd text-center"></div>';
+                  row_input += '<div class="col-md-1 text-center" style="border-right: black solid 1px;"></div>';
+                } else {
+                  // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
+                  if (l > count) {
+                    // in row.. ..
+                    row_title += '<div class="col-md-1 nopd text-center"></div>';
+                    row_input += '<div class="col-md-1 text-center"></div>';
+                  } else {
+                    // in row.. ..
+                    row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
+                    if (l == ((o * 7) - skip)) {
+                      row_input += '<div class="col-md-1">' +
+                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
+                        '</div>';
                     } else {
-                      // in row.. ..
-                      row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
-                      if (l == ((o * 7) - skip)) {
-                        row_input += '<div class="col-md-1 nopd-5 input-group">' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
-                          '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].sale_value" + b)) + '">' +
-                          '</div>';
-                      } else {
-                        row_input += '<div class="col-md-1 nopd-5 input-group" style="border-right: black solid 1px;">' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
-                          '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].sale_value" + b)) + '">' +
-                          '</div>';
-                      }
+                      row_input += '<div class="col-md-1" style="border-right: black solid 1px;">' +
+                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
+                        '</div>';
                     }
                   }
-                } row_title += '</div>'; row_input += '</div>';
+                }
+              } row_title += '</div>'; row_input += '</div>';
 
-                row_branch += row_title + row_input;
-                row_title = ""; row_input = "";
-              }
-
-              branch_ctn += row_branch; row_branch = "";
+              row_branch += row_title + row_input;
+              row_title = ""; row_input = "";
             }
 
-            branch_ctn += '</div>'; // end container 
-            $("#row_arw-" + i).before(branch_ctn);
-            $("." + branch).prop('hidden', false);
+            branch_ctn += row_branch; row_branch = "";
           }
-          else if (mode == "alldate_daterange") {
-            // Count year.. ..
-            var count = 0;
-            $.each(obj, function (i, field) {
-              count++;
-            });
 
-            // Start day
-            //                0      1      2      3      4      5      6
-            var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            var temp_skip = 0, skip = 0;
-            $.each(day_name, function (index, val) {
-              if (val == obj[1].day) {
-                // val = first-day
-                skip = index;
+          branch_ctn += '</div>'; // end container 
+          $("#row_arw-" + i).before(branch_ctn);
+          $("." + branch).prop('hidden', false);
+        }
+        else if (mode == "alldate_daterange") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          // Start day
+          //                0      1      2      3      4      5      6
+          var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          var temp_skip = 0, skip = 0;
+          $.each(day_name, function (index, val) {
+            if (val == obj[1].day) {
+              // val = first-day
+              skip = index;
+            }
+          });
+
+          var loop;
+          //mod = count % 7; if (mod > 0) mod = 1;
+          loop = ((count + skip) / 7) + 1;
+          var row_title = "";
+          var row_input = "";
+          var row_branch = "";
+
+          for (var b = 1; b <= c_branch; b++) {
+            var l = 1 - skip;
+            for (var o = 1; o <= loop; o++) {
+              // Initial 
+              if (o == 1) {
+                row_title = '<br><div class="row justify-content-center align-items-center" style="text-decoration: underline;">จำนวนขาย สาขา ' + b_name[b] + '</div>' +
+                  '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+                row_input = '<div class="row week">';
+              } else {
+                row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+                row_input += '<div class="row week">';
               }
-            });
-
-            var mod, loop;
-            mod = count % 7; if (mod > 0) mod = 1;
-            loop = ((count + skip) / 7) + mod;
-            var row_title = "";
-            var row_input = "";
-            var row_branch = "";
-
-            for (var b = 1; b <= c_branch; b++) {
-              var l = 1 - skip;
-              for (var o = 1; o <= loop; o++) {
-                // Initial 
-                if (o == 1) {
-                  row_title = '<br><div class="row justify-content-center align-items-center" style="text-decoration: underline;">สาขา ' + b_name[b] + ' (จำนวน : ราคารวม)</div>' +
-                    '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                  row_input = '<div class="row week">';
+              for (l = l; l <= ((o * 7) - skip); l++) {
+                if (l <= 0) {
+                  // Fill space
+                  row_title += '<div class="col-md-1 nopd text-center"></div>';
+                  row_input += '<div class="col-md-1 text-center" style="border-right: black solid 1px;"></div>';
                 } else {
-                  row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
-                  row_input += '<div class="row week">';
-                }
-                for (l = l; l <= ((o * 7) - skip); l++) {
-                  if (l <= 0) {
-                    // Fill space
+                  // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
+                  if (l > count) {
+                    // in row.. ..
                     row_title += '<div class="col-md-1 nopd text-center"></div>';
-                    row_input += '<div class="col-md-1 nopd-5 text-center" style="border-right: black solid 1px;"></div>';
+                    row_input += '<div class="col-md-1 text-center"></div>';
                   } else {
-                    // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
-                    if (l > count) {
-                      // in row.. ..
-                      row_title += '<div class="col-md-1 nopd text-center"></div>';
-                      row_input += '<div class="col-md-1 nopd-5 text-center"></div>';
+                    // in row.. ..
+                    row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
+                    if (l == ((o * 7) - skip)) {
+                      row_input += '<div class="col-md-1">' +
+                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
+                        '</div>';
                     } else {
-                      // in row.. ..
-                      row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
-                      if (l == ((o * 7) - skip)) {
-                        row_input += '<div class="col-md-1 nopd-5 input-group">' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
-                          '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].sale_value" + b)) + '">' +
-                          '</div>';
-                      } else {
-                        row_input += '<div class="col-md-1 nopd-5 input-group" style="border-right: black solid 1px;">' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
-                          '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
-                          '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].sale_value" + b)) + '">' +
-                          '</div>';
-                      }
+                      row_input += '<div class="col-md-1" style="border-right: black solid 1px;">' +
+                        '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(eval("obj[" + l + "].amt" + b)) + '">' +
+                        '</div>';
                     }
                   }
-                } row_title += '</div>'; row_input += '</div>';
+                }
+              } row_title += '</div>'; row_input += '</div>';
 
-                row_branch += row_title + row_input;
-                row_title = ""; row_input = "";
-              }
-
-              branch_ctn += row_branch; row_branch = "";
+              row_branch += row_title + row_input;
+              row_title = ""; row_input = "";
             }
 
-            branch_ctn += '</div>'; // end container 
-            $("#row_arw-" + i).before(branch_ctn);
-            $("." + branch).prop('hidden', false);
+            branch_ctn += row_branch; row_branch = "";
           }
-        } else {
-          $(".branch-" + i).prop('hidden', false);
+
+          branch_ctn += '</div>'; // end container 
+          $("#row_arw-" + i).before(branch_ctn);
+          $("." + branch).prop('hidden', false);
+        }
+        else{
           return;
         }
+      } else {
+        $(".branch-" + i).prop('hidden', false);
+        return;
       }
+    }
 
-      function hideBranch(i) {
-        $(".branch-" + i).prop('hidden', true);
-        $("#ihide-" + i).prop('hidden', true);
-        $("#ishow-" + i).prop('hidden', false);
-      }
-    </script>
+    function hideBranch(i) {
+      $(".branch-" + i).prop('hidden', true);
+      $("#ihide-" + i).prop('hidden', true);
+      $("#ishow-" + i).prop('hidden', false);
+    }
+  </script>
 </head>
 
 <body style="overflow-x: auto;">
@@ -1670,11 +1571,10 @@
                   aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">ปี</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important;">
                   <a id="year_all" class="dropdown-item" href="#" onclick="setyear('0')">ทั้งหมด</a>
-                  <a class="dropdown-item" href="#" onclick="setyear('2561')">ปี 2561</a>
-                  <a class="dropdown-item" href="#" onclick="setyear('2560')">ปี 2560</a>
                 </div>
               </div>
             </div>
+            
           </div>
         
         
@@ -1684,9 +1584,8 @@
                 <div class="col-1"></div>
                 <div class="col-3 text-center">จัดเรียงโดย : </div>
                 <div class="col-6 input-group">
-                  <button id="by-amt" class="btn btn-secondary disable" style="background-color: #666; margin-right: 15px;"
-                    aria-disabled="true" onclick="setorderby('amt')">จำนวน</button>
-                  <button id="by-total" class="btn btn-secondary disable" style="background-color: #666;" onclick="setorderby('sale_value')">ราคารวม</button>
+                  <button id="by-amt" class="btn btn-secondary" style="background-color: #666; margin-right: 15px;"
+                    aria-disabled="true" onclick="">จำนวนรวม</button>
                 </div>
               </div>
             </div>
@@ -1709,7 +1608,7 @@
           <div class="container-fullwidth" style="margin-bottom: 20px;">
             <div id="row-title-1" class="row justify-content-center">
               <!-- วันนี้ // รายวัน // เดือนต่างๆ -->
-              <h2 id="title-1" class="text-center">ยอดขาย</h2>
+              <h2 id="title-1" class="text-center">จำนวนขาย</h2>
             </div>
             <div id="row-title-2" class="row justify-content-center" hidden>
               <!-- จาก ถึง -->
@@ -1733,80 +1632,13 @@
             <div class="col-1 text-center nopd-5">ราคา</div>
             <div class="col-1 text-center nopd-5">หน่วย</div>
             <div class="col-1 text-center nopd-5">จำนวนรวม</div>
+            <div class="col-1 text-center nopd-5"></div>
           </div>
         </div>
         
         <!-- Ctn-Show -->
         <div id="ctn-show" class="container-fullwidth" style="margin-top: 5px;">
-          <div class="row input-wth-branch justify-content-center" style="flex-wrap: nowrap;" hidden>
-            <div class="col-2 nopd-5">
-              <div class='input-group-prepend'>
-                <span id="span-no" class='input-group-text'>#</span>
-                <input id='barcode' type='text' class='form-control text-center'>
-              </div>
-            </div>
-            <div class="col-3 nopd-5">
-              <input id='name' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='price' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='unit' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='branch-1' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='branch-2' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='branch-3' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='amount' type='text' class='form-control text-center'>
-            </div>
-          </div>
-          <div class="row input-wthout-branch justify-content-center" style="flex-wrap: nowrap;" >
-            <div class="col-2 nopd-5">
-              <div class='input-group-prepend'>
-                <span id="span-no" class='input-group-text'>#</span>
-                <input id='barcode' type='text' class='form-control text-center'>
-              </div>
-            </div>
-            <div class="col-3 nopd-5">
-              <input id='name' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='price' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='unit' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd">
-              <input id='amount' type='text' class='form-control text-center'>
-            </div>
-          </div>
-          <div class="row input-spcf-branch justify-content-center" style="flex-wrap: nowrap;" hidden>
-            <div class="col-2 nopd-5">
-              <div class='input-group-prepend'>
-                <span id="span-no" class='input-group-text'>#</span>
-                <input id='barcode' type='text' class='form-control text-center'>
-              </div>
-            </div>
-            <div class="col-3 nopd-5">
-              <input id='name' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='price' type='text' class='form-control text-center'>
-            </div>
-            <div class="col-1 nopd-5">
-              <input id='unit' type='text' class='form-control text-center'>
-            </div>
-            <div id="input-spcf-total" class="col-1 nopd-5">
-              <input id='amount' type='text' class='form-control text-center'>
-            </div>
-          </div>
+          
         </div>
         <nav id="nav-pagination" style="margin-top: 20px;">
           <ul class="pagination justify-content-center">
@@ -1870,9 +1702,9 @@
 
       if (!$("#row-title-1").is(":visible")) {
         $("#row-title-1").prop('hidden', false);
-        $("#title-1").text('ยอดขาย');
+        $("#title-1").text('จำนวนขาย');
       } else {
-        $("#title-1").text('ยอดขาย');
+        $("#title-1").text('จำนวนขาย');
       }
 
       $("#opt-from").prop("hidden", true);
@@ -1884,7 +1716,7 @@
       $("#year_all").prop('hidden', true);
 
       var year = $("#select-year .btn").text().split(" ")[1] - 543;
-      setorderby(order_by);
+      //setorderby(order_by);
       setorderseq(order_seq);
     });
 
@@ -1906,9 +1738,9 @@
 
       if (!$("#row-title-1").is(":visible")) {
         $("#row-title-1").prop('hidden', false);
-        $("#title-1").text('ยอดขาย');
+        $("#title-1").text('จำนวนขาย');
       } else {
-        $("#title-1").text('ยอดขาย');
+        $("#title-1").text('จำนวนขาย');
       }
 
       $("#opt-from").prop("hidden", true);
@@ -1959,7 +1791,7 @@
         $("#date-year").prop('hidden', true);
         $("#row-title-1").prop('hidden', false);
         $("#row-title-2").prop('hidden', true);
-        $("#row-title-1").val("ยอดขาย")
+        $("#row-title-1").val("จำนวนขาย")
         
         from_y = parseInt(date_from.split('-')[0]) + 543;
         from_m = checkmonth(parseInt(date_from.split('-')[1]));

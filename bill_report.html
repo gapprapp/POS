@@ -14,17 +14,25 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css" integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ"
+    crossorigin="anonymous">
 
   <!-- Super cool dialog-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
+  <!-- Numeric -->
+  <script type="text/javascript" src="js/jquery.alphanumeric.js"></script>
+
+  <!-- Loading -->
+  <link rel="stylesheet" href="css/easy-loading.css">
+  <script src="js/easy-loading.js"></script>
+
   <!-- Date Picker -->
   <link href="css/datepicker.css" rel="stylesheet">
   <script src="js/datepicker.js"></script>
   <script src="js/datepicker.th-TH.js"></script>
-  
+
   <!-- Sidbar -->
   <link href="css/simple-sidebar.css" rel="stylesheet">
   <!-- Font -->
@@ -33,453 +41,1582 @@
   <link href="css/untitled.css" rel="stylesheet">
 
   <style>
-    .disabled{
-      background-color: #444;
+    .disable {
+      background-color: rgb(160, 160, 160) !important;
+      border-color: rgb(160, 160, 160) !important;
       color: white;
     }
-
-    .nopd-5{
+  
+    .nopd-5 {
       padding-left: 5px;
       padding-right: 5px;
     }
-    .nopd{
+  
+    .nopd {
       padding-left: 0;
       padding-right: 0;
     }
-
-    .inline{
-        display: inline-block;
+  
+    .inline {
+      display: inline-block;
     }
-
-    h2{
-      width: 25%; border: solid 1px #666; border-radius: 3px; color: white; background-color: #666; padding-top: 9px; padding-bottom: 9px; letter-spacing: 1px;
+  
+    h2 {
+      width: 25%;
+      border: solid 1px #666;
+      border-radius: 3px;
+      color: white;
+      background-color: #666;
+      padding-top: 9px;
+      padding-bottom: 9px;
+      letter-spacing: 1px;
     }
-    h4{
-      width: 18%; border: solid 1px #666; border-radius: 3px; color: white; background-color: #666; padding-top: 9px; padding-bottom: 9px; letter-spacing: 1px;
+  
+    h4 {
+      width: 20%;
+      border: solid 1px #666;
+      border-radius: 3px;
+      color: white;
+      background-color: #666;
+      padding-top: 9px;
+      padding-bottom: 9px;
+      letter-spacing: 1px;
+    }
+  
+    p {
+      margin-bottom: 1px;
+    }
+  
+    div[class*="more"] {
+      width: 90%;
+      margin-left: 3.5%;
+      margin-top: 5px;
+      background-color: white;
+      border-radius: 3px;
+      padding: 5px 20px 15px 20px;
+    }
+  
+    i[id*="ishow-"],
+    i[id*="ihide-"] {
+      cursor: pointer;
+    }
+  
+    .page-link {
+      color: #ea8e6c !important;
+    }
+  
+    .active {
+      background: #ea8e6c !important;
+      outline: none !important;
+    }
+  
+    li.active>a {
+      background: #ea8e6c !important;
+      border-color: #ea8e6c !important;
+      color: #fff !important;
+    }
+  
+    @media (min-width: 768px) {
+  
+      .week .col-md-1,
+      .week .col-sm-1,
+      .week .col-lg-1 {
+        width: 100%;
+        *width: 100%;
+      }
+    }
+  
+    @media (min-width: 992px) {
+  
+      .week .col-md-1,
+      .week .col-sm-1,
+      .week .col-lg-1 {
+        width: 14.285714285714285714285714285714%;
+        *width: 14.285714285714285714285714285714%;
+        max-width: 14.285714285714285714285714285714% !important;
+        flex: none !important;
+      }
+    }
+  
+    @media (min-width: 1200px) {
+  
+      .week .col-md-1,
+      .week .col-sm-1,
+      .week .col-lg-1 {
+        width: 14.285714285714285714285714285714%;
+        *width: 14.285714285714285714285714285714%;
+        max-width: 14.285714285714285714285714285714% !important;
+        flex: none !important;
+      }
     }
   </style>
 
-    <script>
-      $(document).ready(function() {
-        $("#opt-month").addClass('disabled');
+  <script>
+    var t_year = (new Date().getFullYear()) + 543;
+    var year = (new Date().getFullYear());
+    var order_by = "amt"; var order_seq = "DESC", viewmode = "branch";
+    var max_page_no = 0;
+    var old_data, data, mode;
+    var to_date, from_date;
+    var b_name = [-1]; // banch_name
+
+    $(document).ready(function () {
+      url = new URL(window.location.href);
+      m = url.searchParams.get("m");
+      mth = url.searchParams.get("mth");
+      d = url.searchParams.get("d");
+      y = url.searchParams.get("y");
+      if (m) {
+        year = y;
+        setmonth(m);
+        $("#opt-month").trigger("click");
+      } else if (d) {
+        dataString = y + "-" + mth + "-" + d;
+        d = d.replace(/^0+/, '');
+        mth = mth.replace(/^0+/, '');
+        //alert("case d mth" + d + ' / ' + mth + ' / ' + year);
+        fullmonth = checkmonth(mth);
+        load_date_range(dataString, dataString, 1);
+
+        $("#opt-month").addClass('disable');
+        $("#select-year").prop('hidden', true);
+        $("#select-month").prop('hidden', true);
+      } else {
+        // Date Now..
+        // 2018-12-01
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+
+        dataString = year + "-" + mm + "-" + dd;
+
         $("#select-year").prop('hidden', true);
         $("#select-month").prop('hidden', true);
 
-        $("#title-1").prop('hidden', false);
-        $("#date-full").prop('hidden', false);
-        $("#title-2").prop('hidden', true);
-        $("#date-year").prop('hidden', true);
+        //load_date_range(dataString, dataString, 1);
+      }
 
-        // Date Now..
-        var d = new Date($.now());
-        date = d.getDate();
-        month = d.getMonth();
-        var year = d.getFullYear() + 543;
-        //alert(date + ' / ' + month + ' / ' + year);
-        fullmonth = checkmonth(month);
-        $("#date-full").text(date + " " + fullmonth + " พ.ศ. " + year);
-
-        // datepicker
-        $('[data-toggle="datepicker"]').datepicker({
-            language: 'th-TH',
-            format: 'yyyy-mm-dd',
-            autoHide: true,
-            endDate: '0d'
-        }).change(function (event) {
-            //alert(event.target.id);
-            var date = $(this).val();
-            var split = date.split("-");// yyyy[0] mm[1] dd[2] 
-            var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
-            var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-            var d = new Date(split[0], split[1]-1, split[2]);
-            var first = days[d.getDay()];
-            month_index = split[1].replace(/^0+/, '');
-            thai_year = (parseInt(split[0])+543)%2500;
-            $(this).val((first + " " + split[2] + "/" + month[month_index] + "/" + thai_year));
-            id = event.target.id.split('opt-');
-            text = id[1]+"complete";
-            $("#" + event.target.id).trigger(text);
-        });
-      });
-
-      function checkfullmonth(arg){
-        var i = 0;
+      // datepicker
+      $('[data-toggle="datepicker"]').datepicker({
+        language: 'th-TH',
+        format: 'yyyy-mm-dd',
+        autoHide: true,
+        endDate: '0d'
+      }).change(function (event) {
+        //alert(event.target.id);
+        var date = $(this).val();
+        var split = date.split("-");// yyyy[0] mm[1] dd[2] 
+        var days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
         var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-        for(i; i < month.length; i++){
-          if(arg == month[i]){
-            return i;
+        var d = new Date(split[0], split[1] - 1, split[2]);
+        var first = days[d.getDay()];
+        month_index = split[1].replace(/^0+/, '');
+        thai_year = (parseInt(split[0]) + 543) % 2500;
+        $(this).val((first + " " + split[2] + "/" + month[month_index] + "/" + thai_year));
+        id = event.target.id.split('opt-');
+
+        if (id[1] == "to") to_date = date;
+        else if (id[1] == "from") from_date = date;
+
+        text = id[1] + "complete";
+        $("#" + event.target.id).trigger(text);
+      });
+    });
+
+    function checkmonth(arg) {
+      switch (arg) {
+        case 1: case "1": return 'มกราคม';
+        case 2: case "2": return 'กุมภาพันธ์';
+        case 3: case "3": return 'มีนาคม';
+        case 4: case "4": return 'เมษายน';
+        case 5: case "5": return 'พฤษภาคม';
+        case 6: case "6": return 'มิถุนายน';
+        case 7: case "7": return 'กรกฎาคม';
+        case 8: case "8": return 'สิงหาคม';
+        case 9: case "9": return 'กันยายน';
+        case 10: case "10": return 'ตุลาคม';
+        case 11: case "11": return 'พฤศจิกายน';
+        case 12: case "12": return 'ธันวาคม';
+      }
+    }
+
+    function checkfullmonth(arg) {
+      i = 0;
+      var month = [' ', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      for (i; i < month.length; i++) {
+        if (arg == month[i]) {
+          if (i < 10) {
+            i = "0" + i;
+          }
+          return i;
+        }
+      }
+    }
+
+    function loadMax(data) {
+      var path = "http://150.95.26.163:8080/gitmew/php/report_sale_max.php";
+      $.post(path, data,
+        function (response) {
+          max_page_no = Math.ceil(response / 100);
+          if (max_page_no == 1) {
+            // only one page
+            $("#nav-pagination").prop('hidden', true);
+          } else if (max_page_no == 2) {
+            $("#pg-rd a").text("#");
+            $("#pg-rd").attr('class', 'page-item disabled');
+            $("#li-next").attr('class', 'page-item disabled');
+            $("#nav-pagination").prop('hidden', false);
+          } else {
+            $("#pg-rd a").text("3");
+            $("#pg-rd").attr('class', 'page-item');
+            $("#nav-pagination").prop('hidden', false);
+          }
+        }
+      );
+    }
+
+    // Object เก็บค่าที่แสดง0
+    var list = [];
+
+    function setmonth(arg) {
+      console.log(viewmode);
+      var text, data;
+      switch (arg) {
+        case 0:
+        case "0":
+          mode = 'allmonth';
+          old_data = data = { report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "ทุกเดือน"; break;
+        case 1:
+        case "1":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 1, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "มกราคม"; break;
+        case 2:
+        case "2":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 2, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "กุมภาพันธ์"; break;
+        case 3:
+        case "3":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 3, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "มีนาคม"; break;
+        case 4:
+        case "4":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 4, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "เมษายน"; break;
+        case 5:
+        case "5":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 5, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "พฤษภาคม"; break;
+        case 6:
+        case "6":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 6, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "มิถุนายน"; break;
+        case 7:
+        case "7":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 7, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "กรกฎาคม"; break;
+        case 8:
+        case "8":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 8, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "สิงหาคม"; break;
+        case 9:
+        case "9":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 9, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "กันยายน"; break;
+        case 10:
+        case "10":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 10, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "ตุลาคม"; break;
+        case 11:
+        case "11":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 11, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "พฤศจิกายน"; break;
+        case 12:
+        case "12":
+          mode = 'alldate_selectedmonth';
+          old_data = data = { report_mode: mode, month: 12, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+          text = "ธันวาคม"; break;
+        default:
+          text = 'ยอดการขาย';
+      }$("div[id*='item-']").remove(); $("div[class*='more-']").remove();
+
+      if ($("#select-year .btn").text() == 'ปี') {
+        $("#select-year .btn").text('ปี ' + t_year);
+      }
+
+      loadMax(data);
+      load(1, data);
+
+      pagination_reset();
+
+      max_page = 0;
+
+      $("#select-month .btn").text(text);
+      $("#date-full").prop('hidden', true);
+      $("#date-year").prop('hidden', false);
+    }
+
+    function setyear(arg) {
+      // clear old *item- and *more-
+      $("div[id*='item-']").remove(); $("div[class*='more-']").remove();
+
+      temp = parseInt(arg - 543);
+      if ($("#date-full").is(":visible")) {
+        $("#date-full").prop('hidden', true);
+      }
+
+      if (!$("#opt-month").hasClass('disable')) {
+        $("#select-year .btn").text("ปี " + arg);
+        $("#select-month .btn").text('เดือน');
+      } else {
+        if (arg == "0") {
+          mode = 'allyear';
+          old_data = data = { report_mode: mode, year: temp, order_by: order_by, order_seq: order_seq, start: 0 };
+          loadMax(data);
+          load(1, data);
+
+          pagination_reset();
+
+          max_page = 0;
+
+          $("#select-year .btn").text("ทั้งหมด");
+          $("#date-year").prop('hidden', false);
+          $("#date-year").text("ทั้งหมด");
+        } else {
+          mode = 'allmonth';
+          old_data = data = { report_mode: mode, year: temp, order_by: order_by, order_seq: order_seq, start: 0 };
+          loadMax(data);
+          load(1, data);
+
+          pagination_reset();
+
+          max_page = 0;
+          $("#select-year .btn").text("ปี " + arg);
+          $("#date-year").prop('hidden', false);
+          $("#date-year").text("ปี " + arg);
+        }
+      }
+    }
+
+    function setorderby(arg) {
+      if (arg != order_by) {
+        if (!$('#opt-date').hasClass('disable')) {
+          $('#opt-date').addClass('disable');
+          $('#opt-from').prop({ hidden: true });
+          $('#opt-to').prop({ hidden: true, disable: true });
+          $("#opt-to").val("");
+          $("#opt-from").val("");
+        }
+
+        if (!$('#opt-month').hasClass('disable')) {
+          $('#opt-month').addClass('disable');
+          $("#select-year").prop('hidden', true);
+          $("#select-month").prop('hidden', true);
+          $("#select-month .btn").text('เดือน');
+          $("#select-year .btn").text('ปี');
+        }
+
+        if (!$('#opt-year').hasClass('disable')) {
+          $('#opt-year').addClass('disable');
+          $("#select-year").prop('hidden', true);
+        }
+      }
+
+      order_by = arg;
+      if (arg == 'amt') {
+        if (!$("#by-total").hasClass('disable')) {
+          $("#by-total").addClass('disable');
+        }
+        $("#by-amt").removeClass('disable');
+      } else {
+        if (!$("#by-amt").hasClass('disable')) {
+          $("#by-amt").addClass('disable');
+        }
+        $("#by-total").removeClass('disable');
+      }
+    }
+
+    function setorderseq(arg) {
+      if (arg != order_seq) {
+        if (!$('#opt-date').hasClass('disable')) {
+          $('#opt-date').addClass('disable');
+          $('#opt-from').prop({ hidden: true });
+          $('#opt-to').prop({ hidden: true, disable: true });
+          $("#opt-to").val("");
+          $("#opt-from").val("");
+        }
+
+        if (!$('#opt-month').hasClass('disable')) {
+          $('#opt-month').addClass('disable');
+          $("#select-year").prop('hidden', true);
+          $("#select-month").prop('hidden', true);
+          $("#select-month .btn").text('เดือน');
+          $("#select-year .btn").text('ปี');
+        }
+
+        if (!$('#opt-year').hasClass('disable')) {
+          $('#opt-year').addClass('disable');
+          $("#select-year").prop('hidden', true);
+        }
+      }
+      order_seq = arg;
+      if (arg == 'ASC') {
+        if (!$("#by-desc").hasClass('disable')) {
+          $("#by-desc").addClass('disable');
+        }
+        $("#by-asc").removeClass('disable');
+
+        //homes.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        //console.log("ascending", homes);
+      } else {
+        if (!$("#by-asc").hasClass('disable')) {
+          $("#by-asc").addClass('disable');
+        }
+        $("#by-desc").removeClass('disable');
+
+        //homes.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        //console.log("descending", homes);
+      }
+    }
+
+    function setviewmode(arg){
+      arry = ['branch', 'type', 'user', 'cus'];
+      if($("#btn-"+arg).hasClass('disable')){
+        $("#btn-"+arg).removeClass('disable');
+        for(var i = 0; i <= arry.length; i++){
+          if(arry[i] != arg && !($("#btn-" + arry[i]).hasClass('disable'))){
+            $("#btn-" + arry[i]).addClass('disable');
           }
         }
       }
 
-      function checkmonth(arg){
-        switch(arg) {
-            case 1: return 'มกราคม';
-            case 2: return 'กุมภาพันธ์';
-            case 3: return 'มีนาคม';
-            case 4: return 'เมษายน';
-            case 5: return 'พฤษภาคม';
-            case 6: return 'มิถุนายน';
-            case 7: return 'กรกฎาคม';
-            case 8: return 'สิงหาคม';
-            case 9: return 'กันยายน';
-            case 10: return 'ตุลาคม';
-            case 11: return 'พฤศจิกายน';
-            case 12: return 'ธันวาคม'; 
-        }    
-      }
+      viewmode = arg;
 
-      function setbranch(arg){
-        if(arg == "show"){
-          $("#btn-branch").text("ทั้งหมด");
-          $("#row-slct-branch").prop('hidden', true);
-          $(".input-spcf-branch").prop('hidden', true);
-          $(".head-wthout-branch").prop('hidden', true);
-          $(".input-wthout-branch").prop('hidden', true);
-          $(".head-spcf-branch").prop('hidden', true);
-          $(".head-wth-branch").prop('hidden', false);
-          $(".input-wth-branch").prop('hidden', false);
-        }else if(arg == "non"){
-          $("#btn-branch").text("ไม่แสดง");
-          $("#row-slct-branch").prop('hidden', true);
-          $(".head-wth-branch").prop('hidden', true);
-          $(".input-wth-branch").prop('hidden', true);
-          $(".input-spcf-branch").prop('hidden', true);
-          $(".head-spcf-branch").prop('hidden', true);
-          $(".head-wthout-branch").prop('hidden', false);
-          $(".input-wthout-branch").prop('hidden', false);
-        }else if(arg == "select"){
-          // arg == number -> 0-n followed by size of branch arry
-          // branch[0] == "สิงห์บุรี"
-          //$("#btn-branch").text(branch[0]);
-          $("#btn-branch").text("เลือกสาขา");
-          $("#row-slct-branch").prop('hidden', false);
-          $(".head-wth-branch").prop('hidden', true);
-          $(".input-wth-branch").prop('hidden', true);
-          $(".head-wthout-branch").prop('hidden', true);
-          $(".input-wthout-branch").prop('hidden', true);
-          $(".input-spcf-branch").prop('hidden', false);
-          $(".head-spcf-branch").prop('hidden', false);
+      if(arg == "branch"){ $("#title-1").text("สาขา"); $("#head-1").text("สาขา")}
+      else if(arg == "type"){ $("#title-1").text("รูปแบบการชำระ"); $("#head-1").text("รูปแบบการชำระ")}
+      else if(arg == "cus"){ $("#title-1").text("ลูกค้า"); $("#head-1").text("ลูกค้า")}
+      else if(arg == "user"){ $("#title-1").text("ผู้บันทึก"); $("#head-1").text("ผู้บันทึก")}
+      $("#head").prop('hidden', false);
+      
+    }
+
+    function pagination_reset() {
+      page = 1;
+
+      if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+      if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+      if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+      st = $("#pg-st a").text('1');
+      nd = $("#pg-nd a").text('2');
+      rd = $("#pg-rd a").text('3');
+    }
+
+    var page = 1;
+    function pagination(arg) {
+      var start = (page * 100) - 100; // pg = 1 start = 0
+
+      if (arg == "st") {
+        if (page > 2 && page != 1) {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page -= 1;
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 1); // 1 -> 2
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 1);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 1);
+        } else if (page == 2) {
+          if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = 1;
+
+        } else {
+          return 0;
+        }
+      } else if (arg == "nd") {
+        //console.log("nd");
+        if (page == 1) page++;
+        else if (page == max_pap - ge_no) page--;
+        if ($("#pg-nd").hasClass('active')) return 0;
+        else $("#pg-nd").attr('class', 'active');
+        if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+        if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+      } else if (arg == "rd") {
+        if (page + 1 == max_page_no) {
+          if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+          page = max_page_no;
+          st = $("#pg-st a").text(parseInt(max_page_no - 2));
+          nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+          rd = $("#pg-rd a").text(parseInt(max_page_no));
+        } else {
+          //console.log("rd");
+          if (page == max_page_no) return 0;
+
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          if (page == 1) page += 2; // page = 3
+          else page += 1;
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 1); // 1 -> 2
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 1);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 1);
+        }
+      } else if (arg == "prev") {
+        //console.log("prev");
+        if (page <= 11) {
+          if (!$("#pg-st").hasClass('active')) $("#pg-st").attr('class', 'active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = 1;
+          st = $("#pg-st a").text("1");
+          nd = $("#pg-nd a").text("2");
+          rd = $("#pg-rd a").text("3");
+        } else {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+          page = page - 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) - 10);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) - 10);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) - 10);
+        }
+      } else if (arg == "next") {
+        //console.log("next");
+        if ($("#pg-st").hasClass('active')) {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+          page = page + 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 9);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 9);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 9);
+        } else {
+          if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+
+          page = page + 10;
+
+          st = $("#pg-st a").text(parseInt($("#pg-st a").text()) + 10);
+          nd = $("#pg-nd a").text(parseInt($("#pg-nd a").text()) + 10);
+          rd = $("#pg-rd a").text(parseInt($("#pg-rd a").text()) + 10);
+        }
+      } else if (arg == "last") {
+        //console.log("last");
+        if (max_page_no <= 3) {
+          if (max_page_no == 2) {
+            //console.log("2");
+            if (!$("#pg-nd").hasClass('active')) $("#pg-nd").attr('class', 'active');
+            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+            if ($("#pg-rd").hasClass('active')) $("#pg-rd").removeClass('active');
+
+            page = 2;
+            st = $("#pg-st a").text("1");
+            nd = $("#pg-nd a").text("2");
+            rd = $("#pg-rd a").text("3");
+          } else if (max_page_no == 3) {
+            //console.log("3");
+            if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+            if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+            if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+            page = 3;
+            st = $("#pg-st a").text("1");
+            nd = $("#pg-nd a").text("2");
+            rd = $("#pg-rd a").text("3");
+          }
+        } else {
+          if (!$("#pg-rd").hasClass('active')) $("#pg-rd").attr('class', 'active');
+          if ($("#pg-st").hasClass('active')) $("#pg-st").removeClass('active');
+          if ($("#pg-nd").hasClass('active')) $("#pg-nd").removeClass('active');
+
+          page = max_page_no;
+          st = $("#pg-st a").text(parseInt(max_page_no - 2));
+          nd = $("#pg-nd a").text(parseInt(max_page_no - 1));
+          rd = $("#pg-rd a").text(parseInt(max_page_no));
         }
       }
-
-      function setmonth(arg){
-        var text;
-        switch(arg) {
-            case 1:
-              text = "มกราคม";
-              $("#select-month .btn").text(text);
-              break;
-            case 2:
-              text = "กุมภาพันธ์";
-              $("#select-month .btn").text(text);
-              break;
-            case 3:
-              text = "มีนาคม";
-              $("#select-month .btn").text(text);
-              break;
-            case 4:
-              text = "เมษายน";
-              $("#select-month .btn").text(text);
-              break;
-            case 5:
-              text = "พฤษภาคม";
-              $("#select-month .btn").text(text);
-              break;
-            case 6:
-              text = "มิถุนายน";
-              $("#select-month .btn").text(text);
-              break;
-            case 7:
-              text = "กรกฎาคม";
-              $("#select-month .btn").text(text);
-              break;
-            case 8:
-              text = "สิงหาคม";
-              $("#select-month .btn").text(text);
-              break;
-            case 9:
-              text = "กันยายน";
-              $("#select-month .btn").text(text);
-              break;
-            case 10:
-              text = "ตุลาคม";
-              $("#select-month .btn").text(text);
-              break;
-            case 11:
-              text = "พฤศจิกายน";
-              $("#select-month .btn").text(text);
-              break;
-            case 12:
-              text = "ธันวาคม";
-              $("#select-month .btn").text(text);
-              break;  
-        }
-
-        $("#title-1").text(text);
-        $("#date-full").prop('hidden', true);
-        $("#date-year").prop('hidden', false);
-        $("#date-year").text(year);
+      // Un-Disabled li-prev
+      if (page > 1) {
+        $("#li-prev").prop('class', 'page-item');
+      } else if (page == 1) {
+        $("#li-prev").prop('class', 'page-item disabled');
       }
 
-      function setyear(arg){
-        $("#select-year .btn").text("ปี "+arg);
-        $("#date-year").prop('hidden', false);
-        $("#date-year").text("พ.ศ. " + arg);
-      }
+      load(page);
+    }
 
-      function checkChange(arg){
-        txt = $(arg).next().text();
-        if(arg.checked == true){
-          $('<div id="head-'+txt+'" class="col-1 text-center nopd-5"><span class="inline">สาขา</span> <span class="inline">'+txt+'</span></div>').insertBefore($('#head-spcf-total'));
-          $('<div id="head-'+txt+'" class="col-1 nopd-5"><input type="text" class="form-control text-center"></div>').insertBefore($('#input-spcf-total'));
-        }if(arg.checked == false){
-          $("#head-"+txt).remove();
-          $("#input-"+txt).remove();
+    function prev() {
+      pagination('prev');
+    }
+
+    function next() {
+      if (page + 10 < max_page_no) {
+        pagination('next');
+      } else if (page + 10 >= max_page_no) {
+        pagination('last');
+      }
+    }
+
+    function commas(x) {
+      var parts = x.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }
+
+    var max_page = 1;
+
+    function load(page, data) {
+      $("div[id*='item-']").prop('hidden', true);
+      $("div[class*='more-']").prop('hidden', true);
+      start = (page == 1 ? 0 : 100 * (page - 1));
+
+      data = (typeof data !== 'undefined') ? data : old_data;
+      data.start = start;
+
+      if (page > max_page) {
+        // Max page = New page.. ..
+        max_page = page;
+        getData(start, data);
+      } else {
+        // Load old page.. .. 
+        if ($("#item-" + start).length == 0) {
+          // Skiped pg.. ..
+          getData(start, data);
+        } else {
+          // Old pg (Loaded pg).. ..
+          // Loop for dis-hidden item in pg.. ..
+          for (var i = start; i < (start + 100); i++) {
+            $("#item-" + i).prop('hidden', false);
+          }
         }
       }
-    </script>
+    }
+
+    function getData(start, data) {
+      //console.log(mode);
+      var path = 'http://150.95.26.163:8080/gitmew/php/sku_report_main.php';
+      $.ajax({
+        url: path,
+        type: 'POST',
+        data: data,
+        beforeSend: function () {
+          EasyLoading.show({
+            text: "กำลังโหลด"
+          });
+        },
+        success: function (response) {
+          EasyLoading.hide();
+          // Response == null // No data
+          var obj = jQuery.parseJSON(response);
+          if (obj == null) {
+            if (mode == 'alldate_selectedmonth') {
+              $.alert({
+                icon: 'fa fa-warning',
+                title: 'เตือน',
+                content: "ไม่มีข้อมูลในเดือนที่เลือก!!"
+              });
+            } if (mode == '')
+              return 0;
+          }
+
+          // LOOP FILL DATA
+          $.each(obj, function (i, field) {
+            var more = "more-" + i; // class "more";
+
+            //console.log(more);
+
+            i = (start + i);
+
+            /*
+              $("#input_price").numeric({
+            allowThouSep: true
+            });
+            */
+            // Main var run in getData
+            list[i] = {
+              "prod_id": field.prod_id,
+              "barcode": field.barcode,
+              "prod_name": field.prod_name,
+              "prod_price": commas(field.prod_price),
+              "unit_name": field.unit_name,
+              "amt": commas(field.amt),
+              "sale_value": commas(field.sale_value),
+            };
+
+            // ROW INPUT
+            row_input = "<div id='item-" + i + "' class='row justify-content-center align-items-center' style='margin-bottom: 5px;'>" +
+              "<div class='col-2 nopd-5'>" +
+              "<div class='input-group-prepend'>" +
+              "<span id='id-" + i + "' hidden>" + list[i].prod_id + "</span>" +
+              "<span id='span-no' class='input-group-text'>" + (i + 1) + "</span>" +
+              "<input id='barcode' type='text' class='form-control text-center' readonly value='" + list[i].barcode + "'>" +
+              "</div>" +
+              "</div>" +
+              "<div class='col-3 nopd-5'>" +
+              "<input id='name' type='text' class='form-control text-center' readonly value='" + list[i].prod_name + "'>" +
+              "</div>" +
+              "<div class='col-1 nopd-5'>" +
+              "<input id='price' type='text' class='form-control text-center' readonly value='" + list[i].prod_price + "'>" +
+              "</div>" +
+              "<div class='col-1 nopd-5'>" +
+              "<input id='unit' type='text' class='form-control text-center' readonly value='" + list[i].unit_name + "'>" +
+              "</div>" +
+              "<div class='col-1 nopd-5'>" +
+              "<input id='amount' type='text' class='form-control text-center' readonly value='" + list[i].amt + "'>" +
+              "</div>" +
+              "<div class='col-1 nopd-5'>" +
+              "<input id='total' type='text' class='form-control text-center' readonly value='" + list[i].sale_value + "'>" +
+              "</div>" +
+              "<div class='col-1'>" +
+              "<button id='more_btn-" + i + "' class='btn btn-info btn-sm' onclick='getMore(" + i + ")'>" +
+              "<i class='fa fa-sort-down'></i>" +
+              "</button>" +
+              "</div>" +
+              "</div>";
+            $("#ctn-show").append(row_input);
+          });
+          $("#ctn-head").prop('hidden', false);
+          $("#nav-pagination").prop('hidden', false);
+        }
+      });
+    }
+
+    function getMore(i) {
+      //console.log("getMore Function " + list[i].prod_id);
+      //console.log(i + " " + mode + " " + prod_id);
+      // $(".more-"+i),slideToggle(400);
+      var exist = false;
+      if ($(".more-" + i).length == 0) {
+        // Class more-i dose not exist
+        var path = 'http://150.95.26.163:8080/gitmew/php/sale_report_more.php';
+        var more_data;
+        //{ report_mode: mode, year: year, order_by: order_by, order_seq: order_seq, start: 0 };
+        if (mode == "allmonth") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id, year: year };
+        } else if (mode == "allyear") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id };
+        } else if (mode == "alldate_selectedmonth") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id, month: old_data.month, year: old_data.year };
+        } else if (mode == "alldate_daterange") {
+          more_data = { report_mode: mode, prod_id: list[i].prod_id, date_from: old_data.date_from, date_to: old_data.date_to };
+        }
+        $.ajax({
+          type: "POST",
+          url: path,
+          data: more_data,
+          beforeSend: function () {
+            EasyLoading.show({
+              text: "กำลังโหลด"
+            });
+          },
+          success: function (response) {
+            var obj = jQuery.parseJSON(response);
+            showMore(i, obj, exist);
+            EasyLoading.hide();
+          }
+        });
+      } else {
+        exist = true;
+        showMore(i, 0, exist);
+        EasyLoading.hide();
+      }
+
+    }
+
+    function showMore(i, obj, exist) {
+      //console.log(obj);
+      var more = "more-" + i;
+      if (!exist) {
+        // MORE CONTAINER
+        more_ctn = '<div class="container-fullwidth ' + more + '" style="margin-bottom: 8px;">';
+        more_end = '</div>';
+
+        if (mode == "allmonth") {
+          // ROW 12 MONTH
+          row_12m = '<div class="row">' +
+            '<div class="col-1 text-center">มกรา</div>' +
+            '<div class="col-1 text-center">กุมภา</div>' +
+            '<div class="col-1 text-center">มีนา</div>' +
+            '<div class="col-1 text-center">เมษา</div>' +
+            '<div class="col-1 text-center">พฤษภา</div>' +
+            '<div class="col-1 text-center">มิถุนา</div>' +
+            '<div class="col-1 text-center">กรกฎา</div>' +
+            '<div class="col-1 text-center">สิงหา</div>' +
+            '<div class="col-1 text-center">กันยา</div>' +
+            '<div class="col-1 text-center">ตุลา</div>' +
+            '<div class="col-1 text-center">พฤศจิกา</div>' +
+            '<div class="col-1 text-center">ธันวา</div>' +
+            '</div>' +
+            '<hr style="margin-top: 5px;">' +
+            // ********* Amonut ********* //
+            '<div class="row" style="margin-bottom: 5px;">' +
+            '<div class="col-1 text-left">จำนวน :</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[1].amt1) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[2].amt2) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[3].amt3) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[4].amt4) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[5].amt5) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[6].amt6) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[7].amt7) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[8].amt8) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[9].amt9) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[10].amt10) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[11].amt11) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[12].amt12) + '">' +
+            '</div>' +
+            '</div>' +
+            // ********* Price ********* //
+            '<div class="row" style="margin-bottom: 5px; margin-top: 10px;">' +
+            '<div class="col-1 text-left">ราคา :</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[1].sale_value1) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[2].sale_value2) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[3].sale_value3) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[4].sale_value4) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[5].sale_value5) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[6].sale_value6) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[7].sale_value7) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[8].sale_value8) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[9].sale_value9) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[10].sale_value10) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[11].sale_value11) + '">' +
+            '</div>' +
+            '<div class="col-1 text-center nopd-5">' +
+            '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[12].sale_value12) + '">' +
+            '</div>' +
+            '</div>';
+          $("#item-" + i).after(more_ctn + row_12m + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else if (mode == "allyear") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          rowyear = "";
+          end_rowyear = '';
+          //$("#item-" + i).after(more_ctn);
+
+          var mod, loop;
+          mod = count % 3; if (mod > 0) mod = 1;
+          loop = (count / 3) + mod;
+          var l = 1;
+
+          for (var o = 1; o <= loop; o++) {
+            var row_title = '<div class="row justify-content-center align-items-center"' + 'style="margin-bottom: 5px;">' +
+              '<div class="col-2"></div>';
+
+            var row_input = '<div class="row justify-content-center align-items-center">' +
+              '<div class="col-2">จำนวน : ราคา</div>';
+
+            //$("."+more).append(rowyear);
+            for (l = l; l <= 3 * o; l++) {
+              //console.log("o :" + o +" l :" + l + " count : " + count);
+              // Remain in row fill "-" (dash..)
+              if (l > count) {
+                //console.log("hi");
+                row_title += '<div class="col-3 text-center">ปี -</div>';
+                row_input += '<div class="col-3 input-group">' +
+                  '<input type="text" class="form-control form-control-sm text-center" readonly value="-">' +
+                  '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
+                  '<input type="text" class="form-control form-control-sm text-center" readonly value="-">' +
+                  '</div>';
+              } else {
+                row_title += '<div class="col-3 text-center">ปี ' + obj[l].year + '</div>';
+                row_input += '<div class="col-3 input-group">' +
+                  '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                  '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
+                  '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
+                  '</div>';
+              }
+            } row_title += '</div>'; row_input += '</div>';
+            rowyear = row_title + row_input + end_rowyear;
+            row_title = row_input = "";
+          }
+
+          $("#item-" + i).after(more_ctn + rowyear + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else if (mode == "alldate_selectedmonth") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          rowdaterange = "";
+          end_rowdaterange = '';
+          //$("#item-" + i).after(more_ctn);
+
+          // Start day
+          //                0      1      2      3      4      5      6
+          var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          var temp_skip = 0, skip = 0;
+          $.each(day_name, function (index, val) {
+            if (val == obj[1].day) {
+              // val = first-day
+              skip = index;
+              temp_skip = index;
+            }
+          });
+
+          var mod, loop;
+          mod = count % 7; if (mod > 0) mod = 1;
+          loop = ((count + skip) / 7) + mod;
+          var l = 1 - temp_skip;
+          var row_title = "";
+          var row_input = "";
+
+
+          for (var o = 1; o <= loop; o++) {
+            // Initial 
+            if (o == 1) {
+              row_title = '<div class="row justify-content-center align-items-center">วันที่/เดือน (จำนวน : ราคารวม)</div>' +
+                '<div class="row week">' +
+                '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;"> อา.</div>' +
+                '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">จ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">อ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">พ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">พฤ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center" style="border-right: black 1px solid;">ศ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center">ส.</div>' +
+                '</div><hr>' +
+                '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input = '<div class="row week">';
+            } else {
+              row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input += '<div class="row week">';
+            }
+            if (o == 2) temp_skip = 0;
+            for (var l = l; l <= ((o * 7) - skip); l++) {
+              if (l <= 0) {
+                // Fill space
+                row_title += '<div class="col-md-1 nopd text-center"></div>';
+                row_input += '<div class="col-md-1 nopd-5 text-center" style="border-right: black solid 1px;"></div>';
+              } else {
+                // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
+                if (l > count) {
+                  // in row.. ..
+                  row_title += '<div class="col-md-1 nopd text-center"></div>';
+                  row_input += '<div class="col-md-1 nopd-5 text-center"></div>';
+                } else {
+                  // in row.. ..
+                  row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
+
+                  if (l == ((o * 7) - skip)) {
+                    row_input += '<div class="col-md-1 nopd-5 input-group">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                      '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
+                      '</div>';
+                  } else {
+                    row_input += '<div class="col-md-1 nopd-5 input-group" style="border-right: black solid 1px;">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                      '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
+                      '</div>';
+                  }
+                }
+              }
+            } row_title += '</div>'; row_input += '</div>';
+            rowdaterange += row_title + row_input;
+            row_title = ""; row_input = "";
+          }
+          rowdaterange += end_rowdaterange;
+
+          $("#item-" + i).after(more_ctn + rowdaterange + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else if (mode == "alldate_daterange") {
+          // Count year.. ..
+          var count = 0;
+          $.each(obj, function (i, field) {
+            count++;
+          });
+
+          rowdaterange = "";
+          end_rowdaterange = '';
+          //$("#item-" + i).after(more_ctn);
+
+          // Start day
+          //                0      1      2      3      4      5      6
+          var day_name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          var temp_skip = 0, skip = 0;
+          $.each(day_name, function (index, val) {
+            if (val == obj[1].day) {
+              // val = first-day
+              skip = index;
+              temp_skip = index;
+            }
+          });
+
+          var mod, loop;
+          mod = count % 7; if (mod > 0) mod = 1;
+          loop = ((count + skip) / 7) + mod;
+          var l = 1 - temp_skip;
+          var row_title = "";
+          var row_input = "";
+
+
+          for (var o = 1; o <= loop; o++) {
+            console.log("Loop o : " + o);
+            // Initial 
+            if (o == 1) {
+              row_title = '<div class="row justify-content-center align-items-center">วันที่/เดือน (จำนวน : ราคารวม)</div>' +
+                '<div class="row week">' +
+                '<div class="col-md-1 nopd-5 text-center"> อา.</div>' +
+                '<div class="col-md-1 nopd-5 text-center">จ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center">อ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center">พ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center">พฤ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center">ศ.</div>' +
+                '<div class="col-md-1 nopd-5 text-center">ส.</div>' +
+                '</div><hr>' +
+                '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input = '<div class="row week">';
+            } else {
+              row_title += '<div class="row week" style="margin-bottom: 5px; margin-top: 5px;">';
+              row_input += '<div class="row week">';
+            }
+            if (o == 2) temp_skip = 0;
+            for (var l = l; l <= ((o * 7) - skip); l++) {
+              console.log("Loop l : " + l);
+              if (l <= 0) {
+                // Fill space
+                row_title += '<div class="col-md-1 nopd text-center"></div>';
+                row_input += '<div class="col-md-1 nopd-5 text-center" style="border-right: black solid 1px;"></div>';
+              } else {
+                // เงื่อนไข กำหนดการขึ้นบรรทัดใหม่
+                if (l > count) {
+                  // in row.. ..
+                  row_title += '<div class="col-md-1 nopd text-center"></div>';
+                  row_input += '<div class="col-md-1 nopd-5 text-center"></div>';
+                } else {
+                  // in row.. ..
+                  row_title += '<div class="col-md-1 nopd text-center">' + obj[l].date + '</div>';
+                  if (l == ((o * 7) - skip)) {
+                    row_input += '<div class="col-md-1 nopd-5 input-group">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                      '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
+                      '</div>';
+                  } else {
+                    row_input += '<div class="col-md-1 nopd-5 input-group" style="border-right: black solid 1px;">' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].amt) + '">' +
+                      '<span style="margin-left: 5px; margin-right: 5px;">:</span>' +
+                      '<input type="text" class="form-control form-control-sm text-center" readonly value="' + commas(obj[l].sale_value) + '">' +
+                      '</div>';
+                  }
+                }
+              }
+            } row_title += '</div>'; row_input += '</div>';
+            rowdaterange += row_title + row_input;
+            row_title = ""; row_input = "";
+          }
+          rowdaterange += end_rowdaterange;
+
+          $("#item-" + i).after(more_ctn + rowdaterange + more_end);
+          $("." + more).hide();
+          $("." + more).slideToggle(400);
+
+          // Done loading more .. .. next time will only slide
+          $("#more_btn-" + i).click(function (e) {
+            $("." + more).slideToggle(400);
+          });
+        }
+        else {
+          return 0;
+        }
+      } else {
+        // if(exist) ...
+        return;
+      }
+    }
+
+    
+  </script>
 </head>
 
 <body style="overflow-x: auto;">
-    <div id="wrapper">
-      <!-- Sidebar -->
-      <div id="sidebar-wrapper">
-          <ul class="sidebar-nav" style="margin-top: 20px">
-            <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto Group</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
-              <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>  
-              <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li> 
-              <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>   
-              <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li> 
-              <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
-              <li><a href="http://150.95.26.163:8080/gitmew/multi_unit.html">๐ สินค้าหลายหน่วย</a></li>
-              <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
-          </ul>
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+      <ul class="sidebar-nav" style="margin-top: 20px">
+        <li class="sidebar-brand"><a id="sidebar-title" href="http://150.95.26.163:8080/gitmew/sale.html">PPS Auto
+            Group</a></li>
+        <li><a href="http://150.95.26.163:8080/gitmew/import.html">๐ สินค้าเข้า</a></li>
+        <li><a id="mp" href="http://150.95.26.163:8080/gitmew/manage_prod.html">๐ จัดการสินค้า</a></li>
+        <li><a href="http://150.95.26.163:8080/gitmew/manage_cus.html">๐ จัดการลูกค้า</a></li>
+        <li><a href="http://150.95.26.163:8080/gitmew/sale.html">๐ ทำรายการขาย</a></li>
+        <li><a id="mb" href="http://150.95.26.163:8080/gitmew/manage_bill.html">๐ รายการขายย้อนหลัง</a></li>
+        <li><a href="http://150.95.26.163:8080/gitmew/cash_record.html">๐ ตัดกะ</a></li>
+        <li><a href="http://150.95.26.163:8080/gitmew/manage_shift.html">๐ รายการตัดกะย้อนหลัง</a></li>
+        <li><a href="http://150.95.26.163:8080/gitmew/transfer.html">๐ โอนสินค้า</a></li>
+        <li><a href="http://150.95.26.163:8080/gitmew/multi_unit.html">๐ สินค้าหลายหน่วย</a></li>
+        <li><a href="#" onclick="logout()">๐ ออกจากระบบ ๐</a></li>
+      </ul>
+    </div>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <div id="offline" class="alert alert-danger alert-dismissible" hidden>
+        <button type="button" class="close" onclick="dismiss()">&times;</button>
+        <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
+      </div>
+      <div id="online" class="alert alert-success alert-dismissible" hidden>
+        <button type="button" class="close" onclick="dismiss()">&times;</button>
+        <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
+      </div>
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #ea8e6c;">
+        <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+          aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
+          <h3 id="nav-title">รายงานการขาย</h3>
+        </div>
+      </nav><br>
+
+      <!-- Ctn-Options -->
+      <div class="container-fullwidth">
+        <div class="row justify-content-center">
+          <div class="col-4 input-group align-items-center" style="padding-left: 0;">
+            <input id="opt-from" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd"
+              placeholder="เลือกวันที่" hidden readonly style="margin-right: 5px;">
+            <input id="opt-to" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd"
+              placeholder="ถึงวันที่" hidden readonly>
+          </div>
+          <div class="col-3 input-group nopd">
+            <button id="opt-date" class="btn btn-secondary disable" style="width: 75px; background-color: #666; margin-right: 5px;">รายวัน</button>
+            <button id="opt-month" class="btn btn-secondary disable" style="background-color: #666; margin-right: 5px;">รายเดือน</button>
+            <button id="opt-year" class="btn btn-secondary disable" style="width: 75px; background-color: #666;">รายปี</button>
+          </div>
+          <div class="col-3 input-group text-center">
+            <div id="select-month" class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" style="background-color: #666;  margin-right: 10px; width: 105px;">เดือน</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important; max-height: 150px !important; overflow-y: auto;">
+                <a class="dropdown-item text-center" onclick="setmonth(0);" href="#">ทุกเดือน</a>
+                <a class="dropdown-item text-center" onclick="setmonth(1);" href="#">มกราคม</a>
+                <a class="dropdown-item text-center" onclick="setmonth(2);" href="#">กุมภาพันธ์</a>
+                <a class="dropdown-item text-center" onclick="setmonth(3);" href="#">มีนาคม</a>
+                <a class="dropdown-item text-center" onclick="setmonth(4);" href="#">เมษายน</a>
+                <a class="dropdown-item text-center" onclick="setmonth(5);" href="#">พฤษภาคม</a>
+                <a class="dropdown-item text-center" onclick="setmonth(6);" href="#">มิถุนายน</a>
+                <a class="dropdown-item text-center" onclick="setmonth(7);" href="#">กรกฎาคม</a>
+                <a class="dropdown-item text-center" onclick="setmonth(8);" href="#">สิงหาคม</a>
+                <a class="dropdown-item text-center" onclick="setmonth(9);" href="#">กันยายน</a>
+                <a class="dropdown-item text-center" onclick="setmonth(10);" href="#">ตุลาคม</a>
+                <a class="dropdown-item text-center" onclick="setmonth(11);" href="#">พฤศจิกายน</a>
+                <a class="dropdown-item text-center" onclick="setmonth(12);" href="#">ธันวาคม</a>
+              </div>
+            </div>
+            <div id="select-year" class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">ปี</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important;">
+                <a id="year_all" class="dropdown-item" href="#" onclick="setyear('0')">ทั้งหมด</a>
+                <a class="dropdown-item" href="#" onclick="setyear('2561')">ปี 2561</a>
+                <a class="dropdown-item" href="#" onclick="setyear('2560')">ปี 2560</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="row-filter" class="row justify-content-center align-items-center" style="margin-top: 20px;">
+          <div class="col-1"></div>
+          <div class="col-6 input-group align-items-center">
+            <div class="col-3 text-center">ตัวเลือกมุมมอง :</div>
+            <div class="col-9" id="viewmode">
+              <button id="btn-branch" class="btn btn-secondary btn-mode disable" style="background-color: #666; margin-right: 10px;" onclick="setviewmode('branch')">สาขา</button>
+              <button id="btn-cus" class="btn btn-secondary btn-mode disable" style="background-color: #666; margin-right: 10px;" onclick="setviewmode('cus')">ลูกค้า</button>
+              <button id="btn-type" class="btn btn-secondary btn-mode disable" style="background-color: #666; margin-right: 10px;" onclick="setviewmode('type')">รูปแบบการชำระ</button>
+              <button id="btn-user" class="btn btn-secondary btn-mode disable" style="background-color: #666;" onclick="setviewmode('user')">ผู้บันทึก</button>
+            </div>
+          </div>
+          <div class="col-5 input-group align-items-center">
+            <div class="col-3 text-center">จัดเรียงจาก : </div>
+            <div class="col-6">
+              <button id="by-desc" class="btn btn-secondary disable" style="background-color: #666; margin-right: 15px;"
+                onclick="setorderseq('DESC')">มาก > น้อย</button>
+              <button id="by-asc" class="btn btn-secondary disable" style="background-color: #666;" onclick="setorderseq('ASC')">น้อย
+                > มาก</button>
+            </div>
+          </div>
+        </div>
+        <hr style="width: 90%;">
+
+        <!-- Ctn-Date and Month -->
+        <div class="container-fullwidth" style="margin-bottom: 20px;">
+          <div id="row-title-1" class="row justify-content-center">
+            <!-- วันนี้ // รายวัน // เดือนต่างๆ -->
+            <h2 id="title-1" class="text-center">ยอดการขาย</h2>
+          </div>
+          <div id="row-title-2" class="row justify-content-center" hidden>
+            <!-- จาก ถึง -->
+            <h4 id="h4-from" class="text-center"></h4>
+            <h3 style="color: #666; padding-top: 5px; margin-left: 10px; margin-right: 10px;"> ถึง </h3>
+            <h4 id="h4-to" class="text-center"></h4>
+          </div>
+          <div id="row-date" class="row justify-content-center">
+            <p id="date-full"></p>
+            <p id="date-year" hidden></p>
+          </div>
+        </div>
       </div>
 
-      <!-- Page Content -->
-      <div id="page-content-wrapper">
-          <div id="offline" class="alert alert-danger alert-dismissible" hidden>
-            <button type="button" class="close" onclick="dismiss()">&times;</button>
-            <strong>แจ้งเตือน!</strong> อินเทอเน็ตขาดการเชื่อมต่อ.
-          </div>
-          <div id="online" class="alert alert-success alert-dismissible" hidden>
-            <button type="button" class="close" onclick="dismiss()">&times;</button>
-            <strong>สำเร็จ!</strong> อินเทอเน็ตทำการเชื่อมต่อแล้ว.
-          </div>
-          <!-- Navbar -->
-          <nav class="navbar navbar-expand-md navbar-dark mb-4 rounded" style="background: #ea8e6c;">
-            <a href="#menu-toggle" class="navbar-brand " id="menu-toggle">รายการ</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-md-center" id="navbarCollapse">
-              <h3 id="nav-title">รายงานการขาย</h3>
-            </div>
-          </nav>         
 
-          <!-- Ctn-Options -->
-          <div class="container-fullwidth">
-            <div class="row" style="margin-bottom: 2px;">
-              <div class="col-12">&nbsp</div>
-            </div>
+      <!-- Ctn-Header -->
+      <div id="ctn-head" class="container-fullwidth" hidden>
+        <div id="head" class="row justify-content-center">
+          <div id="head-1" class="col-3 text-center"></div>
+          <div id="head-numbill" class="col-2 text-center">จำนวนการขาย</div>
+          <div class="col-2"></div>
+        </div>
+      </div>
 
-            <div class="row">
-              <div class="col-2"></div>
-              <div class="col-3 input-group nopd">
-                  <input id="opt-from" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd" placeholder="เลือกวันที่" hidden readonly style="margin-right: 5px;">
-                  <input id="opt-to" data-toggle="datepicker" type="text" class="form-control text-center docs-date nopd" placeholder="ถึงวันที่" hidden disabled>
-              </div>
-              <div class="col-3 input-group">
-                  <button id="opt-date" class="btn btn-secondary disabled" style="width: 90px; background-color: #666; margin-right: 5px;">รายวัน</button>
-                  <button id="opt-month" class="btn btn-secondary" style="background-color: #666;">รายเดือน</button>
-              </div>
-              <div class="col-3 input-group">
-                  <div id="select-month" class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666;  margin-right: 10px; width: 105px;">เดือน
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important; max-height: 150px !important; overflow-y: auto;">
-                      <a class="dropdown-item text-center" onclick="setmonth(1);" href="#">มกราคม</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(2);" href="#">กุมภาพันธ์</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(3);" href="#">มีนาคม</a>
-                       <a class="dropdown-item text-center" onclick="setmonth(4);" href="#">เมษายน</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(5);" href="#">พฤษภาคม</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(6);" href="#">มิถุนายน</a>
-                       <a class="dropdown-item text-center" onclick="setmonth(7);" href="#">กรกฎาคม</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(8);" href="#">สิงหาคม</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(9);" href="#">กันยายน</a>
-                       <a class="dropdown-item text-center" onclick="setmonth(10);" href="#">ตุลาคม</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(11);" href="#">พฤศจิกายน</a>
-                      <a class="dropdown-item text-center" onclick="setmonth(12);" href="#">ธันวาคม</a>
-                    </div>
-                  </div>
-                  <div id="select-year" class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #666; width: 90px;">
-                      ปี 2561
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="min-width: 0px !important;">
-                      <a class="dropdown-item" href="#" onclick="setyear('2561')">ปี 2561</a>
-                      <a class="dropdown-item" href="#" onclick="setyear('2560')">ปี 2560</a>
-                      <a class="dropdown-item" href="#" onclick="setyear('2559')">ปี 2559</a>
-                    </div>
-                  </div>
-              </div>
-            </div> 
-
-            <!-- Checkbox Select Branch -->
-            <div id="row-slct-branch" class="row" style="margin-top: 20px; padding-right: 12%;" hidden>
-              <div class="col-1"></div>
-              <div class="col-1 text-center">สาขา : </div>
-              <div class="col-10 input-group text-left">
-                <div class="col-2 nopd">
-                  <input type="checkbox" onchange="checkChange(this);">
-                  <label for="" style="margin-right: 2px;">สิงห์บุรี</label>
-                </div>
-                <div class="col-2 nopd">
-                  <input type="checkbox" onchange="checkChange(this);">
-                  <label for="" style="margin-right: 2px;">อ่างทอง</label>
-                </div>
-                <div class="col-2 nopd">
-                  <input type="checkbox" onchange="checkChange(this);">
-                  <label for="" style="margin-right: 2px;">คลังสินค้า</label>
-                </div>
-              </div>
-            </div>
-          </div> <hr style="width: 90%;">
-
-          <!-- Ctn-Date and Month -->
-          <div class="container-fullwidth" style="margin-bottom: 20px;">
-            <div id="row-title-1" class="row justify-content-center">
-              <!-- วันนี้ // รายวัน // เดือนต่างๆ -->
-              <h2 id="title-1" class="text-center">รายการขาย</h2>
-            </div>
-            <div id="row-title-2" class="row justify-content-center" hidden>
-              <!-- จาก ถึง -->
-              <h4 id="date-from" class="text-center"></h4>
-              <h1 style="color: #666; padding-top: 3px; margin-left: 10px; margin-right: 10px;">-</h1>
-              <h4 id="date-to" class="text-center"></h4>
-            </div>
-            <div id="row-date" class="row justify-content-center">
-              <p id="date-full" >22 มกราคม พ.ศ. 2561</p>
-              <p id="date-year" hidden>พ.ศ. 2561</p>
-            </div>
+      <!-- Ctn-Show -->
+      <div id="ctn-show" class="container-fullwidth" style="margin-top: 5px;">
+        <div class="row justify-content-center align-items-center">
+          <div class="col-3 text-center">
+            <input type="text" class="form-control text-center" readonly>
           </div>
-          
-          <!-- Ctn-Header -->
-          <div id="ctn-head" class="container-fullwidth">
-            <div class="row head-wthout-branch justify-content-center" >
-              <div class="col-2 text-center nopd-5" style='padding-left: 3.5%;'>เลขที่รายการ</div>
-              <div class="col-3 text-center nopd-5">ชื่อลูกค้า</div>
-              <div class="col-1 text-center nopd-5">สาขา</div>
-              <div class="col-1 text-center nopd">รูปแบบการชำระ</div>
-              <div class="col-1 text-center nopd-5">เวลา</div>
-              <div class="col-1 text-center nopd">รวมสุทธิ</div>
-            </div>
+          <div class="col-2 text-center">
+            <input type="text" class="form-control text-center" readonly>
           </div>
-
-          <!-- Ctn-Show -->
-          <div id="ctn-show" class="container-fullwidth" style="margin-top: 5px;">
-            <div class="row input-wthout-branch justify-content-center" style="flex-wrap: nowrap;" >
-              <div class="col-2 nopd-5">
-                <div class='input-group-prepend'>
-                  <span id="span-no" class='input-group-text'>#</span>
-                  <input id='bill_no' type='text' class='form-control text-center'>
-                </div>
-              </div>
-              <div class="col-3 nopd-5">
-                <input id='cus_name' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd-5">
-                <input id='branch' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd-5">
-                <input id='type' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd-5">
-                <input id='time' type='text' class='form-control text-center'>
-              </div>
-              <div class="col-1 nopd">
-                <input id='net' type='text' class='form-control text-center'>
-              </div>
-            </div>
+          <div class="col-1">
+            <button class="btn btn-info btn-sm" onclick="window.location = 'detail_report.html'"><i class="fas fa-info-circle"></i></button>
           </div>
-      </div><!-- End page content wrapper -->
-    </div> <!-- End Wrapper -->
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <nav id="nav-pagination" style="margin-top: 20px;" hidden>
+        <ul class="pagination justify-content-center">
+          <li id="li-prev" class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous" onclick="prev();">
+              <span aria-hidden="true">&laquo;</span>
+              <span class="sr-only">Previous</span>
+            </a>
+          </li>
+          <li id="pg-st" class="page-item active">
+            <a class="page-link scroll_to" href="#" onclick="pagination('st')">1</a>
+          </li>
+          <li id="pg-nd" class="page-item">
+            <a class="page-link scroll_to" href="#" onclick="pagination('nd')">2</a>
+          </li>
+          <li id="pg-rd" class="page-item">
+            <a class="page-link scroll_to" href="#" onclick="pagination('rd')">3</a>
+          </li>
+          <li id="li-next" class="page-item">
+            <a class="page-link" href="#" aria-label="Next" onclick="next();">
+              <span aria-hidden="true">&raquo;</span>
+              <span class="sr-only">Next</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div><!-- End page content wrapper -->
+  </div> <!-- End Wrapper -->
 
   <script>
-    $("#opt-date").click(function(event) {
-          if($(this).hasClass('disabled')) $(this).removeClass('disabled');
-          if(!$("#opt-from").is(":visible")){$("#opt-from").prop('hidden', false); $("#btn-from").prop('hidden', false); $("#btn-to").prop('hidden', false); $("#opt-to").prop('hidden', false);} 
-          $("#opt-month").addClass('disabled');
-          $("#select-year").prop('hidden', true);
-          $("#select-month").prop('hidden', true);
-      });
+    var prod_month = [];
+    $("#opt-date").click(function (event) {
+      if ($(this).hasClass('disable')) $(this).removeClass('disable');
+      if (!$("#opt-from").is(":visible")) {
+        $("#opt-from").prop('hidden', false);
+        $("#btn-from").prop('hidden', false);
+        $("#btn-to").prop('hidden', false);
+        $("#opt-to").prop('hidden', false);
+      }
+      $("#opt-month").addClass('disable');
+      $("#opt-year").addClass('disable');
+      $("#select-year").prop('hidden', true);
+      $("#select-month").prop('hidden', true);
+      setorderby(order_by);
+      setorderseq(order_seq);
+      setviewmode(viewmode);
+    });
 
-      $("#opt-month").click(function(event) {
-          if($(this).hasClass('disabled')) $(this).removeClass('disabled');
-          if(!$("#select-year").is(":visible")){
-            $("#select-year").prop('hidden', false);
-            $("#select-month").prop('hidden', false);
-          } 
-          ($("#opt-from")).prop("hidden", true);
-          ($("#opt-to")).prop("hidden", true);
-          $("#opt-date").addClass('disabled');
-      });
+    $("#opt-month").click(function (event) {
+      mode = "";
+      if ($(this).hasClass('disable')) $(this).removeClass('disable');
+      if (!$("#select-month").is(":visible")) {
+        $("#select-year").prop('hidden', false);
+        $("#select-month").prop('hidden', false);
+      }
+      // Hidden / Show row title
+      if ($("#row-title-2").is(":visible")) {
+        $("#row-title-2").prop('hidden', true);
+        $("#h4-from").text('');
+        $("#h4-to").text('');
+      }
 
-      $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
+      $("#opt-from").prop("hidden", true);
+      $("#opt-to").prop("hidden", true);
+      $("#opt-date").addClass('disable');
+      $("#opt-year").addClass('disable');
 
-        if($("#menu-toggle").text() == "รายการ"){
-          $("#menu-toggle").text("กลับ");
-        }else if($("#menu-toggle").text() == "กลับ"){
-          $("#menu-toggle").text("รายการ");
-        }
-      });
+      // Hide select all_year
+      $("#year_all").prop('hidden', true);
 
-      $("#opt-from").on('fromcomplete',function() {
-        $("#opt-to").prop('disabled', false);
-        $("#opt-to").prop('readonly', true);
+      var year = $("#select-year .btn").text().split(" ")[1] - 543;
+      setorderby(order_by);
+      setorderseq(order_seq);
+      setviewmode(viewmode);
+    });
+
+    $("#opt-year").click(function (event) {
+      mode = "";
+      if ($(this).hasClass('disable')) $(this).removeClass('disable');
+      if ($("#select-month").is(":visible")) {
+        $("#select-month").prop('hidden', true);
+      } else {
+        $("#select-year").prop('hidden', false);
+      }
+
+      // Hidden / Show row title
+      if ($("#row-title-2").is(":visible")) {
+        $("#row-title-2").prop('hidden', true);
+        $("#h4-from").text('');
+        $("#h4-to").text('');
+      }
+
+      $("#opt-from").prop("hidden", true);
+      $("#opt-to").prop("hidden", true);
+      $("#opt-date").addClass('disable');
+      $("#opt-month").addClass('disable');
+      $("#year_all").prop('hidden', false);
+
+      setorderby(order_by);
+      setorderseq(order_seq);
+      setviewmode(viewmode);
+    });
+
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+
+      if ($("#menu-toggle").text() == "รายการ") {
+        $("#menu-toggle").text("กลับ");
+      } else if ($("#menu-toggle").text() == "กลับ") {
+        $("#menu-toggle").text("รายการ");
+      }
+    });
+
+    $("#opt-from").on('fromcomplete', function () { });
+
+    function load_date_range(date_from, date_to, same = 0) {
+      mode = 'alldate_daterange';
+      old_data = data = {
+        report_mode: mode,
+        date_from: date_from,
+        date_to: date_to,
+        order_by: order_by,
+        order_seq: order_seq,
+        start: 0
+      };
+
+      // clear old *item- and *more-
+      $("div[id*='item-']").remove(); $("div[class*='more-']").remove();
+
+      loadMax(data);
+      load(1, data);
+
+      pagination_reset();
+
+      max_page = 0;
+      if (same == 1) {
+        $("#date-full").prop('hidden', false);
+        $("#date-year").prop('hidden', true);
+        $("#row-title-1").prop('hidden', false);
+        $("#row-title-2").prop('hidden', true);
+
+        from_y = parseInt(date_from.split('-')[0]) + 543;
+        from_m = checkmonth(parseInt(date_from.split('-')[1]));
+        from_d = parseInt(date_from.split('-')[2]);
+
+        $("#date-full").text(from_d + " " + from_m + " ปี " + from_y);
+      } else {
         $("#date-full").prop('hidden', true);
         $("#date-year").prop('hidden', true);
 
-        // change date on title-1
-        $("#title-1").text($("#opt-from").val());
-        $("#row-title-2").prop('hidden', true);
-        $("#row-title-1").prop('hidden', false);
-        $("#opt-to").val("");
+        $("#title-1").text('');
+        $("#row-title-1").prop('hidden', true);
+        $("#row-title-2").prop('hidden', false);
+        $("#h4-from").text($("#opt-from").val());
+        $("#h4-to").text($("#opt-to").val());
+      }
+    }
 
-        // get and show data from db
+    function date_range_alert() {
+      $(this).val('');
+      $.alert({
+        icon: 'fa fa-warning',
+        title: 'เตือน',
+        content: "กรุณาเลือกวันที่ให้ถูกต้อง"
       });
+    }
 
-      $("#opt-to").on('tocomplete',function() {
-        // change date on title-2
-        temp = $(this).val().split(' ');
-        temp = temp[1].split('/');
-        temp_date = parseInt(temp[0]);
-        temp_month = checkfullmonth(temp[1]);
+    $("#opt-to").on('tocomplete', function () {
+      console.log(from_date + " " + to_date);
+      from_y = parseInt(from_date.split('-')[0]);
+      from_m = parseInt(from_date.split('-')[1]);
+      from_d = parseInt(from_date.split('-')[2]);
 
-        temp_from = $("#opt-from").val().split(' ');
-        temp_from = temp_from[1].split('/');
-        temp_from_date = parseInt(temp_from[0]); // opt-from date //
-        temp_from_month = checkfullmonth(temp_from[1]); // opt-from month //
-        //alert(temp_date + " " + temp_from_date);
+      to_y = parseInt(to_date.split('-')[0]);
+      to_m = parseInt(to_date.split('-')[1]);
+      to_d = parseInt(to_date.split('-')[2]);
 
-        if(temp_date < temp_from_date || temp_month < temp_from_month){
-          $(this).val("");
-          alert("กรุณาเลือกวันที่ถัดออกไป");
-        }else{
-          // วันที่ถูกต้อง
-          $("#title-1").text('');
-          $("#row-title-1").prop('hidden', true);
-          $("#row-title-2").prop('hidden', false);
-          $("#date-from").text($("#opt-from").val());
-          $("#date-to").text($("#opt-to").val());
+
+      //console.log(from_d + " " + from_m + " " + from_y); // Done
+      //console.log(to_d + " " + to_m + " " + to_y); // Done
+
+      // Check < 40 days range ....
+      var range = 0;
+      if (from_m < to_m) {
+        var d = 1;
+        for (var m = from_m; m <= to_m; m++) {
+          max_date = new Date(from_y, m, 0).getDate();
+          if (m == to_m) { d = 1; }
+          else { d = from_d; }
+          for (d = d; d <= max_date; d++) {
+            range++;
+            if (m == to_m && d == to_d) { break; }
+          }
         }
-      });
+      } else if (to_m - from_m >= 3) {
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "ช่วงวันที่มากเกินกำหนด"
+        });
+      }
+      console.log(range);
+      if (range > 40) {
+        $.alert({
+          icon: 'fa fa-warning',
+          title: 'เตือน',
+          content: "ช่วงวันที่มากเกินกำหนด"
+        });
+        return 0;
+      } else {
+        if (from_y <= to_y) {
+          if (from_m <= to_m) {
+            if (from_d == to_d) {
+              // only one day
+              load_date_range(from_date, to_date, 1);
+            } else if (from_d < to_d) {
+              // loaddata
+              load_date_range(from_date, to_date);
+            } else if (from_d >= to_d && from_m <= to_m) {
+              load_date_range(from_date, to_date);
+            } else {
+              console.log("1")
+              date_range_alert();
+            }
+          } else {
+            console.log("2")
+            date_range_alert();
+          }
+        } else {
+          console.log("3")
+          date_range_alert();
+        }
+      }
+    });
   </script>
 </body>
+
 </html>

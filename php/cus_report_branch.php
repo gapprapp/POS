@@ -1,7 +1,7 @@
 ﻿<?php
     $conn = mysqli_connect("localhost", "root", "pkl2468GG", "pos");
-    $prod_id = $_POST['prod_id']; // Ex: "1247";
-    //$prod_id = "1247";
+    $cust_id = $_POST['cust_id']; // Ex: "292";
+    //$cust_id = "292";
     $date_from  = $_POST['date_from']; // Ex: "2018-09-01";
     $date_to  = $_POST['date_to']; // Ex: "2018-09-19";
     //$date_from  = "2018-11-01";
@@ -78,15 +78,21 @@
 	    if(mysqli_num_rows($pre_result) > 0){    
        		while($d_row = mysqli_fetch_array($pre_result)){   
 		      for($i=0; $i<sizeof($b_list); $i++){
-				  $temp_i = $i;
-		      		$sql = "SELECT p.prod_id, IFNULL(SUM(si.prod_amount),0) as amt, IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value 
-		              		FROM product p LEFT JOIN sale_order_item si ON p.prod_id = si.prod_id LEFT JOIN sale_order s ON si.order_id = s.order_id WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
-		              		AND p.prod_id = ".$prod_id." AND s.branch_id = '".$b_list[$i][0]."' AND DATE_FORMAT(s.date_time, '%Y%m%d') = '".$d_row[0]."' GROUP BY p.prod_id ";
+			  	$temp_i = $i;
+		                $sql = "SELECT c.customer_id, GROUP_CONCAT(DISTINCT s.payment_type, '|') as payment_history, 
+			                IFNULL(COUNT(DISTINCT si.order_id),0) as num_order, IFNULL(COUNT(DISTINCT si.prod_id),0) as num_item, 
+	 		                IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value FROM customer c LEFT JOIN sale_order s 
+			                ON c.customer_id = s.customer_id LEFT JOIN sale_order_item si ON s.order_id = si.order_id 
+ 			        	WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
+		              		AND c.customer_id = ".$cust_id." AND s.branch_id = '".$b_list[$i][0]."' 
+					AND DATE_FORMAT(s.date_time, '%Y%m%d') = '".$d_row[0]."' GROUP BY c.customer_id ";	
 		      		$result = mysqli_query($conn, $sql);
 	              		if(mysqli_num_rows($result) > 0){
 	       		  		while($dd_row = mysqli_fetch_array($result)){
-			    			$output[$d_count]["amt".($i+1)] = $dd_row[1];
-							$output[$d_count]["sale_value".($i+1)] = $dd_row[2];
+						$output[$d_count]["payment_history".($i+1)] = $dd_row[1];
+						$output[$d_count]["num_order".($i+1)] = $dd_row[2];
+						$output[$d_count]["num_item".($i+1)] = $dd_row[3];
+						$output[$d_count]["sale_value".($i+1)] = $dd_row[4];
 							$originalDate = $d_row[0];
 							$newDate = (string)date("d/m", strtotime($originalDate));
 							$output[$d_count]["date"] = thaimonth($newDate);
@@ -97,7 +103,9 @@
 							
 			  		}
 	              		}else{
-					$output[$d_count]["amt".($i+1)] = 0;
+					$output[$d_count]["payment_history".($i+1)] = "";
+					$output[$d_count]["num_order".($i+1)] = 0;
+					$output[$d_count]["num_item".($i+1)] = 0;
 					$output[$d_count]["sale_value".($i+1)] = 0;
 					$originalDate = $d_row[0];
 					$newDate = (string)date("d/m", strtotime($originalDate));
@@ -130,14 +138,20 @@
 	    if(mysqli_num_rows($pre_result) > 0){
 		while($d_row = mysqli_fetch_array($pre_result)){
 			for($i=0; $i<sizeof($b_list); $i++){	
-				$sql = "SELECT p.prod_id, IFNULL(SUM(si.prod_amount),0) as amt, IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value 
-					FROM product p LEFT JOIN sale_order_item si ON p.prod_id = si.prod_id LEFT JOIN sale_order s ON si.order_id = s.order_id WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
-					AND p.prod_id = ".$prod_id." AND s.branch_id = '".$b_list[$i][0]."' AND DATE_FORMAT(s.date_time, '%Y%m%d') = '".$d_row[0]."' GROUP BY p.prod_id ";
-						$result = mysqli_query($conn, $sql);
+		                $sql = "SELECT c.customer_id, GROUP_CONCAT(DISTINCT s.payment_type, '|') as payment_history, 
+			                IFNULL(COUNT(DISTINCT si.order_id),0) as num_order, IFNULL(COUNT(DISTINCT si.prod_id),0) as num_item, 
+	 		                IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value FROM customer c LEFT JOIN sale_order s 
+			                ON c.customer_id = s.customer_id LEFT JOIN sale_order_item si ON s.order_id = si.order_id 
+ 			        	WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
+		              		AND c.customer_id = ".$cust_id." AND s.branch_id = '".$b_list[$i][0]."' 
+					AND DATE_FORMAT(s.date_time, '%Y%m%d') = '".$d_row[0]."' GROUP BY c.customer_id ";	
+				$result = mysqli_query($conn, $sql);
 				if(mysqli_num_rows($result) > 0){
 					while($dd_row = mysqli_fetch_array($result)){
-						$output[$d_count]["amt".($i+1)] = $dd_row[1];
-						$output[$d_count]["sale_value".($i+1)] = $dd_row[2];
+						$output[$d_count]["payment_history".($i+1)] = $dd_row[1];
+						$output[$d_count]["num_order".($i+1)] = $dd_row[2];
+						$output[$d_count]["num_item".($i+1)] = $dd_row[3];
+						$output[$d_count]["sale_value".($i+1)] = $dd_row[4];
 						$originalDate = $d_row[0];
 						$newDate = (string)date("d/m", strtotime($originalDate));
 						$output[$d_count]["date"] = thaimonth($newDate);
@@ -147,8 +161,10 @@
 							}$temp_i = 0;
 					}
 				}
-				else{
-					$output[$d_count]["amt".($i+1)] = 0;
+				else{					
+					$output[$d_count]["payment_history".($i+1)] = "";
+					$output[$d_count]["num_order".($i+1)] = 0;
+					$output[$d_count]["num_item".($i+1)] = 0;
 					$output[$d_count]["sale_value".($i+1)] = 0;
 					$originalDate = $d_row[0];
 					$newDate = (string)date("d/m", strtotime($originalDate));
@@ -172,19 +188,27 @@
 	    $sql_where = " AND YEAR(s.date_time) = ".$year." ";
 
 	    for($m_count=1; $m_count<=12; $m_count++){
-			for($i=0; $i<sizeof($b_list); $i++){
-			        $sql = "SELECT p.prod_id, IFNULL(SUM(si.prod_amount),0) as amt, IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value 
-      				        FROM product p LEFT JOIN sale_order_item si ON p.prod_id = si.prod_id LEFT JOIN sale_order s ON si.order_id = s.order_id WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
-				        AND p.prod_id = ".$prod_id." AND s.branch_id = '".$b_list[$i][0]."' AND MONTH(s.date_time) = '".$m_count."' ".$sql_where." GROUP BY p.prod_id";
-	    			$result = mysqli_query($conn, $sql);
+			for($i=0; $i<sizeof($b_list); $i++){   			
+				$sql = "SELECT c.customer_id, GROUP_CONCAT(DISTINCT s.payment_type, '|') as payment_history, 
+			                IFNULL(COUNT(DISTINCT si.order_id),0) as num_order, IFNULL(COUNT(DISTINCT si.prod_id),0) as num_item, 
+	 		                IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value FROM customer c LEFT JOIN sale_order s 
+			                ON c.customer_id = s.customer_id LEFT JOIN sale_order_item si ON s.order_id = si.order_id 
+ 			        	WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
+		              		AND c.customer_id = ".$cust_id." AND s.branch_id = '".$b_list[$i][0]."' 
+					AND MONTH(s.date_time) = '".$m_count."' ".$sql_where." GROUP BY c.customer_id ";
+				$result = mysqli_query($conn, $sql);
 	        		if(mysqli_num_rows($result) > 0){
 	       				while($m_row = mysqli_fetch_array($result)){
-			    			$output[$m_count]["amt".$m_count."_".($i+1)] = $m_row[1];
-			    			$output[$m_count]["sale_value".$m_count."_".($i+1)] = $m_row[2];
+						$output[$m_count]["payment_history".($i+1)] = $m_row[1];
+						$output[$m_count]["num_order".($i+1)] = $m_row[2];
+						$output[$m_count]["num_item".($i+1)] = $m_row[3];
+						$output[$m_count]["sale_value".($i+1)] = $m_row[4];
 					}
 				}else{
-					$output[$m_count]["amt".$m_count."_".($i+1)] = 0;
-					$output[$m_count]["sale_value".$m_count."_".($i+1)] = 0;
+					$output[$m_count]["payment_history".($i+1)] = "";
+					$output[$m_count]["num_order".($i+1)] = 0;
+					$output[$m_count]["num_item".($i+1)] = 0;
+					$output[$m_count]["sale_value".($i+1)] = 0;
 				}
 			}
     	    }
@@ -197,17 +221,25 @@
 	    if(mysqli_num_rows($pre_result) > 0){    
        		while($y_row = mysqli_fetch_array($pre_result)){ 
 			for($i=0; $i<sizeof($b_list); $i++){     
-		    		$sql = "SELECT p.prod_id, IFNULL(SUM(si.prod_amount),0) as amt, IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value 
-		            		FROM product p LEFT JOIN sale_order_item si ON p.prod_id = si.prod_id LEFT JOIN sale_order s ON si.order_id = s.order_id WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
-		            		AND p.prod_id = ".$prod_id." AND s.branch_id = '".$b_list[$i][0]."' AND YEAR(s.date_time) = '".$y_row[0]."' ".$sql_where." GROUP BY p.prod_id ";
-	    	    		$result = mysqli_query($conn, $sql);
+		            $sql = "SELECT c.customer_id, GROUP_CONCAT(DISTINCT s.payment_type, '|') as payment_history, 
+			            IFNULL(COUNT(DISTINCT si.order_id),0) as num_order, IFNULL(COUNT(DISTINCT si.prod_id),0) as num_item, 
+   		        	    IFNULL(SUM((si.prod_price*si.prod_amount)-si.prod_discount),0) as sale_value FROM customer c LEFT JOIN sale_order s 
+				    ON c.customer_id = s.customer_id LEFT JOIN sale_order_item si ON s.order_id = si.order_id 
+				    WHERE s.order_number NOT LIKE '%can%' AND si.order_id NOT LIKE '%refund%' 
+			            AND c.customer_id = ".$cust_id." AND s.branch_id = '".$b_list[$i][0]."' 
+				    AND YEAR(s.date_time) = '".$y_row[0]."' ".$sql_where." GROUP BY c.customer_id ";		
+     	    			$result = mysqli_query($conn, $sql);
 	            		if(mysqli_num_rows($result) > 0){
 	       		    		while($yy_row = mysqli_fetch_array($result)){
-			        		$output[$y_count]["amt".($i+1)] = $yy_row[1];
-							$output[$y_count]["sale_value".($i+1)] = $yy_row[2];
+						$output[$y_count]["payment_history".($i+1)] = $yy_row[1];
+						$output[$y_count]["num_order".($i+1)] = $yy_row[2];
+						$output[$y_count]["num_item".($i+1)] = $yy_row[3];
+						$output[$y_count]["sale_value".($i+1)] = $yy_row[4];
 			    		}
 		    		}else{
-					$output[$y_count]["amt".($i+1)] = 0;
+					$output[$y_count]["payment_history".($i+1)] = "";
+					$output[$y_count]["num_order".($i+1)] = 0;
+					$output[$y_count]["num_item".($i+1)] = 0;
 					$output[$y_count]["sale_value".($i+1)] = 0;
 					$output[$y_count]["year"] = 0;
 		    		}

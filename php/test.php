@@ -29,8 +29,9 @@
 			echo "fail";
 			exit;
 		}
-	}		
-	mysqli_commit($conn);          
+	}	
 	echo "success";
+	mysqli_commit($conn);          
+	
     mysqli_close($conn);	
 ?>

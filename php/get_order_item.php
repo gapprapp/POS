@@ -46,30 +46,11 @@
       }   
   } 
 
-  $sql = "SELECT o.record_id,b.branch_name,o.date_time,o.sum_price,o.total_discount,o.total_price,o.get_money,o.change_money FROM order_record o INNER JOIN branch b 
-  ON o.branch_id = b.branch_id WHERE o.order_id = '$order_id' ORDER BY o.record_id DESC";
-  $result = mysqli_query($conn, $sql);
-  if(mysqli_num_rows($result) > 0){    
-      while($row = mysqli_fetch_array($result)){ 
-          $re_id = $row['record_id'];        
-          $output2 = [];
-          $sql = "SELECT r.prod_id,p.prod_name,r.prod_price,r.prod_amount FROM order_record_item r INNER JOIN product p ON 
-          r.prod_id = p.prod_id WHERE r.order_id = '$re_id'";
-          $result1 = mysqli_query($conn, $sql);
-          if(mysqli_num_rows($result1) > 0){    
-              while($row1 = mysqli_fetch_array($result1)){           
-                  $output2[] = $row1;
-              } 
-              array_push($row,$output2);       
-          }    
-          $output[] = $row;
-      }   
-  }
-
 	if($result){    
 		echo json_encode($output);
 	}else{
 		echo "fail";
-	}	
+	}
+	
 	mysqli_close($conn);
 ?>

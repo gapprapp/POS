@@ -23,7 +23,7 @@
         }   
     }   
 
-    $sql = "SELECT record_id,datetime,sum_price,note FROM order_record WHERE order_id = '$order_id'";
+    $sql = "SELECT record_id,datetime,order_id,note FROM order_record WHERE order_id = '$order_id'";
     $result = mysqli_query($conn, $sql);
     if(mysqli_num_rows($result) > 0){    
         while($row = mysqli_fetch_array($result)){ 
@@ -31,7 +31,7 @@
             $type = array('type' => "edit");
             array_push($row,$type);
             $output2 = [];
-            $sql = "SELECT r.prod_id,p.prod_name,r.prod_price,r.prod_amount FROM order_record_item r INNER JOIN product p ON 
+            $sql = "SELECT p.prod_name,r.prod_price,r.prod_amount FROM order_record_item r INNER JOIN product p ON 
             r.prod_id = p.prod_id WHERE r.order_id = '$re_id'";
             $result1 = mysqli_query($conn, $sql);
             if(mysqli_num_rows($result1) > 0){    

@@ -568,7 +568,7 @@
                       <div class="card-header">
                         <h3>จำนวนลูกค้า</h3>
                       </div>
-                      <div class="card-body" style="margin-top: 20px;" onclick="window.location='member_report.html'">
+                      <div class="card-body" style="margin-top: 20px;" onclick="window.location='cus_report.html'">
                         <h2 id="card_cus" class="card-title"></h2>
                       </div>
                       <div class="card-footer text-right">
@@ -665,7 +665,7 @@
                 <div class="row">
                     <div class="col-4">
                         <div class="card text-center">
-                          <div class="card-body" onclick="window.location = 'member_report.html?sort=net'">
+                          <div class="card-body" onclick="window.location = 'cus_report.html?sort=net'">
                             <h3 id="card-more" class="card-title"><span class="inline" style="margin-bottom: 10px;">รายชื่อลูกค้า</span> <span class="inline">เรียงตามยอดขาย</span></h3>
                           </div>
                         </div>
@@ -708,13 +708,13 @@
           var obj = jQuery.parseJSON(response);
           
 
-          sale = parseFloat(obj.sale_value).toFixed(2);
-          cash = parseFloat(obj.เงินสด).toFixed(2);
-          transf = parseFloat(obj.เงินโอน).toFixed(2);
-          sku = parseInt(obj.sku_item);
-          items = parseInt(obj.num_item);
-          bill = parseInt(obj.num_order);
-          cus = parseInt(obj.num_customer);
+          sale = commas(parseFloat(obj.sale_value).toFixed(2));
+          cash = commas(parseFloat(obj.เงินสด).toFixed(2));
+          transf = commas(parseFloat(obj.เงินโอน).toFixed(2));
+          sku = commas(parseInt(obj.sku_item));
+          items = commas(parseInt(obj.num_item));
+          bill = commas(parseInt(obj.num_order));
+          cus = commas(parseInt(obj.num_customer));
           
           $("#card_sale").text(sale);
           $("#card_cash").text(cash);
